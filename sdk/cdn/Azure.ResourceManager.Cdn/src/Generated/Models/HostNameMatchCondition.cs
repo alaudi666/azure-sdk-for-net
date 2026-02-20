@@ -5,49 +5,56 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
     /// <summary> Defines the parameters for HostName match conditions. </summary>
-    public partial class HostNameMatchCondition
+    public partial class HostNameMatchCondition : DeliveryRuleConditionProperties
     {
-        /// <summary> Initializes a new instance of HostNameMatchCondition. </summary>
-        /// <param name="conditionType"></param>
+        /// <summary> Initializes a new instance of <see cref="HostNameMatchCondition"/>. </summary>
         /// <param name="hostNameOperator"> Describes operator to be matched. </param>
-        public HostNameMatchCondition(HostNameMatchConditionType conditionType, HostNameOperator hostNameOperator)
+        public HostNameMatchCondition(HostNameOperator hostNameOperator)
         {
-            ConditionType = conditionType;
             HostNameOperator = hostNameOperator;
             MatchValues = new ChangeTrackingList<string>();
             Transforms = new ChangeTrackingList<PreTransformCategory>();
+            TypeName = DeliveryRuleConditionParametersType.DeliveryRuleHostNameConditionParameters;
         }
 
-        /// <summary> Initializes a new instance of HostNameMatchCondition. </summary>
-        /// <param name="conditionType"></param>
+        /// <summary> Initializes a new instance of <see cref="HostNameMatchCondition"/>. </summary>
+        /// <param name="typeName"></param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="hostNameOperator"> Describes operator to be matched. </param>
         /// <param name="negateCondition"> Describes if this is negate condition or not. </param>
         /// <param name="matchValues"> The match value for the condition of the delivery rule. </param>
         /// <param name="transforms"> List of transforms. </param>
-        internal HostNameMatchCondition(HostNameMatchConditionType conditionType, HostNameOperator hostNameOperator, bool? negateCondition, IList<string> matchValues, IList<PreTransformCategory> transforms)
+        internal HostNameMatchCondition(DeliveryRuleConditionParametersType typeName, IDictionary<string, BinaryData> serializedAdditionalRawData, HostNameOperator hostNameOperator, bool? negateCondition, IList<string> matchValues, IList<PreTransformCategory> transforms) : base(typeName, serializedAdditionalRawData)
         {
-            ConditionType = conditionType;
             HostNameOperator = hostNameOperator;
             NegateCondition = negateCondition;
             MatchValues = matchValues;
             Transforms = transforms;
+            TypeName = typeName;
         }
 
-        /// <summary> Gets or sets the condition type. </summary>
-        public HostNameMatchConditionType ConditionType { get; set; }
+        /// <summary> Initializes a new instance of <see cref="HostNameMatchCondition"/> for deserialization. </summary>
+        internal HostNameMatchCondition()
+        {
+        }
+
         /// <summary> Describes operator to be matched. </summary>
+        [WirePath("operator")]
         public HostNameOperator HostNameOperator { get; set; }
         /// <summary> Describes if this is negate condition or not. </summary>
+        [WirePath("negateCondition")]
         public bool? NegateCondition { get; set; }
         /// <summary> The match value for the condition of the delivery rule. </summary>
+        [WirePath("matchValues")]
         public IList<string> MatchValues { get; }
         /// <summary> List of transforms. </summary>
+        [WirePath("transforms")]
         public IList<PreTransformCategory> Transforms { get; }
     }
 }

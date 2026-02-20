@@ -5,41 +5,156 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
-    public partial class ServerEndpointRecallError
+    /// <summary> Server endpoint recall error object. </summary>
+    public partial class ServerEndpointRecallError : IJsonModel<ServerEndpointRecallError>
     {
-        internal static ServerEndpointRecallError DeserializeServerEndpointRecallError(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServerEndpointRecallError PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<int> errorCode = default;
-            Optional<long> count = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointRecallError>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("errorCode"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeServerEndpointRecallError(document.RootElement, options);
                     }
-                    errorCode = property.Value.GetInt32();
-                    continue;
-                }
-                if (property.NameEquals("count"))
+                default:
+                    throw new FormatException($"The model {nameof(ServerEndpointRecallError)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ServerEndpointRecallError>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointRecallError>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServerEndpointRecallError)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(ErrorCode))
+            {
+                writer.WritePropertyName("errorCode"u8);
+                writer.WriteNumberValue(ErrorCode.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Count))
+            {
+                writer.WritePropertyName("count"u8);
+                writer.WriteNumberValue(Count.Value);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    count = property.Value.GetInt64();
-                    continue;
+#endif
                 }
             }
-            return new ServerEndpointRecallError(Optional.ToNullable(errorCode), Optional.ToNullable(count));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServerEndpointRecallError IJsonModel<ServerEndpointRecallError>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServerEndpointRecallError JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointRecallError>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServerEndpointRecallError)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeServerEndpointRecallError(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ServerEndpointRecallError DeserializeServerEndpointRecallError(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            int? errorCode = default;
+            long? count = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("errorCode"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    errorCode = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("count"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    count = prop.Value.GetInt64();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new ServerEndpointRecallError(errorCode, count, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ServerEndpointRecallError>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointRecallError>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerStorageSyncContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ServerEndpointRecallError)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServerEndpointRecallError IPersistableModel<ServerEndpointRecallError>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ServerEndpointRecallError>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -5,23 +5,79 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Models;
+using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
     /// <summary> Parameters for updating an Storage sync service. </summary>
     public partial class StorageSyncServicePatch
     {
-        /// <summary> Initializes a new instance of StorageSyncServicePatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="StorageSyncServicePatch"/>. </summary>
         public StorageSyncServicePatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="StorageSyncServicePatch"/>. </summary>
+        /// <param name="tags"> The user-specified tags associated with the storage sync service. </param>
+        /// <param name="identity"> managed identities for the Container App to interact with other Azure services without maintaining any secrets or credentials in code. </param>
+        /// <param name="properties"> The properties of the server endpoint. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal StorageSyncServicePatch(IDictionary<string, string> tags, ManagedServiceIdentity identity, StorageSyncServiceUpdateProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Tags = tags;
+            Identity = identity;
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> The user-specified tags associated with the storage sync service. </summary>
         public IDictionary<string, string> Tags { get; }
+
+        /// <summary> managed identities for the Container App to interact with other Azure services without maintaining any secrets or credentials in code. </summary>
+        public ManagedServiceIdentity Identity { get; set; }
+
+        /// <summary> The properties of the server endpoint. </summary>
+        internal StorageSyncServiceUpdateProperties Properties { get; set; }
+
         /// <summary> Incoming Traffic Policy. </summary>
-        public IncomingTrafficPolicy? IncomingTrafficPolicy { get; set; }
+        public IncomingTrafficPolicy? IncomingTrafficPolicy
+        {
+            get
+            {
+                return Properties is null ? default : Properties.IncomingTrafficPolicy;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new StorageSyncServiceUpdateProperties();
+                }
+                Properties.IncomingTrafficPolicy = value.Value;
+            }
+        }
+
+        /// <summary> Use Identity authorization when customer have finished setup RBAC permissions. </summary>
+        public bool? UseIdentity
+        {
+            get
+            {
+                return Properties is null ? default : Properties.UseIdentity;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new StorageSyncServiceUpdateProperties();
+                }
+                Properties.UseIdentity = value.Value;
+            }
+        }
     }
 }

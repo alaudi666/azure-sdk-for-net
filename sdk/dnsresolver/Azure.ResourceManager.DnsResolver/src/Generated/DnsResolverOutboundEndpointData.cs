@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.DnsResolver.Models;
 using Azure.ResourceManager.Models;
@@ -15,10 +14,45 @@ using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.DnsResolver
 {
-    /// <summary> A class representing the DnsResolverOutboundEndpoint data model. </summary>
+    /// <summary>
+    /// A class representing the DnsResolverOutboundEndpoint data model.
+    /// Describes an outbound endpoint for a DNS resolver.
+    /// </summary>
     public partial class DnsResolverOutboundEndpointData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of DnsResolverOutboundEndpointData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="DnsResolverOutboundEndpointData"/>. </summary>
         /// <param name="location"> The location. </param>
         /// <param name="subnet"> The reference to the subnet used for the outbound endpoint. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subnet"/> is null. </exception>
@@ -29,26 +63,33 @@ namespace Azure.ResourceManager.DnsResolver
             Subnet = subnet;
         }
 
-        /// <summary> Initializes a new instance of DnsResolverOutboundEndpointData. </summary>
+        /// <summary> Initializes a new instance of <see cref="DnsResolverOutboundEndpointData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
         /// <param name="systemData"> The systemData. </param>
         /// <param name="tags"> The tags. </param>
         /// <param name="location"> The location. </param>
-        /// <param name="etag"> ETag of the outbound endpoint. </param>
+        /// <param name="etag"> "If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields."). </param>
         /// <param name="subnet"> The reference to the subnet used for the outbound endpoint. </param>
         /// <param name="provisioningState"> The current provisioning state of the outbound endpoint. This is a read-only property and any attempt to set this value will be ignored. </param>
         /// <param name="resourceGuid"> The resourceGuid property of the outbound endpoint resource. </param>
-        internal DnsResolverOutboundEndpointData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, ETag? etag, WritableSubResource subnet, DnsResolverProvisioningState? provisioningState, Guid? resourceGuid) : base(id, name, resourceType, systemData, tags, location)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal DnsResolverOutboundEndpointData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, ETag? etag, WritableSubResource subnet, DnsResolverProvisioningState? provisioningState, Guid? resourceGuid, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData, tags, location)
         {
             ETag = etag;
             Subnet = subnet;
             ProvisioningState = provisioningState;
             ResourceGuid = resourceGuid;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary> ETag of the outbound endpoint. </summary>
+        /// <summary> Initializes a new instance of <see cref="DnsResolverOutboundEndpointData"/> for deserialization. </summary>
+        internal DnsResolverOutboundEndpointData()
+        {
+        }
+
+        /// <summary> "If etag is provided in the response body, it may also be provided as a header per the normal etag convention.  Entity tags are used for comparing two or more entities from the same requested resource. HTTP/1.1 uses entity tags in the etag (section 14.19), If-Match (section 14.24), If-None-Match (section 14.26), and If-Range (section 14.27) header fields."). </summary>
         public ETag? ETag { get; }
         /// <summary> The reference to the subnet used for the outbound endpoint. </summary>
         internal WritableSubResource Subnet { get; set; }

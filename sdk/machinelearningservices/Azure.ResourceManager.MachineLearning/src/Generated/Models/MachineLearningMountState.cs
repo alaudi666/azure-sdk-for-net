@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Mount state.
-    /// Serialized Name: MountState
-    /// </summary>
+    /// <summary> Mount state. </summary>
     public readonly partial struct MachineLearningMountState : IEquatable<MachineLearningMountState>
     {
         private readonly string _value;
@@ -32,41 +29,23 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string UnmountFailedValue = "UnmountFailed";
         private const string UnmountedValue = "Unmounted";
 
-        /// <summary>
-        /// MountRequested
-        /// Serialized Name: MountState.MountRequested
-        /// </summary>
+        /// <summary> MountRequested. </summary>
         public static MachineLearningMountState MountRequested { get; } = new MachineLearningMountState(MountRequestedValue);
-        /// <summary>
-        /// Mounted
-        /// Serialized Name: MountState.Mounted
-        /// </summary>
+        /// <summary> Mounted. </summary>
         public static MachineLearningMountState Mounted { get; } = new MachineLearningMountState(MountedValue);
-        /// <summary>
-        /// MountFailed
-        /// Serialized Name: MountState.MountFailed
-        /// </summary>
+        /// <summary> MountFailed. </summary>
         public static MachineLearningMountState MountFailed { get; } = new MachineLearningMountState(MountFailedValue);
-        /// <summary>
-        /// UnmountRequested
-        /// Serialized Name: MountState.UnmountRequested
-        /// </summary>
+        /// <summary> UnmountRequested. </summary>
         public static MachineLearningMountState UnmountRequested { get; } = new MachineLearningMountState(UnmountRequestedValue);
-        /// <summary>
-        /// UnmountFailed
-        /// Serialized Name: MountState.UnmountFailed
-        /// </summary>
+        /// <summary> UnmountFailed. </summary>
         public static MachineLearningMountState UnmountFailed { get; } = new MachineLearningMountState(UnmountFailedValue);
-        /// <summary>
-        /// Unmounted
-        /// Serialized Name: MountState.Unmounted
-        /// </summary>
+        /// <summary> Unmounted. </summary>
         public static MachineLearningMountState Unmounted { get; } = new MachineLearningMountState(UnmountedValue);
         /// <summary> Determines if two <see cref="MachineLearningMountState"/> values are the same. </summary>
         public static bool operator ==(MachineLearningMountState left, MachineLearningMountState right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningMountState"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningMountState left, MachineLearningMountState right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningMountState"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningMountState"/>. </summary>
         public static implicit operator MachineLearningMountState(string value) => new MachineLearningMountState(value);
 
         /// <inheritdoc />
@@ -77,7 +56,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

@@ -6,6 +6,7 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
@@ -13,43 +14,164 @@ using Azure.ResourceManager.Compute.Models;
 
 namespace Azure.ResourceManager.Compute
 {
-    public partial class SharedGalleryImageData
+    public partial class SharedGalleryImageData : IUtf8JsonSerializable, IJsonModel<SharedGalleryImageData>
     {
-        internal static SharedGalleryImageData DeserializeSharedGalleryImageData(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<SharedGalleryImageData>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<SharedGalleryImageData>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<string> name = default;
-            Optional<AzureLocation> location = default;
-            Optional<SupportedOperatingSystemType> osType = default;
-            Optional<OperatingSystemStateType> osState = default;
-            Optional<DateTimeOffset> endOfLifeDate = default;
-            Optional<GalleryImageIdentifier> identifier = default;
-            Optional<RecommendedMachineConfiguration> recommended = default;
-            Optional<Disallowed> disallowed = default;
-            Optional<HyperVGeneration> hyperVGeneration = default;
-            Optional<IReadOnlyList<GalleryImageFeature>> features = default;
-            Optional<ImagePurchasePlan> purchasePlan = default;
-            Optional<ArchitectureType> architecture = default;
-            Optional<Uri> privacyStatementUri = default;
-            Optional<string> eula = default;
-            Optional<string> uniqueId = default;
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SharedGalleryImageData>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SharedGalleryImageData)} does not support writing '{format}' format.");
+            }
+
+            base.JsonModelWriteCore(writer, options);
+            writer.WritePropertyName("properties"u8);
+            writer.WriteStartObject();
+            if (Optional.IsDefined(OSType))
+            {
+                writer.WritePropertyName("osType"u8);
+                writer.WriteStringValue(OSType.Value.ToSerialString());
+            }
+            if (Optional.IsDefined(OSState))
+            {
+                writer.WritePropertyName("osState"u8);
+                writer.WriteStringValue(OSState.Value.ToSerialString());
+            }
+            if (Optional.IsDefined(EndOfLifeOn))
+            {
+                writer.WritePropertyName("endOfLifeDate"u8);
+                writer.WriteStringValue(EndOfLifeOn.Value, "O");
+            }
+            if (Optional.IsDefined(Identifier))
+            {
+                writer.WritePropertyName("identifier"u8);
+                writer.WriteObjectValue(Identifier, options);
+            }
+            if (Optional.IsDefined(Recommended))
+            {
+                writer.WritePropertyName("recommended"u8);
+                writer.WriteObjectValue(Recommended, options);
+            }
+            if (Optional.IsDefined(Disallowed))
+            {
+                writer.WritePropertyName("disallowed"u8);
+                writer.WriteObjectValue(Disallowed, options);
+            }
+            if (Optional.IsDefined(HyperVGeneration))
+            {
+                writer.WritePropertyName("hyperVGeneration"u8);
+                writer.WriteStringValue(HyperVGeneration.Value.ToString());
+            }
+            if (Optional.IsCollectionDefined(Features))
+            {
+                writer.WritePropertyName("features"u8);
+                writer.WriteStartArray();
+                foreach (var item in Features)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsDefined(PurchasePlan))
+            {
+                writer.WritePropertyName("purchasePlan"u8);
+                writer.WriteObjectValue(PurchasePlan, options);
+            }
+            if (Optional.IsDefined(Architecture))
+            {
+                writer.WritePropertyName("architecture"u8);
+                writer.WriteStringValue(Architecture.Value.ToString());
+            }
+            if (Optional.IsDefined(PrivacyStatementUri))
+            {
+                writer.WritePropertyName("privacyStatementUri"u8);
+                writer.WriteStringValue(PrivacyStatementUri.AbsoluteUri);
+            }
+            if (Optional.IsDefined(Eula))
+            {
+                writer.WritePropertyName("eula"u8);
+                writer.WriteStringValue(Eula);
+            }
+            if (Optional.IsCollectionDefined(ArtifactTags))
+            {
+                writer.WritePropertyName("artifactTags"u8);
+                writer.WriteStartObject();
+                foreach (var item in ArtifactTags)
+                {
+                    writer.WritePropertyName(item.Key);
+                    writer.WriteStringValue(item.Value);
+                }
+                writer.WriteEndObject();
+            }
+            writer.WriteEndObject();
+        }
+
+        SharedGalleryImageData IJsonModel<SharedGalleryImageData>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SharedGalleryImageData>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SharedGalleryImageData)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSharedGalleryImageData(document.RootElement, options);
+        }
+
+        internal static SharedGalleryImageData DeserializeSharedGalleryImageData(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string name = default;
+            AzureLocation? location = default;
+            SupportedOperatingSystemType? osType = default;
+            OperatingSystemStateType? osState = default;
+            DateTimeOffset? endOfLifeDate = default;
+            GalleryImageIdentifier identifier = default;
+            RecommendedMachineConfiguration recommended = default;
+            Disallowed disallowed = default;
+            HyperVGeneration? hyperVGeneration = default;
+            IReadOnlyList<GalleryImageFeature> features = default;
+            ImagePurchasePlan purchasePlan = default;
+            ArchitectureType? architecture = default;
+            Uri privacyStatementUri = default;
+            string eula = default;
+            IReadOnlyDictionary<string, string> artifactTags = default;
+            string uniqueId = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("location"))
+                if (property.NameEquals("location"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     location = new AzureLocation(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -58,130 +180,133 @@ namespace Azure.ResourceManager.Compute
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("osType"))
+                        if (property0.NameEquals("osType"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             osType = property0.Value.GetString().ToSupportedOperatingSystemType();
                             continue;
                         }
-                        if (property0.NameEquals("osState"))
+                        if (property0.NameEquals("osState"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             osState = property0.Value.GetString().ToOperatingSystemStateType();
                             continue;
                         }
-                        if (property0.NameEquals("endOfLifeDate"))
+                        if (property0.NameEquals("endOfLifeDate"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             endOfLifeDate = property0.Value.GetDateTimeOffset("O");
                             continue;
                         }
-                        if (property0.NameEquals("identifier"))
+                        if (property0.NameEquals("identifier"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            identifier = GalleryImageIdentifier.DeserializeGalleryImageIdentifier(property0.Value);
+                            identifier = GalleryImageIdentifier.DeserializeGalleryImageIdentifier(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("recommended"))
+                        if (property0.NameEquals("recommended"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            recommended = RecommendedMachineConfiguration.DeserializeRecommendedMachineConfiguration(property0.Value);
+                            recommended = RecommendedMachineConfiguration.DeserializeRecommendedMachineConfiguration(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("disallowed"))
+                        if (property0.NameEquals("disallowed"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            disallowed = Disallowed.DeserializeDisallowed(property0.Value);
+                            disallowed = Disallowed.DeserializeDisallowed(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("hyperVGeneration"))
+                        if (property0.NameEquals("hyperVGeneration"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             hyperVGeneration = new HyperVGeneration(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("features"))
+                        if (property0.NameEquals("features"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<GalleryImageFeature> array = new List<GalleryImageFeature>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(GalleryImageFeature.DeserializeGalleryImageFeature(item));
+                                array.Add(GalleryImageFeature.DeserializeGalleryImageFeature(item, options));
                             }
                             features = array;
                             continue;
                         }
-                        if (property0.NameEquals("purchasePlan"))
+                        if (property0.NameEquals("purchasePlan"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            purchasePlan = ImagePurchasePlan.DeserializeImagePurchasePlan(property0.Value);
+                            purchasePlan = ImagePurchasePlan.DeserializeImagePurchasePlan(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("architecture"))
+                        if (property0.NameEquals("architecture"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             architecture = new ArchitectureType(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("privacyStatementUri"))
+                        if (property0.NameEquals("privacyStatementUri"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                privacyStatementUri = null;
                                 continue;
                             }
                             privacyStatementUri = new Uri(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("eula"))
+                        if (property0.NameEquals("eula"u8))
                         {
                             eula = property0.Value.GetString();
+                            continue;
+                        }
+                        if (property0.NameEquals("artifactTags"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+                            foreach (var property1 in property0.Value.EnumerateObject())
+                            {
+                                dictionary.Add(property1.Name, property1.Value.GetString());
+                            }
+                            artifactTags = dictionary;
                             continue;
                         }
                     }
                     continue;
                 }
-                if (property.NameEquals("identifier"))
+                if (property.NameEquals("identifier"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -190,7 +315,7 @@ namespace Azure.ResourceManager.Compute
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("uniqueId"))
+                        if (property0.NameEquals("uniqueId"u8))
                         {
                             uniqueId = property0.Value.GetString();
                             continue;
@@ -198,8 +323,61 @@ namespace Azure.ResourceManager.Compute
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new SharedGalleryImageData(name.Value, Optional.ToNullable(location), uniqueId.Value, Optional.ToNullable(osType), Optional.ToNullable(osState), Optional.ToNullable(endOfLifeDate), identifier.Value, recommended.Value, disallowed.Value, Optional.ToNullable(hyperVGeneration), Optional.ToList(features), purchasePlan.Value, Optional.ToNullable(architecture), privacyStatementUri.Value, eula.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new SharedGalleryImageData(
+                name,
+                location,
+                serializedAdditionalRawData,
+                uniqueId,
+                osType,
+                osState,
+                endOfLifeDate,
+                identifier,
+                recommended,
+                disallowed,
+                hyperVGeneration,
+                features ?? new ChangeTrackingList<GalleryImageFeature>(),
+                purchasePlan,
+                architecture,
+                privacyStatementUri,
+                eula,
+                artifactTags ?? new ChangeTrackingDictionary<string, string>());
         }
+
+        BinaryData IPersistableModel<SharedGalleryImageData>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SharedGalleryImageData>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerComputeContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(SharedGalleryImageData)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        SharedGalleryImageData IPersistableModel<SharedGalleryImageData>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SharedGalleryImageData>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeSharedGalleryImageData(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SharedGalleryImageData)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<SharedGalleryImageData>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

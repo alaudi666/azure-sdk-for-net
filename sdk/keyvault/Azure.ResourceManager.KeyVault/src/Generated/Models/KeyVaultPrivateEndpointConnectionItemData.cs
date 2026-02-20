@@ -5,50 +5,78 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure;
 using Azure.Core;
-using Azure.ResourceManager.Resources.Models;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> Private endpoint connection item. </summary>
     public partial class KeyVaultPrivateEndpointConnectionItemData
     {
-        /// <summary> Initializes a new instance of KeyVaultPrivateEndpointConnectionItemData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="KeyVaultPrivateEndpointConnectionItemData"/>. </summary>
         internal KeyVaultPrivateEndpointConnectionItemData()
         {
         }
 
-        /// <summary> Initializes a new instance of KeyVaultPrivateEndpointConnectionItemData. </summary>
+        /// <summary> Initializes a new instance of <see cref="KeyVaultPrivateEndpointConnectionItemData"/>. </summary>
         /// <param name="id"> Id of private endpoint connection. </param>
-        /// <param name="etag"> Modified whenever there is a change in the state of private endpoint connection. </param>
-        /// <param name="privateEndpoint"> Properties of the private endpoint object. </param>
-        /// <param name="connectionState"> Approval state of the private link connection. </param>
-        /// <param name="provisioningState"> Provisioning state of the private endpoint connection. </param>
-        internal KeyVaultPrivateEndpointConnectionItemData(string id, ETag? etag, SubResource privateEndpoint, KeyVaultPrivateLinkServiceConnectionState connectionState, KeyVaultPrivateEndpointConnectionProvisioningState? provisioningState)
+        /// <param name="eTag"> Modified whenever there is a change in the state of private endpoint connection. </param>
+        /// <param name="properties"> Private endpoint connection properties. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal KeyVaultPrivateEndpointConnectionItemData(string id, ETag? eTag, PrivateEndpointConnectionProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Id = id;
-            ETag = etag;
-            PrivateEndpoint = privateEndpoint;
-            ConnectionState = connectionState;
-            ProvisioningState = provisioningState;
+            ETag = eTag;
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Id of private endpoint connection. </summary>
+        [WirePath("id")]
         public string Id { get; }
+
         /// <summary> Modified whenever there is a change in the state of private endpoint connection. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
-        /// <summary> Properties of the private endpoint object. </summary>
-        internal SubResource PrivateEndpoint { get; }
-        /// <summary> Gets Id. </summary>
-        public ResourceIdentifier PrivateEndpointId
-        {
-            get => PrivateEndpoint?.Id;
-        }
+
+        /// <summary> Private endpoint connection properties. </summary>
+        [WirePath("properties")]
+        internal PrivateEndpointConnectionProperties Properties { get; }
 
         /// <summary> Approval state of the private link connection. </summary>
-        public KeyVaultPrivateLinkServiceConnectionState ConnectionState { get; }
+        [WirePath("properties.privateLinkServiceConnectionState")]
+        public KeyVaultPrivateLinkServiceConnectionState ConnectionState
+        {
+            get
+            {
+                return Properties.ConnectionState;
+            }
+        }
+
         /// <summary> Provisioning state of the private endpoint connection. </summary>
-        public KeyVaultPrivateEndpointConnectionProvisioningState? ProvisioningState { get; }
+        [WirePath("properties.provisioningState")]
+        public KeyVaultPrivateEndpointConnectionProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties.ProvisioningState;
+            }
+        }
+
+        /// <summary> Full identifier of the private endpoint resource. </summary>
+        [WirePath("properties.privateEndpoint.id")]
+        public ResourceIdentifier PrivateEndpointId
+        {
+            get
+            {
+                return Properties.PrivateEndpointId;
+            }
+        }
     }
 }

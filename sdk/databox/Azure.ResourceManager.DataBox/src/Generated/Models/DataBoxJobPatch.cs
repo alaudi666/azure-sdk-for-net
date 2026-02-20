@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.DataBox.Models
@@ -14,17 +15,52 @@ namespace Azure.ResourceManager.DataBox.Models
     /// <summary> The JobResourceUpdateParameter. </summary>
     public partial class DataBoxJobPatch
     {
-        /// <summary> Initializes a new instance of DataBoxJobPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DataBoxJobPatch"/>. </summary>
         public DataBoxJobPatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="DataBoxJobPatch"/>. </summary>
+        /// <param name="properties"> Properties of a job to be updated. </param>
+        /// <param name="tags"> The list of key value pairs that describe the resource. These tags can be used in viewing and grouping this resource (across resource groups). </param>
+        /// <param name="identity"> Msi identity of the resource. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DataBoxJobPatch(UpdateJobProperties properties, IDictionary<string, string> tags, ManagedServiceIdentity identity, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Properties = properties;
+            Tags = tags;
+            Identity = identity;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> Properties of a job to be updated. </summary>
+        internal UpdateJobProperties Properties { get; set; }
+
         /// <summary> The list of key value pairs that describe the resource. These tags can be used in viewing and grouping this resource (across resource groups). </summary>
         public IDictionary<string, string> Tags { get; }
+
         /// <summary> Msi identity of the resource. </summary>
         public ManagedServiceIdentity Identity { get; set; }
+
         /// <summary> Details of a job to be updated. </summary>
-        public UpdateJobDetails Details { get; set; }
+        public UpdateJobDetails Details
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Details;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new UpdateJobProperties();
+                }
+                Properties.Details = value;
+            }
+        }
     }
 }

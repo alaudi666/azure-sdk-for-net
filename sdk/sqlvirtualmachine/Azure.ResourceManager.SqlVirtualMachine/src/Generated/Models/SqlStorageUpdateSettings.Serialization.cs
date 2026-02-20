@@ -5,73 +5,171 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.SqlVirtualMachine;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
-    public partial class SqlStorageUpdateSettings : IUtf8JsonSerializable
+    /// <summary> Set disk storage settings for SQL Server. </summary>
+    public partial class SqlStorageUpdateSettings : IJsonModel<SqlStorageUpdateSettings>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual SqlStorageUpdateSettings PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlStorageUpdateSettings>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeSqlStorageUpdateSettings(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SqlStorageUpdateSettings)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<SqlStorageUpdateSettings>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlStorageUpdateSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SqlStorageUpdateSettings)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(DiskCount))
             {
-                writer.WritePropertyName("diskCount");
+                writer.WritePropertyName("diskCount"u8);
                 writer.WriteNumberValue(DiskCount.Value);
             }
             if (Optional.IsDefined(StartingDeviceId))
             {
-                writer.WritePropertyName("startingDeviceId");
+                writer.WritePropertyName("startingDeviceId"u8);
                 writer.WriteNumberValue(StartingDeviceId.Value);
             }
             if (Optional.IsDefined(DiskConfigurationType))
             {
-                writer.WritePropertyName("diskConfigurationType");
+                writer.WritePropertyName("diskConfigurationType"u8);
                 writer.WriteStringValue(DiskConfigurationType.Value.ToString());
             }
-            writer.WriteEndObject();
-        }
-
-        internal static SqlStorageUpdateSettings DeserializeSqlStorageUpdateSettings(JsonElement element)
-        {
-            Optional<int> diskCount = default;
-            Optional<int> startingDeviceId = default;
-            Optional<SqlVmDiskConfigurationType> diskConfigurationType = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("diskCount"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    diskCount = property.Value.GetInt32();
-                    continue;
-                }
-                if (property.NameEquals("startingDeviceId"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    startingDeviceId = property.Value.GetInt32();
-                    continue;
-                }
-                if (property.NameEquals("diskConfigurationType"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    diskConfigurationType = new SqlVmDiskConfigurationType(property.Value.GetString());
-                    continue;
+#endif
                 }
             }
-            return new SqlStorageUpdateSettings(Optional.ToNullable(diskCount), Optional.ToNullable(startingDeviceId), Optional.ToNullable(diskConfigurationType));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        SqlStorageUpdateSettings IJsonModel<SqlStorageUpdateSettings>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual SqlStorageUpdateSettings JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlStorageUpdateSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SqlStorageUpdateSettings)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSqlStorageUpdateSettings(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static SqlStorageUpdateSettings DeserializeSqlStorageUpdateSettings(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            int? diskCount = default;
+            int? startingDeviceId = default;
+            SqlVmDiskConfigurationType? diskConfigurationType = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("diskCount"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    diskCount = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("startingDeviceId"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    startingDeviceId = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("diskConfigurationType"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    diskConfigurationType = new SqlVmDiskConfigurationType(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new SqlStorageUpdateSettings(diskCount, startingDeviceId, diskConfigurationType, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<SqlStorageUpdateSettings>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlStorageUpdateSettings>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerSqlVirtualMachineContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(SqlStorageUpdateSettings)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        SqlStorageUpdateSettings IPersistableModel<SqlStorageUpdateSettings>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<SqlStorageUpdateSettings>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Xml.Linq;
 using System;
 using System.Collections.Generic;
-using System.Xml;
 using System.Globalization;
-using Azure.Core.Pipeline;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
+using Azure.Core.Pipeline;
 
 namespace Azure.Messaging.ServiceBus.Administration
 {
@@ -66,7 +66,7 @@ namespace Azure.Messaging.ServiceBus.Administration
                 {
                     if (xDoc.Name.LocalName == "entry")
                     {
-                        return await ParseFromEntryElementAsync(xDoc, response, diagnostics).ConfigureAwait(false);
+                        return ParseFromEntryElement(xDoc, response);
                     }
                 }
             }
@@ -78,10 +78,10 @@ namespace Azure.Messaging.ServiceBus.Administration
             throw new ServiceBusException(
                 "Queue was not found",
                 ServiceBusFailureReason.MessagingEntityNotFound,
-                innerException: await diagnostics.CreateRequestFailedExceptionAsync(response).ConfigureAwait(false));
+                innerException: new RequestFailedException(response));
         }
 
-        private static async Task<QueueProperties> ParseFromEntryElementAsync(XElement xEntry, Response response, ClientDiagnostics diagnostics)
+        private static QueueProperties ParseFromEntryElement(XElement xEntry, Response response)
         {
             var name = xEntry.Element(XName.Get("title", AdministrationClientConstants.AtomNamespace)).Value;
 
@@ -93,7 +93,7 @@ namespace Azure.Messaging.ServiceBus.Administration
                 throw new ServiceBusException(
                     "Queue was not found",
                     ServiceBusFailureReason.MessagingEntityNotFound,
-                    innerException: await diagnostics.CreateRequestFailedExceptionAsync(response).ConfigureAwait(false));
+                    innerException: new RequestFailedException(response));
             }
 
             var properties = new QueueProperties(name);
@@ -129,7 +129,7 @@ namespace Azure.Messaging.ServiceBus.Administration
                         properties.EnableBatchedOperations = bool.Parse(element.Value);
                         break;
                     case "IsAnonymousAccessible":
-                        properties.IsAnonymousAccessible = Boolean.Parse(element.Value);
+                        properties.IsAnonymousAccessible = bool.Parse(element.Value);
                         break;
                     case "AuthorizationRules":
                         properties.AuthorizationRules = AuthorizationRules.ParseFromXElement(element);
@@ -147,7 +147,7 @@ namespace Azure.Messaging.ServiceBus.Administration
                         properties.UserMetadata = element.Value;
                         break;
                     case "SupportOrdering":
-                        properties.SupportOrdering = Boolean.Parse(element.Value);
+                        properties.SupportOrdering = bool.Parse(element.Value);
                         break;
                     case "AutoDeleteOnIdle":
                         properties.AutoDeleteOnIdle = XmlConvert.ToTimeSpan(element.Value);
@@ -180,10 +180,7 @@ namespace Azure.Messaging.ServiceBus.Administration
                         break;
                     default:
                         // For unknown properties, keep them as-is for forward proof.
-                        if (properties.UnknownProperties == null)
-                        {
-                            properties.UnknownProperties = new List<XElement>();
-                        }
+                        properties.UnknownProperties ??= [];
 
                         properties.UnknownProperties.Add(element);
                         break;
@@ -193,7 +190,7 @@ namespace Azure.Messaging.ServiceBus.Administration
             return properties;
         }
 
-        public static async Task<List<QueueProperties>> ParsePagedResponseAsync(Response response, ClientDiagnostics diagnostics)
+        public static async Task<List<QueueProperties>> ParsePagedResponseAsync(Response response)
         {
             try
             {
@@ -208,7 +205,7 @@ namespace Azure.Messaging.ServiceBus.Administration
                         var entryList = xDoc.Elements(XName.Get("entry", AdministrationClientConstants.AtomNamespace));
                         foreach (var entry in entryList)
                         {
-                            queueList.Add(await ParseFromEntryElementAsync(entry, response, diagnostics).ConfigureAwait(false));
+                            queueList.Add(ParseFromEntryElement(entry, response));
                         }
 
                         return queueList;
@@ -223,7 +220,7 @@ namespace Azure.Messaging.ServiceBus.Administration
             throw new ServiceBusException(
                 "No queues were found",
                 ServiceBusFailureReason.MessagingEntityNotFound,
-                innerException: await diagnostics.CreateRequestFailedExceptionAsync(response).ConfigureAwait(false));
+                innerException: new RequestFailedException(response));
         }
 
         public static void NormalizeDescription(this QueueProperties description, string baseAddress)

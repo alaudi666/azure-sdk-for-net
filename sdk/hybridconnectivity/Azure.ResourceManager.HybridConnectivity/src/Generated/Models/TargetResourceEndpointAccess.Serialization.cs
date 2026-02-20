@@ -5,66 +5,149 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure;
+using Azure.ResourceManager.HybridConnectivity;
 
 namespace Azure.ResourceManager.HybridConnectivity.Models
 {
-    public partial class TargetResourceEndpointAccess
+    /// <summary> The endpoint access for the target resource. </summary>
+    public partial class TargetResourceEndpointAccess : IJsonModel<TargetResourceEndpointAccess>
     {
-        internal static TargetResourceEndpointAccess DeserializeTargetResourceEndpointAccess(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual TargetResourceEndpointAccess PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<string> namespaceName = default;
-            Optional<string> namespaceNameSuffix = default;
-            Optional<string> hybridConnectionName = default;
-            Optional<string> accessKey = default;
-            Optional<long> expiresOn = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<TargetResourceEndpointAccess>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("relay"))
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeTargetResourceEndpointAccess(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(TargetResourceEndpointAccess)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="response"> The <see cref="Response"/> to deserialize the <see cref="TargetResourceEndpointAccess"/> from. </param>
+        internal static TargetResourceEndpointAccess FromResponse(Response response)
+        {
+            using JsonDocument document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeTargetResourceEndpointAccess(document.RootElement, ModelSerializationExtensions.WireOptions);
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<TargetResourceEndpointAccess>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<TargetResourceEndpointAccess>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(TargetResourceEndpointAccess)} does not support writing '{format}' format.");
+            }
+            if (Optional.IsDefined(Relay))
+            {
+                writer.WritePropertyName("relay"u8);
+                writer.WriteObjectValue(Relay, options);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    foreach (var property0 in property.Value.EnumerateObject())
-                    {
-                        if (property0.NameEquals("namespaceName"))
-                        {
-                            namespaceName = property0.Value.GetString();
-                            continue;
-                        }
-                        if (property0.NameEquals("namespaceNameSuffix"))
-                        {
-                            namespaceNameSuffix = property0.Value.GetString();
-                            continue;
-                        }
-                        if (property0.NameEquals("hybridConnectionName"))
-                        {
-                            hybridConnectionName = property0.Value.GetString();
-                            continue;
-                        }
-                        if (property0.NameEquals("accessKey"))
-                        {
-                            accessKey = property0.Value.GetString();
-                            continue;
-                        }
-                        if (property0.NameEquals("expiresOn"))
-                        {
-                            if (property0.Value.ValueKind == JsonValueKind.Null)
-                            {
-                                property0.ThrowNonNullablePropertyIsNull();
-                                continue;
-                            }
-                            expiresOn = property0.Value.GetInt64();
-                            continue;
-                        }
-                    }
-                    continue;
+#endif
                 }
             }
-            return new TargetResourceEndpointAccess(namespaceName.Value, namespaceNameSuffix.Value, hybridConnectionName.Value, accessKey.Value, Optional.ToNullable(expiresOn));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        TargetResourceEndpointAccess IJsonModel<TargetResourceEndpointAccess>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual TargetResourceEndpointAccess JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<TargetResourceEndpointAccess>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(TargetResourceEndpointAccess)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeTargetResourceEndpointAccess(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static TargetResourceEndpointAccess DeserializeTargetResourceEndpointAccess(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            RelayNamespaceAccessProperties relay = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("relay"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    relay = RelayNamespaceAccessProperties.DeserializeRelayNamespaceAccessProperties(prop.Value, options);
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new TargetResourceEndpointAccess(relay, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<TargetResourceEndpointAccess>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<TargetResourceEndpointAccess>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerHybridConnectivityContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(TargetResourceEndpointAccess)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        TargetResourceEndpointAccess IPersistableModel<TargetResourceEndpointAccess>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<TargetResourceEndpointAccess>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

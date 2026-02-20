@@ -6,32 +6,40 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> The settings to enable AAD authentication on the cluster. </summary>
     public partial class ManagedClusterAzureActiveDirectory
     {
-        /// <summary> Initializes a new instance of ManagedClusterAzureActiveDirectory. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedClusterAzureActiveDirectory"/>. </summary>
         public ManagedClusterAzureActiveDirectory()
         {
         }
 
-        /// <summary> Initializes a new instance of ManagedClusterAzureActiveDirectory. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedClusterAzureActiveDirectory"/>. </summary>
         /// <param name="tenantId"> Azure active directory tenant id. </param>
         /// <param name="clusterApplication"> Azure active directory cluster application id. </param>
         /// <param name="clientApplication"> Azure active directory client application id. </param>
-        internal ManagedClusterAzureActiveDirectory(Guid? tenantId, string clusterApplication, string clientApplication)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedClusterAzureActiveDirectory(Guid? tenantId, string clusterApplication, string clientApplication, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             TenantId = tenantId;
             ClusterApplication = clusterApplication;
             ClientApplication = clientApplication;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Azure active directory tenant id. </summary>
         public Guid? TenantId { get; set; }
+
         /// <summary> Azure active directory cluster application id. </summary>
         public string ClusterApplication { get; set; }
+
         /// <summary> Azure active directory client application id. </summary>
         public string ClientApplication { get; set; }
     }

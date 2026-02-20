@@ -5,48 +5,173 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.LoadTesting;
 
 namespace Azure.ResourceManager.LoadTesting.Models
 {
-    public partial class LoadTestingEndpointDependency
+    /// <summary> A domain name and connection details used to access a dependency. </summary>
+    public partial class LoadTestingEndpointDependency : IJsonModel<LoadTestingEndpointDependency>
     {
-        internal static LoadTestingEndpointDependency DeserializeLoadTestingEndpointDependency(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual LoadTestingEndpointDependency PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<string> domainName = default;
-            Optional<string> description = default;
-            Optional<IReadOnlyList<LoadTestingEndpointDetail>> endpointDetails = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<LoadTestingEndpointDependency>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("domainName"))
-                {
-                    domainName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("description"))
-                {
-                    description = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("endpointDetails"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        return DeserializeLoadTestingEndpointDependency(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(LoadTestingEndpointDependency)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<LoadTestingEndpointDependency>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<LoadTestingEndpointDependency>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(LoadTestingEndpointDependency)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("domainName"u8);
+                writer.WriteStringValue(DomainName);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Description))
+            {
+                writer.WritePropertyName("description"u8);
+                writer.WriteStringValue(Description);
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(EndpointDetails))
+            {
+                writer.WritePropertyName("endpointDetails"u8);
+                writer.WriteStartArray();
+                foreach (LoadTestingEndpointDetail item in EndpointDetails)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        LoadTestingEndpointDependency IJsonModel<LoadTestingEndpointDependency>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual LoadTestingEndpointDependency JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<LoadTestingEndpointDependency>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(LoadTestingEndpointDependency)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeLoadTestingEndpointDependency(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static LoadTestingEndpointDependency DeserializeLoadTestingEndpointDependency(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string domainName = default;
+            string description = default;
+            IReadOnlyList<LoadTestingEndpointDetail> endpointDetails = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("domainName"u8))
+                {
+                    domainName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("description"u8))
+                {
+                    description = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("endpointDetails"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
                     List<LoadTestingEndpointDetail> array = new List<LoadTestingEndpointDetail>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(LoadTestingEndpointDetail.DeserializeLoadTestingEndpointDetail(item));
+                        array.Add(LoadTestingEndpointDetail.DeserializeLoadTestingEndpointDetail(item, options));
                     }
                     endpointDetails = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
             }
-            return new LoadTestingEndpointDependency(domainName.Value, description.Value, Optional.ToList(endpointDetails));
+            return new LoadTestingEndpointDependency(domainName, description, endpointDetails ?? new ChangeTrackingList<LoadTestingEndpointDetail>(), additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<LoadTestingEndpointDependency>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<LoadTestingEndpointDependency>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerLoadTestingContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(LoadTestingEndpointDependency)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        LoadTestingEndpointDependency IPersistableModel<LoadTestingEndpointDependency>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<LoadTestingEndpointDependency>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

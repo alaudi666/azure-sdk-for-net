@@ -58,15 +58,17 @@ public class CustomProcessor : PluggableCheckpointStoreEventProcessor<EventProce
         BlobContainerClient storageClient,
         int eventBatchMaximumCount,
         string consumerGroup,
-        string connectionString,
+        string fullyQualifiedNamespace,
         string eventHubName,
+        TokenCredential credential,
         EventProcessorOptions clientOptions = default)
             : base(
                 new BlobCheckpointStore(storageClient),
                 eventBatchMaximumCount,
                 consumerGroup,
-                connectionString,
+                fullyQualifiedNamespace,
                 eventHubName,
+                credential,
                 clientOptions)
     {
     }
@@ -80,11 +82,11 @@ public class CustomProcessor : PluggableCheckpointStoreEventProcessor<EventProce
 
         try
         {
-            Console.WriteLine($"Received events for partition { partition.PartitionId }");
+            Console.WriteLine($"Received events for partition {partition.PartitionId}");
 
             foreach (var currentEvent in events)
             {
-                Console.WriteLine($"Event: { currentEvent.EventBody }");
+                Console.WriteLine($"Event: {currentEvent.EventBody}");
                 lastEvent = currentEvent;
             }
 
@@ -92,8 +94,7 @@ public class CustomProcessor : PluggableCheckpointStoreEventProcessor<EventProce
             {
                 await UpdateCheckpointAsync(
                     partition.PartitionId,
-                    lastEvent.Offset,
-                    lastEvent.SequenceNumber,
+                    CheckpointPosition.FromEvent(lastEvent),
                     cancellationToken)
                 .ConfigureAwait(false);
             }
@@ -109,7 +110,7 @@ public class CustomProcessor : PluggableCheckpointStoreEventProcessor<EventProce
             // In this case, the partition processing task will fault and be restarted
             // from the last recorded checkpoint.
 
-            Console.WriteLine($"Exception while processing events: { ex }");
+            Console.WriteLine($"Exception while processing events: {ex}");
         }
     }
 
@@ -124,13 +125,13 @@ public class CustomProcessor : PluggableCheckpointStoreEventProcessor<EventProce
             if (partition != null)
             {
                 Console.Error.WriteLine(
-                    $"Exception on partition { partition.PartitionId } while " +
-                    $"performing { operationDescription }: {exception}");
+                    $"Exception on partition {partition.PartitionId} while " +
+                    $"performing {operationDescription}: {exception}");
             }
             else
             {
                 Console.Error.WriteLine(
-                    $"Exception while performing { operationDescription }: { exception }");
+                    $"Exception while performing {operationDescription}: {exception}");
             }
         }
         catch (Exception ex)
@@ -144,7 +145,7 @@ public class CustomProcessor : PluggableCheckpointStoreEventProcessor<EventProce
             // In this case, unhandled exceptions will not impact the processor
             // operation but will go unobserved, hiding potential application problems.
 
-            Console.WriteLine($"Exception while processing events: { ex }");
+            Console.WriteLine($"Exception while processing events: {ex}");
         }
 
         return Task.CompletedTask;
@@ -156,7 +157,7 @@ public class CustomProcessor : PluggableCheckpointStoreEventProcessor<EventProce
     {
         try
         {
-            Console.WriteLine($"Initializing partition { partition.PartitionId }");
+            Console.WriteLine($"Initializing partition {partition.PartitionId}");
         }
         catch (Exception ex)
         {
@@ -169,7 +170,7 @@ public class CustomProcessor : PluggableCheckpointStoreEventProcessor<EventProce
             // In this case, the partition processing task will fault and the
             // partition will be initialized again.
 
-            Console.WriteLine($"Exception while initializing a partition: { ex }");
+            Console.WriteLine($"Exception while initializing a partition: {ex}");
         }
 
         return Task.CompletedTask;
@@ -183,8 +184,8 @@ public class CustomProcessor : PluggableCheckpointStoreEventProcessor<EventProce
         try
         {
             Console.WriteLine(
-                $"No longer processing partition { partition.PartitionId } " +
-                $"because { reason }");
+                $"No longer processing partition {partition.PartitionId} " +
+                $"because {reason}");
         }
         catch (Exception ex)
         {
@@ -197,7 +198,7 @@ public class CustomProcessor : PluggableCheckpointStoreEventProcessor<EventProce
             // In this case, unhandled exceptions will not impact the processor
             // operation but will go unobserved, hiding potential application problems.
 
-            Console.WriteLine($"Exception while stopping processing for a partition: { ex }");
+            Console.WriteLine($"Exception while stopping processing for a partition: {ex}");
         }
 
         return Task.CompletedTask;
@@ -210,16 +211,23 @@ public class CustomProcessor : PluggableCheckpointStoreEventProcessor<EventProce
 The `CustomProcessor` is used by instantiating it and using the `StartProcessingAsync` and `StopProcessingAsync` methods to control its activity.  Starting the processor does not block; if your application is not performing other activities, it will need to ensure that the host does not exit until you're ready to stop processing events.
 
 ```C# Snippet:EventHubs_Sample08_CustomProcessorUse
-var storageConnectionString = "<< CONNECTION STRING FOR THE STORAGE ACCOUNT >>";
+var credential = new DefaultAzureCredential();
+
+var storageAccountEndpoint = "<< Account Uri (likely similar to https://{your-account}.blob.core.windows.net) >>";
 var blobContainerName = "<< NAME OF THE BLOB CONTAINER >>";
 
-var eventHubsConnectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
 var eventHubName = "<< NAME OF THE EVENT HUB >>";
 var consumerGroup = "<< NAME OF THE EVENT HUB CONSUMER GROUP >>";
 
+var blobUriBuilder = new BlobUriBuilder(new Uri(storageAccountEndpoint))
+{
+    BlobContainerName = blobContainerName
+};
+
 var storageClient = new BlobContainerClient(
-    storageConnectionString,
-    blobContainerName);
+    blobUriBuilder.ToUri(),
+    credential);
 
 var maximumBatchSize = 100;
 
@@ -227,8 +235,9 @@ var processor = new CustomProcessor(
     storageClient,
     maximumBatchSize,
     consumerGroup,
-    eventHubsConnectionString,
-    eventHubName);
+    fullyQualifiedNamespace,
+    eventHubName,
+    credential);
 
 using var cancellationSource = new CancellationTokenSource();
 cancellationSource.CancelAfter(TimeSpan.FromSeconds(30));
@@ -270,7 +279,7 @@ The customizations in this sample are demonstrated using the `PluggableCheckpoin
 
 ### Overriding checkpoints
 
-During normal processor operation, when a partition is being initialized any checkpoint found for it becomes the authoritative position to start reading from.  If no checkpoint found, the global [DefaultStartingPosition](https://docs.microsoft.com/dotnet/api/azure.messaging.eventhubs.primitives.eventprocessoroptions.defaultstartingposition) from the options is used.  
+During normal processor operation, when a partition is being initialized any checkpoint found for it becomes the authoritative position to start reading from.  If no checkpoint found, the global [DefaultStartingPosition](https://learn.microsoft.com/dotnet/api/azure.messaging.eventhubs.primitives.eventprocessoroptions.defaultstartingposition) from the options is used.
 
 In many scenarios, it can be helpful to apply logic to a specific partition for overriding the found checkpoint or customizing the default starting position.  This can be accomplished by overriding the `GetCheckpointAsync` method of the processor.
 
@@ -318,11 +327,11 @@ public class CustomCheckpointProcessor : PluggableCheckpointStoreEventProcessor<
 
             checkpoint = new EventProcessorCheckpoint
             {
-               FullyQualifiedNamespace = this.FullyQualifiedNamespace,
-               EventHubName = this.EventHubName,
-               ConsumerGroup = this.ConsumerGroup,
-               PartitionId = partitionId,
-               StartingPosition = EventPosition.FromEnqueuedTime(startingTime)
+                FullyQualifiedNamespace = this.FullyQualifiedNamespace,
+                EventHubName = this.EventHubName,
+                ConsumerGroup = this.ConsumerGroup,
+                PartitionId = partitionId,
+                StartingPosition = EventPosition.FromEnqueuedTime(startingTime)
             };
         }
 
@@ -354,7 +363,7 @@ One of the core behaviors of an event processor is that it coordinates with othe
 
 In some scenarios, it is beneficial to assign a static set of partitions to a specific processor ensuring a consistent and predictable distribution and preventing partitions from migrating to a new host if a node is temporarily unavailable.  This is often useful when processors are hosted in an orchestrated environment, such as Kubernetes or Service Fabric, where the orchestrator owns responsibility for keeping nodes healthy.
 
-The most effective way to restrict an event processor to an assigned set of partitions is to lie to it about the environment, restricting its view to only its own partitions by overriding `ListPartitionIdsAsync`, `ListOwnershipAsync`, and `ClaimOwnershipAsync`.  
+The most effective way to restrict an event processor to an assigned set of partitions is to lie to it about the environment, restricting its view to only its own partitions by overriding `ListPartitionIdsAsync`, `ListOwnershipAsync`, and `ClaimOwnershipAsync`.
 
 ```C# Snippet:EventHubs_Sample08_StaticPartitionProcessor
 public class StaticPartitionProcessor : PluggableCheckpointStoreEventProcessor<EventProcessorPartition>
@@ -442,4 +451,4 @@ public class StaticPartitionProcessor : PluggableCheckpointStoreEventProcessor<E
 
 ## Extending EventProcessor&lt;TPartition&gt;
 
-For the majority of scenarios, extending `PluggableCheckpointStoreEventProcessor<TPartition>` will be the right approach, but more demanding applications may need greater control over storage operations to meet their higher throughput or specialized needs - that's where the [EventProcessor&lt;TPartition&gt;](https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/eventhub/Azure.Messaging.EventHubs/samples/Sample02_EventHubsClients.md) from the [Azure.Messaging.EventHubs](https://www.nuget.org/packages/Azure.Messaging.EventHubs) package is intended to help.  A ste-by-step example of customizing the `EventProcessor<TPartition>` is discussed in the article "[Building A Custom Event Hubs Event Processor with .NET](https://devblogs.microsoft.com/azure-sdk/custom-event-processor/)" on the [Azure SDK blog](https://devblogs.microsoft.com/azure-sdk).  More information on the design and philosophy behind the `EventProcessor<TPartition>` can be found in its [design document](https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/eventhub/Azure.Messaging.EventHubs/design/proposal-event-processor%7BT%7D.md).
+For the majority of scenarios, extending `PluggableCheckpointStoreEventProcessor<TPartition>` will be the right approach, but more demanding applications may need greater control over storage operations to meet their higher throughput or specialized needs - that's where the [EventProcessor&lt;TPartition&gt;](https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/eventhub/Azure.Messaging.EventHubs/samples/Sample02_EventHubsClients.md) from the [Azure.Messaging.EventHubs](https://www.nuget.org/packages/Azure.Messaging.EventHubs) package is intended to help.  A step-by-step example of customizing the `EventProcessor<TPartition>` is discussed in the article "[Building A Custom Event Hubs Event Processor with .NET](https://devblogs.microsoft.com/azure-sdk/custom-event-processor/)" on the [Azure SDK blog](https://devblogs.microsoft.com/azure-sdk).  More information on the design and philosophy behind the `EventProcessor<TPartition>` can be found in its [design document](https://github.com/Azure/azure-sdk-for-net/tree/main/sdk/eventhub/Azure.Messaging.EventHubs/design/proposal-event-processor%7BT%7D.md).

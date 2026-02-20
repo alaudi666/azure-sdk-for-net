@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using Azure.ResourceManager.ElasticSan;
 
 namespace Azure.ResourceManager.ElasticSan.Models
 {
@@ -14,35 +15,67 @@ namespace Azure.ResourceManager.ElasticSan.Models
     public readonly partial struct ElasticSanVolumeCreateOption : IEquatable<ElasticSanVolumeCreateOption>
     {
         private readonly string _value;
+        private const string NoneValue = "None";
+        private const string VolumeSnapshotValue = "VolumeSnapshot";
+        private const string DiskSnapshotValue = "DiskSnapshot";
+        private const string DiskValue = "Disk";
+        private const string DiskRestorePointValue = "DiskRestorePoint";
 
         /// <summary> Initializes a new instance of <see cref="ElasticSanVolumeCreateOption"/>. </summary>
+        /// <param name="value"> The value. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
         public ElasticSanVolumeCreateOption(string value)
         {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
+            Argument.AssertNotNull(value, nameof(value));
+
+            _value = value;
         }
 
-        private const string NoneValue = "None";
-
-        /// <summary> None. </summary>
+        /// <summary> Gets the None. </summary>
         public static ElasticSanVolumeCreateOption None { get; } = new ElasticSanVolumeCreateOption(NoneValue);
+
+        /// <summary> Gets the VolumeSnapshot. </summary>
+        public static ElasticSanVolumeCreateOption VolumeSnapshot { get; } = new ElasticSanVolumeCreateOption(VolumeSnapshotValue);
+
+        /// <summary> Gets the DiskSnapshot. </summary>
+        public static ElasticSanVolumeCreateOption DiskSnapshot { get; } = new ElasticSanVolumeCreateOption(DiskSnapshotValue);
+
+        /// <summary> Gets the Disk. </summary>
+        public static ElasticSanVolumeCreateOption Disk { get; } = new ElasticSanVolumeCreateOption(DiskValue);
+
+        /// <summary> Gets the DiskRestorePoint. </summary>
+        public static ElasticSanVolumeCreateOption DiskRestorePoint { get; } = new ElasticSanVolumeCreateOption(DiskRestorePointValue);
+
         /// <summary> Determines if two <see cref="ElasticSanVolumeCreateOption"/> values are the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator ==(ElasticSanVolumeCreateOption left, ElasticSanVolumeCreateOption right) => left.Equals(right);
+
         /// <summary> Determines if two <see cref="ElasticSanVolumeCreateOption"/> values are not the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator !=(ElasticSanVolumeCreateOption left, ElasticSanVolumeCreateOption right) => !left.Equals(right);
+
         /// <summary> Converts a string to a <see cref="ElasticSanVolumeCreateOption"/>. </summary>
+        /// <param name="value"> The value. </param>
         public static implicit operator ElasticSanVolumeCreateOption(string value) => new ElasticSanVolumeCreateOption(value);
 
-        /// <inheritdoc />
+        /// <summary> Converts a string to a <see cref="ElasticSanVolumeCreateOption"/>. </summary>
+        /// <param name="value"> The value. </param>
+        public static implicit operator ElasticSanVolumeCreateOption?(string value) => value == null ? null : new ElasticSanVolumeCreateOption(value);
+
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj) => obj is ElasticSanVolumeCreateOption other && Equals(other);
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public bool Equals(ElasticSanVolumeCreateOption other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-        /// <inheritdoc />
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
+
+        /// <inheritdoc/>
         public override string ToString() => _value;
     }
 }

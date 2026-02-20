@@ -1,14 +1,14 @@
 {
   "Entries": [
     {
-      "RequestUri": "https://fakeHost.api.wus2.digitaltwins.azure.net/models/dtmi%3Adoesnotexist%3Afakemodel%3B1000?includeModelDefinition=true\u0026api-version=2022-05-31",
+      "RequestUri": "https://fakeHost.api.wus2.digitaltwins.azure.net/models/dtmi%3Adoesnotexist%3Afakemodel%3B1000?includeModelDefinition=true&api-version=2023-10-31",
       "RequestMethod": "GET",
       "RequestHeaders": {
         "Accept": "application/json",
         "Authorization": "Sanitized",
-        "traceparent": "00-d888f52c131c55419133e8ae13ac063f-32a7347ca81cbf48-00",
-        "User-Agent": "azsdk-net-DigitalTwins.Core/1.4.0-alpha.20220629.1 (.NET Core 3.1.26; Microsoft Windows 10.0.19044)",
-        "x-ms-client-request-id": "5573638cd540f0cd06afae6ce13671f5",
+        "traceparent": "00-f9e860dbaf40eeb2bacf7fc6d753992c-cb0d7a3afd68286b-00",
+        "User-Agent": "azsdk-net-DigitalTwins.Core/1.6.0-alpha.20250501.1 (.NET Framework 4.8.9300.0; Microsoft Windows 10.0.26100 )",
+        "x-ms-client-request-id": "Sanitized",
         "x-ms-return-client-request-id": "true"
       },
       "RequestBody": null,
@@ -16,10 +16,11 @@
       "ResponseHeaders": {
         "Content-Length": "217",
         "Content-Type": "application/json; charset=utf-8",
-        "Date": "Wed, 29 Jun 2022 09:17:46 GMT",
-        "mise-correlation-id": "90ef3b91-c449-42fa-9ce8-02af759f34dd",
+        "Date": "Fri, 02 May 2025 14:59:08 GMT",
+        "mise-correlation-id": "130039eb-8859-48cf-a45a-1ea2da9139d7",
         "Strict-Transport-Security": "max-age=2592000",
-        "traceresponse": "00-d888f52c131c55419133e8ae13ac063f-a4fb89f9dc5a9344-01"
+        "traceresponse": "00-f9e860dbaf40eeb2bacf7fc6d753992c-65f7b84a69190ec3-01",
+        "x-ms-error-code": "ModelNotFound"
       },
       "ResponseBody": {
         "error": {
@@ -30,8 +31,7 @@
     }
   ],
   "Variables": {
-    "AZURE_AUTHORITY_HOST": "https://login.microsoftonline.com/",
     "DIGITALTWINS_URL": "https://fakeHost.api.wus2.digitaltwins.azure.net",
-    "RandomSeed": "778471190"
+    "RandomSeed": "1009527220"
   }
 }

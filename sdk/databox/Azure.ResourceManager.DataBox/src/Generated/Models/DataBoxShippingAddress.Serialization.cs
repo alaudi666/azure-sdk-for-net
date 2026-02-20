@@ -5,131 +5,278 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class DataBoxShippingAddress : IUtf8JsonSerializable
+    /// <summary> Shipping address where customer wishes to receive the device. </summary>
+    public partial class DataBoxShippingAddress : IJsonModel<DataBoxShippingAddress>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="DataBoxShippingAddress"/> for deserialization. </summary>
+        internal DataBoxShippingAddress()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DataBoxShippingAddress PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxShippingAddress>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDataBoxShippingAddress(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxShippingAddress)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DataBoxShippingAddress>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("streetAddress1");
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxShippingAddress>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DataBoxShippingAddress)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("streetAddress1"u8);
             writer.WriteStringValue(StreetAddress1);
             if (Optional.IsDefined(StreetAddress2))
             {
-                writer.WritePropertyName("streetAddress2");
+                writer.WritePropertyName("streetAddress2"u8);
                 writer.WriteStringValue(StreetAddress2);
             }
             if (Optional.IsDefined(StreetAddress3))
             {
-                writer.WritePropertyName("streetAddress3");
+                writer.WritePropertyName("streetAddress3"u8);
                 writer.WriteStringValue(StreetAddress3);
             }
             if (Optional.IsDefined(City))
             {
-                writer.WritePropertyName("city");
+                writer.WritePropertyName("city"u8);
                 writer.WriteStringValue(City);
             }
             if (Optional.IsDefined(StateOrProvince))
             {
-                writer.WritePropertyName("stateOrProvince");
+                writer.WritePropertyName("stateOrProvince"u8);
                 writer.WriteStringValue(StateOrProvince);
             }
-            writer.WritePropertyName("country");
+            writer.WritePropertyName("country"u8);
             writer.WriteStringValue(Country);
-            writer.WritePropertyName("postalCode");
-            writer.WriteStringValue(PostalCode);
+            if (Optional.IsDefined(PostalCode))
+            {
+                writer.WritePropertyName("postalCode"u8);
+                writer.WriteStringValue(PostalCode);
+            }
             if (Optional.IsDefined(ZipExtendedCode))
             {
-                writer.WritePropertyName("zipExtendedCode");
+                writer.WritePropertyName("zipExtendedCode"u8);
                 writer.WriteStringValue(ZipExtendedCode);
             }
             if (Optional.IsDefined(CompanyName))
             {
-                writer.WritePropertyName("companyName");
+                writer.WritePropertyName("companyName"u8);
                 writer.WriteStringValue(CompanyName);
             }
             if (Optional.IsDefined(AddressType))
             {
-                writer.WritePropertyName("addressType");
+                writer.WritePropertyName("addressType"u8);
                 writer.WriteStringValue(AddressType.Value.ToSerialString());
             }
-            writer.WriteEndObject();
-        }
-
-        internal static DataBoxShippingAddress DeserializeDataBoxShippingAddress(JsonElement element)
-        {
-            string streetAddress1 = default;
-            Optional<string> streetAddress2 = default;
-            Optional<string> streetAddress3 = default;
-            Optional<string> city = default;
-            Optional<string> stateOrProvince = default;
-            string country = default;
-            string postalCode = default;
-            Optional<string> zipExtendedCode = default;
-            Optional<string> companyName = default;
-            Optional<DataBoxShippingAddressType> addressType = default;
-            foreach (var property in element.EnumerateObject())
+            if (Optional.IsDefined(SkipAddressValidation))
             {
-                if (property.NameEquals("streetAddress1"))
+                writer.WritePropertyName("skipAddressValidation"u8);
+                writer.WriteBooleanValue(SkipAddressValidation.Value);
+            }
+            if (Optional.IsDefined(TaxIdentificationNumber))
+            {
+                writer.WritePropertyName("taxIdentificationNumber"u8);
+                writer.WriteStringValue(TaxIdentificationNumber);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    streetAddress1 = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("streetAddress2"))
-                {
-                    streetAddress2 = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("streetAddress3"))
-                {
-                    streetAddress3 = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("city"))
-                {
-                    city = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("stateOrProvince"))
-                {
-                    stateOrProvince = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("country"))
-                {
-                    country = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("postalCode"))
-                {
-                    postalCode = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("zipExtendedCode"))
-                {
-                    zipExtendedCode = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("companyName"))
-                {
-                    companyName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("addressType"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    addressType = property.Value.GetString().ToDataBoxShippingAddressType();
-                    continue;
+#endif
                 }
             }
-            return new DataBoxShippingAddress(streetAddress1, streetAddress2.Value, streetAddress3.Value, city.Value, stateOrProvince.Value, country, postalCode, zipExtendedCode.Value, companyName.Value, Optional.ToNullable(addressType));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxShippingAddress IJsonModel<DataBoxShippingAddress>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DataBoxShippingAddress JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxShippingAddress>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DataBoxShippingAddress)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDataBoxShippingAddress(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DataBoxShippingAddress DeserializeDataBoxShippingAddress(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string streetAddress1 = default;
+            string streetAddress2 = default;
+            string streetAddress3 = default;
+            string city = default;
+            string stateOrProvince = default;
+            string country = default;
+            string postalCode = default;
+            string zipExtendedCode = default;
+            string companyName = default;
+            DataBoxShippingAddressType? addressType = default;
+            bool? skipAddressValidation = default;
+            string taxIdentificationNumber = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("streetAddress1"u8))
+                {
+                    streetAddress1 = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("streetAddress2"u8))
+                {
+                    streetAddress2 = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("streetAddress3"u8))
+                {
+                    streetAddress3 = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("city"u8))
+                {
+                    city = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("stateOrProvince"u8))
+                {
+                    stateOrProvince = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("country"u8))
+                {
+                    country = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("postalCode"u8))
+                {
+                    postalCode = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("zipExtendedCode"u8))
+                {
+                    zipExtendedCode = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("companyName"u8))
+                {
+                    companyName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("addressType"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    addressType = prop.Value.GetString().ToDataBoxShippingAddressType();
+                    continue;
+                }
+                if (prop.NameEquals("skipAddressValidation"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    skipAddressValidation = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (prop.NameEquals("taxIdentificationNumber"u8))
+                {
+                    taxIdentificationNumber = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new DataBoxShippingAddress(
+                streetAddress1,
+                streetAddress2,
+                streetAddress3,
+                city,
+                stateOrProvince,
+                country,
+                postalCode,
+                zipExtendedCode,
+                companyName,
+                addressType,
+                skipAddressValidation,
+                taxIdentificationNumber,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DataBoxShippingAddress>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxShippingAddress>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxShippingAddress)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxShippingAddress IPersistableModel<DataBoxShippingAddress>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DataBoxShippingAddress>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

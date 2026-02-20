@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.ManagedNetwork
 {
     /// <summary>
-    /// A class representing a collection of <see cref="ManagedNetworkPeeringPolicyResource" /> and their operations.
-    /// Each <see cref="ManagedNetworkPeeringPolicyResource" /> in the collection will belong to the same instance of <see cref="ManagedNetworkResource" />.
-    /// To get a <see cref="ManagedNetworkPeeringPolicyCollection" /> instance call the GetManagedNetworkPeeringPolicies method from an instance of <see cref="ManagedNetworkResource" />.
+    /// A class representing a collection of <see cref="ManagedNetworkPeeringPolicyResource"/> and their operations.
+    /// Each <see cref="ManagedNetworkPeeringPolicyResource"/> in the collection will belong to the same instance of <see cref="ManagedNetworkResource"/>.
+    /// To get a <see cref="ManagedNetworkPeeringPolicyCollection"/> instance call the GetManagedNetworkPeeringPolicies method from an instance of <see cref="ManagedNetworkResource"/>.
     /// </summary>
     public partial class ManagedNetworkPeeringPolicyCollection : ArmCollection, IEnumerable<ManagedNetworkPeeringPolicyResource>, IAsyncEnumerable<ManagedNetworkPeeringPolicyResource>
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.ManagedNetwork
 
         /// <summary>
         /// The Put ManagedNetworkPeeringPolicies operation creates/updates a new Managed Network Peering Policy
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}
-        /// Operation Id: ManagedNetworkPeeringPolicies_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedNetworkPeeringPolicies_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ManagedNetworkPeeringPolicyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="managedNetworkPeeringPolicyName"> The name of the Managed Network Peering Policy. </param>
@@ -88,8 +102,24 @@ namespace Azure.ResourceManager.ManagedNetwork
 
         /// <summary>
         /// The Put ManagedNetworkPeeringPolicies operation creates/updates a new Managed Network Peering Policy
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}
-        /// Operation Id: ManagedNetworkPeeringPolicies_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedNetworkPeeringPolicies_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ManagedNetworkPeeringPolicyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="managedNetworkPeeringPolicyName"> The name of the Managed Network Peering Policy. </param>
@@ -121,8 +151,24 @@ namespace Azure.ResourceManager.ManagedNetwork
 
         /// <summary>
         /// The Get ManagedNetworkPeeringPolicies operation gets a Managed Network Peering Policy resource, specified by the  resource group, Managed Network name, and peering policy name
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}
-        /// Operation Id: ManagedNetworkPeeringPolicies_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedNetworkPeeringPolicies_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ManagedNetworkPeeringPolicyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="managedNetworkPeeringPolicyName"> The name of the Managed Network Peering Policy. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -150,8 +196,24 @@ namespace Azure.ResourceManager.ManagedNetwork
 
         /// <summary>
         /// The Get ManagedNetworkPeeringPolicies operation gets a Managed Network Peering Policy resource, specified by the  resource group, Managed Network name, and peering policy name
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}
-        /// Operation Id: ManagedNetworkPeeringPolicies_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedNetworkPeeringPolicies_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ManagedNetworkPeeringPolicyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="managedNetworkPeeringPolicyName"> The name of the Managed Network Peering Policy. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -179,96 +241,88 @@ namespace Azure.ResourceManager.ManagedNetwork
 
         /// <summary>
         /// The ListByManagedNetwork PeeringPolicies operation retrieves all the Managed Network Peering Policies in a specified Managed Network, in a paginated format.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies
-        /// Operation Id: ManagedNetworkPeeringPolicies_ListByManagedNetwork
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedNetworkPeeringPolicies_ListByManagedNetwork</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ManagedNetworkPeeringPolicyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="top"> May be used to limit the number of results in a page for list queries. </param>
         /// <param name="skiptoken"> Skiptoken is only used if a previous operation returned a partial result. If a previous response contains a nextLink element, the value of the nextLink element will include a skiptoken parameter that specifies a starting point to use for subsequent calls. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="ManagedNetworkPeeringPolicyResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="ManagedNetworkPeeringPolicyResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<ManagedNetworkPeeringPolicyResource> GetAllAsync(int? top = null, string skiptoken = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<ManagedNetworkPeeringPolicyResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _managedNetworkPeeringPolicyClientDiagnostics.CreateScope("ManagedNetworkPeeringPolicyCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _managedNetworkPeeringPolicyRestClient.ListByManagedNetworkAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, top, skiptoken, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new ManagedNetworkPeeringPolicyResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<ManagedNetworkPeeringPolicyResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _managedNetworkPeeringPolicyClientDiagnostics.CreateScope("ManagedNetworkPeeringPolicyCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _managedNetworkPeeringPolicyRestClient.ListByManagedNetworkNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, top, skiptoken, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new ManagedNetworkPeeringPolicyResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _managedNetworkPeeringPolicyRestClient.CreateListByManagedNetworkRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, top, skiptoken);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _managedNetworkPeeringPolicyRestClient.CreateListByManagedNetworkNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, top, skiptoken);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new ManagedNetworkPeeringPolicyResource(Client, ManagedNetworkPeeringPolicyData.DeserializeManagedNetworkPeeringPolicyData(e)), _managedNetworkPeeringPolicyClientDiagnostics, Pipeline, "ManagedNetworkPeeringPolicyCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// The ListByManagedNetwork PeeringPolicies operation retrieves all the Managed Network Peering Policies in a specified Managed Network, in a paginated format.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies
-        /// Operation Id: ManagedNetworkPeeringPolicies_ListByManagedNetwork
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedNetworkPeeringPolicies_ListByManagedNetwork</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ManagedNetworkPeeringPolicyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="top"> May be used to limit the number of results in a page for list queries. </param>
         /// <param name="skiptoken"> Skiptoken is only used if a previous operation returned a partial result. If a previous response contains a nextLink element, the value of the nextLink element will include a skiptoken parameter that specifies a starting point to use for subsequent calls. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="ManagedNetworkPeeringPolicyResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="ManagedNetworkPeeringPolicyResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<ManagedNetworkPeeringPolicyResource> GetAll(int? top = null, string skiptoken = null, CancellationToken cancellationToken = default)
         {
-            Page<ManagedNetworkPeeringPolicyResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _managedNetworkPeeringPolicyClientDiagnostics.CreateScope("ManagedNetworkPeeringPolicyCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _managedNetworkPeeringPolicyRestClient.ListByManagedNetwork(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, top, skiptoken, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new ManagedNetworkPeeringPolicyResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<ManagedNetworkPeeringPolicyResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _managedNetworkPeeringPolicyClientDiagnostics.CreateScope("ManagedNetworkPeeringPolicyCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _managedNetworkPeeringPolicyRestClient.ListByManagedNetworkNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, top, skiptoken, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new ManagedNetworkPeeringPolicyResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _managedNetworkPeeringPolicyRestClient.CreateListByManagedNetworkRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, top, skiptoken);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _managedNetworkPeeringPolicyRestClient.CreateListByManagedNetworkNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, top, skiptoken);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new ManagedNetworkPeeringPolicyResource(Client, ManagedNetworkPeeringPolicyData.DeserializeManagedNetworkPeeringPolicyData(e)), _managedNetworkPeeringPolicyClientDiagnostics, Pipeline, "ManagedNetworkPeeringPolicyCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}
-        /// Operation Id: ManagedNetworkPeeringPolicies_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedNetworkPeeringPolicies_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ManagedNetworkPeeringPolicyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="managedNetworkPeeringPolicyName"> The name of the Managed Network Peering Policy. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -294,8 +348,24 @@ namespace Azure.ResourceManager.ManagedNetwork
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}
-        /// Operation Id: ManagedNetworkPeeringPolicies_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedNetworkPeeringPolicies_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ManagedNetworkPeeringPolicyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="managedNetworkPeeringPolicyName"> The name of the Managed Network Peering Policy. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -311,6 +381,96 @@ namespace Azure.ResourceManager.ManagedNetwork
             {
                 var response = _managedNetworkPeeringPolicyRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, managedNetworkPeeringPolicyName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedNetworkPeeringPolicies_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ManagedNetworkPeeringPolicyResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="managedNetworkPeeringPolicyName"> The name of the Managed Network Peering Policy. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="managedNetworkPeeringPolicyName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="managedNetworkPeeringPolicyName"/> is null. </exception>
+        public virtual async Task<NullableResponse<ManagedNetworkPeeringPolicyResource>> GetIfExistsAsync(string managedNetworkPeeringPolicyName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(managedNetworkPeeringPolicyName, nameof(managedNetworkPeeringPolicyName));
+
+            using var scope = _managedNetworkPeeringPolicyClientDiagnostics.CreateScope("ManagedNetworkPeeringPolicyCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _managedNetworkPeeringPolicyRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, managedNetworkPeeringPolicyName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<ManagedNetworkPeeringPolicyResource>(response.GetRawResponse());
+                return Response.FromValue(new ManagedNetworkPeeringPolicyResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ManagedNetwork/managedNetworks/{managedNetworkName}/managedNetworkPeeringPolicies/{managedNetworkPeeringPolicyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedNetworkPeeringPolicies_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ManagedNetworkPeeringPolicyResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="managedNetworkPeeringPolicyName"> The name of the Managed Network Peering Policy. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="managedNetworkPeeringPolicyName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="managedNetworkPeeringPolicyName"/> is null. </exception>
+        public virtual NullableResponse<ManagedNetworkPeeringPolicyResource> GetIfExists(string managedNetworkPeeringPolicyName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(managedNetworkPeeringPolicyName, nameof(managedNetworkPeeringPolicyName));
+
+            using var scope = _managedNetworkPeeringPolicyClientDiagnostics.CreateScope("ManagedNetworkPeeringPolicyCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _managedNetworkPeeringPolicyRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, managedNetworkPeeringPolicyName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<ManagedNetworkPeeringPolicyResource>(response.GetRawResponse());
+                return Response.FromValue(new ManagedNetworkPeeringPolicyResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

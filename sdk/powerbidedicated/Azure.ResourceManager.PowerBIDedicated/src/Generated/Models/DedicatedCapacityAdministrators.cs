@@ -5,25 +5,31 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.PowerBIDedicated;
 
 namespace Azure.ResourceManager.PowerBIDedicated.Models
 {
     /// <summary> An array of administrator user identities. </summary>
     internal partial class DedicatedCapacityAdministrators
     {
-        /// <summary> Initializes a new instance of DedicatedCapacityAdministrators. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DedicatedCapacityAdministrators"/>. </summary>
         public DedicatedCapacityAdministrators()
         {
             Members = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of DedicatedCapacityAdministrators. </summary>
+        /// <summary> Initializes a new instance of <see cref="DedicatedCapacityAdministrators"/>. </summary>
         /// <param name="members"> An array of administrator user identities. </param>
-        internal DedicatedCapacityAdministrators(IList<string> members)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DedicatedCapacityAdministrators(IList<string> members, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Members = members;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> An array of administrator user identities. </summary>

@@ -5,17 +5,62 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.StorageMover.Models
 {
     /// <summary> The Agent resource. </summary>
     public partial class StorageMoverAgentPatch
     {
-        /// <summary> Initializes a new instance of StorageMoverAgentPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="StorageMoverAgentPatch"/>. </summary>
         public StorageMoverAgentPatch()
         {
         }
 
+        /// <summary> Initializes a new instance of <see cref="StorageMoverAgentPatch"/>. </summary>
+        /// <param name="properties"></param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal StorageMoverAgentPatch(AgentUpdateProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> Gets or sets the Properties. </summary>
+        internal AgentUpdateProperties Properties { get; set; }
+
         /// <summary> A description for the Agent. </summary>
-        public string Description { get; set; }
+        public string Description
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Description;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new AgentUpdateProperties();
+                }
+                Properties.Description = value;
+            }
+        }
+
+        /// <summary> The set of weekly repeating recurrences of the WAN-link upload limit schedule. </summary>
+        public IList<UploadLimitWeeklyRecurrence> UploadLimitScheduleWeeklyRecurrences
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new AgentUpdateProperties();
+                }
+                return Properties.UploadLimitScheduleWeeklyRecurrences;
+            }
+        }
     }
 }

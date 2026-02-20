@@ -110,7 +110,7 @@ namespace Azure.AI.TextAnalytics
             Id = operationId;
             _serviceClient = client.ServiceClient;
             _diagnostics = _serviceClient.Diagnostics;
-            _operationInternal = new(_diagnostics, this, rawResponse: null);
+            _operationInternal = new(this, _diagnostics, rawResponse: null);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace Azure.AI.TextAnalytics
             _diagnostics = diagnostics;
             _idToIndexMap = idToIndexMap;
             _showStats = showStats;
-            _operationInternal = new(_diagnostics, this, rawResponse: null);
+            _operationInternal = new(this, _diagnostics, rawResponse: null);
 
             _jobId = operationLocation.Split('/').Last().Split('?')[0];
 
@@ -294,5 +294,9 @@ namespace Azure.AI.TextAnalytics
 
             return OperationState<AsyncPageable<ClassifyDocumentResultCollection>>.Failure(rawResponse, new RequestFailedException(rawResponse));
         }
+
+        // This method is never invoked since we don't override Operation<T>.GetRehydrationToken.
+        RehydrationToken IOperation<AsyncPageable<ClassifyDocumentResultCollection>>.GetRehydrationToken() =>
+            throw new NotSupportedException($"{nameof(GetRehydrationToken)} is not supported.");
     }
 }

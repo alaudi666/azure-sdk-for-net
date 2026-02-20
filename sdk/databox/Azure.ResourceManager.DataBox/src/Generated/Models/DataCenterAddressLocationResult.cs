@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 
@@ -13,16 +14,16 @@ namespace Azure.ResourceManager.DataBox.Models
     /// <summary> Datacenter address for given storage location. </summary>
     public partial class DataCenterAddressLocationResult : DataCenterAddressResult
     {
-        /// <summary> Initializes a new instance of DataCenterAddressLocationResult. </summary>
-        internal DataCenterAddressLocationResult()
+        /// <summary> Initializes a new instance of <see cref="DataCenterAddressLocationResult"/>. </summary>
+        internal DataCenterAddressLocationResult() : base(DatacenterAddressType.DatacenterAddressLocation)
         {
-            DataCenterAddressType = DataCenterAddressType.DataCenterAddressLocation;
         }
 
-        /// <summary> Initializes a new instance of DataCenterAddressLocationResult. </summary>
-        /// <param name="dataCenterAddressType"> Data center address type. </param>
+        /// <summary> Initializes a new instance of <see cref="DataCenterAddressLocationResult"/>. </summary>
+        /// <param name="datacenterAddressType"> Data center address type. </param>
         /// <param name="supportedCarriersForReturnShipment"> List of supported carriers for return shipment. </param>
         /// <param name="dataCenterAzureLocation"> Azure Location where the Data Center serves primarily. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
         /// <param name="contactPersonName"> Contact person name. </param>
         /// <param name="company"> Company name. </param>
         /// <param name="street1"> Street address line 1. </param>
@@ -36,7 +37,7 @@ namespace Azure.ResourceManager.DataBox.Models
         /// <param name="phoneExtension"> Phone extension. </param>
         /// <param name="addressType"> Address type. </param>
         /// <param name="additionalShippingInformation"> Special instruction for shipping. </param>
-        internal DataCenterAddressLocationResult(DataCenterAddressType dataCenterAddressType, IReadOnlyList<string> supportedCarriersForReturnShipment, AzureLocation? dataCenterAzureLocation, string contactPersonName, string company, string street1, string street2, string street3, string city, string state, string zip, string country, string phone, string phoneExtension, string addressType, string additionalShippingInformation) : base(dataCenterAddressType, supportedCarriersForReturnShipment, dataCenterAzureLocation)
+        internal DataCenterAddressLocationResult(DatacenterAddressType datacenterAddressType, IReadOnlyList<string> supportedCarriersForReturnShipment, AzureLocation? dataCenterAzureLocation, IDictionary<string, BinaryData> additionalBinaryDataProperties, string contactPersonName, string company, string street1, string street2, string street3, string city, string state, string zip, string country, string phone, string phoneExtension, string addressType, string additionalShippingInformation) : base(datacenterAddressType, supportedCarriersForReturnShipment, dataCenterAzureLocation, additionalBinaryDataProperties)
         {
             ContactPersonName = contactPersonName;
             Company = company;
@@ -51,33 +52,44 @@ namespace Azure.ResourceManager.DataBox.Models
             PhoneExtension = phoneExtension;
             AddressType = addressType;
             AdditionalShippingInformation = additionalShippingInformation;
-            DataCenterAddressType = dataCenterAddressType;
         }
 
         /// <summary> Contact person name. </summary>
         public string ContactPersonName { get; }
+
         /// <summary> Company name. </summary>
         public string Company { get; }
+
         /// <summary> Street address line 1. </summary>
         public string Street1 { get; }
+
         /// <summary> Street address line 2. </summary>
         public string Street2 { get; }
+
         /// <summary> Street address line 3. </summary>
         public string Street3 { get; }
+
         /// <summary> City name. </summary>
         public string City { get; }
+
         /// <summary> name of the state. </summary>
         public string State { get; }
+
         /// <summary> Zip code. </summary>
         public string Zip { get; }
+
         /// <summary> name of the country. </summary>
         public string Country { get; }
+
         /// <summary> Phone number. </summary>
         public string Phone { get; }
+
         /// <summary> Phone extension. </summary>
         public string PhoneExtension { get; }
+
         /// <summary> Address type. </summary>
         public string AddressType { get; }
+
         /// <summary> Special instruction for shipping. </summary>
         public string AdditionalShippingInformation { get; }
     }

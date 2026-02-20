@@ -84,7 +84,7 @@ namespace Azure.Storage.Blobs.Models
         private const string CopyIdMismatchValue = "CopyIdMismatch";
         private const string FeatureVersionMismatchValue = "FeatureVersionMismatch";
         private const string IncrementalCopyBlobMismatchValue = "IncrementalCopyBlobMismatch";
-        private const string IncrementalCopyOfEarlierVersionSnapshotNotAllowedValue = "IncrementalCopyOfEarlierVersionSnapshotNotAllowed";
+        private const string IncrementalCopyOfEarlierSnapshotNotAllowedValue = "IncrementalCopyOfEarlierSnapshotNotAllowed";
         private const string IncrementalCopySourceMustBeSnapshotValue = "IncrementalCopySourceMustBeSnapshot";
         private const string InfiniteLeaseDurationRequiredValue = "InfiniteLeaseDurationRequired";
         private const string InvalidBlobOrBlockValue = "InvalidBlobOrBlock";
@@ -135,6 +135,7 @@ namespace Azure.Storage.Blobs.Models
         private const string AuthorizationPermissionMismatchValue = "AuthorizationPermissionMismatch";
         private const string AuthorizationServiceMismatchValue = "AuthorizationServiceMismatch";
         private const string AuthorizationResourceTypeMismatchValue = "AuthorizationResourceTypeMismatch";
+        private const string BlobAccessTierNotSupportedForAccountTypeValue = "BlobAccessTierNotSupportedForAccountType";
 
         /// <summary> AccountAlreadyExists. </summary>
         public static BlobErrorCode AccountAlreadyExists { get; } = new BlobErrorCode(AccountAlreadyExistsValue);
@@ -260,8 +261,8 @@ namespace Azure.Storage.Blobs.Models
         public static BlobErrorCode FeatureVersionMismatch { get; } = new BlobErrorCode(FeatureVersionMismatchValue);
         /// <summary> IncrementalCopyBlobMismatch. </summary>
         public static BlobErrorCode IncrementalCopyBlobMismatch { get; } = new BlobErrorCode(IncrementalCopyBlobMismatchValue);
-        /// <summary> IncrementalCopyOfEarlierVersionSnapshotNotAllowed. </summary>
-        public static BlobErrorCode IncrementalCopyOfEarlierVersionSnapshotNotAllowed { get; } = new BlobErrorCode(IncrementalCopyOfEarlierVersionSnapshotNotAllowedValue);
+        /// <summary> IncrementalCopyOfEarlierSnapshotNotAllowed. </summary>
+        public static BlobErrorCode IncrementalCopyOfEarlierSnapshotNotAllowed { get; } = new BlobErrorCode(IncrementalCopyOfEarlierSnapshotNotAllowedValue);
         /// <summary> IncrementalCopySourceMustBeSnapshot. </summary>
         public static BlobErrorCode IncrementalCopySourceMustBeSnapshot { get; } = new BlobErrorCode(IncrementalCopySourceMustBeSnapshotValue);
         /// <summary> InfiniteLeaseDurationRequired. </summary>
@@ -362,11 +363,13 @@ namespace Azure.Storage.Blobs.Models
         public static BlobErrorCode AuthorizationServiceMismatch { get; } = new BlobErrorCode(AuthorizationServiceMismatchValue);
         /// <summary> AuthorizationResourceTypeMismatch. </summary>
         public static BlobErrorCode AuthorizationResourceTypeMismatch { get; } = new BlobErrorCode(AuthorizationResourceTypeMismatchValue);
+        /// <summary> BlobAccessTierNotSupportedForAccountType. </summary>
+        public static BlobErrorCode BlobAccessTierNotSupportedForAccountType { get; } = new BlobErrorCode(BlobAccessTierNotSupportedForAccountTypeValue);
         /// <summary> Determines if two <see cref="BlobErrorCode"/> values are the same. </summary>
         public static bool operator ==(BlobErrorCode left, BlobErrorCode right) => left.Equals(right);
         /// <summary> Determines if two <see cref="BlobErrorCode"/> values are not the same. </summary>
         public static bool operator !=(BlobErrorCode left, BlobErrorCode right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="BlobErrorCode"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="BlobErrorCode"/>. </summary>
         public static implicit operator BlobErrorCode(string value) => new BlobErrorCode(value);
 
         /// <inheritdoc />
@@ -377,7 +380,7 @@ namespace Azure.Storage.Blobs.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

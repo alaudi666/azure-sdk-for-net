@@ -5,28 +5,38 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.Models;
+
 namespace Azure.ResourceManager.StorageMover.Models
 {
     /// <summary> The Endpoint resource. </summary>
     public partial class StorageMoverEndpointPatch
     {
-        /// <summary> Initializes a new instance of StorageMoverEndpointPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="StorageMoverEndpointPatch"/>. </summary>
         public StorageMoverEndpointPatch()
         {
         }
 
-        /// <summary> The Endpoint resource, which contains information about file sources and targets. </summary>
-        internal EndpointBaseUpdateProperties Properties { get; set; }
-        /// <summary> A description for the Endpoint. </summary>
-        public string EndpointBaseUpdateDescription
+        /// <summary> Initializes a new instance of <see cref="StorageMoverEndpointPatch"/>. </summary>
+        /// <param name="properties"> The Endpoint resource, which contains information about file sources and targets. </param>
+        /// <param name="identity"> The managed system identity assigned to this resource. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal StorageMoverEndpointPatch(EndpointBaseUpdateProperties properties, ManagedServiceIdentity identity, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            get => Properties is null ? default : Properties.Description;
-            set
-            {
-                if (Properties is null)
-                    Properties = new EndpointBaseUpdateProperties();
-                Properties.Description = value;
-            }
+            Properties = properties;
+            Identity = identity;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
+
+        /// <summary> The Endpoint resource, which contains information about file sources and targets. </summary>
+        public EndpointBaseUpdateProperties Properties { get; set; }
+
+        /// <summary> The managed system identity assigned to this resource. </summary>
+        public ManagedServiceIdentity Identity { get; set; }
     }
 }

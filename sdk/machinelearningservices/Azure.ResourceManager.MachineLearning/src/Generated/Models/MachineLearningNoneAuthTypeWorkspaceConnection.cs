@@ -5,39 +5,35 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.Core;
+
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The MachineLearningNoneAuthTypeWorkspaceConnection.
-    /// Serialized Name: NoneAuthTypeWorkspaceConnectionProperties
-    /// </summary>
+    /// <summary> The MachineLearningNoneAuthTypeWorkspaceConnection. </summary>
     public partial class MachineLearningNoneAuthTypeWorkspaceConnection : MachineLearningWorkspaceConnectionProperties
     {
-        /// <summary> Initializes a new instance of MachineLearningNoneAuthTypeWorkspaceConnection. </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningNoneAuthTypeWorkspaceConnection"/>. </summary>
         public MachineLearningNoneAuthTypeWorkspaceConnection()
         {
             AuthType = MachineLearningConnectionAuthType.None;
         }
 
-        /// <summary> Initializes a new instance of MachineLearningNoneAuthTypeWorkspaceConnection. </summary>
-        /// <param name="authType">
-        /// Authentication type of the connection target
-        /// Serialized Name: WorkspaceConnectionPropertiesV2.authType
-        /// </param>
-        /// <param name="category">
-        /// Category of the connection
-        /// Serialized Name: WorkspaceConnectionPropertiesV2.category
-        /// </param>
-        /// <param name="target"> Serialized Name: WorkspaceConnectionPropertiesV2.target. </param>
-        /// <param name="value">
-        /// Value details of the workspace connection.
-        /// Serialized Name: WorkspaceConnectionPropertiesV2.value
-        /// </param>
-        /// <param name="valueFormat">
-        /// format for the workspace connection value
-        /// Serialized Name: WorkspaceConnectionPropertiesV2.valueFormat
-        /// </param>
-        internal MachineLearningNoneAuthTypeWorkspaceConnection(MachineLearningConnectionAuthType authType, MachineLearningConnectionCategory? category, string target, string value, MachineLearningValueFormat? valueFormat) : base(authType, category, target, value, valueFormat)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningNoneAuthTypeWorkspaceConnection"/>. </summary>
+        /// <param name="authType"> Authentication type of the connection target. </param>
+        /// <param name="category"> Category of the connection. </param>
+        /// <param name="createdByWorkspaceArmId"></param>
+        /// <param name="expiryOn"></param>
+        /// <param name="group"> Group based on connection category. </param>
+        /// <param name="isSharedToAll"></param>
+        /// <param name="target"></param>
+        /// <param name="metadata"> Store user metadata for this connection. </param>
+        /// <param name="sharedUserList"></param>
+        /// <param name="value"> Value details of the workspace connection. </param>
+        /// <param name="valueFormat"> format for the workspace connection value. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal MachineLearningNoneAuthTypeWorkspaceConnection(MachineLearningConnectionAuthType authType, MachineLearningConnectionCategory? category, ResourceIdentifier createdByWorkspaceArmId, DateTimeOffset? expiryOn, WorkspaceConnectionGroup? group, bool? isSharedToAll, string target, IDictionary<string, string> metadata, IList<string> sharedUserList, string value, MachineLearningValueFormat? valueFormat, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(authType, category, createdByWorkspaceArmId, expiryOn, group, isSharedToAll, target, metadata, sharedUserList, value, valueFormat, serializedAdditionalRawData)
         {
             AuthType = authType;
         }

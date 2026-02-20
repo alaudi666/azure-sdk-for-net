@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Analytics.Synapse.Artifacts.Models;
 using Azure.Core;
 using Azure.Core.Pipeline;
@@ -29,7 +28,7 @@ namespace Azure.Analytics.Synapse.Artifacts
         internal SqlScriptCreateOrUpdateSqlScriptOperation(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Request request, Response response)
         {
             IOperation<SqlScriptResource> nextLinkOperation = NextLinkOperationImplementation.Create(this, pipeline, request.Method, request.Uri.ToUri(), response, OperationFinalStateVia.Location);
-            _operation = new OperationInternal<SqlScriptResource>(clientDiagnostics, nextLinkOperation, response, "SqlScriptCreateOrUpdateSqlScriptOperation");
+            _operation = new OperationInternal<SqlScriptResource>(nextLinkOperation, clientDiagnostics, response, "SqlScriptCreateOrUpdateSqlScriptOperation");
         }
 
         /// <inheritdoc />
@@ -69,13 +68,13 @@ namespace Azure.Analytics.Synapse.Artifacts
 
         SqlScriptResource IOperationSource<SqlScriptResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
+            using var document = JsonDocument.Parse(response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
             return SqlScriptResource.DeserializeSqlScriptResource(document.RootElement);
         }
 
         async ValueTask<SqlScriptResource> IOperationSource<SqlScriptResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            using var document = await JsonDocument.ParseAsync(response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
             return SqlScriptResource.DeserializeSqlScriptResource(document.RootElement);
         }
     }

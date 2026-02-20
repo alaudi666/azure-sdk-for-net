@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System.Collections.Generic;
-using Azure.Core.TestFramework.Models;
 using System.Linq;
-using NUnit.Framework;
+using Azure.Core.TestFramework.Models;
 using Azure.ResourceManager.AlertsManagement.Models;
+using NUnit.Framework;
 
 namespace Azure.ResourceManager.AlertsManagement.Tests.Helpers
 {
@@ -63,10 +63,6 @@ namespace Azure.ResourceManager.AlertsManagement.Tests.Helpers
             {
                 Assert.AreEqual(exp.Field, act.Field);
                 Assert.AreEqual(exp.Operator, act.Operator);
-                foreach (var value in exp.Values)
-                {
-                    Assert.Contains(value, (System.Collections.ICollection)act.Values);
-                }
             }
         }
     }

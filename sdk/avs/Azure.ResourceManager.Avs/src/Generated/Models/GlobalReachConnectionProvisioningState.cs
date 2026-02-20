@@ -7,51 +7,75 @@
 
 using System;
 using System.ComponentModel;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> The state of the  ExpressRoute Circuit Authorization provisioning. </summary>
+    /// <summary> Global Reach Connection provisioning state. </summary>
     public readonly partial struct GlobalReachConnectionProvisioningState : IEquatable<GlobalReachConnectionProvisioningState>
     {
         private readonly string _value;
+        /// <summary> Resource has been created. </summary>
+        private const string SucceededValue = "Succeeded";
+        /// <summary> Resource creation failed. </summary>
+        private const string FailedValue = "Failed";
+        /// <summary> Resource creation was canceled. </summary>
+        private const string CanceledValue = "Canceled";
+        /// <summary> is updating. </summary>
+        private const string UpdatingValue = "Updating";
 
         /// <summary> Initializes a new instance of <see cref="GlobalReachConnectionProvisioningState"/>. </summary>
+        /// <param name="value"> The value. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
         public GlobalReachConnectionProvisioningState(string value)
         {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
+            Argument.AssertNotNull(value, nameof(value));
+
+            _value = value;
         }
 
-        private const string SucceededValue = "Succeeded";
-        private const string FailedValue = "Failed";
-        private const string UpdatingValue = "Updating";
-        private const string CanceledValue = "Canceled";
-
-        /// <summary> Succeeded. </summary>
+        /// <summary> Resource has been created. </summary>
         public static GlobalReachConnectionProvisioningState Succeeded { get; } = new GlobalReachConnectionProvisioningState(SucceededValue);
-        /// <summary> Failed. </summary>
+
+        /// <summary> Resource creation failed. </summary>
         public static GlobalReachConnectionProvisioningState Failed { get; } = new GlobalReachConnectionProvisioningState(FailedValue);
-        /// <summary> Updating. </summary>
-        public static GlobalReachConnectionProvisioningState Updating { get; } = new GlobalReachConnectionProvisioningState(UpdatingValue);
-        /// <summary> Canceled. </summary>
+
+        /// <summary> Resource creation was canceled. </summary>
         public static GlobalReachConnectionProvisioningState Canceled { get; } = new GlobalReachConnectionProvisioningState(CanceledValue);
+
+        /// <summary> is updating. </summary>
+        public static GlobalReachConnectionProvisioningState Updating { get; } = new GlobalReachConnectionProvisioningState(UpdatingValue);
+
         /// <summary> Determines if two <see cref="GlobalReachConnectionProvisioningState"/> values are the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator ==(GlobalReachConnectionProvisioningState left, GlobalReachConnectionProvisioningState right) => left.Equals(right);
+
         /// <summary> Determines if two <see cref="GlobalReachConnectionProvisioningState"/> values are not the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator !=(GlobalReachConnectionProvisioningState left, GlobalReachConnectionProvisioningState right) => !left.Equals(right);
+
         /// <summary> Converts a string to a <see cref="GlobalReachConnectionProvisioningState"/>. </summary>
+        /// <param name="value"> The value. </param>
         public static implicit operator GlobalReachConnectionProvisioningState(string value) => new GlobalReachConnectionProvisioningState(value);
 
-        /// <inheritdoc />
+        /// <summary> Converts a string to a <see cref="GlobalReachConnectionProvisioningState"/>. </summary>
+        /// <param name="value"> The value. </param>
+        public static implicit operator GlobalReachConnectionProvisioningState?(string value) => value == null ? null : new GlobalReachConnectionProvisioningState(value);
+
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj) => obj is GlobalReachConnectionProvisioningState other && Equals(other);
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public bool Equals(GlobalReachConnectionProvisioningState other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-        /// <inheritdoc />
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
+
+        /// <inheritdoc/>
         public override string ToString() => _value;
     }
 }

@@ -5,33 +5,39 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 using Azure.ResourceManager.SqlVirtualMachine;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
-    /// <summary> A list of availability group listeners. </summary>
+    /// <summary> The response of a AvailabilityGroupListener list operation. </summary>
     internal partial class AvailabilityGroupListenerListResult
     {
-        /// <summary> Initializes a new instance of AvailabilityGroupListenerListResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AvailabilityGroupListenerListResult"/>. </summary>
         internal AvailabilityGroupListenerListResult()
         {
             Value = new ChangeTrackingList<AvailabilityGroupListenerData>();
         }
 
-        /// <summary> Initializes a new instance of AvailabilityGroupListenerListResult. </summary>
-        /// <param name="value"> Array of results. </param>
-        /// <param name="nextLink"> Link to retrieve next page of results. </param>
-        internal AvailabilityGroupListenerListResult(IReadOnlyList<AvailabilityGroupListenerData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="AvailabilityGroupListenerListResult"/>. </summary>
+        /// <param name="value"> The AvailabilityGroupListener items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal AvailabilityGroupListenerListResult(IReadOnlyList<AvailabilityGroupListenerData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Array of results. </summary>
+        /// <summary> The AvailabilityGroupListener items on this page. </summary>
         public IReadOnlyList<AvailabilityGroupListenerData> Value { get; }
-        /// <summary> Link to retrieve next page of results. </summary>
-        public string NextLink { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

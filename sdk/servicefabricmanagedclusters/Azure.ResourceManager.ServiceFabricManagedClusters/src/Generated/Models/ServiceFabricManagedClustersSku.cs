@@ -5,16 +5,31 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Service Fabric managed cluster Sku definition. </summary>
-    internal partial class ServiceFabricManagedClustersSku
+    public partial class ServiceFabricManagedClustersSku
     {
-        /// <summary> Initializes a new instance of ServiceFabricManagedClustersSku. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedClustersSku"/>. </summary>
         /// <param name="name"> Sku Name. </param>
         public ServiceFabricManagedClustersSku(ServiceFabricManagedClustersSkuName name)
         {
             Name = name;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedClustersSku"/>. </summary>
+        /// <param name="name"> Sku Name. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ServiceFabricManagedClustersSku(ServiceFabricManagedClustersSkuName name, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Name = name;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Sku Name. </summary>

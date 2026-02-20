@@ -101,7 +101,7 @@ namespace Azure.Messaging.EventHubs.Tests
         /// </summary>
         ///
         [Test]
-        public async Task ExpireCoseNotCloseTheRemovedItemWhenInUse()
+        public async Task ExpireCloseNotCloseTheRemovedItemWhenInUse()
         {
             var transportProducer = new ObservableTransportProducerMock();
 
@@ -269,7 +269,8 @@ namespace Azure.Messaging.EventHubs.Tests
 
             await using (var _ = pooledProducer.ConfigureAwait(false))
             {
-            };
+            }
+            ;
 
             GetExpirationCallBack(transportProducerPool).Invoke(null);
 
@@ -398,7 +399,7 @@ namespace Azure.Messaging.EventHubs.Tests
                                                                           CancellationToken cancellationToken = default)
             {
                 GetPropertiesInvokedWith = retryPolicy;
-                return Task.FromResult(new EventHubProperties(EventHubName, DateTimeOffset.Parse("2015-10-27T00:00:00Z"), new string[] { "0", "1" }));
+                return Task.FromResult(new EventHubProperties(EventHubName, DateTimeOffset.Parse("2015-10-27T00:00:00Z"), new string[] { "0", "1" }, false));
             }
 
             internal async override Task<string[]> GetPartitionIdsAsync(EventHubsRetryPolicy retryPolicy,
@@ -426,13 +427,14 @@ namespace Azure.Messaging.EventHubs.Tests
                                                                     string eventHubName,
                                                                     TimeSpan operationTimeout,
                                                                     EventHubTokenCredential credential,
-                                                                    EventHubConnectionOptions options)
+                                                                    EventHubConnectionOptions options,
+                                                                    bool useTls = true)
             {
                 var client = new Mock<TransportClient>();
 
                 client
                     .Setup(client => client.ServiceEndpoint)
-                    .Returns(new Uri($"amgp://{ fullyQualifiedNamespace }.com/{ eventHubName }"));
+                    .Returns(new Uri($"amgp://{fullyQualifiedNamespace}.com/{eventHubName}"));
 
                 return client.Object;
             }

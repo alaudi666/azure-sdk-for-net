@@ -10,7 +10,10 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.ContainerService.Models
 {
-    /// <summary> The operating system type. The default is Linux. </summary>
+    /// <summary>
+    /// The operating system type. The default is Linux.
+    /// Serialized Name: OSType
+    /// </summary>
     public readonly partial struct ContainerServiceOSType : IEquatable<ContainerServiceOSType>
     {
         private readonly string _value;
@@ -25,15 +28,21 @@ namespace Azure.ResourceManager.ContainerService.Models
         private const string LinuxValue = "Linux";
         private const string WindowsValue = "Windows";
 
-        /// <summary> Use Linux. </summary>
+        /// <summary>
+        /// Use Linux.
+        /// Serialized Name: OSType.Linux
+        /// </summary>
         public static ContainerServiceOSType Linux { get; } = new ContainerServiceOSType(LinuxValue);
-        /// <summary> Use Windows. </summary>
+        /// <summary>
+        /// Use Windows.
+        /// Serialized Name: OSType.Windows
+        /// </summary>
         public static ContainerServiceOSType Windows { get; } = new ContainerServiceOSType(WindowsValue);
         /// <summary> Determines if two <see cref="ContainerServiceOSType"/> values are the same. </summary>
         public static bool operator ==(ContainerServiceOSType left, ContainerServiceOSType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="ContainerServiceOSType"/> values are not the same. </summary>
         public static bool operator !=(ContainerServiceOSType left, ContainerServiceOSType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="ContainerServiceOSType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="ContainerServiceOSType"/>. </summary>
         public static implicit operator ContainerServiceOSType(string value) => new ContainerServiceOSType(value);
 
         /// <inheritdoc />
@@ -44,7 +53,7 @@ namespace Azure.ResourceManager.ContainerService.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

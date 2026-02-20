@@ -5,21 +5,52 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Application update request. </summary>
     public partial class ServiceFabricManagedApplicationPatch
     {
-        /// <summary> Initializes a new instance of ServiceFabricManagedApplicationPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedApplicationPatch"/>. </summary>
         public ServiceFabricManagedApplicationPatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedApplicationPatch"/>. </summary>
+        /// <param name="tags"> Application update parameters. </param>
+        /// <param name="properties"> Application update parameters properties. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ServiceFabricManagedApplicationPatch(IDictionary<string, string> tags, ApplicationUpdateParametersProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Tags = tags;
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> Application update parameters. </summary>
         public IDictionary<string, string> Tags { get; }
+
+        /// <summary> Application update parameters properties. </summary>
+        internal ApplicationUpdateParametersProperties Properties { get; set; }
+
+        /// <summary> List of application parameters with overridden values from their default values specified in the application manifest. </summary>
+        public IDictionary<string, string> ApplicationUpdateParameters
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new ApplicationUpdateParametersProperties();
+                }
+                return Properties.Parameters;
+            }
+        }
     }
 }

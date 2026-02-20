@@ -6,48 +6,263 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class TroubleshootingRecommendedActions
+    public partial class TroubleshootingRecommendedActions : IUtf8JsonSerializable, IJsonModel<TroubleshootingRecommendedActions>
     {
-        internal static TroubleshootingRecommendedActions DeserializeTroubleshootingRecommendedActions(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<TroubleshootingRecommendedActions>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<TroubleshootingRecommendedActions>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<string> actionId = default;
-            Optional<string> actionText = default;
-            Optional<Uri> actionUri = default;
-            Optional<string> actionUriText = default;
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<TroubleshootingRecommendedActions>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(TroubleshootingRecommendedActions)} does not support writing '{format}' format.");
+            }
+
+            if (Optional.IsDefined(ActionId))
+            {
+                writer.WritePropertyName("actionId"u8);
+                writer.WriteStringValue(ActionId);
+            }
+            if (Optional.IsDefined(ActionText))
+            {
+                writer.WritePropertyName("actionText"u8);
+                writer.WriteStringValue(ActionText);
+            }
+            if (Optional.IsDefined(ActionUri))
+            {
+                writer.WritePropertyName("actionUri"u8);
+                writer.WriteStringValue(ActionUri.AbsoluteUri);
+            }
+            if (Optional.IsDefined(ActionUriText))
+            {
+                writer.WritePropertyName("actionUriText"u8);
+                writer.WriteStringValue(ActionUriText);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        TroubleshootingRecommendedActions IJsonModel<TroubleshootingRecommendedActions>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<TroubleshootingRecommendedActions>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(TroubleshootingRecommendedActions)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeTroubleshootingRecommendedActions(document.RootElement, options);
+        }
+
+        internal static TroubleshootingRecommendedActions DeserializeTroubleshootingRecommendedActions(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string actionId = default;
+            string actionText = default;
+            Uri actionUri = default;
+            string actionUriText = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("actionId"))
+                if (property.NameEquals("actionId"u8))
                 {
                     actionId = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("actionText"))
+                if (property.NameEquals("actionText"u8))
                 {
                     actionText = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("actionUri"))
+                if (property.NameEquals("actionUri"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        actionUri = null;
                         continue;
                     }
                     actionUri = new Uri(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("actionUriText"))
+                if (property.NameEquals("actionUriText"u8))
                 {
                     actionUriText = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new TroubleshootingRecommendedActions(actionId.Value, actionText.Value, actionUri.Value, actionUriText.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new TroubleshootingRecommendedActions(actionId, actionText, actionUri, actionUriText, serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ActionId), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  actionId: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ActionId))
+                {
+                    builder.Append("  actionId: ");
+                    if (ActionId.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ActionId}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ActionId}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ActionText), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  actionText: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ActionText))
+                {
+                    builder.Append("  actionText: ");
+                    if (ActionText.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ActionText}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ActionText}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ActionUri), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  actionUri: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ActionUri))
+                {
+                    builder.Append("  actionUri: ");
+                    builder.AppendLine($"'{ActionUri.AbsoluteUri}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ActionUriText), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  actionUriText: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ActionUriText))
+                {
+                    builder.Append("  actionUriText: ");
+                    if (ActionUriText.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ActionUriText}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ActionUriText}'");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<TroubleshootingRecommendedActions>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<TroubleshootingRecommendedActions>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(TroubleshootingRecommendedActions)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        TroubleshootingRecommendedActions IPersistableModel<TroubleshootingRecommendedActions>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<TroubleshootingRecommendedActions>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeTroubleshootingRecommendedActions(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(TroubleshootingRecommendedActions)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<TroubleshootingRecommendedActions>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

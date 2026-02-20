@@ -6,142 +6,172 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class ApplicationGatewayRedirectConfiguration : IUtf8JsonSerializable
+    public partial class ApplicationGatewayRedirectConfiguration : IUtf8JsonSerializable, IJsonModel<ApplicationGatewayRedirectConfiguration>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ApplicationGatewayRedirectConfiguration>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ApplicationGatewayRedirectConfiguration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(Id))
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayRedirectConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                writer.WritePropertyName("id");
-                writer.WriteStringValue(Id);
+                throw new FormatException($"The model {nameof(ApplicationGatewayRedirectConfiguration)} does not support writing '{format}' format.");
             }
-            if (Optional.IsDefined(Name))
+
+            base.JsonModelWriteCore(writer, options);
+            if (options.Format != "W" && Optional.IsDefined(ETag))
             {
-                writer.WritePropertyName("name");
-                writer.WriteStringValue(Name);
+                writer.WritePropertyName("etag"u8);
+                writer.WriteStringValue(ETag.Value.ToString());
             }
-            writer.WritePropertyName("properties");
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsDefined(RedirectType))
             {
-                writer.WritePropertyName("redirectType");
+                writer.WritePropertyName("redirectType"u8);
                 writer.WriteStringValue(RedirectType.Value.ToString());
             }
             if (Optional.IsDefined(TargetListener))
             {
-                writer.WritePropertyName("targetListener");
-                JsonSerializer.Serialize(writer, TargetListener);
+                writer.WritePropertyName("targetListener"u8);
+                ((IJsonModel<WritableSubResource>)TargetListener).Write(writer, options);
             }
             if (Optional.IsDefined(TargetUri))
             {
-                writer.WritePropertyName("targetUrl");
+                writer.WritePropertyName("targetUrl"u8);
                 writer.WriteStringValue(TargetUri.AbsoluteUri);
             }
             if (Optional.IsDefined(IncludePath))
             {
-                writer.WritePropertyName("includePath");
+                writer.WritePropertyName("includePath"u8);
                 writer.WriteBooleanValue(IncludePath.Value);
             }
             if (Optional.IsDefined(IncludeQueryString))
             {
-                writer.WritePropertyName("includeQueryString");
+                writer.WritePropertyName("includeQueryString"u8);
                 writer.WriteBooleanValue(IncludeQueryString.Value);
             }
             if (Optional.IsCollectionDefined(RequestRoutingRules))
             {
-                writer.WritePropertyName("requestRoutingRules");
+                writer.WritePropertyName("requestRoutingRules"u8);
                 writer.WriteStartArray();
                 foreach (var item in RequestRoutingRules)
                 {
-                    JsonSerializer.Serialize(writer, item);
+                    ((IJsonModel<WritableSubResource>)item).Write(writer, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(UrlPathMaps))
             {
-                writer.WritePropertyName("urlPathMaps");
+                writer.WritePropertyName("urlPathMaps"u8);
                 writer.WriteStartArray();
                 foreach (var item in UrlPathMaps)
                 {
-                    JsonSerializer.Serialize(writer, item);
+                    ((IJsonModel<WritableSubResource>)item).Write(writer, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(PathRules))
             {
-                writer.WritePropertyName("pathRules");
+                writer.WritePropertyName("pathRules"u8);
                 writer.WriteStartArray();
                 foreach (var item in PathRules)
                 {
-                    JsonSerializer.Serialize(writer, item);
+                    ((IJsonModel<WritableSubResource>)item).Write(writer, options);
                 }
                 writer.WriteEndArray();
             }
             writer.WriteEndObject();
-            writer.WriteEndObject();
         }
 
-        internal static ApplicationGatewayRedirectConfiguration DeserializeApplicationGatewayRedirectConfiguration(JsonElement element)
+        ApplicationGatewayRedirectConfiguration IJsonModel<ApplicationGatewayRedirectConfiguration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<ETag> etag = default;
-            Optional<ResourceIdentifier> id = default;
-            Optional<string> name = default;
-            Optional<ResourceType> type = default;
-            Optional<ApplicationGatewayRedirectType> redirectType = default;
-            Optional<WritableSubResource> targetListener = default;
-            Optional<Uri> targetUrl = default;
-            Optional<bool> includePath = default;
-            Optional<bool> includeQueryString = default;
-            Optional<IList<WritableSubResource>> requestRoutingRules = default;
-            Optional<IList<WritableSubResource>> urlPathMaps = default;
-            Optional<IList<WritableSubResource>> pathRules = default;
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayRedirectConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ApplicationGatewayRedirectConfiguration)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeApplicationGatewayRedirectConfiguration(document.RootElement, options);
+        }
+
+        internal static ApplicationGatewayRedirectConfiguration DeserializeApplicationGatewayRedirectConfiguration(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ETag? etag = default;
+            ResourceIdentifier id = default;
+            string name = default;
+            ResourceType? type = default;
+            ApplicationGatewayRedirectType? redirectType = default;
+            WritableSubResource targetListener = default;
+            Uri targetUrl = default;
+            bool? includePath = default;
+            bool? includeQueryString = default;
+            IList<WritableSubResource> requestRoutingRules = default;
+            IList<WritableSubResource> urlPathMaps = default;
+            IList<WritableSubResource> pathRules = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("etag"))
+                if (property.NameEquals("etag"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     etag = new ETag(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     id = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     type = new ResourceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -150,97 +180,89 @@ namespace Azure.ResourceManager.Network.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("redirectType"))
+                        if (property0.NameEquals("redirectType"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             redirectType = new ApplicationGatewayRedirectType(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("targetListener"))
+                        if (property0.NameEquals("targetListener"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            targetListener = JsonSerializer.Deserialize<WritableSubResource>(property0.Value.GetRawText());
+                            targetListener = ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(property0.Value.GetRawText())), options, AzureResourceManagerNetworkContext.Default);
                             continue;
                         }
-                        if (property0.NameEquals("targetUrl"))
+                        if (property0.NameEquals("targetUrl"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                targetUrl = null;
                                 continue;
                             }
                             targetUrl = new Uri(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("includePath"))
+                        if (property0.NameEquals("includePath"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             includePath = property0.Value.GetBoolean();
                             continue;
                         }
-                        if (property0.NameEquals("includeQueryString"))
+                        if (property0.NameEquals("includeQueryString"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             includeQueryString = property0.Value.GetBoolean();
                             continue;
                         }
-                        if (property0.NameEquals("requestRoutingRules"))
+                        if (property0.NameEquals("requestRoutingRules"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<WritableSubResource> array = new List<WritableSubResource>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(JsonSerializer.Deserialize<WritableSubResource>(item.GetRawText()));
+                                array.Add(ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(item.GetRawText())), options, AzureResourceManagerNetworkContext.Default));
                             }
                             requestRoutingRules = array;
                             continue;
                         }
-                        if (property0.NameEquals("urlPathMaps"))
+                        if (property0.NameEquals("urlPathMaps"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<WritableSubResource> array = new List<WritableSubResource>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(JsonSerializer.Deserialize<WritableSubResource>(item.GetRawText()));
+                                array.Add(ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(item.GetRawText())), options, AzureResourceManagerNetworkContext.Default));
                             }
                             urlPathMaps = array;
                             continue;
                         }
-                        if (property0.NameEquals("pathRules"))
+                        if (property0.NameEquals("pathRules"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<WritableSubResource> array = new List<WritableSubResource>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(JsonSerializer.Deserialize<WritableSubResource>(item.GetRawText()));
+                                array.Add(ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(item.GetRawText())), options, AzureResourceManagerNetworkContext.Default));
                             }
                             pathRules = array;
                             continue;
@@ -248,8 +270,281 @@ namespace Azure.ResourceManager.Network.Models
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ApplicationGatewayRedirectConfiguration(id.Value, name.Value, Optional.ToNullable(type), Optional.ToNullable(etag), Optional.ToNullable(redirectType), targetListener, targetUrl.Value, Optional.ToNullable(includePath), Optional.ToNullable(includeQueryString), Optional.ToList(requestRoutingRules), Optional.ToList(urlPathMaps), Optional.ToList(pathRules));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ApplicationGatewayRedirectConfiguration(
+                id,
+                name,
+                type,
+                serializedAdditionalRawData,
+                etag,
+                redirectType,
+                targetListener,
+                targetUrl,
+                includePath,
+                includeQueryString,
+                requestRoutingRules ?? new ChangeTrackingList<WritableSubResource>(),
+                urlPathMaps ?? new ChangeTrackingList<WritableSubResource>(),
+                pathRules ?? new ChangeTrackingList<WritableSubResource>());
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Name))
+                {
+                    builder.Append("  name: ");
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ETag), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  etag: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ETag))
+                {
+                    builder.Append("  etag: ");
+                    builder.AppendLine($"'{ETag.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Id), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  id: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Id))
+                {
+                    builder.Append("  id: ");
+                    builder.AppendLine($"'{Id.ToString()}'");
+                }
+            }
+
+            builder.Append("  properties:");
+            builder.AppendLine(" {");
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RedirectType), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    redirectType: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(RedirectType))
+                {
+                    builder.Append("    redirectType: ");
+                    builder.AppendLine($"'{RedirectType.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("TargetListenerId", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    targetListener: ");
+                builder.AppendLine("{");
+                builder.AppendLine("      targetListener: {");
+                builder.Append("        id: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("      }");
+                builder.AppendLine("    }");
+            }
+            else
+            {
+                if (Optional.IsDefined(TargetListener))
+                {
+                    builder.Append("    targetListener: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, TargetListener, options, 4, false, "    targetListener: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(TargetUri), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    targetUrl: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(TargetUri))
+                {
+                    builder.Append("    targetUrl: ");
+                    builder.AppendLine($"'{TargetUri.AbsoluteUri}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IncludePath), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    includePath: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(IncludePath))
+                {
+                    builder.Append("    includePath: ");
+                    var boolValue = IncludePath.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IncludeQueryString), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    includeQueryString: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(IncludeQueryString))
+                {
+                    builder.Append("    includeQueryString: ");
+                    var boolValue = IncludeQueryString.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RequestRoutingRules), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    requestRoutingRules: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(RequestRoutingRules))
+                {
+                    if (RequestRoutingRules.Any())
+                    {
+                        builder.Append("    requestRoutingRules: ");
+                        builder.AppendLine("[");
+                        foreach (var item in RequestRoutingRules)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 6, true, "    requestRoutingRules: ");
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(UrlPathMaps), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    urlPathMaps: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(UrlPathMaps))
+                {
+                    if (UrlPathMaps.Any())
+                    {
+                        builder.Append("    urlPathMaps: ");
+                        builder.AppendLine("[");
+                        foreach (var item in UrlPathMaps)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 6, true, "    urlPathMaps: ");
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PathRules), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    pathRules: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(PathRules))
+                {
+                    if (PathRules.Any())
+                    {
+                        builder.Append("    pathRules: ");
+                        builder.AppendLine("[");
+                        foreach (var item in PathRules)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 6, true, "    pathRules: ");
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            builder.AppendLine("  }");
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<ApplicationGatewayRedirectConfiguration>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayRedirectConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(ApplicationGatewayRedirectConfiguration)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ApplicationGatewayRedirectConfiguration IPersistableModel<ApplicationGatewayRedirectConfiguration>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayRedirectConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeApplicationGatewayRedirectConfiguration(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ApplicationGatewayRedirectConfiguration)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ApplicationGatewayRedirectConfiguration>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Output data delivery mode enums.
-    /// Serialized Name: OutputDeliveryMode
-    /// </summary>
+    /// <summary> Output data delivery mode enums. </summary>
     public readonly partial struct MachineLearningOutputDeliveryMode : IEquatable<MachineLearningOutputDeliveryMode>
     {
         private readonly string _value;
@@ -27,22 +24,19 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         private const string ReadWriteMountValue = "ReadWriteMount";
         private const string UploadValue = "Upload";
+        private const string DirectValue = "Direct";
 
-        /// <summary>
-        /// ReadWriteMount
-        /// Serialized Name: OutputDeliveryMode.ReadWriteMount
-        /// </summary>
+        /// <summary> ReadWriteMount. </summary>
         public static MachineLearningOutputDeliveryMode ReadWriteMount { get; } = new MachineLearningOutputDeliveryMode(ReadWriteMountValue);
-        /// <summary>
-        /// Upload
-        /// Serialized Name: OutputDeliveryMode.Upload
-        /// </summary>
+        /// <summary> Upload. </summary>
         public static MachineLearningOutputDeliveryMode Upload { get; } = new MachineLearningOutputDeliveryMode(UploadValue);
+        /// <summary> Direct. </summary>
+        public static MachineLearningOutputDeliveryMode Direct { get; } = new MachineLearningOutputDeliveryMode(DirectValue);
         /// <summary> Determines if two <see cref="MachineLearningOutputDeliveryMode"/> values are the same. </summary>
         public static bool operator ==(MachineLearningOutputDeliveryMode left, MachineLearningOutputDeliveryMode right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningOutputDeliveryMode"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningOutputDeliveryMode left, MachineLearningOutputDeliveryMode right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningOutputDeliveryMode"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningOutputDeliveryMode"/>. </summary>
         public static implicit operator MachineLearningOutputDeliveryMode(string value) => new MachineLearningOutputDeliveryMode(value);
 
         /// <inheritdoc />
@@ -53,7 +47,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

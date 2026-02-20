@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Support
 {
     /// <summary>
-    /// A class representing a collection of <see cref="SupportTicketCommunicationResource" /> and their operations.
-    /// Each <see cref="SupportTicketCommunicationResource" /> in the collection will belong to the same instance of <see cref="SupportTicketResource" />.
-    /// To get a <see cref="SupportTicketCommunicationCollection" /> instance call the GetSupportTicketCommunications method from an instance of <see cref="SupportTicketResource" />.
+    /// A class representing a collection of <see cref="SupportTicketCommunicationResource"/> and their operations.
+    /// Each <see cref="SupportTicketCommunicationResource"/> in the collection will belong to the same instance of <see cref="SubscriptionSupportTicketResource"/>.
+    /// To get a <see cref="SupportTicketCommunicationCollection"/> instance call the GetSupportTicketCommunications method from an instance of <see cref="SubscriptionSupportTicketResource"/>.
     /// </summary>
     public partial class SupportTicketCommunicationCollection : ArmCollection, IEnumerable<SupportTicketCommunicationResource>, IAsyncEnumerable<SupportTicketCommunicationResource>
     {
@@ -49,17 +47,33 @@ namespace Azure.ResourceManager.Support
 
         internal static void ValidateResourceId(ResourceIdentifier id)
         {
-            if (id.ResourceType != SupportTicketResource.ResourceType)
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, SupportTicketResource.ResourceType), nameof(id));
+            if (id.ResourceType != "Microsoft.Support/supportTickets")
+                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, "Microsoft.Support/supportTickets"), nameof(id));
         }
 
         /// <summary>
         /// Adds a new customer communication to an Azure support ticket.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}
-        /// Operation Id: Communications_Create
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Communications_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SupportTicketCommunicationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="communicationName"> Communication name. </param>
+        /// <param name="communicationName"> The name of the CommunicationDetails. </param>
         /// <param name="data"> Communication object. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="communicationName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -88,11 +102,27 @@ namespace Azure.ResourceManager.Support
 
         /// <summary>
         /// Adds a new customer communication to an Azure support ticket.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}
-        /// Operation Id: Communications_Create
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Communications_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SupportTicketCommunicationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="communicationName"> Communication name. </param>
+        /// <param name="communicationName"> The name of the CommunicationDetails. </param>
         /// <param name="data"> Communication object. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="communicationName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -121,10 +151,26 @@ namespace Azure.ResourceManager.Support
 
         /// <summary>
         /// Returns communication details for a support ticket.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}
-        /// Operation Id: Communications_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Communications_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SupportTicketCommunicationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="communicationName"> Communication name. </param>
+        /// <param name="communicationName"> The name of the CommunicationDetails. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="communicationName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="communicationName"/> is null. </exception>
@@ -150,10 +196,26 @@ namespace Azure.ResourceManager.Support
 
         /// <summary>
         /// Returns communication details for a support ticket.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}
-        /// Operation Id: Communications_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Communications_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SupportTicketCommunicationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="communicationName"> Communication name. </param>
+        /// <param name="communicationName"> The name of the CommunicationDetails. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="communicationName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="communicationName"/> is null. </exception>
@@ -179,98 +241,90 @@ namespace Azure.ResourceManager.Support
 
         /// <summary>
         /// Lists all communications (attachments not included) for a support ticket. &lt;br/&gt;&lt;/br&gt; You can also filter support ticket communications by _CreatedDate_ or _CommunicationType_ using the $filter parameter. The only type of communication supported today is _Web_. Output will be a paged result with _nextLink_, using which you can retrieve the next set of Communication results. &lt;br/&gt;&lt;br/&gt;Support ticket data is available for 18 months after ticket creation. If a ticket was created more than 18 months ago, a request for data might cause an error.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications
-        /// Operation Id: Communications_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Communications_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SupportTicketCommunicationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="top"> The number of values to return in the collection. Default is 10 and max is 10. </param>
-        /// <param name="filter"> The filter to apply on the operation. You can filter by communicationType and createdDate properties. CommunicationType supports Equals (&apos;eq&apos;) operator and createdDate supports Greater Than (&apos;gt&apos;) and Greater Than or Equals (&apos;ge&apos;) operators. You may combine the CommunicationType and CreatedDate filters by Logical And (&apos;and&apos;) operator. </param>
+        /// <param name="filter"> The filter to apply on the operation. You can filter by communicationType and createdDate properties. CommunicationType supports Equals ('eq') operator and createdDate supports Greater Than ('gt') and Greater Than or Equals ('ge') operators. You may combine the CommunicationType and CreatedDate filters by Logical And ('and') operator. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="SupportTicketCommunicationResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SupportTicketCommunicationResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SupportTicketCommunicationResource> GetAllAsync(int? top = null, string filter = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<SupportTicketCommunicationResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _supportTicketCommunicationCommunicationsClientDiagnostics.CreateScope("SupportTicketCommunicationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _supportTicketCommunicationCommunicationsRestClient.ListAsync(Id.SubscriptionId, Id.Name, top, filter, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SupportTicketCommunicationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<SupportTicketCommunicationResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _supportTicketCommunicationCommunicationsClientDiagnostics.CreateScope("SupportTicketCommunicationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _supportTicketCommunicationCommunicationsRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.Name, top, filter, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SupportTicketCommunicationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _supportTicketCommunicationCommunicationsRestClient.CreateListRequest(Id.SubscriptionId, Id.Name, top, filter);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _supportTicketCommunicationCommunicationsRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.Name, top, filter);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new SupportTicketCommunicationResource(Client, SupportTicketCommunicationData.DeserializeSupportTicketCommunicationData(e)), _supportTicketCommunicationCommunicationsClientDiagnostics, Pipeline, "SupportTicketCommunicationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Lists all communications (attachments not included) for a support ticket. &lt;br/&gt;&lt;/br&gt; You can also filter support ticket communications by _CreatedDate_ or _CommunicationType_ using the $filter parameter. The only type of communication supported today is _Web_. Output will be a paged result with _nextLink_, using which you can retrieve the next set of Communication results. &lt;br/&gt;&lt;br/&gt;Support ticket data is available for 18 months after ticket creation. If a ticket was created more than 18 months ago, a request for data might cause an error.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications
-        /// Operation Id: Communications_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Communications_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SupportTicketCommunicationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="top"> The number of values to return in the collection. Default is 10 and max is 10. </param>
-        /// <param name="filter"> The filter to apply on the operation. You can filter by communicationType and createdDate properties. CommunicationType supports Equals (&apos;eq&apos;) operator and createdDate supports Greater Than (&apos;gt&apos;) and Greater Than or Equals (&apos;ge&apos;) operators. You may combine the CommunicationType and CreatedDate filters by Logical And (&apos;and&apos;) operator. </param>
+        /// <param name="filter"> The filter to apply on the operation. You can filter by communicationType and createdDate properties. CommunicationType supports Equals ('eq') operator and createdDate supports Greater Than ('gt') and Greater Than or Equals ('ge') operators. You may combine the CommunicationType and CreatedDate filters by Logical And ('and') operator. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="SupportTicketCommunicationResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SupportTicketCommunicationResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SupportTicketCommunicationResource> GetAll(int? top = null, string filter = null, CancellationToken cancellationToken = default)
         {
-            Page<SupportTicketCommunicationResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _supportTicketCommunicationCommunicationsClientDiagnostics.CreateScope("SupportTicketCommunicationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _supportTicketCommunicationCommunicationsRestClient.List(Id.SubscriptionId, Id.Name, top, filter, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SupportTicketCommunicationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<SupportTicketCommunicationResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _supportTicketCommunicationCommunicationsClientDiagnostics.CreateScope("SupportTicketCommunicationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _supportTicketCommunicationCommunicationsRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.Name, top, filter, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SupportTicketCommunicationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _supportTicketCommunicationCommunicationsRestClient.CreateListRequest(Id.SubscriptionId, Id.Name, top, filter);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _supportTicketCommunicationCommunicationsRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.Name, top, filter);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new SupportTicketCommunicationResource(Client, SupportTicketCommunicationData.DeserializeSupportTicketCommunicationData(e)), _supportTicketCommunicationCommunicationsClientDiagnostics, Pipeline, "SupportTicketCommunicationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}
-        /// Operation Id: Communications_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Communications_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SupportTicketCommunicationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="communicationName"> Communication name. </param>
+        /// <param name="communicationName"> The name of the CommunicationDetails. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="communicationName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="communicationName"/> is null. </exception>
@@ -294,10 +348,26 @@ namespace Azure.ResourceManager.Support
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}
-        /// Operation Id: Communications_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Communications_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SupportTicketCommunicationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="communicationName"> Communication name. </param>
+        /// <param name="communicationName"> The name of the CommunicationDetails. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="communicationName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="communicationName"/> is null. </exception>
@@ -311,6 +381,96 @@ namespace Azure.ResourceManager.Support
             {
                 var response = _supportTicketCommunicationCommunicationsRestClient.Get(Id.SubscriptionId, Id.Name, communicationName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Communications_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SupportTicketCommunicationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="communicationName"> The name of the CommunicationDetails. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="communicationName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="communicationName"/> is null. </exception>
+        public virtual async Task<NullableResponse<SupportTicketCommunicationResource>> GetIfExistsAsync(string communicationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(communicationName, nameof(communicationName));
+
+            using var scope = _supportTicketCommunicationCommunicationsClientDiagnostics.CreateScope("SupportTicketCommunicationCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _supportTicketCommunicationCommunicationsRestClient.GetAsync(Id.SubscriptionId, Id.Name, communicationName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<SupportTicketCommunicationResource>(response.GetRawResponse());
+                return Response.FromValue(new SupportTicketCommunicationResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Support/supportTickets/{supportTicketName}/communications/{communicationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Communications_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SupportTicketCommunicationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="communicationName"> The name of the CommunicationDetails. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="communicationName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="communicationName"/> is null. </exception>
+        public virtual NullableResponse<SupportTicketCommunicationResource> GetIfExists(string communicationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(communicationName, nameof(communicationName));
+
+            using var scope = _supportTicketCommunicationCommunicationsClientDiagnostics.CreateScope("SupportTicketCommunicationCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _supportTicketCommunicationCommunicationsRestClient.Get(Id.SubscriptionId, Id.Name, communicationName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<SupportTicketCommunicationResource>(response.GetRawResponse());
+                return Response.FromValue(new SupportTicketCommunicationResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

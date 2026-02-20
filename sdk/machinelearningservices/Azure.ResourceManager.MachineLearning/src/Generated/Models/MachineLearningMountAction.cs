@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Mount Action.
-    /// Serialized Name: MountAction
-    /// </summary>
+    /// <summary> Mount Action. </summary>
     public readonly partial struct MachineLearningMountAction : IEquatable<MachineLearningMountAction>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string MountValue = "Mount";
         private const string UnmountValue = "Unmount";
 
-        /// <summary>
-        /// Mount
-        /// Serialized Name: MountAction.Mount
-        /// </summary>
+        /// <summary> Mount. </summary>
         public static MachineLearningMountAction Mount { get; } = new MachineLearningMountAction(MountValue);
-        /// <summary>
-        /// Unmount
-        /// Serialized Name: MountAction.Unmount
-        /// </summary>
+        /// <summary> Unmount. </summary>
         public static MachineLearningMountAction Unmount { get; } = new MachineLearningMountAction(UnmountValue);
         /// <summary> Determines if two <see cref="MachineLearningMountAction"/> values are the same. </summary>
         public static bool operator ==(MachineLearningMountAction left, MachineLearningMountAction right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningMountAction"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningMountAction left, MachineLearningMountAction right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningMountAction"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningMountAction"/>. </summary>
         public static implicit operator MachineLearningMountAction(string value) => new MachineLearningMountAction(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

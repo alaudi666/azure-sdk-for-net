@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
 using Azure.ResourceManager.ElasticSan;
 
 namespace Azure.ResourceManager.ElasticSan.Models
@@ -16,28 +15,31 @@ namespace Azure.ResourceManager.ElasticSan.Models
     /// <summary> List of Volume Groups. </summary>
     internal partial class ElasticSanVolumeGroupList
     {
-        /// <summary> Initializes a new instance of ElasticSanVolumeGroupList. </summary>
-        /// <param name="value"> An array of Volume Groups objects. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ElasticSanVolumeGroupList"/>. </summary>
+        /// <param name="value"> The VolumeGroup items on this page. </param>
         internal ElasticSanVolumeGroupList(IEnumerable<ElasticSanVolumeGroupData> value)
         {
-            Argument.AssertNotNull(value, nameof(value));
-
             Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of ElasticSanVolumeGroupList. </summary>
-        /// <param name="value"> An array of Volume Groups objects. </param>
-        /// <param name="nextLink"> URI to fetch the next section of the paginated response. </param>
-        internal ElasticSanVolumeGroupList(IReadOnlyList<ElasticSanVolumeGroupData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ElasticSanVolumeGroupList"/>. </summary>
+        /// <param name="value"> The VolumeGroup items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ElasticSanVolumeGroupList(IList<ElasticSanVolumeGroupData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> An array of Volume Groups objects. </summary>
-        public IReadOnlyList<ElasticSanVolumeGroupData> Value { get; }
-        /// <summary> URI to fetch the next section of the paginated response. </summary>
-        public string NextLink { get; }
+        /// <summary> The VolumeGroup items on this page. </summary>
+        public IList<ElasticSanVolumeGroupData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

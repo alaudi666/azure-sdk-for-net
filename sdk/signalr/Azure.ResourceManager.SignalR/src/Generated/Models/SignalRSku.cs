@@ -5,34 +5,47 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
+using Azure.ResourceManager.SignalR;
 
 namespace Azure.ResourceManager.SignalR.Models
 {
-    /// <summary> Describes an available sku.&quot;. </summary>
+    /// <summary> Describes an available sku.". </summary>
     public partial class SignalRSku
     {
-        /// <summary> Initializes a new instance of SignalRSku. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRSku"/>. </summary>
         internal SignalRSku()
         {
         }
 
-        /// <summary> Initializes a new instance of SignalRSku. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRSku"/>. </summary>
         /// <param name="resourceType"> The resource type that this object applies to. </param>
         /// <param name="sku"> The billing information of the resource. </param>
         /// <param name="capacity"> Describes scaling information of a sku. </param>
-        internal SignalRSku(ResourceType? resourceType, SignalRResourceSku sku, SignalRSkuCapacity capacity)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRSku(ResourceType? resourceType, SignalRResourceSku sku, SignalRSkuCapacity capacity, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ResourceType = resourceType;
             Sku = sku;
             Capacity = capacity;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The resource type that this object applies to. </summary>
+        [WirePath("resourceType")]
         public ResourceType? ResourceType { get; }
+
         /// <summary> The billing information of the resource. </summary>
+        [WirePath("sku")]
         public SignalRResourceSku Sku { get; }
+
         /// <summary> Describes scaling information of a sku. </summary>
+        [WirePath("capacity")]
         public SignalRSkuCapacity Capacity { get; }
     }
 }

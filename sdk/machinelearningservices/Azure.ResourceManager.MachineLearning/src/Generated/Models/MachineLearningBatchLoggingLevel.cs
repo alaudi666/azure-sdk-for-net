@@ -14,7 +14,6 @@ namespace Azure.ResourceManager.MachineLearning.Models
     /// Log verbosity for batch inferencing.
     /// Increasing verbosity order for logging is : Warning, Info and Debug.
     /// The default value is Info.
-    /// Serialized Name: BatchLoggingLevel
     /// </summary>
     public readonly partial struct MachineLearningBatchLoggingLevel : IEquatable<MachineLearningBatchLoggingLevel>
     {
@@ -31,26 +30,17 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string WarningValue = "Warning";
         private const string DebugValue = "Debug";
 
-        /// <summary>
-        /// Info
-        /// Serialized Name: BatchLoggingLevel.Info
-        /// </summary>
+        /// <summary> Info. </summary>
         public static MachineLearningBatchLoggingLevel Info { get; } = new MachineLearningBatchLoggingLevel(InfoValue);
-        /// <summary>
-        /// Warning
-        /// Serialized Name: BatchLoggingLevel.Warning
-        /// </summary>
+        /// <summary> Warning. </summary>
         public static MachineLearningBatchLoggingLevel Warning { get; } = new MachineLearningBatchLoggingLevel(WarningValue);
-        /// <summary>
-        /// Debug
-        /// Serialized Name: BatchLoggingLevel.Debug
-        /// </summary>
+        /// <summary> Debug. </summary>
         public static MachineLearningBatchLoggingLevel Debug { get; } = new MachineLearningBatchLoggingLevel(DebugValue);
         /// <summary> Determines if two <see cref="MachineLearningBatchLoggingLevel"/> values are the same. </summary>
         public static bool operator ==(MachineLearningBatchLoggingLevel left, MachineLearningBatchLoggingLevel right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningBatchLoggingLevel"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningBatchLoggingLevel left, MachineLearningBatchLoggingLevel right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningBatchLoggingLevel"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningBatchLoggingLevel"/>. </summary>
         public static implicit operator MachineLearningBatchLoggingLevel(string value) => new MachineLearningBatchLoggingLevel(value);
 
         /// <inheritdoc />
@@ -61,7 +51,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

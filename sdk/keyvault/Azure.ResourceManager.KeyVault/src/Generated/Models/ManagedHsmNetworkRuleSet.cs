@@ -5,41 +5,61 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> A set of rules governing the network accessibility of a managed hsm pool. </summary>
     public partial class ManagedHsmNetworkRuleSet
     {
-        /// <summary> Initializes a new instance of ManagedHsmNetworkRuleSet. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmNetworkRuleSet"/>. </summary>
         public ManagedHsmNetworkRuleSet()
         {
             IPRules = new ChangeTrackingList<ManagedHsmIPRule>();
+            ServiceTags = new ChangeTrackingList<ManagedHsmServiceTagRule>();
             VirtualNetworkRules = new ChangeTrackingList<ManagedHsmVirtualNetworkRule>();
         }
 
-        /// <summary> Initializes a new instance of ManagedHsmNetworkRuleSet. </summary>
-        /// <param name="bypass"> Tells what traffic can bypass network rules. This can be &apos;AzureServices&apos; or &apos;None&apos;.  If not specified the default is &apos;AzureServices&apos;. </param>
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmNetworkRuleSet"/>. </summary>
+        /// <param name="bypass"> Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'.  If not specified the default is 'AzureServices'. </param>
         /// <param name="defaultAction"> The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property has been evaluated. </param>
         /// <param name="ipRules"> The list of IP address rules. </param>
+        /// <param name="serviceTags"> The list of service tags. </param>
         /// <param name="virtualNetworkRules"> The list of virtual network rules. </param>
-        internal ManagedHsmNetworkRuleSet(ManagedHsmNetworkRuleBypassOption? bypass, ManagedHsmNetworkRuleAction? defaultAction, IList<ManagedHsmIPRule> ipRules, IList<ManagedHsmVirtualNetworkRule> virtualNetworkRules)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedHsmNetworkRuleSet(ManagedHsmNetworkRuleBypassOption? bypass, ManagedHsmNetworkRuleAction? defaultAction, IList<ManagedHsmIPRule> ipRules, IList<ManagedHsmServiceTagRule> serviceTags, IList<ManagedHsmVirtualNetworkRule> virtualNetworkRules, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Bypass = bypass;
             DefaultAction = defaultAction;
             IPRules = ipRules;
+            ServiceTags = serviceTags;
             VirtualNetworkRules = virtualNetworkRules;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Tells what traffic can bypass network rules. This can be &apos;AzureServices&apos; or &apos;None&apos;.  If not specified the default is &apos;AzureServices&apos;. </summary>
+        /// <summary> Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'.  If not specified the default is 'AzureServices'. </summary>
+        [WirePath("bypass")]
         public ManagedHsmNetworkRuleBypassOption? Bypass { get; set; }
+
         /// <summary> The default action when no rule from ipRules and from virtualNetworkRules match. This is only used after the bypass property has been evaluated. </summary>
+        [WirePath("defaultAction")]
         public ManagedHsmNetworkRuleAction? DefaultAction { get; set; }
+
         /// <summary> The list of IP address rules. </summary>
+        [WirePath("ipRules")]
         public IList<ManagedHsmIPRule> IPRules { get; }
+
+        /// <summary> The list of service tags. </summary>
+        [WirePath("serviceTags")]
+        public IList<ManagedHsmServiceTagRule> ServiceTags { get; }
+
         /// <summary> The list of virtual network rules. </summary>
+        [WirePath("virtualNetworkRules")]
         public IList<ManagedHsmVirtualNetworkRule> VirtualNetworkRules { get; }
     }
 }

@@ -9,23 +9,27 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.DataLakeAnalytics.Models;
 
 namespace Azure.ResourceManager.DataLakeAnalytics
 {
     /// <summary>
     /// A Class representing a DataLakeAnalyticsStorageContainer along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="DataLakeAnalyticsStorageContainerResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetDataLakeAnalyticsStorageContainerResource method.
-    /// Otherwise you can get one from its parent resource <see cref="DataLakeAnalyticsStorageAccountInformationResource" /> using the GetDataLakeAnalyticsStorageContainer method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="DataLakeAnalyticsStorageContainerResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetDataLakeAnalyticsStorageContainerResource method.
+    /// Otherwise you can get one from its parent resource <see cref="DataLakeAnalyticsStorageAccountInformationResource"/> using the GetDataLakeAnalyticsStorageContainer method.
     /// </summary>
     public partial class DataLakeAnalyticsStorageContainerResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="DataLakeAnalyticsStorageContainerResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="resourceGroupName"> The resourceGroupName. </param>
+        /// <param name="accountName"> The accountName. </param>
+        /// <param name="storageAccountName"> The storageAccountName. </param>
+        /// <param name="containerName"> The containerName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string resourceGroupName, string accountName, string storageAccountName, string containerName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeAnalytics/accounts/{accountName}/storageAccounts/{storageAccountName}/containers/{containerName}";
@@ -36,12 +40,15 @@ namespace Azure.ResourceManager.DataLakeAnalytics
         private readonly StorageAccountsRestOperations _dataLakeAnalyticsStorageContainerStorageAccountsRestClient;
         private readonly DataLakeAnalyticsStorageContainerData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.DataLakeAnalytics/accounts/storageAccounts/containers";
+
         /// <summary> Initializes a new instance of the <see cref="DataLakeAnalyticsStorageContainerResource"/> class for mocking. </summary>
         protected DataLakeAnalyticsStorageContainerResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "DataLakeAnalyticsStorageContainerResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="DataLakeAnalyticsStorageContainerResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal DataLakeAnalyticsStorageContainerResource(ArmClient client, DataLakeAnalyticsStorageContainerData data) : this(client, data.Id)
@@ -62,9 +69,6 @@ namespace Azure.ResourceManager.DataLakeAnalytics
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.DataLakeAnalytics/accounts/storageAccounts/containers";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -89,8 +93,24 @@ namespace Azure.ResourceManager.DataLakeAnalytics
 
         /// <summary>
         /// Gets the specified Azure Storage container associated with the given Data Lake Analytics and Azure Storage accounts.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeAnalytics/accounts/{accountName}/storageAccounts/{storageAccountName}/containers/{containerName}
-        /// Operation Id: StorageAccounts_GetStorageContainer
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeAnalytics/accounts/{accountName}/storageAccounts/{storageAccountName}/containers/{containerName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageAccounts_GetStorageContainer</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2016-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DataLakeAnalyticsStorageContainerResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<DataLakeAnalyticsStorageContainerResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -113,8 +133,24 @@ namespace Azure.ResourceManager.DataLakeAnalytics
 
         /// <summary>
         /// Gets the specified Azure Storage container associated with the given Data Lake Analytics and Azure Storage accounts.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeAnalytics/accounts/{accountName}/storageAccounts/{storageAccountName}/containers/{containerName}
-        /// Operation Id: StorageAccounts_GetStorageContainer
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeAnalytics/accounts/{accountName}/storageAccounts/{storageAccountName}/containers/{containerName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageAccounts_GetStorageContainer</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2016-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DataLakeAnalyticsStorageContainerResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<DataLakeAnalyticsStorageContainerResource> Get(CancellationToken cancellationToken = default)
@@ -137,86 +173,62 @@ namespace Azure.ResourceManager.DataLakeAnalytics
 
         /// <summary>
         /// Gets the SAS token associated with the specified Data Lake Analytics and Azure Storage account and container combination.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeAnalytics/accounts/{accountName}/storageAccounts/{storageAccountName}/containers/{containerName}/listSasTokens
-        /// Operation Id: StorageAccounts_ListSasTokens
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeAnalytics/accounts/{accountName}/storageAccounts/{storageAccountName}/containers/{containerName}/listSasTokens</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageAccounts_ListSasTokens</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2016-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DataLakeAnalyticsStorageContainerResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="DataLakeAnalyticsSasTokenInformation" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="DataLakeAnalyticsSasTokenInformation"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<DataLakeAnalyticsSasTokenInformation> GetSasTokensAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<DataLakeAnalyticsSasTokenInformation>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _dataLakeAnalyticsStorageContainerStorageAccountsClientDiagnostics.CreateScope("DataLakeAnalyticsStorageContainerResource.GetSasTokens");
-                scope.Start();
-                try
-                {
-                    var response = await _dataLakeAnalyticsStorageContainerStorageAccountsRestClient.ListSasTokensAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<DataLakeAnalyticsSasTokenInformation>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _dataLakeAnalyticsStorageContainerStorageAccountsClientDiagnostics.CreateScope("DataLakeAnalyticsStorageContainerResource.GetSasTokens");
-                scope.Start();
-                try
-                {
-                    var response = await _dataLakeAnalyticsStorageContainerStorageAccountsRestClient.ListSasTokensNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _dataLakeAnalyticsStorageContainerStorageAccountsRestClient.CreateListSasTokensRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _dataLakeAnalyticsStorageContainerStorageAccountsRestClient.CreateListSasTokensNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => DataLakeAnalyticsSasTokenInformation.DeserializeDataLakeAnalyticsSasTokenInformation(e), _dataLakeAnalyticsStorageContainerStorageAccountsClientDiagnostics, Pipeline, "DataLakeAnalyticsStorageContainerResource.GetSasTokens", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Gets the SAS token associated with the specified Data Lake Analytics and Azure Storage account and container combination.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeAnalytics/accounts/{accountName}/storageAccounts/{storageAccountName}/containers/{containerName}/listSasTokens
-        /// Operation Id: StorageAccounts_ListSasTokens
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataLakeAnalytics/accounts/{accountName}/storageAccounts/{storageAccountName}/containers/{containerName}/listSasTokens</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageAccounts_ListSasTokens</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2016-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DataLakeAnalyticsStorageContainerResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="DataLakeAnalyticsSasTokenInformation" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="DataLakeAnalyticsSasTokenInformation"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<DataLakeAnalyticsSasTokenInformation> GetSasTokens(CancellationToken cancellationToken = default)
         {
-            Page<DataLakeAnalyticsSasTokenInformation> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _dataLakeAnalyticsStorageContainerStorageAccountsClientDiagnostics.CreateScope("DataLakeAnalyticsStorageContainerResource.GetSasTokens");
-                scope.Start();
-                try
-                {
-                    var response = _dataLakeAnalyticsStorageContainerStorageAccountsRestClient.ListSasTokens(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<DataLakeAnalyticsSasTokenInformation> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _dataLakeAnalyticsStorageContainerStorageAccountsClientDiagnostics.CreateScope("DataLakeAnalyticsStorageContainerResource.GetSasTokens");
-                scope.Start();
-                try
-                {
-                    var response = _dataLakeAnalyticsStorageContainerStorageAccountsRestClient.ListSasTokensNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _dataLakeAnalyticsStorageContainerStorageAccountsRestClient.CreateListSasTokensRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _dataLakeAnalyticsStorageContainerStorageAccountsRestClient.CreateListSasTokensNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => DataLakeAnalyticsSasTokenInformation.DeserializeDataLakeAnalyticsSasTokenInformation(e), _dataLakeAnalyticsStorageContainerStorageAccountsClientDiagnostics, Pipeline, "DataLakeAnalyticsStorageContainerResource.GetSasTokens", "value", "nextLink", cancellationToken);
         }
     }
 }

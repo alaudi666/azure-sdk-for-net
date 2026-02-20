@@ -76,11 +76,12 @@ namespace Azure.Data.AppConfiguration
             message.Request.Headers.SetValue(HttpHeader.Names.Authorization, authorization);
         }
 
-        private string GetAuthorizationHeader(Request request, string contentHash, string date) {
+        private string GetAuthorizationHeader(Request request, string contentHash, string date)
+        {
             const string signedHeaders = "date;host;x-ms-content-sha256"; // Semicolon separated header names
 
             var uri = request.Uri.ToUri();
-            var host = uri.Host;
+            var host = uri.Authority;
             var pathAndQuery = uri.PathAndQuery;
             var method = request.Method.Method;
 

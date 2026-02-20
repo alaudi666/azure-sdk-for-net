@@ -1,18 +1,18 @@
 {
   "matrix": {
     "Agent": {
-      "ubuntu-20.04": {
-          "OSVmImage": "MMSUbuntu20.04",
-          "Pool": "azsdk-pool-mms-ubuntu-2004-storage"
+      "ubuntu-24.04": {
+          "OSVmImage": "env:LINUXVMIMAGE",
+          "Pool": "env:LINUXPOOL"
       },
       "windows-2022": {
-          "OSVmImage": "MMS2022",
-          "Pool": "azsdk-pool-mms-win-2019-storage"
+          "OSVmImage": "env:WINDOWSVMIMAGE",
+          "Pool": "env:WINDOWSPOOL"
       }
     },
     "TestTargetFramework": [
-        "netcoreapp3.1",
-        "net5.0"
+        "net6.0",
+        "net7.0"
     ],
     "AZURE_LIVE_TEST_SERVICE_VERSIONS": [
         "V2019_02_02",
@@ -29,7 +29,27 @@
         "V2021_06_08",
         "V2021_08_06",
         "V2021_10_04",
-        "V2021_12_02"
+        "V2021_12_02",
+        "V2021-04-10",
+        "V2021-06-08",
+        "V2021-08-06",
+        "V2021-10-04",
+        "V2021-12-02",
+        "V2022-11-02",
+        "V2023-01-03",
+        "V2023-05-03",
+        "V2023-08-03",
+        "V2023-11-03",
+        "V2024-02-04",
+        "V2024-05-04",
+        "V2024-08-04",
+        "V2024-11-04",
+        "V2025-01-05",
+        "V2025-05-05",
+        "V2025-07-05",
+        "V2025-11-05",
+        "V2026-02-06",
+        "V2026-04-06"
     ]
   }
 }

@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Chaos;
 
 namespace Azure.ResourceManager.Chaos.Models
@@ -14,24 +15,31 @@ namespace Azure.ResourceManager.Chaos.Models
     /// <summary> Model that represents a list of Target Type resources and a link for pagination. </summary>
     internal partial class TargetTypeListResult
     {
-        /// <summary> Initializes a new instance of TargetTypeListResult. </summary>
-        internal TargetTypeListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="TargetTypeListResult"/>. </summary>
+        /// <param name="value"> The TargetType items on this page. </param>
+        internal TargetTypeListResult(IEnumerable<ChaosTargetMetadataData> value)
         {
-            Value = new ChangeTrackingList<TargetTypeData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of TargetTypeListResult. </summary>
-        /// <param name="value"> List of Target Type resources. </param>
-        /// <param name="nextLink"> URL to retrieve the next page of Target Type resources. </param>
-        internal TargetTypeListResult(IReadOnlyList<TargetTypeData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="TargetTypeListResult"/>. </summary>
+        /// <param name="value"> The TargetType items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal TargetTypeListResult(IList<ChaosTargetMetadataData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of Target Type resources. </summary>
-        public IReadOnlyList<TargetTypeData> Value { get; }
-        /// <summary> URL to retrieve the next page of Target Type resources. </summary>
-        public string NextLink { get; }
+        /// <summary> The TargetType items on this page. </summary>
+        public IList<ChaosTargetMetadataData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

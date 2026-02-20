@@ -5,96 +5,239 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
-    public partial class ProductDimensions
+    /// <summary> Dimensions of a configuration. </summary>
+    public partial class ProductDimensions : IJsonModel<ProductDimensions>
     {
-        internal static ProductDimensions DeserializeProductDimensions(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ProductDimensions PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<double> length = default;
-            Optional<double> height = default;
-            Optional<double> width = default;
-            Optional<ProductLengthHeightWidthUnit> lengthHeightUnit = default;
-            Optional<double> weight = default;
-            Optional<double> depth = default;
-            Optional<ProductWeightMeasurementUnit> weightUnit = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ProductDimensions>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("length"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeProductDimensions(document.RootElement, options);
                     }
-                    length = property.Value.GetDouble();
-                    continue;
-                }
-                if (property.NameEquals("height"))
+                default:
+                    throw new FormatException($"The model {nameof(ProductDimensions)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ProductDimensions>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ProductDimensions>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ProductDimensions)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(Length))
+            {
+                writer.WritePropertyName("length"u8);
+                writer.WriteNumberValue(Length.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Height))
+            {
+                writer.WritePropertyName("height"u8);
+                writer.WriteNumberValue(Height.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Width))
+            {
+                writer.WritePropertyName("width"u8);
+                writer.WriteNumberValue(Width.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(LengthHeightUnit))
+            {
+                writer.WritePropertyName("lengthHeightUnit"u8);
+                writer.WriteStringValue(LengthHeightUnit.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(Weight))
+            {
+                writer.WritePropertyName("weight"u8);
+                writer.WriteNumberValue(Weight.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Depth))
+            {
+                writer.WritePropertyName("depth"u8);
+                writer.WriteNumberValue(Depth.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(WeightUnit))
+            {
+                writer.WritePropertyName("weightUnit"u8);
+                writer.WriteStringValue(WeightUnit.Value.ToString());
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    height = property.Value.GetDouble();
-                    continue;
-                }
-                if (property.NameEquals("width"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    width = property.Value.GetDouble();
-                    continue;
-                }
-                if (property.NameEquals("lengthHeightUnit"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    lengthHeightUnit = new ProductLengthHeightWidthUnit(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("weight"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    weight = property.Value.GetDouble();
-                    continue;
-                }
-                if (property.NameEquals("depth"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    depth = property.Value.GetDouble();
-                    continue;
-                }
-                if (property.NameEquals("weightUnit"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    weightUnit = new ProductWeightMeasurementUnit(property.Value.GetString());
-                    continue;
+#endif
                 }
             }
-            return new ProductDimensions(Optional.ToNullable(length), Optional.ToNullable(height), Optional.ToNullable(width), Optional.ToNullable(lengthHeightUnit), Optional.ToNullable(weight), Optional.ToNullable(depth), Optional.ToNullable(weightUnit));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ProductDimensions IJsonModel<ProductDimensions>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ProductDimensions JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ProductDimensions>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ProductDimensions)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeProductDimensions(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ProductDimensions DeserializeProductDimensions(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            double? length = default;
+            double? height = default;
+            double? width = default;
+            ProductLengthHeightWidthUnit? lengthHeightUnit = default;
+            double? weight = default;
+            double? depth = default;
+            ProductWeightMeasurementUnit? weightUnit = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("length"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    length = prop.Value.GetDouble();
+                    continue;
+                }
+                if (prop.NameEquals("height"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    height = prop.Value.GetDouble();
+                    continue;
+                }
+                if (prop.NameEquals("width"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    width = prop.Value.GetDouble();
+                    continue;
+                }
+                if (prop.NameEquals("lengthHeightUnit"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    lengthHeightUnit = new ProductLengthHeightWidthUnit(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("weight"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    weight = prop.Value.GetDouble();
+                    continue;
+                }
+                if (prop.NameEquals("depth"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    depth = prop.Value.GetDouble();
+                    continue;
+                }
+                if (prop.NameEquals("weightUnit"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    weightUnit = new ProductWeightMeasurementUnit(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new ProductDimensions(
+                length,
+                height,
+                width,
+                lengthHeightUnit,
+                weight,
+                depth,
+                weightUnit,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ProductDimensions>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ProductDimensions>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerEdgeOrderContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ProductDimensions)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ProductDimensions IPersistableModel<ProductDimensions>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ProductDimensions>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

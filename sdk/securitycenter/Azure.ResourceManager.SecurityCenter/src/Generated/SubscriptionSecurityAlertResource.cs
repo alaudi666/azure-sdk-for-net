@@ -9,22 +9,23 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.SecurityCenter
 {
     /// <summary>
     /// A Class representing a SubscriptionSecurityAlert along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="SubscriptionSecurityAlertResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetSubscriptionSecurityAlertResource method.
-    /// Otherwise you can get one from its parent resource <see cref="SecurityCenterLocationResource" /> using the GetSubscriptionSecurityAlert method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="SubscriptionSecurityAlertResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetSubscriptionSecurityAlertResource method.
+    /// Otherwise you can get one from its parent resource <see cref="SecurityCenterLocationResource"/> using the GetSubscriptionSecurityAlert method.
     /// </summary>
     public partial class SubscriptionSecurityAlertResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="SubscriptionSecurityAlertResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="ascLocation"> The ascLocation. </param>
+        /// <param name="alertName"> The alertName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, AzureLocation ascLocation, string alertName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}";
@@ -35,12 +36,15 @@ namespace Azure.ResourceManager.SecurityCenter
         private readonly AlertsRestOperations _subscriptionSecurityAlertAlertsRestClient;
         private readonly SecurityAlertData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.Security/locations/alerts";
+
         /// <summary> Initializes a new instance of the <see cref="SubscriptionSecurityAlertResource"/> class for mocking. </summary>
         protected SubscriptionSecurityAlertResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "SubscriptionSecurityAlertResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="SubscriptionSecurityAlertResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal SubscriptionSecurityAlertResource(ArmClient client, SecurityAlertData data) : this(client, data.Id)
@@ -61,9 +65,6 @@ namespace Azure.ResourceManager.SecurityCenter
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.Security/locations/alerts";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -88,8 +89,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get an alert that is associated with a subscription
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}
-        /// Operation Id: Alerts_GetSubscriptionLevel
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_GetSubscriptionLevel</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<SubscriptionSecurityAlertResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -112,8 +129,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get an alert that is associated with a subscription
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}
-        /// Operation Id: Alerts_GetSubscriptionLevel
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_GetSubscriptionLevel</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<SubscriptionSecurityAlertResource> Get(CancellationToken cancellationToken = default)
@@ -135,9 +168,25 @@ namespace Azure.ResourceManager.SecurityCenter
         }
 
         /// <summary>
-        /// Update the alert&apos;s state
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/dismiss
-        /// Operation Id: Alerts_UpdateSubscriptionLevelStateToDismiss
+        /// Update the alert's state
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/dismiss</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_UpdateSubscriptionLevelStateToDismiss</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response> DismissAsync(CancellationToken cancellationToken = default)
@@ -157,9 +206,25 @@ namespace Azure.ResourceManager.SecurityCenter
         }
 
         /// <summary>
-        /// Update the alert&apos;s state
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/dismiss
-        /// Operation Id: Alerts_UpdateSubscriptionLevelStateToDismiss
+        /// Update the alert's state
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/dismiss</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_UpdateSubscriptionLevelStateToDismiss</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response Dismiss(CancellationToken cancellationToken = default)
@@ -179,9 +244,25 @@ namespace Azure.ResourceManager.SecurityCenter
         }
 
         /// <summary>
-        /// Update the alert&apos;s state
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/resolve
-        /// Operation Id: Alerts_UpdateSubscriptionLevelStateToResolve
+        /// Update the alert's state
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/resolve</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_UpdateSubscriptionLevelStateToResolve</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response> ResolveAsync(CancellationToken cancellationToken = default)
@@ -201,9 +282,25 @@ namespace Azure.ResourceManager.SecurityCenter
         }
 
         /// <summary>
-        /// Update the alert&apos;s state
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/resolve
-        /// Operation Id: Alerts_UpdateSubscriptionLevelStateToResolve
+        /// Update the alert's state
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/resolve</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_UpdateSubscriptionLevelStateToResolve</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response Resolve(CancellationToken cancellationToken = default)
@@ -223,9 +320,25 @@ namespace Azure.ResourceManager.SecurityCenter
         }
 
         /// <summary>
-        /// Update the alert&apos;s state
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/activate
-        /// Operation Id: Alerts_UpdateSubscriptionLevelStateToActivate
+        /// Update the alert's state
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/activate</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_UpdateSubscriptionLevelStateToActivate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response> ActivateAsync(CancellationToken cancellationToken = default)
@@ -245,9 +358,25 @@ namespace Azure.ResourceManager.SecurityCenter
         }
 
         /// <summary>
-        /// Update the alert&apos;s state
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/activate
-        /// Operation Id: Alerts_UpdateSubscriptionLevelStateToActivate
+        /// Update the alert's state
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/activate</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_UpdateSubscriptionLevelStateToActivate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response Activate(CancellationToken cancellationToken = default)
@@ -267,9 +396,25 @@ namespace Azure.ResourceManager.SecurityCenter
         }
 
         /// <summary>
-        /// Update the alert&apos;s state
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/inProgress
-        /// Operation Id: Alerts_UpdateSubscriptionLevelStateToInProgress
+        /// Update the alert's state
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/inProgress</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_UpdateSubscriptionLevelStateToInProgress</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response> UpdateSatateToInProgressAsync(CancellationToken cancellationToken = default)
@@ -289,9 +434,25 @@ namespace Azure.ResourceManager.SecurityCenter
         }
 
         /// <summary>
-        /// Update the alert&apos;s state
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/inProgress
-        /// Operation Id: Alerts_UpdateSubscriptionLevelStateToInProgress
+        /// Update the alert's state
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}/inProgress</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_UpdateSubscriptionLevelStateToInProgress</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response UpdateSatateToInProgress(CancellationToken cancellationToken = default)

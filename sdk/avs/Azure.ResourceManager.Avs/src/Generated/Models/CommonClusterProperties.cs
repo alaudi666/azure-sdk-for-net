@@ -5,40 +5,49 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
     /// <summary> The common properties of a cluster. </summary>
     public partial class CommonClusterProperties
     {
-        /// <summary> Initializes a new instance of CommonClusterProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CommonClusterProperties"/>. </summary>
         public CommonClusterProperties()
         {
             Hosts = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of CommonClusterProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="CommonClusterProperties"/>. </summary>
         /// <param name="clusterSize"> The cluster size. </param>
         /// <param name="provisioningState"> The state of the cluster provisioning. </param>
         /// <param name="clusterId"> The identity. </param>
         /// <param name="hosts"> The hosts. </param>
-        internal CommonClusterProperties(int? clusterSize, AvsPrivateCloudClusterProvisioningState? provisioningState, int? clusterId, IList<string> hosts)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CommonClusterProperties(int? clusterSize, AvsPrivateCloudClusterProvisioningState? provisioningState, int? clusterId, IList<string> hosts, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ClusterSize = clusterSize;
             ProvisioningState = provisioningState;
             ClusterId = clusterId;
             Hosts = hosts;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The cluster size. </summary>
-        public int? ClusterSize { get; set; }
+        public virtual int? ClusterSize { get; set; }
+
         /// <summary> The state of the cluster provisioning. </summary>
-        public AvsPrivateCloudClusterProvisioningState? ProvisioningState { get; }
+        public virtual AvsPrivateCloudClusterProvisioningState? ProvisioningState { get; }
+
         /// <summary> The identity. </summary>
-        public int? ClusterId { get; }
+        public virtual int? ClusterId { get; }
+
         /// <summary> The hosts. </summary>
-        public IList<string> Hosts { get; }
+        public virtual IList<string> Hosts { get; }
     }
 }

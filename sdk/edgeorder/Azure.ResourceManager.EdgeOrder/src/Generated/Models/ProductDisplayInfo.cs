@@ -5,27 +5,36 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Describes product display information. </summary>
     public partial class ProductDisplayInfo
     {
-        /// <summary> Initializes a new instance of ProductDisplayInfo. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ProductDisplayInfo"/>. </summary>
         public ProductDisplayInfo()
         {
         }
 
-        /// <summary> Initializes a new instance of ProductDisplayInfo. </summary>
+        /// <summary> Initializes a new instance of <see cref="ProductDisplayInfo"/>. </summary>
         /// <param name="productFamilyDisplayName"> Product family display name. </param>
         /// <param name="configurationDisplayName"> Configuration display name. </param>
-        internal ProductDisplayInfo(string productFamilyDisplayName, string configurationDisplayName)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ProductDisplayInfo(string productFamilyDisplayName, string configurationDisplayName, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ProductFamilyDisplayName = productFamilyDisplayName;
             ConfigurationDisplayName = configurationDisplayName;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Product family display name. </summary>
         public string ProductFamilyDisplayName { get; }
+
         /// <summary> Configuration display name. </summary>
         public string ConfigurationDisplayName { get; }
     }

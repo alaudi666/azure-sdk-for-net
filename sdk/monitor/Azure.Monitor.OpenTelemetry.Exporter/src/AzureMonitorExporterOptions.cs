@@ -1,11 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#nullable disable // TODO: remove and fix errors
+#nullable disable
 
 using System.Diagnostics.CodeAnalysis;
 
 using Azure.Core;
+using Azure.Monitor.OpenTelemetry.LiveMetrics;
 
 namespace Azure.Monitor.OpenTelemetry.Exporter
 {
@@ -17,20 +18,45 @@ namespace Azure.Monitor.OpenTelemetry.Exporter
         /// <summary>
         /// The latest service version supported by this library.
         /// </summary>
-        internal const ServiceVersion LatestVersion = ServiceVersion.V2020_09_15_Preview;
+        internal const ServiceVersion LatestVersion = ServiceVersion.v2_1;
 
         /// <summary>
         /// The Connection String provides users with a single configuration setting to identify the Azure Monitor resource and endpoint.
         /// </summary>
         /// <remarks>
-        /// (https://docs.microsoft.com/azure/azure-monitor/app/sdk-connection-string).
+        /// <see href="https://docs.microsoft.com/azure/azure-monitor/app/sdk-connection-string"/>.
         /// </remarks>
         public string ConnectionString { get; set; }
 
         /// <summary>
+        /// Get or sets the value of <see cref="TokenCredential" />.
+        /// </summary>
+        public TokenCredential Credential { get; set; }
+
+        /// <summary>
+        /// Gets or sets the ratio of telemetry items to be sampled. The value must be between 0.0F and 1.0F, inclusive.
+        /// For example, specifying 0.4 means that 40% of traces are sampled and 60% are dropped.
+        /// </summary>
+        public float SamplingRatio { get; set; } = 1.0F;
+
+        /// <summary>
+        /// Gets or sets the number of traces per second to be sampled when using rate-limited sampling.
+        /// For example, specifying 0.5 means one request every two seconds.
+        /// When both TracesPerSecond and SamplingRatio are specified, TracesPerSecond takes precedence.
+        /// </summary>
+        public double? TracesPerSecond { get; set; } = 5.0;
+
+        /// <summary>
         /// The <see cref="ServiceVersion"/> of the Azure Monitor ingestion API.
         /// </summary>
-        public ServiceVersion Version { get; set; } = ServiceVersion.V2020_09_15_Preview;
+        public ServiceVersion Version { get; set; } = LatestVersion;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AzureMonitorExporterOptions"/>.
+        /// </summary>
+        public AzureMonitorExporterOptions() : this(LatestVersion)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AzureMonitorExporterOptions"/>.
@@ -39,6 +65,9 @@ namespace Azure.Monitor.OpenTelemetry.Exporter
         public AzureMonitorExporterOptions(ServiceVersion version = LatestVersion)
         {
             this.Version = version;
+            // users can explicitly change it, but by default we don't want exporter internal logs to be reported to Azure Monitor.
+            this.Diagnostics.IsDistributedTracingEnabled = false;
+            this.Diagnostics.IsLoggingEnabled = false;
         }
 
         /// <summary>
@@ -48,9 +77,9 @@ namespace Azure.Monitor.OpenTelemetry.Exporter
         public enum ServiceVersion
         {
             /// <summary>
-            /// (https://github.com/Azure/azure-rest-api-specs/blob/master/specification/applicationinsights/data-plane/Monitor.Exporters/preview/2020-09-15_Preview/swagger.json).
+            /// <see href="https://github.com/Azure/azure-rest-api-specs/blob/master/specification/applicationinsights/data-plane/Monitor.Exporters/preview/v2.1/swagger.json" />.
             /// </summary>
-            V2020_09_15_Preview = 1,
+            v2_1 = 1,
         }
 
         /// <summary>
@@ -62,5 +91,60 @@ namespace Azure.Monitor.OpenTelemetry.Exporter
         /// Disable offline storage.
         /// </summary>
         public bool DisableOfflineStorage { get; set; }
+
+        /// <summary>
+        /// Enables or disables the Live Metrics feature. This property is enabled by default.
+        /// Note: Enabling Live Metrics incurs no additional billing or costs. However, it does introduce
+        /// a performance overhead due to extra data collection, processing, and networking calls. This overhead
+        /// is only significant when the LiveMetrics portal is actively used in the UI. Once the portal is closed,
+        /// </summary>
+        /// LiveMetrics reverts to a 'silent' mode with minimal to no overhead.
+        /// <remarks>
+        /// This setting is applicable only when `UseAzureMonitorExporter` API is used.
+        /// <see href="https://learn.microsoft.com/azure/azure-monitor/app/live-stream"/>.
+        /// </remarks>
+        public bool EnableLiveMetrics { get; set; } = true;
+
+        /// <summary>
+        /// Enables or disables filtering logs based on trace sampling decisions.
+        /// </summary>
+        /// <remarks>
+        /// When enabled, only logs associated with sampled traces are exported.
+        /// Logs without trace context are always exported.
+        /// This reduces log volume while maintaining trace-log correlation.
+        /// </remarks>
+        public bool EnableTraceBasedLogsSampler { get; set; } = true;
+
+        /// <summary>
+        /// Internal flag to control if Statsbeat is enabled.
+        /// </summary>
+        internal bool EnableStatsbeat { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether standard metrics should be collected.
+        /// Default is true.
+        /// </summary>
+        public bool EnableStandardMetrics { get; set; } = true;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether performance counters should be collected.
+        /// Default is true.
+        /// </summary>
+        public bool EnablePerfCounters { get; set; } = true;
+
+        internal void SetValueToLiveMetricsOptions(AzureMonitorLiveMetricsOptions liveMetricsOptions)
+        {
+            liveMetricsOptions.ConnectionString = ConnectionString;
+            liveMetricsOptions.Credential = Credential;
+            liveMetricsOptions.EnableLiveMetrics = EnableLiveMetrics;
+
+            if (Transport != null)
+            {
+                liveMetricsOptions.Transport = Transport;
+            }
+
+            liveMetricsOptions.Diagnostics.IsDistributedTracingEnabled = Diagnostics.IsDistributedTracingEnabled;
+            liveMetricsOptions.Diagnostics.IsLoggingEnabled = Diagnostics.IsLoggingEnabled;
+        }
     }
 }

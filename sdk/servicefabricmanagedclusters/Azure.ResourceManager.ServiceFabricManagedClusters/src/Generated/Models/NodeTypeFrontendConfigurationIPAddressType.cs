@@ -7,48 +7,65 @@
 
 using System;
 using System.ComponentModel;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    /// <summary>
-    /// The IP address type.
-    /// 
-    /// </summary>
+    /// <summary> The IP address type. </summary>
     public readonly partial struct NodeTypeFrontendConfigurationIPAddressType : IEquatable<NodeTypeFrontendConfigurationIPAddressType>
     {
         private readonly string _value;
+        /// <summary> IPv4 address type. </summary>
+        private const string IPv4Value = "IPv4";
+        /// <summary> IPv6 address type. </summary>
+        private const string IPv6Value = "IPv6";
 
         /// <summary> Initializes a new instance of <see cref="NodeTypeFrontendConfigurationIPAddressType"/>. </summary>
+        /// <param name="value"> The value. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
         public NodeTypeFrontendConfigurationIPAddressType(string value)
         {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
-        }
+            Argument.AssertNotNull(value, nameof(value));
 
-        private const string IPv4Value = "IPv4";
-        private const string IPv6Value = "IPv6";
+            _value = value;
+        }
 
         /// <summary> IPv4 address type. </summary>
         public static NodeTypeFrontendConfigurationIPAddressType IPv4 { get; } = new NodeTypeFrontendConfigurationIPAddressType(IPv4Value);
+
         /// <summary> IPv6 address type. </summary>
         public static NodeTypeFrontendConfigurationIPAddressType IPv6 { get; } = new NodeTypeFrontendConfigurationIPAddressType(IPv6Value);
+
         /// <summary> Determines if two <see cref="NodeTypeFrontendConfigurationIPAddressType"/> values are the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator ==(NodeTypeFrontendConfigurationIPAddressType left, NodeTypeFrontendConfigurationIPAddressType right) => left.Equals(right);
+
         /// <summary> Determines if two <see cref="NodeTypeFrontendConfigurationIPAddressType"/> values are not the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator !=(NodeTypeFrontendConfigurationIPAddressType left, NodeTypeFrontendConfigurationIPAddressType right) => !left.Equals(right);
+
         /// <summary> Converts a string to a <see cref="NodeTypeFrontendConfigurationIPAddressType"/>. </summary>
+        /// <param name="value"> The value. </param>
         public static implicit operator NodeTypeFrontendConfigurationIPAddressType(string value) => new NodeTypeFrontendConfigurationIPAddressType(value);
 
-        /// <inheritdoc />
+        /// <summary> Converts a string to a <see cref="NodeTypeFrontendConfigurationIPAddressType"/>. </summary>
+        /// <param name="value"> The value. </param>
+        public static implicit operator NodeTypeFrontendConfigurationIPAddressType?(string value) => value == null ? null : new NodeTypeFrontendConfigurationIPAddressType(value);
+
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj) => obj is NodeTypeFrontendConfigurationIPAddressType other && Equals(other);
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public bool Equals(NodeTypeFrontendConfigurationIPAddressType other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-        /// <inheritdoc />
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
+
+        /// <inheritdoc/>
         public override string ToString() => _value;
     }
 }

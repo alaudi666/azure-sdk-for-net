@@ -10,7 +10,10 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.ContainerService.Models
 {
-    /// <summary> The type of Agent Pool. </summary>
+    /// <summary>
+    /// The type of Agent Pool.
+    /// Serialized Name: AgentPoolType
+    /// </summary>
     public readonly partial struct AgentPoolType : IEquatable<AgentPoolType>
     {
         private readonly string _value;
@@ -24,16 +27,28 @@ namespace Azure.ResourceManager.ContainerService.Models
 
         private const string VirtualMachineScaleSetsValue = "VirtualMachineScaleSets";
         private const string AvailabilitySetValue = "AvailabilitySet";
+        private const string VirtualMachinesValue = "VirtualMachines";
 
-        /// <summary> Create an Agent Pool backed by a Virtual Machine Scale Set. </summary>
+        /// <summary>
+        /// Create an Agent Pool backed by a Virtual Machine Scale Set.
+        /// Serialized Name: AgentPoolType.VirtualMachineScaleSets
+        /// </summary>
         public static AgentPoolType VirtualMachineScaleSets { get; } = new AgentPoolType(VirtualMachineScaleSetsValue);
-        /// <summary> Use of this is strongly discouraged. </summary>
+        /// <summary>
+        /// Use of this is strongly discouraged.
+        /// Serialized Name: AgentPoolType.AvailabilitySet
+        /// </summary>
         public static AgentPoolType AvailabilitySet { get; } = new AgentPoolType(AvailabilitySetValue);
+        /// <summary>
+        /// Create an Agent Pool backed by a Single Instance VM orchestration mode.
+        /// Serialized Name: AgentPoolType.VirtualMachines
+        /// </summary>
+        public static AgentPoolType VirtualMachines { get; } = new AgentPoolType(VirtualMachinesValue);
         /// <summary> Determines if two <see cref="AgentPoolType"/> values are the same. </summary>
         public static bool operator ==(AgentPoolType left, AgentPoolType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="AgentPoolType"/> values are not the same. </summary>
         public static bool operator !=(AgentPoolType left, AgentPoolType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="AgentPoolType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="AgentPoolType"/>. </summary>
         public static implicit operator AgentPoolType(string value) => new AgentPoolType(value);
 
         /// <inheritdoc />
@@ -44,7 +59,7 @@ namespace Azure.ResourceManager.ContainerService.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

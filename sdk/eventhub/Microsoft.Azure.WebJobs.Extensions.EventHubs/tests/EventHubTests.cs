@@ -27,10 +27,11 @@ namespace Microsoft.Azure.WebJobs.EventHubs.UnitTests
             var strategy = new EventHubTriggerBindingStrategy();
             var contract = strategy.GetBindingContract();
 
-            Assert.AreEqual(8, contract.Count);
+            Assert.AreEqual(9, contract.Count);
             Assert.AreEqual(typeof(TriggerPartitionContext), contract["TriggerPartitionContext"]);
             Assert.AreEqual(typeof(PartitionContext), contract["PartitionContext"]);
             Assert.AreEqual(typeof(string), contract["Offset"]);
+            Assert.AreEqual(typeof(string), contract["OffsetString"]);
             Assert.AreEqual(typeof(long), contract["SequenceNumber"]);
             Assert.AreEqual(typeof(DateTime), contract["EnqueuedTimeUtc"]);
             Assert.AreEqual(typeof(IDictionary<string, object>), contract["Properties"]);
@@ -43,10 +44,11 @@ namespace Microsoft.Azure.WebJobs.EventHubs.UnitTests
             var strategy = new EventHubTriggerBindingStrategy();
             var contract = strategy.GetBindingContract(true);
 
-            Assert.AreEqual(8, contract.Count);
+            Assert.AreEqual(9, contract.Count);
             Assert.AreEqual(typeof(TriggerPartitionContext), contract["TriggerPartitionContext"]);
             Assert.AreEqual(typeof(PartitionContext), contract["PartitionContext"]);
             Assert.AreEqual(typeof(string), contract["Offset"]);
+            Assert.AreEqual(typeof(string), contract["OffsetString"]);
             Assert.AreEqual(typeof(long), contract["SequenceNumber"]);
             Assert.AreEqual(typeof(DateTime), contract["EnqueuedTimeUtc"]);
             Assert.AreEqual(typeof(IDictionary<string, object>), contract["Properties"]);
@@ -59,11 +61,12 @@ namespace Microsoft.Azure.WebJobs.EventHubs.UnitTests
             var strategy = new EventHubTriggerBindingStrategy();
             var contract = strategy.GetBindingContract(false);
 
-            Assert.AreEqual(8, contract.Count);
+            Assert.AreEqual(9, contract.Count);
             Assert.AreEqual(typeof(TriggerPartitionContext), contract["TriggerPartitionContext"]);
             Assert.AreEqual(typeof(PartitionContext), contract["PartitionContext"]);
             Assert.AreEqual(typeof(string[]), contract["PartitionKeyArray"]);
             Assert.AreEqual(typeof(string[]), contract["OffsetArray"]);
+            Assert.AreEqual(typeof(string[]), contract["OffsetStringArray"]);
             Assert.AreEqual(typeof(long[]), contract["SequenceNumberArray"]);
             Assert.AreEqual(typeof(DateTime[]), contract["EnqueuedTimeUtcArray"]);
             Assert.AreEqual(typeof(IDictionary<string, object>[]), contract["PropertiesArray"]);
@@ -81,42 +84,45 @@ namespace Microsoft.Azure.WebJobs.EventHubs.UnitTests
             var strategy = new EventHubTriggerBindingStrategy();
             var bindingData = strategy.GetBindingData(input);
 
-            Assert.AreEqual(8, bindingData.Count);
+            if (!long.TryParse(evt.OffsetString, NumberStyles.Integer, CultureInfo.InvariantCulture, out long offsetLong))
+            {
+                offsetLong = -1;
+            }
+
+            Assert.AreEqual(9, bindingData.Count);
             Assert.AreSame(input.ProcessorPartition.PartitionContext, bindingData["TriggerPartitionContext"]);
             Assert.AreSame(input.ProcessorPartition.PartitionContext, bindingData["PartitionContext"]);
             Assert.AreEqual(evt.PartitionKey, bindingData["PartitionKey"]);
-            Assert.AreEqual(evt.Offset, bindingData["Offset"]);
+            Assert.AreEqual(offsetLong.ToString(CultureInfo.InvariantCulture), bindingData["Offset"]);
+            Assert.AreEqual(evt.OffsetString, bindingData["OffsetString"]);
             Assert.AreEqual(evt.SequenceNumber, bindingData["SequenceNumber"]);
             Assert.AreEqual(evt.EnqueuedTime.DateTime, bindingData["EnqueuedTimeUtc"]);
             Assert.AreSame(evt.Properties, bindingData["Properties"]);
             IDictionary<string, object> bindingDataSysProps = bindingData["SystemProperties"] as Dictionary<string, object>;
             Assert.NotNull(bindingDataSysProps);
             Assert.AreEqual(bindingDataSysProps["PartitionKey"], bindingData["PartitionKey"]);
-            Assert.AreEqual(bindingDataSysProps["Offset"], bindingData["Offset"]);
+            Assert.AreEqual(offsetLong.ToString(CultureInfo.InvariantCulture), bindingData["Offset"]);
             Assert.AreEqual(bindingDataSysProps["SequenceNumber"], bindingData["SequenceNumber"]);
             Assert.AreEqual(bindingDataSysProps["EnqueuedTimeUtc"], bindingData["EnqueuedTimeUtc"]);
             Assert.AreEqual(bindingDataSysProps["iothub-connection-device-id"], "testDeviceId");
             Assert.AreEqual(bindingDataSysProps["iothub-enqueuedtime"], DateTime.MinValue);
         }
 
-        private static TestEventData GetSystemProperties(byte[] body, string partitionKey = "TestKey")
-        {
-            long testSequence = 4294967296;
-            return new TestEventData(body, partitionKey: partitionKey, offset: 140, enqueuedTime: DateTimeOffset.MinValue, sequenceNumber: testSequence, systemProperties: new Dictionary<string, object>()
+        private static EventData GetSystemProperties(byte[] body, string partitionKey = "TestKey") =>
+            EventHubsModelFactory.EventData(new BinaryData(body), partitionKey: partitionKey, offsetString: "140:1:12", enqueuedTime: DateTimeOffset.MinValue, sequenceNumber: 4294967296, systemProperties: new Dictionary<string, object>()
             {
                 {"iothub-connection-device-id", "testDeviceId"},
                 {"iothub-enqueuedtime", DateTime.MinValue}
             });
-        }
 
         [Test]
         public void GetBindingData_MultipleDispatch_ReturnsExpectedValue()
         {
             var events = new EventData[3]
             {
-                GetSystemProperties(Encoding.UTF8.GetBytes("Event 1"), $"pk0"),
-                GetSystemProperties(Encoding.UTF8.GetBytes("Event 2"), $"pk1"),
-                GetSystemProperties(Encoding.UTF8.GetBytes("Event 3"),$"pk2"),
+                GetSystemProperties(Encoding.UTF8.GetBytes("Event 1"), "pk0"),
+                GetSystemProperties(Encoding.UTF8.GetBytes("Event 2"), "pk1"),
+                GetSystemProperties(Encoding.UTF8.GetBytes("Event 3"), "pk2"),
             };
 
             var input = new EventHubTriggerInput
@@ -127,13 +133,14 @@ namespace Microsoft.Azure.WebJobs.EventHubs.UnitTests
             var strategy = new EventHubTriggerBindingStrategy();
             var bindingData = strategy.GetBindingData(input);
 
-            Assert.AreEqual(8, bindingData.Count);
+            Assert.AreEqual(9, bindingData.Count);
             Assert.AreSame(input.ProcessorPartition.PartitionContext, bindingData["TriggerPartitionContext"]);
             Assert.AreSame(input.ProcessorPartition.PartitionContext, bindingData["PartitionContext"]);
 
             // verify an array was created for each binding data type
             Assert.AreEqual(events.Length, ((string[])bindingData["PartitionKeyArray"]).Length);
             Assert.AreEqual(events.Length, ((string[])bindingData["OffsetArray"]).Length);
+            Assert.AreEqual(events.Length, ((string[])bindingData["OffsetStringArray"]).Length);
             Assert.AreEqual(events.Length, ((long[])bindingData["SequenceNumberArray"]).Length);
             Assert.AreEqual(events.Length, ((DateTime[])bindingData["EnqueuedTimeUtcArray"]).Length);
             Assert.AreEqual(events.Length, ((IDictionary<string, object>[])bindingData["PropertiesArray"]).Length);
@@ -193,9 +200,12 @@ namespace Microsoft.Azure.WebJobs.EventHubs.UnitTests
                 {
                     c.AddInMemoryCollection(new Dictionary<string, string>
                     {
+                        { "AzureWebJobs:extensions:EventHubs:TargetUnprocessedEventThreshold", "300"},
                         { "AzureWebJobs:extensions:EventHubs:EventProcessorOptions:MaxBatchSize", "100" },
                         { "AzureWebJobs:extensions:EventHubs:EventProcessorOptions:PrefetchCount", "200" },
                         { "AzureWebJobs:extensions:EventHubs:BatchCheckpointFrequency", "5" },
+                        { "AzureWebJobs:extensions:EventHubs:MinEventBatchSize", "90" },
+                        { "AzureWebJobs:extensions:EventHubs:MaxWaitTime", "00:00:01" },
                         { "AzureWebJobs:extensions:EventHubs:PartitionManagerOptions:LeaseDuration", "00:00:31" },
                         { "AzureWebJobs:extensions:EventHubs:PartitionManagerOptions:RenewInterval", "00:00:21" },
                         { "AzureWebJobs:extensions:EventHubs:InitialOffsetOptions:Type", "FromEnd" },
@@ -208,9 +218,12 @@ namespace Microsoft.Azure.WebJobs.EventHubs.UnitTests
             var options = host.Services.GetService<IOptions<EventHubOptions>>().Value;
 
             var eventProcessorOptions = options.EventProcessorOptions;
+            Assert.AreEqual(300, options.TargetUnprocessedEventThreshold);
             Assert.AreEqual(200, eventProcessorOptions.PrefetchCount);
             Assert.AreEqual(5, options.BatchCheckpointFrequency);
             Assert.AreEqual(100, options.MaxEventBatchSize);
+            Assert.AreEqual(90, options.MinEventBatchSize);
+            Assert.AreEqual(TimeSpan.FromSeconds(1), options.MaxWaitTime);
             Assert.AreEqual(31, options.EventProcessorOptions.PartitionOwnershipExpirationInterval.TotalSeconds);
             Assert.AreEqual(21, options.EventProcessorOptions.LoadBalancingUpdateInterval.TotalSeconds);
             Assert.AreEqual(EventPosition.Latest, eventProcessorOptions.DefaultStartingPosition);
@@ -308,7 +321,7 @@ namespace Microsoft.Azure.WebJobs.EventHubs.UnitTests
         }
 
         internal static EventProcessorHostPartition GetPartitionContext(string partitionId = "0", string eventHubPath = "path",
-            string consumerGroupName = "group", string owner = null)
+            string consumerGroupName = "group")
         {
             var processor = new EventProcessorHost(consumerGroupName,
                 "Endpoint=sb://test.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=abc123=",

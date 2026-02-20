@@ -5,47 +5,226 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class NextHopResult
+    public partial class NextHopResult : IUtf8JsonSerializable, IJsonModel<NextHopResult>
     {
-        internal static NextHopResult DeserializeNextHopResult(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<NextHopResult>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<NextHopResult>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<NextHopType> nextHopType = default;
-            Optional<string> nextHopIPAddress = default;
-            Optional<ResourceIdentifier> routeTableId = default;
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NextHopResult>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NextHopResult)} does not support writing '{format}' format.");
+            }
+
+            if (Optional.IsDefined(NextHopType))
+            {
+                writer.WritePropertyName("nextHopType"u8);
+                writer.WriteStringValue(NextHopType.Value.ToString());
+            }
+            if (Optional.IsDefined(NextHopIPAddress))
+            {
+                writer.WritePropertyName("nextHopIpAddress"u8);
+                writer.WriteStringValue(NextHopIPAddress);
+            }
+            if (Optional.IsDefined(RouteTableId))
+            {
+                writer.WritePropertyName("routeTableId"u8);
+                writer.WriteStringValue(RouteTableId);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        NextHopResult IJsonModel<NextHopResult>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NextHopResult>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NextHopResult)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeNextHopResult(document.RootElement, options);
+        }
+
+        internal static NextHopResult DeserializeNextHopResult(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            NextHopType? nextHopType = default;
+            string nextHopIPAddress = default;
+            ResourceIdentifier routeTableId = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("nextHopType"))
+                if (property.NameEquals("nextHopType"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     nextHopType = new NextHopType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("nextHopIpAddress"))
+                if (property.NameEquals("nextHopIpAddress"u8))
                 {
                     nextHopIPAddress = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("routeTableId"))
+                if (property.NameEquals("routeTableId"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     routeTableId = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new NextHopResult(Optional.ToNullable(nextHopType), nextHopIPAddress.Value, routeTableId.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new NextHopResult(nextHopType, nextHopIPAddress, routeTableId, serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(NextHopType), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  nextHopType: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(NextHopType))
+                {
+                    builder.Append("  nextHopType: ");
+                    builder.AppendLine($"'{NextHopType.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(NextHopIPAddress), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  nextHopIpAddress: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(NextHopIPAddress))
+                {
+                    builder.Append("  nextHopIpAddress: ");
+                    if (NextHopIPAddress.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{NextHopIPAddress}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{NextHopIPAddress}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RouteTableId), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  routeTableId: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(RouteTableId))
+                {
+                    builder.Append("  routeTableId: ");
+                    builder.AppendLine($"'{RouteTableId.ToString()}'");
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<NextHopResult>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NextHopResult>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(NextHopResult)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        NextHopResult IPersistableModel<NextHopResult>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NextHopResult>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeNextHopResult(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(NextHopResult)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<NextHopResult>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

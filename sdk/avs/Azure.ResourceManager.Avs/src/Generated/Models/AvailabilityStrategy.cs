@@ -7,45 +7,65 @@
 
 using System;
 using System.ComponentModel;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> The availability strategy for the private cloud. </summary>
+    /// <summary> Whether the private clouds is available in a single zone or two zones. </summary>
     public readonly partial struct AvailabilityStrategy : IEquatable<AvailabilityStrategy>
     {
         private readonly string _value;
+        /// <summary> in single zone. </summary>
+        private const string SingleZoneValue = "SingleZone";
+        /// <summary> in two zones. </summary>
+        private const string DualZoneValue = "DualZone";
 
         /// <summary> Initializes a new instance of <see cref="AvailabilityStrategy"/>. </summary>
+        /// <param name="value"> The value. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
         public AvailabilityStrategy(string value)
         {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
+            Argument.AssertNotNull(value, nameof(value));
+
+            _value = value;
         }
 
-        private const string SingleZoneValue = "SingleZone";
-        private const string DualZoneValue = "DualZone";
-
-        /// <summary> SingleZone. </summary>
+        /// <summary> in single zone. </summary>
         public static AvailabilityStrategy SingleZone { get; } = new AvailabilityStrategy(SingleZoneValue);
-        /// <summary> DualZone. </summary>
+
+        /// <summary> in two zones. </summary>
         public static AvailabilityStrategy DualZone { get; } = new AvailabilityStrategy(DualZoneValue);
+
         /// <summary> Determines if two <see cref="AvailabilityStrategy"/> values are the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator ==(AvailabilityStrategy left, AvailabilityStrategy right) => left.Equals(right);
+
         /// <summary> Determines if two <see cref="AvailabilityStrategy"/> values are not the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator !=(AvailabilityStrategy left, AvailabilityStrategy right) => !left.Equals(right);
+
         /// <summary> Converts a string to a <see cref="AvailabilityStrategy"/>. </summary>
+        /// <param name="value"> The value. </param>
         public static implicit operator AvailabilityStrategy(string value) => new AvailabilityStrategy(value);
 
-        /// <inheritdoc />
+        /// <summary> Converts a string to a <see cref="AvailabilityStrategy"/>. </summary>
+        /// <param name="value"> The value. </param>
+        public static implicit operator AvailabilityStrategy?(string value) => value == null ? null : new AvailabilityStrategy(value);
+
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj) => obj is AvailabilityStrategy other && Equals(other);
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public bool Equals(AvailabilityStrategy other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-        /// <inheritdoc />
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
+
+        /// <inheritdoc/>
         public override string ToString() => _value;
     }
 }

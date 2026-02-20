@@ -2,9 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Text.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Azure.Core;
 
 namespace Azure.AI.Personalizer
@@ -24,7 +25,7 @@ namespace Azure.AI.Personalizer
                 {
                      new JsonBinaryDataConverter(),
                 },
-                IgnoreNullValues = true
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
             return JsonSerializer.Serialize(decisionContext, jsonSerializerOptions);
         }

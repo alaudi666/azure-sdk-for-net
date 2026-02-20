@@ -7,42 +7,51 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Dynatrace;
 
 namespace Azure.ResourceManager.Dynatrace.Models
 {
     /// <summary> The details of a Dynatrace single sign-on. </summary>
     public partial class DynatraceSingleSignOnProperties
     {
-        /// <summary> Initializes a new instance of DynatraceSingleSignOnProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DynatraceSingleSignOnProperties"/>. </summary>
         public DynatraceSingleSignOnProperties()
         {
             AadDomains = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of DynatraceSingleSignOnProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynatraceSingleSignOnProperties"/>. </summary>
         /// <param name="singleSignOnState"> State of Single Sign On. </param>
         /// <param name="enterpriseAppId"> Version of the Dynatrace agent installed on the VM. </param>
         /// <param name="singleSignOnUri"> The login URL specific to this Dynatrace Environment. </param>
         /// <param name="aadDomains"> array of Aad(azure active directory) domains. </param>
         /// <param name="provisioningState"> Provisioning state of the resource. </param>
-        internal DynatraceSingleSignOnProperties(DynatraceSingleSignOnState? singleSignOnState, Guid? enterpriseAppId, Uri singleSignOnUri, IList<string> aadDomains, DynatraceProvisioningState? provisioningState)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DynatraceSingleSignOnProperties(DynatraceSingleSignOnState? singleSignOnState, Guid? enterpriseAppId, Uri singleSignOnUri, IList<string> aadDomains, DynatraceProvisioningState? provisioningState, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             SingleSignOnState = singleSignOnState;
             EnterpriseAppId = enterpriseAppId;
             SingleSignOnUri = singleSignOnUri;
             AadDomains = aadDomains;
             ProvisioningState = provisioningState;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> State of Single Sign On. </summary>
         public DynatraceSingleSignOnState? SingleSignOnState { get; set; }
+
         /// <summary> Version of the Dynatrace agent installed on the VM. </summary>
         public Guid? EnterpriseAppId { get; set; }
+
         /// <summary> The login URL specific to this Dynatrace Environment. </summary>
         public Uri SingleSignOnUri { get; set; }
+
         /// <summary> array of Aad(azure active directory) domains. </summary>
-        public IList<string> AadDomains { get; }
+        public IList<string> AadDomains { get; } = new ChangeTrackingList<string>();
+
         /// <summary> Provisioning state of the resource. </summary>
         public DynatraceProvisioningState? ProvisioningState { get; }
     }

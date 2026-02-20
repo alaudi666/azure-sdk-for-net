@@ -5,63 +5,173 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Net;
 using System.Text.Json;
 using Azure.Core;
+using Azure.ResourceManager.Nginx;
 
 namespace Azure.ResourceManager.Nginx.Models
 {
-    public partial class NginxPrivateIPAddress : IUtf8JsonSerializable
+    /// <summary> Nginx Private IP Address. </summary>
+    public partial class NginxPrivateIPAddress : IJsonModel<NginxPrivateIPAddress>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual NginxPrivateIPAddress PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<NginxPrivateIPAddress>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeNginxPrivateIPAddress(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(NginxPrivateIPAddress)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<NginxPrivateIPAddress>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<NginxPrivateIPAddress>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NginxPrivateIPAddress)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(PrivateIPAddress))
             {
-                writer.WritePropertyName("privateIPAddress");
-                writer.WriteStringValue(PrivateIPAddress);
+                writer.WritePropertyName("privateIPAddress"u8);
+                writer.WriteStringValue(PrivateIPAddress.ToString());
             }
             if (Optional.IsDefined(PrivateIPAllocationMethod))
             {
-                writer.WritePropertyName("privateIPAllocationMethod");
+                writer.WritePropertyName("privateIPAllocationMethod"u8);
                 writer.WriteStringValue(PrivateIPAllocationMethod.Value.ToString());
             }
             if (Optional.IsDefined(SubnetId))
             {
-                writer.WritePropertyName("subnetId");
+                writer.WritePropertyName("subnetId"u8);
                 writer.WriteStringValue(SubnetId);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static NginxPrivateIPAddress DeserializeNginxPrivateIPAddress(JsonElement element)
-        {
-            Optional<string> privateIPAddress = default;
-            Optional<NginxPrivateIPAllocationMethod> privateIPAllocationMethod = default;
-            Optional<string> subnetId = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("privateIPAddress"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    privateIPAddress = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("privateIPAllocationMethod"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    privateIPAllocationMethod = new NginxPrivateIPAllocationMethod(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("subnetId"))
-                {
-                    subnetId = property.Value.GetString();
-                    continue;
+#endif
                 }
             }
-            return new NginxPrivateIPAddress(privateIPAddress.Value, Optional.ToNullable(privateIPAllocationMethod), subnetId.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        NginxPrivateIPAddress IJsonModel<NginxPrivateIPAddress>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual NginxPrivateIPAddress JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<NginxPrivateIPAddress>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NginxPrivateIPAddress)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeNginxPrivateIPAddress(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static NginxPrivateIPAddress DeserializeNginxPrivateIPAddress(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IPAddress privateIPAddress = default;
+            NginxPrivateIPAllocationMethod? privateIPAllocationMethod = default;
+            ResourceIdentifier subnetId = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("privateIPAddress"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    privateIPAddress = IPAddress.Parse(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("privateIPAllocationMethod"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    privateIPAllocationMethod = new NginxPrivateIPAllocationMethod(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("subnetId"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    subnetId = new ResourceIdentifier(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new NginxPrivateIPAddress(privateIPAddress, privateIPAllocationMethod, subnetId, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<NginxPrivateIPAddress>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<NginxPrivateIPAddress>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNginxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(NginxPrivateIPAddress)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        NginxPrivateIPAddress IPersistableModel<NginxPrivateIPAddress>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<NginxPrivateIPAddress>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

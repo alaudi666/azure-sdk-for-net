@@ -5,23 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> Parameters for creating or updating a vault. </summary>
     public partial class KeyVaultPatch
     {
-        /// <summary> Initializes a new instance of KeyVaultPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="KeyVaultPatch"/>. </summary>
         public KeyVaultPatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="KeyVaultPatch"/>. </summary>
+        /// <param name="tags"> The tags that will be assigned to the key vault. </param>
+        /// <param name="properties"> Properties of the vault. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal KeyVaultPatch(IDictionary<string, string> tags, KeyVaultPatchProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Tags = tags;
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> The tags that will be assigned to the key vault. </summary>
+        [WirePath("tags")]
         public IDictionary<string, string> Tags { get; }
+
         /// <summary> Properties of the vault. </summary>
+        [WirePath("properties")]
         public KeyVaultPatchProperties Properties { get; set; }
     }
 }

@@ -1,6 +1,152 @@
 # Release History
 
-## 12.12.0-beta.1 (Unreleased)
+## 12.25.0-beta.2 (Unreleased)
+
+### Features Added
+
+### Breaking Changes
+
+### Bugs Fixed
+
+### Other Changes
+
+## 12.25.0-beta.1 (2026-01-20)
+
+### Features Added
+- Added support for service version 2026-04-06.
+
+## 12.24.0 (2026-01-08)
+
+### Features Added
+- Includes all features from 12.24.0-beta.1
+
+## 12.24.0-beta.1 (2025-11-17)
+
+### Features Added
+- Added support for service version 2026-02-06.
+
+## 12.23.0 (2025-10-13)
+
+### Features Added
+- Includes all features from 12.23.0-beta.1
+
+## 12.22.0 (2025-07-14)
+
+### Features Added
+- Includes all features from 12.22.0-beta.1
+
+## 12.23.0-beta.1 (2025-06-09)
+
+### Features Added
+- Added support for service version 2025-11-05.
+- Added more useful error message when the SDK encounters an x-ms-version mis-match issue.
+
+## 12.22.0-beta.1 (2025-05-06)
+
+### Features Added
+- Added support for service version 2025-07-05.
+
+## 12.21.0 (2025-03-11)
+
+### Features Added
+- Includes all features from 12.21.0-beta.1
+
+### Bugs Fixed
+- Fixed an issue where batch subrequests would not authenticate properly if using `TokenCredential` authentication when the `BlobBatchClient` was created from `BlobContianerClient.GetBlobBatchClient`.
+
+## 12.21.0-beta.1 (2025-02-11)
+
+### Features Added
+- Added support for service version 2025-05-05.
+
+## 12.20.0 (2024-11-12)
+
+### Features Added
+- Includes all features from 12.20.0-beta.1 and 12.20.0-beta.2.
+
+## 12.20.0-beta.2 (2024-10-10)
+
+### Other Changes
+- Upgraded `System.Text.Json` package dependency to 6.0.10 for security fix.
+
+## 12.19.1 (2024-10-10)
+
+### Other Changes
+- Upgraded `System.Text.Json` package dependency to 6.0.10 for security fix.
+
+## 12.20.0-beta.1 (2024-10-08)
+
+### Features Added
+- Added support for service version 2025-01-05.
+
+## 12.19.0 (2024-09-18)
+
+### Features Added
+- Includes all features from 12.19.0-beta.1.
+
+## 12.19.0-beta.1 (2024-08-06)
+
+### Features Added
+- Added support for service version 2024-11-04.
+
+## 12.18.1 (2024-07-25)
+
+### Bugs Fixed
+- Fixed \[BUG\] Azure Blob Storage Client SDK No Longer Supports Globalization Invariant Mode for Account Key Authentication #45052
+
+## 12.18.0 (2024-07-16)
+
+### Features Added
+- Includes all features from 12.18.0-beta.1.
+
+## 12.18.0-beta.1 (2024-06-11)
+- Added support for service version 2024-08-04.
+
+## 12.17.0 (2024-05-15)
+- Includes all features from 12.17.0-beta.1 and 12.17.0-beta.2.
+
+## 12.17.0-beta.2 (2024-04-15)
+- Added support for service version 2023-05-04.
+- Added support for deleting individual blob versions.
+
+## 12.17.0-beta.1 (2023-12-05)
+- Added support for service version 2024-02-04.
+
+## 12.16.1 (2023-11-13)
+- Distributed tracing with `ActivitySource` is stable and no longer requires the [Experimental feature-flag](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/Diagnostics.md).
+
+## 12.16.0 (2023-11-06)
+- Includes all features from 12.16.0-beta.1.
+
+## 12.16.0-beta.1 (2023-10-16)
+- Added support for service version 2023-11-03.
+
+## 12.15.0 (2023-09-12)
+- Includes all features from 12.15.0-beta.1.
+
+## 12.15.0-beta.1 (2023-08-08)
+- Added support for service version 2023-05-03 and 2023-08-03.
+
+## 12.14.0 (2023-07-11)
+- Includes all features from 12.14.0-beta.1.
+
+## 12.14.0-beta.1 (2023-05-30)
+- Added support for service version 2023-01-03.
+
+## 12.13.0 (2023-04-11)
+- Includes all features from 12.13.0-beta.1.
+
+## 12.13.0-beta.1 (2023-03-28)
+- Added support for service version 2022-11-02.
+- `BlobBatch` is made explicitly resilient to multiple dispose
+
+## 12.12.1 (2023-03-24)
+- Bumped Azure.Core dependency from 1.28 and 1.30, fixing issue with headers being non-resilient to double dispose of the request.
+
+## 12.12.0 (2023-02-21)
+- Includes all features from 12.12.0-beta.1.
+
+## 12.12.0-beta.1 (2023-02-07)
 - Added support for service version 2021-12-02.
 
 ## 12.11.0 (2022-10-12)

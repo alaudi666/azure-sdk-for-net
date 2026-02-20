@@ -5,17 +5,35 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.Dynatrace;
+
 namespace Azure.ResourceManager.Dynatrace.Models
 {
     /// <summary> Request for getting sso details for a user. </summary>
     public partial class DynatraceSsoDetailsContent
     {
-        /// <summary> Initializes a new instance of DynatraceSsoDetailsContent. </summary>
-        public DynatraceSsoDetailsContent()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DynatraceSsoDetailsContent"/>. </summary>
+        /// <param name="userPrincipal"> user principal id of the user. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="userPrincipal"/> is null. </exception>
+        public DynatraceSsoDetailsContent(string userPrincipal)
         {
+            Argument.AssertNotNull(userPrincipal, nameof(userPrincipal));
+
+            UserPrincipal = userPrincipal;
         }
 
-        /// <summary> user principal id of the user. </summary>
-        public string UserPrincipal { get; set; }
+        /// <summary> Initializes a new instance of <see cref="DynatraceSsoDetailsContent"/>. </summary>
+        /// <param name="userPrincipal"> user principal id of the user. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DynatraceSsoDetailsContent(string userPrincipal, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            UserPrincipal = userPrincipal;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
     }
 }

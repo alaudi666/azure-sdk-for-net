@@ -1,13 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 using Azure.Core;
-using Azure.Core.TestFramework;
-using Microsoft.Identity.Client;
 using NUnit.Framework;
 
 namespace Azure.Identity.Tests
@@ -42,6 +37,7 @@ namespace Azure.Identity.Tests
             Assert.IsNotNull(token.Token);
         }
 
+        [Ignore("Skipped: tenant requires MFA; test no longer valid for TME tenant.")]
         [Test]
         public async Task AuthenticateNoContext()
         {

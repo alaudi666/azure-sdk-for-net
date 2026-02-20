@@ -5,32 +5,40 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> List of unencrypted credentials for accessing device. </summary>
     internal partial class UnencryptedCredentialsList
     {
-        /// <summary> Initializes a new instance of UnencryptedCredentialsList. </summary>
-        internal UnencryptedCredentialsList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="UnencryptedCredentialsList"/>. </summary>
+        /// <param name="value"> The UnencryptedCredentials items on this page. </param>
+        internal UnencryptedCredentialsList(IEnumerable<UnencryptedCredentials> value)
         {
-            Value = new ChangeTrackingList<UnencryptedCredentials>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of UnencryptedCredentialsList. </summary>
-        /// <param name="value"> List of unencrypted credentials. </param>
-        /// <param name="nextLink"> Link for the next set of unencrypted credentials. </param>
-        internal UnencryptedCredentialsList(IReadOnlyList<UnencryptedCredentials> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="UnencryptedCredentialsList"/>. </summary>
+        /// <param name="value"> The UnencryptedCredentials items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal UnencryptedCredentialsList(IList<UnencryptedCredentials> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of unencrypted credentials. </summary>
-        public IReadOnlyList<UnencryptedCredentials> Value { get; }
-        /// <summary> Link for the next set of unencrypted credentials. </summary>
-        public string NextLink { get; }
+        /// <summary> The UnencryptedCredentials items on this page. </summary>
+        public IList<UnencryptedCredentials> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

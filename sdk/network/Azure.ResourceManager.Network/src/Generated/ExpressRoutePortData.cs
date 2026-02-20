@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 using Azure.ResourceManager.Network.Models;
@@ -15,22 +14,26 @@ using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the ExpressRoutePort data model. </summary>
+    /// <summary>
+    /// A class representing the ExpressRoutePort data model.
+    /// ExpressRoutePort resource definition.
+    /// </summary>
     public partial class ExpressRoutePortData : NetworkTrackedResourceData
     {
-        /// <summary> Initializes a new instance of ExpressRoutePortData. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExpressRoutePortData"/>. </summary>
         public ExpressRoutePortData()
         {
             Links = new ChangeTrackingList<ExpressRouteLinkData>();
             Circuits = new ChangeTrackingList<WritableSubResource>();
         }
 
-        /// <summary> Initializes a new instance of ExpressRoutePortData. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExpressRoutePortData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
         /// <param name="location"> Resource location. </param>
         /// <param name="tags"> Resource tags. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="identity"> The identity of ExpressRoutePort, if configured. </param>
         /// <param name="peeringLocation"> The name of the peering location that the ExpressRoutePort is mapped to physically. </param>
@@ -44,7 +47,8 @@ namespace Azure.ResourceManager.Network
         /// <param name="circuits"> Reference the ExpressRoute circuit(s) that are provisioned on this ExpressRoutePort resource. </param>
         /// <param name="provisioningState"> The provisioning state of the express route port resource. </param>
         /// <param name="resourceGuid"> The resource GUID property of the express route port resource. </param>
-        internal ExpressRoutePortData(ResourceIdentifier id, string name, ResourceType? resourceType, AzureLocation? location, IDictionary<string, string> tags, ETag? etag, ManagedServiceIdentity identity, string peeringLocation, int? bandwidthInGbps, float? provisionedBandwidthInGbps, string mtu, ExpressRoutePortsEncapsulation? encapsulation, string etherType, string allocationDate, IList<ExpressRouteLinkData> links, IReadOnlyList<WritableSubResource> circuits, NetworkProvisioningState? provisioningState, Guid? resourceGuid) : base(id, name, resourceType, location, tags)
+        /// <param name="billingType"> The billing type of the ExpressRoutePort resource. </param>
+        internal ExpressRoutePortData(ResourceIdentifier id, string name, ResourceType? resourceType, AzureLocation? location, IDictionary<string, string> tags, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, ManagedServiceIdentity identity, string peeringLocation, int? bandwidthInGbps, float? provisionedBandwidthInGbps, string mtu, ExpressRoutePortsEncapsulation? encapsulation, string etherType, string allocationDate, IList<ExpressRouteLinkData> links, IReadOnlyList<WritableSubResource> circuits, NetworkProvisioningState? provisioningState, Guid? resourceGuid, ExpressRoutePortsBillingType? billingType) : base(id, name, resourceType, location, tags, serializedAdditionalRawData)
         {
             ETag = etag;
             Identity = identity;
@@ -59,33 +63,50 @@ namespace Azure.ResourceManager.Network
             Circuits = circuits;
             ProvisioningState = provisioningState;
             ResourceGuid = resourceGuid;
+            BillingType = billingType;
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> The identity of ExpressRoutePort, if configured. </summary>
+        [WirePath("identity")]
         public ManagedServiceIdentity Identity { get; set; }
         /// <summary> The name of the peering location that the ExpressRoutePort is mapped to physically. </summary>
+        [WirePath("properties.peeringLocation")]
         public string PeeringLocation { get; set; }
         /// <summary> Bandwidth of procured ports in Gbps. </summary>
+        [WirePath("properties.bandwidthInGbps")]
         public int? BandwidthInGbps { get; set; }
         /// <summary> Aggregate Gbps of associated circuit bandwidths. </summary>
+        [WirePath("properties.provisionedBandwidthInGbps")]
         public float? ProvisionedBandwidthInGbps { get; }
         /// <summary> Maximum transmission unit of the physical port pair(s). </summary>
+        [WirePath("properties.mtu")]
         public string Mtu { get; }
         /// <summary> Encapsulation method on physical ports. </summary>
+        [WirePath("properties.encapsulation")]
         public ExpressRoutePortsEncapsulation? Encapsulation { get; set; }
         /// <summary> Ether type of the physical port. </summary>
+        [WirePath("properties.etherType")]
         public string EtherType { get; }
         /// <summary> Date of the physical port allocation to be used in Letter of Authorization. </summary>
+        [WirePath("properties.allocationDate")]
         public string AllocationDate { get; }
         /// <summary> The set of physical links of the ExpressRoutePort resource. </summary>
+        [WirePath("properties.links")]
         public IList<ExpressRouteLinkData> Links { get; }
         /// <summary> Reference the ExpressRoute circuit(s) that are provisioned on this ExpressRoutePort resource. </summary>
+        [WirePath("properties.circuits")]
         public IReadOnlyList<WritableSubResource> Circuits { get; }
         /// <summary> The provisioning state of the express route port resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
         /// <summary> The resource GUID property of the express route port resource. </summary>
+        [WirePath("properties.resourceGuid")]
         public Guid? ResourceGuid { get; }
+        /// <summary> The billing type of the ExpressRoutePort resource. </summary>
+        [WirePath("properties.billingType")]
+        public ExpressRoutePortsBillingType? BillingType { get; set; }
     }
 }

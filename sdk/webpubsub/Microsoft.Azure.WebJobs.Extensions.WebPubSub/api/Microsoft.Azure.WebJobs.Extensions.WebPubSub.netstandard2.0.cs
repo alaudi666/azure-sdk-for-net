@@ -133,7 +133,6 @@ namespace Microsoft.Azure.WebJobs.Extensions.WebPubSub
     public partial class WebPubSubAttribute : System.Attribute
     {
         public WebPubSubAttribute() { }
-        [Microsoft.Azure.WebJobs.Description.ConnectionStringAttribute]
         public string Connection { get { throw null; } set { } }
         [Microsoft.Azure.WebJobs.Description.AutoResolveAttribute]
         public string Hub { get { throw null; } set { } }
@@ -153,7 +152,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.WebPubSub
     public partial class WebPubSubConnectionAttribute : System.Attribute
     {
         public WebPubSubConnectionAttribute() { }
-        [Microsoft.Azure.WebJobs.Description.ConnectionStringAttribute]
+        public Azure.Messaging.WebPubSub.WebPubSubClientProtocol ClientProtocol { get { throw null; } set { } }
         public string Connection { get { throw null; } set { } }
         [Microsoft.Azure.WebJobs.Description.AutoResolveAttribute]
         public string Hub { get { throw null; } set { } }
@@ -187,8 +186,13 @@ namespace Microsoft.Azure.WebJobs.Extensions.WebPubSub
         public WebPubSubFunctionsOptions() { }
         public string ConnectionString { get { throw null; } set { } }
         public string Hub { get { throw null; } set { } }
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         string Microsoft.Azure.WebJobs.Hosting.IOptionsFormatter.Format() { throw null; }
+    }
+    public enum WebPubSubTriggerAcceptedClientProtocols
+    {
+        All = 0,
+        WebPubSub = 1,
+        Mqtt = 2,
     }
     [Microsoft.Azure.WebJobs.Description.BindingAttribute(TriggerHandlesReturnValue=true)]
     [System.AttributeUsageAttribute(System.AttributeTargets.Parameter)]
@@ -198,6 +202,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.WebPubSub
         public WebPubSubTriggerAttribute(Microsoft.Azure.WebPubSub.Common.WebPubSubEventType eventType, string eventName, params string[] connections) { }
         public WebPubSubTriggerAttribute(string hub, Microsoft.Azure.WebPubSub.Common.WebPubSubEventType eventType, string eventName) { }
         public WebPubSubTriggerAttribute(string hub, Microsoft.Azure.WebPubSub.Common.WebPubSubEventType eventType, string eventName, params string[] connections) { }
+        public Microsoft.Azure.WebJobs.Extensions.WebPubSub.WebPubSubTriggerAcceptedClientProtocols ClientProtocols { get { throw null; } set { } }
         public string[] Connections { get { throw null; } }
         [System.ComponentModel.DataAnnotations.RequiredAttribute]
         public string EventName { get { throw null; } }

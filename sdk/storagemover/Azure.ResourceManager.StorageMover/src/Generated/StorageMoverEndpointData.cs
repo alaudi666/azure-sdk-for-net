@@ -6,21 +6,21 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 using Azure.ResourceManager.StorageMover.Models;
 
 namespace Azure.ResourceManager.StorageMover
 {
-    /// <summary> A class representing the StorageMoverEndpoint data model. </summary>
+    /// <summary> The Endpoint resource, which contains information about file sources and targets. </summary>
     public partial class StorageMoverEndpointData : ResourceData
     {
-        /// <summary> Initializes a new instance of StorageMoverEndpointData. </summary>
-        /// <param name="properties">
-        /// The resource specific properties for the Storage Mover resource.
-        /// Please note <see cref="EndpointBaseProperties"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AzureStorageBlobContainerEndpointProperties"/> and <see cref="NfsMountEndpointProperties"/>.
-        /// </param>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="StorageMoverEndpointData"/>. </summary>
+        /// <param name="properties"> The resource specific properties for the Storage Mover resource. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="properties"/> is null. </exception>
         public StorageMoverEndpointData(EndpointBaseProperties properties)
         {
@@ -29,26 +29,25 @@ namespace Azure.ResourceManager.StorageMover
             Properties = properties;
         }
 
-        /// <summary> Initializes a new instance of StorageMoverEndpointData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="properties">
-        /// The resource specific properties for the Storage Mover resource.
-        /// Please note <see cref="EndpointBaseProperties"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AzureStorageBlobContainerEndpointProperties"/> and <see cref="NfsMountEndpointProperties"/>.
-        /// </param>
-        internal StorageMoverEndpointData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, EndpointBaseProperties properties) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="StorageMoverEndpointData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> The resource specific properties for the Storage Mover resource. </param>
+        /// <param name="identity"> The managed service identity of the resource. This property is only available on the latest version. </param>
+        internal StorageMoverEndpointData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, EndpointBaseProperties properties, ManagedServiceIdentity identity) : base(id, name, resourceType, systemData)
         {
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
             Properties = properties;
+            Identity = identity;
         }
 
-        /// <summary>
-        /// The resource specific properties for the Storage Mover resource.
-        /// Please note <see cref="EndpointBaseProperties"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AzureStorageBlobContainerEndpointProperties"/> and <see cref="NfsMountEndpointProperties"/>.
-        /// </summary>
+        /// <summary> The resource specific properties for the Storage Mover resource. </summary>
         public EndpointBaseProperties Properties { get; set; }
+
+        /// <summary> The managed service identity of the resource. This property is only available on the latest version. </summary>
+        public ManagedServiceIdentity Identity { get; set; }
     }
 }

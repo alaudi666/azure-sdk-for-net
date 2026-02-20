@@ -1,12 +1,10 @@
 namespace Microsoft.Azure.WebJobs.Extensions.SignalRService
 {
-    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
     public static partial class Category
     {
         public const string Connections = "connections";
         public const string Messages = "messages";
     }
-    [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
     public static partial class Event
     {
         public const string Connected = "connected";
@@ -185,7 +183,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.SignalRService
     }
     public static partial class SignalRFunctionsHostBuilderExtensions
     {
-        public static Microsoft.Azure.Functions.Extensions.DependencyInjection.IFunctionsHostBuilder AddDefaultAuth(this Microsoft.Azure.Functions.Extensions.DependencyInjection.IFunctionsHostBuilder builder, System.Action<Microsoft.IdentityModel.Tokens.TokenValidationParameters> configureTokenValidationParameters, System.Func<Microsoft.Azure.WebJobs.Extensions.SignalRService.SecurityTokenResult, Microsoft.AspNetCore.Http.HttpRequest, Microsoft.Azure.WebJobs.Extensions.SignalRService.SignalRConnectionDetail, Microsoft.Azure.WebJobs.Extensions.SignalRService.SignalRConnectionDetail> configurer = null) { throw null; }
+        public static Microsoft.Extensions.DependencyInjection.IServiceCollection AddDefaultAuth(this Microsoft.Extensions.DependencyInjection.IServiceCollection services, System.Action<Microsoft.IdentityModel.Tokens.TokenValidationParameters> configureTokenValidationParameters, System.Func<Microsoft.Azure.WebJobs.Extensions.SignalRService.SecurityTokenResult, Microsoft.AspNetCore.Http.HttpRequest, Microsoft.Azure.WebJobs.Extensions.SignalRService.SignalRConnectionDetail, Microsoft.Azure.WebJobs.Extensions.SignalRService.SignalRConnectionDetail> configurer = null) { throw null; }
     }
     [Newtonsoft.Json.JsonObjectAttribute]
     public partial class SignalRGroupAction
@@ -236,7 +234,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.SignalRService
     public partial class SignalROptions : Microsoft.Azure.WebJobs.Hosting.IOptionsFormatter
     {
         public SignalROptions() { }
-        public Azure.Core.Serialization.ObjectSerializer JsonObjectSerializer { get { throw null; } set { } }
+        public System.TimeSpan? HttpClientTimeout { get { throw null; } set { } }
+        public Azure.Core.Serialization.ObjectSerializer? JsonObjectSerializer { get { throw null; } set { } }
+        public Microsoft.AspNetCore.SignalR.Protocol.IHubProtocol? MessagePackHubProtocol { get { throw null; } set { } }
+        public Microsoft.Azure.SignalR.Management.ServiceManagerRetryOptions? RetryOptions { get { throw null; } set { } }
         public System.Collections.Generic.IList<Microsoft.Azure.SignalR.ServiceEndpoint> ServiceEndpoints { get { throw null; } }
         public Microsoft.Azure.SignalR.Management.ServiceTransportType ServiceTransportType { get { throw null; } set { } }
         string Microsoft.Azure.WebJobs.Hosting.IOptionsFormatter.Format() { throw null; }
@@ -251,8 +252,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.SignalRService
     {
         public SignalRParameterAttribute() { }
     }
-    [Microsoft.Azure.WebJobs.Description.BindingAttribute]
-    [System.AttributeUsageAttribute(System.AttributeTargets.Parameter | System.AttributeTargets.ReturnValue)]
+    [Microsoft.Azure.WebJobs.Description.BindingAttribute(TriggerHandlesReturnValue=true)]
+    [System.AttributeUsageAttribute(System.AttributeTargets.Parameter)]
     public partial class SignalRTriggerAttribute : System.Attribute
     {
         public SignalRTriggerAttribute() { }

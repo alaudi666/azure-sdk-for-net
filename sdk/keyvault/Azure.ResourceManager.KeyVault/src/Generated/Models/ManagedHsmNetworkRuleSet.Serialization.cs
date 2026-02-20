@@ -5,110 +5,237 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
-    public partial class ManagedHsmNetworkRuleSet : IUtf8JsonSerializable
+    /// <summary> A set of rules governing the network accessibility of a managed hsm pool. </summary>
+    public partial class ManagedHsmNetworkRuleSet : IJsonModel<ManagedHsmNetworkRuleSet>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ManagedHsmNetworkRuleSet PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedHsmNetworkRuleSet>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeManagedHsmNetworkRuleSet(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ManagedHsmNetworkRuleSet)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ManagedHsmNetworkRuleSet>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedHsmNetworkRuleSet>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ManagedHsmNetworkRuleSet)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(Bypass))
             {
-                writer.WritePropertyName("bypass");
+                writer.WritePropertyName("bypass"u8);
                 writer.WriteStringValue(Bypass.Value.ToString());
             }
             if (Optional.IsDefined(DefaultAction))
             {
-                writer.WritePropertyName("defaultAction");
+                writer.WritePropertyName("defaultAction"u8);
                 writer.WriteStringValue(DefaultAction.Value.ToString());
             }
             if (Optional.IsCollectionDefined(IPRules))
             {
-                writer.WritePropertyName("ipRules");
+                writer.WritePropertyName("ipRules"u8);
                 writer.WriteStartArray();
-                foreach (var item in IPRules)
+                foreach (ManagedHsmIPRule item in IPRules)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(ServiceTags))
+            {
+                writer.WritePropertyName("serviceTags"u8);
+                writer.WriteStartArray();
+                foreach (ManagedHsmServiceTagRule item in ServiceTags)
+                {
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(VirtualNetworkRules))
             {
-                writer.WritePropertyName("virtualNetworkRules");
+                writer.WritePropertyName("virtualNetworkRules"u8);
                 writer.WriteStartArray();
-                foreach (var item in VirtualNetworkRules)
+                foreach (ManagedHsmVirtualNetworkRule item in VirtualNetworkRules)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static ManagedHsmNetworkRuleSet DeserializeManagedHsmNetworkRuleSet(JsonElement element)
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ManagedHsmNetworkRuleSet IJsonModel<ManagedHsmNetworkRuleSet>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ManagedHsmNetworkRuleSet JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<ManagedHsmNetworkRuleBypassOption> bypass = default;
-            Optional<ManagedHsmNetworkRuleAction> defaultAction = default;
-            Optional<IList<ManagedHsmIPRule>> ipRules = default;
-            Optional<IList<ManagedHsmVirtualNetworkRule>> virtualNetworkRules = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedHsmNetworkRuleSet>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("bypass"))
+                throw new FormatException($"The model {nameof(ManagedHsmNetworkRuleSet)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeManagedHsmNetworkRuleSet(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ManagedHsmNetworkRuleSet DeserializeManagedHsmNetworkRuleSet(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ManagedHsmNetworkRuleBypassOption? bypass = default;
+            ManagedHsmNetworkRuleAction? defaultAction = default;
+            IList<ManagedHsmIPRule> ipRules = default;
+            IList<ManagedHsmServiceTagRule> serviceTags = default;
+            IList<ManagedHsmVirtualNetworkRule> virtualNetworkRules = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("bypass"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    bypass = new ManagedHsmNetworkRuleBypassOption(property.Value.GetString());
+                    bypass = new ManagedHsmNetworkRuleBypassOption(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("defaultAction"))
+                if (prop.NameEquals("defaultAction"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    defaultAction = new ManagedHsmNetworkRuleAction(property.Value.GetString());
+                    defaultAction = new ManagedHsmNetworkRuleAction(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("ipRules"))
+                if (prop.NameEquals("ipRules"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ManagedHsmIPRule> array = new List<ManagedHsmIPRule>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(ManagedHsmIPRule.DeserializeManagedHsmIPRule(item));
+                        array.Add(ManagedHsmIPRule.DeserializeManagedHsmIPRule(item, options));
                     }
                     ipRules = array;
                     continue;
                 }
-                if (property.NameEquals("virtualNetworkRules"))
+                if (prop.NameEquals("serviceTags"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    List<ManagedHsmServiceTagRule> array = new List<ManagedHsmServiceTagRule>();
+                    foreach (var item in prop.Value.EnumerateArray())
+                    {
+                        array.Add(ManagedHsmServiceTagRule.DeserializeManagedHsmServiceTagRule(item, options));
+                    }
+                    serviceTags = array;
+                    continue;
+                }
+                if (prop.NameEquals("virtualNetworkRules"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
                     List<ManagedHsmVirtualNetworkRule> array = new List<ManagedHsmVirtualNetworkRule>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(ManagedHsmVirtualNetworkRule.DeserializeManagedHsmVirtualNetworkRule(item));
+                        array.Add(ManagedHsmVirtualNetworkRule.DeserializeManagedHsmVirtualNetworkRule(item, options));
                     }
                     virtualNetworkRules = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
             }
-            return new ManagedHsmNetworkRuleSet(Optional.ToNullable(bypass), Optional.ToNullable(defaultAction), Optional.ToList(ipRules), Optional.ToList(virtualNetworkRules));
+            return new ManagedHsmNetworkRuleSet(
+                bypass,
+                defaultAction,
+                ipRules ?? new ChangeTrackingList<ManagedHsmIPRule>(),
+                serviceTags ?? new ChangeTrackingList<ManagedHsmServiceTagRule>(),
+                virtualNetworkRules ?? new ChangeTrackingList<ManagedHsmVirtualNetworkRule>(),
+                additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ManagedHsmNetworkRuleSet>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedHsmNetworkRuleSet>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerKeyVaultContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ManagedHsmNetworkRuleSet)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ManagedHsmNetworkRuleSet IPersistableModel<ManagedHsmNetworkRuleSet>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ManagedHsmNetworkRuleSet>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

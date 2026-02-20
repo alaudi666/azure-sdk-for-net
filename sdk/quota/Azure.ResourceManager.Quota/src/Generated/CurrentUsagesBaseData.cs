@@ -5,32 +5,40 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 using Azure.ResourceManager.Quota.Models;
 
 namespace Azure.ResourceManager.Quota
 {
-    /// <summary> A class representing the CurrentUsagesBase data model. </summary>
+    /// <summary> Resource usage. </summary>
     public partial class CurrentUsagesBaseData : ResourceData
     {
-        /// <summary> Initializes a new instance of CurrentUsagesBaseData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CurrentUsagesBaseData"/>. </summary>
         internal CurrentUsagesBaseData()
         {
         }
 
-        /// <summary> Initializes a new instance of CurrentUsagesBaseData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
+        /// <summary> Initializes a new instance of <see cref="CurrentUsagesBaseData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
         /// <param name="properties"> Usage properties for the specified resource. </param>
-        internal CurrentUsagesBaseData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, UsagesProperties properties) : base(id, name, resourceType, systemData)
+        internal CurrentUsagesBaseData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, QuotaUsagesProperties properties) : base(id, name, resourceType, systemData)
         {
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
             Properties = properties;
         }
 
         /// <summary> Usage properties for the specified resource. </summary>
-        public UsagesProperties Properties { get; }
+        [WirePath("properties")]
+        public QuotaUsagesProperties Properties { get; }
     }
 }

@@ -5,20 +5,40 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class DnsSettings : IUtf8JsonSerializable
+    public partial class DnsSettings : IUtf8JsonSerializable, IJsonModel<DnsSettings>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<DnsSettings>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<DnsSettings>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DnsSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DnsSettings)} does not support writing '{format}' format.");
+            }
+
             if (Optional.IsCollectionDefined(Servers))
             {
-                writer.WritePropertyName("servers");
+                writer.WritePropertyName("servers"u8);
                 writer.WriteStartArray();
                 foreach (var item in Servers)
                 {
@@ -28,14 +48,14 @@ namespace Azure.ResourceManager.Network.Models
             }
             if (Optional.IsDefined(EnableProxy))
             {
-                writer.WritePropertyName("enableProxy");
+                writer.WritePropertyName("enableProxy"u8);
                 writer.WriteBooleanValue(EnableProxy.Value);
             }
             if (Optional.IsDefined(RequireProxyForNetworkRules))
             {
                 if (RequireProxyForNetworkRules != null)
                 {
-                    writer.WritePropertyName("requireProxyForNetworkRules");
+                    writer.WritePropertyName("requireProxyForNetworkRules"u8);
                     writer.WriteBooleanValue(RequireProxyForNetworkRules.Value);
                 }
                 else
@@ -43,21 +63,54 @@ namespace Azure.ResourceManager.Network.Models
                     writer.WriteNull("requireProxyForNetworkRules");
                 }
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static DnsSettings DeserializeDnsSettings(JsonElement element)
+        DnsSettings IJsonModel<DnsSettings>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<IList<string>> servers = default;
-            Optional<bool> enableProxy = default;
-            Optional<bool?> requireProxyForNetworkRules = default;
+            var format = options.Format == "W" ? ((IPersistableModel<DnsSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DnsSettings)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDnsSettings(document.RootElement, options);
+        }
+
+        internal static DnsSettings DeserializeDnsSettings(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IList<string> servers = default;
+            bool? enableProxy = default;
+            bool? requireProxyForNetworkRules = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("servers"))
+                if (property.NameEquals("servers"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -68,17 +121,16 @@ namespace Azure.ResourceManager.Network.Models
                     servers = array;
                     continue;
                 }
-                if (property.NameEquals("enableProxy"))
+                if (property.NameEquals("enableProxy"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enableProxy = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("requireProxyForNetworkRules"))
+                if (property.NameEquals("requireProxyForNetworkRules"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -88,8 +140,129 @@ namespace Azure.ResourceManager.Network.Models
                     requireProxyForNetworkRules = property.Value.GetBoolean();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new DnsSettings(Optional.ToList(servers), Optional.ToNullable(enableProxy), Optional.ToNullable(requireProxyForNetworkRules));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new DnsSettings(servers ?? new ChangeTrackingList<string>(), enableProxy, requireProxyForNetworkRules, serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Servers), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  servers: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(Servers))
+                {
+                    if (Servers.Any())
+                    {
+                        builder.Append("  servers: ");
+                        builder.AppendLine("[");
+                        foreach (var item in Servers)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("    '''");
+                                builder.AppendLine($"{item}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"    '{item}'");
+                            }
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EnableProxy), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  enableProxy: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(EnableProxy))
+                {
+                    builder.Append("  enableProxy: ");
+                    var boolValue = EnableProxy.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RequireProxyForNetworkRules), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  requireProxyForNetworkRules: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(RequireProxyForNetworkRules))
+                {
+                    builder.Append("  requireProxyForNetworkRules: ");
+                    var boolValue = RequireProxyForNetworkRules.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<DnsSettings>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DnsSettings>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(DnsSettings)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        DnsSettings IPersistableModel<DnsSettings>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DnsSettings>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeDnsSettings(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DnsSettings)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<DnsSettings>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

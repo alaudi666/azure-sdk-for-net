@@ -2,11 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace Azure.Communication.JobRouter.Tests.RouterClients
@@ -20,7 +15,7 @@ namespace Azure.Communication.JobRouter.Tests.RouterClients
             var sampleAsDateTimeOffset = DateTimeOffsetParser.ParseAndGetDateTimeOffset(input);
 
             Assert.NotNull(sampleAsDateTimeOffset);
-            Assert.AreEqual(new TimeSpan(0,0,0), sampleAsDateTimeOffset.Offset);
+            Assert.AreEqual(new TimeSpan(0, 0, 0), sampleAsDateTimeOffset.Offset);
         }
 
         [Test]

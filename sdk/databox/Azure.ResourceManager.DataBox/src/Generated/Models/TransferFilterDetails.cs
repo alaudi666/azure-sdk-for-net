@@ -5,15 +5,19 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Details of the filtering the transfer of data. </summary>
     public partial class TransferFilterDetails
     {
-        /// <summary> Initializes a new instance of TransferFilterDetails. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="TransferFilterDetails"/>. </summary>
         /// <param name="dataAccountType"> Type of the account of data. </param>
         public TransferFilterDetails(DataAccountType dataAccountType)
         {
@@ -21,25 +25,30 @@ namespace Azure.ResourceManager.DataBox.Models
             FilterFileDetails = new ChangeTrackingList<FilterFileDetails>();
         }
 
-        /// <summary> Initializes a new instance of TransferFilterDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="TransferFilterDetails"/>. </summary>
         /// <param name="dataAccountType"> Type of the account of data. </param>
         /// <param name="blobFilterDetails"> Filter details to transfer blobs. </param>
         /// <param name="azureFileFilterDetails"> Filter details to transfer Azure files. </param>
         /// <param name="filterFileDetails"> Details of the filter files to be used for data transfer. </param>
-        internal TransferFilterDetails(DataAccountType dataAccountType, BlobFilterDetails blobFilterDetails, AzureFileFilterDetails azureFileFilterDetails, IList<FilterFileDetails> filterFileDetails)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal TransferFilterDetails(DataAccountType dataAccountType, BlobFilterDetails blobFilterDetails, AzureFileFilterDetails azureFileFilterDetails, IList<FilterFileDetails> filterFileDetails, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             DataAccountType = dataAccountType;
             BlobFilterDetails = blobFilterDetails;
             AzureFileFilterDetails = azureFileFilterDetails;
             FilterFileDetails = filterFileDetails;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Type of the account of data. </summary>
         public DataAccountType DataAccountType { get; set; }
+
         /// <summary> Filter details to transfer blobs. </summary>
         public BlobFilterDetails BlobFilterDetails { get; set; }
+
         /// <summary> Filter details to transfer Azure files. </summary>
         public AzureFileFilterDetails AzureFileFilterDetails { get; set; }
+
         /// <summary> Details of the filter files to be used for data transfer. </summary>
         public IList<FilterFileDetails> FilterFileDetails { get; }
     }

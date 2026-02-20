@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Sql
 {
     /// <summary>
-    /// A class representing a collection of <see cref="SqlDatabaseAdvisorResource" /> and their operations.
-    /// Each <see cref="SqlDatabaseAdvisorResource" /> in the collection will belong to the same instance of <see cref="SqlDatabaseResource" />.
-    /// To get a <see cref="SqlDatabaseAdvisorCollection" /> instance call the GetSqlDatabaseAdvisors method from an instance of <see cref="SqlDatabaseResource" />.
+    /// A class representing a collection of <see cref="SqlDatabaseAdvisorResource"/> and their operations.
+    /// Each <see cref="SqlDatabaseAdvisorResource"/> in the collection will belong to the same instance of <see cref="SqlDatabaseResource"/>.
+    /// To get a <see cref="SqlDatabaseAdvisorCollection"/> instance call the GetSqlDatabaseAdvisors method from an instance of <see cref="SqlDatabaseResource"/>.
     /// </summary>
     public partial class SqlDatabaseAdvisorCollection : ArmCollection, IEnumerable<SqlDatabaseAdvisorResource>, IAsyncEnumerable<SqlDatabaseAdvisorResource>
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.Sql
 
         /// <summary>
         /// Gets a database advisor.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors/{advisorName}
-        /// Operation Id: DatabaseAdvisors_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors/{advisorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DatabaseAdvisors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlDatabaseAdvisorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="advisorName"> The name of the Database Advisor. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -84,8 +98,24 @@ namespace Azure.ResourceManager.Sql
 
         /// <summary>
         /// Gets a database advisor.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors/{advisorName}
-        /// Operation Id: DatabaseAdvisors_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors/{advisorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DatabaseAdvisors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlDatabaseAdvisorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="advisorName"> The name of the Database Advisor. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -113,64 +143,84 @@ namespace Azure.ResourceManager.Sql
 
         /// <summary>
         /// Gets a list of database advisors.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors
-        /// Operation Id: DatabaseAdvisors_ListByDatabase
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DatabaseAdvisors_ListByDatabase</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlDatabaseAdvisorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="expand"> The child resources to include in the response. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="SqlDatabaseAdvisorResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SqlDatabaseAdvisorResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SqlDatabaseAdvisorResource> GetAllAsync(string expand = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<SqlDatabaseAdvisorResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _sqlDatabaseAdvisorDatabaseAdvisorsClientDiagnostics.CreateScope("SqlDatabaseAdvisorCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _sqlDatabaseAdvisorDatabaseAdvisorsRestClient.ListByDatabaseAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, expand, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Select(value => new SqlDatabaseAdvisorResource(Client, value)), null, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, null);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _sqlDatabaseAdvisorDatabaseAdvisorsRestClient.CreateListByDatabaseRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, expand);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, null, e => new SqlDatabaseAdvisorResource(Client, SqlAdvisorData.DeserializeSqlAdvisorData(e)), _sqlDatabaseAdvisorDatabaseAdvisorsClientDiagnostics, Pipeline, "SqlDatabaseAdvisorCollection.GetAll", "", null, cancellationToken);
         }
 
         /// <summary>
         /// Gets a list of database advisors.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors
-        /// Operation Id: DatabaseAdvisors_ListByDatabase
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DatabaseAdvisors_ListByDatabase</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlDatabaseAdvisorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="expand"> The child resources to include in the response. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="SqlDatabaseAdvisorResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SqlDatabaseAdvisorResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SqlDatabaseAdvisorResource> GetAll(string expand = null, CancellationToken cancellationToken = default)
         {
-            Page<SqlDatabaseAdvisorResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _sqlDatabaseAdvisorDatabaseAdvisorsClientDiagnostics.CreateScope("SqlDatabaseAdvisorCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _sqlDatabaseAdvisorDatabaseAdvisorsRestClient.ListByDatabase(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, expand, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Select(value => new SqlDatabaseAdvisorResource(Client, value)), null, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, null);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _sqlDatabaseAdvisorDatabaseAdvisorsRestClient.CreateListByDatabaseRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, expand);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, null, e => new SqlDatabaseAdvisorResource(Client, SqlAdvisorData.DeserializeSqlAdvisorData(e)), _sqlDatabaseAdvisorDatabaseAdvisorsClientDiagnostics, Pipeline, "SqlDatabaseAdvisorCollection.GetAll", "", null, cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors/{advisorName}
-        /// Operation Id: DatabaseAdvisors_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors/{advisorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DatabaseAdvisors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlDatabaseAdvisorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="advisorName"> The name of the Database Advisor. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -196,8 +246,24 @@ namespace Azure.ResourceManager.Sql
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors/{advisorName}
-        /// Operation Id: DatabaseAdvisors_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors/{advisorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DatabaseAdvisors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlDatabaseAdvisorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="advisorName"> The name of the Database Advisor. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -213,6 +279,96 @@ namespace Azure.ResourceManager.Sql
             {
                 var response = _sqlDatabaseAdvisorDatabaseAdvisorsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, advisorName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors/{advisorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DatabaseAdvisors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlDatabaseAdvisorResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="advisorName"> The name of the Database Advisor. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="advisorName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="advisorName"/> is null. </exception>
+        public virtual async Task<NullableResponse<SqlDatabaseAdvisorResource>> GetIfExistsAsync(string advisorName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(advisorName, nameof(advisorName));
+
+            using var scope = _sqlDatabaseAdvisorDatabaseAdvisorsClientDiagnostics.CreateScope("SqlDatabaseAdvisorCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _sqlDatabaseAdvisorDatabaseAdvisorsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, advisorName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<SqlDatabaseAdvisorResource>(response.GetRawResponse());
+                return Response.FromValue(new SqlDatabaseAdvisorResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/databases/{databaseName}/advisors/{advisorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DatabaseAdvisors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlDatabaseAdvisorResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="advisorName"> The name of the Database Advisor. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="advisorName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="advisorName"/> is null. </exception>
+        public virtual NullableResponse<SqlDatabaseAdvisorResource> GetIfExists(string advisorName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(advisorName, nameof(advisorName));
+
+            using var scope = _sqlDatabaseAdvisorDatabaseAdvisorsClientDiagnostics.CreateScope("SqlDatabaseAdvisorCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _sqlDatabaseAdvisorDatabaseAdvisorsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, advisorName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<SqlDatabaseAdvisorResource>(response.GetRawResponse());
+                return Response.FromValue(new SqlDatabaseAdvisorResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

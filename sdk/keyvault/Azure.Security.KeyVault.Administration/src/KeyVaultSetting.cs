@@ -2,11 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
+using Azure.Security.KeyVault.Administration.Models;
+using Microsoft.TypeSpec.Generator.Customizations;
 
 namespace Azure.Security.KeyVault.Administration
 {
-    [CodeGenModel("Setting")]
+    /// <summary>
+    /// An account setting.
+    /// </summary>
+    [CodeGenType("Setting")]
+    [CodeGenSuppress(nameof(KeyVaultSetting), typeof(string), typeof(string))]
     public partial class KeyVaultSetting
     {
         /// <summary>
@@ -21,59 +28,56 @@ namespace Azure.Security.KeyVault.Administration
             Argument.AssertNotNullOrEmpty(name, nameof(name));
 
             Name = name;
-            Type = SettingType.Boolean;
-
-            // bool.ToString() returns "True" or "False", but the service wants "true" or "false".
-            Value = value ? "true" : "false";
+            Value = new KeyVaultSettingValue(value);
+            SettingType = KeyVaultSettingType.Boolean;
         }
 
-        // TODO: Consider using Azure.Value and making this class mutable: https://github.com/Azure/azure-sdk-for-net/issues/32174
+        // TODO: Move construction to KeyVaultSettingValue and hide constructors here when the number of supported value types warrants it e.g., more than 3 intrinsic types.
 
         /// <summary>
-        /// Gets the boolean value of this account setting if <see cref="Type"/> is <see cref="SettingType.Boolean"/>.
+        /// Creates a new instance of the <see cref="KeyVaultSetting"/> class.
         /// </summary>
-        /// <returns>A boolean value if <see cref="Type"/> is <see cref="SettingType.Boolean"/>.</returns>
-        /// <exception cref="InvalidOperationException">The <see cref="Type"/> is not <see cref="SettingType.Boolean"/>, or the value cannot be normalized as a Boolean.</exception>
-        public bool AsBoolean() => CheckType(SettingType.Boolean, () => (bool.TryParse(Value, out bool parsedValue), parsedValue));
+        /// <param name="name">The name of the account setting.</param>
+        /// <param name="content">The string content of the account setting.</param>
+        /// <param name="settingType">The type specifier of the value.</param>
+        /// <param name="additionalBinaryDataProperties">Additional properties.</param>
+        internal KeyVaultSetting(string name, string content, KeyVaultSettingType? settingType, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Argument.AssertNotNull(name, nameof(name));
+            Argument.AssertNotNull(content, nameof(content));
+
+            Name = name;
+            SettingType = settingType;
+            Value = new KeyVaultSettingValue(content, settingType);
+            Content = content;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
 
         /// <summary>
-        /// Gets the string value of this account setting. Use <see cref="Type"/> to determine if a more appropriate method like <see cref="AsBoolean"/> should be used instead.
+        /// Gets the type specifier of the value.
         /// </summary>
-        /// <returns>The string value of this account setting.</returns>
-        public string AsString() => Value;
+        [CodeGenMember("Type")]
+        public KeyVaultSettingType? SettingType { get; }
 
         /// <summary>
-        /// Gets the raw string value of this account setting.
+        /// Gets the value of the account setting.
+        /// </summary>
+        public KeyVaultSettingValue Value { get; }
+
+        internal string Content { get; }
+
+        /// <summary>
+        /// Returns the setting name, value, and type.
         /// </summary>
         /// <returns></returns>
-        public override string ToString()
+        public override string ToString() => $"{Name}={Value} ({SettingType ?? string.Empty})";
+
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
+        internal virtual RequestContent ToRequestContent()
         {
-            string method = nameof(AsString);
-            if (Type == SettingType.Boolean)
-            {
-                method = nameof(AsBoolean);
-            }
-
-            return $"{Name}: {method}()=>{Value}";
-        }
-
-        [CodeGenMember("Value")]
-        internal string Value { get; }
-
-        private T CheckType<T>(SettingType expectedType, Func<(bool IsValid, T ParsedValue)> converter)
-        {
-            if (Type != expectedType)
-            {
-                throw new InvalidOperationException($"Cannot get setting as {SettingType.Boolean}. Setting type is {Type}.");
-            }
-
-            (bool isValid, T parsedValue) = converter();
-            if (isValid)
-            {
-                return parsedValue;
-            }
-
-            throw new InvalidOperationException($"Cannot normalize the setting as {expectedType}. Use {nameof(AsString)}() for a textual representation of the setting.");
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue(new UpdateSettingRequest(this.Value.ToString()));
+            return content;
         }
     }
 }

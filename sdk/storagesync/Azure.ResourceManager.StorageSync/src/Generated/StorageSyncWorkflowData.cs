@@ -6,60 +6,150 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 using Azure.ResourceManager.StorageSync.Models;
 
 namespace Azure.ResourceManager.StorageSync
 {
-    /// <summary> A class representing the StorageSyncWorkflow data model. </summary>
+    /// <summary> Workflow resource. </summary>
     public partial class StorageSyncWorkflowData : ResourceData
     {
-        /// <summary> Initializes a new instance of StorageSyncWorkflowData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="StorageSyncWorkflowData"/>. </summary>
         public StorageSyncWorkflowData()
         {
         }
 
-        /// <summary> Initializes a new instance of StorageSyncWorkflowData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="lastStepName"> last step name. </param>
-        /// <param name="status"> workflow status. </param>
-        /// <param name="operation"> operation direction. </param>
-        /// <param name="steps"> workflow steps. </param>
-        /// <param name="lastOperationId"> workflow last operation identifier. </param>
-        /// <param name="commandName"> workflow command name. </param>
-        /// <param name="createdOn"> workflow created timestamp. </param>
-        /// <param name="lastStatusUpdatedOn"> workflow last status timestamp. </param>
-        internal StorageSyncWorkflowData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string lastStepName, StorageSyncWorkflowStatus? status, StorageSyncOperationDirection? operation, string steps, Guid? lastOperationId, string commandName, DateTimeOffset? createdOn, DateTimeOffset? lastStatusUpdatedOn) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="StorageSyncWorkflowData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> Workflow properties. </param>
+        internal StorageSyncWorkflowData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, WorkflowProperties properties) : base(id, name, resourceType, systemData)
         {
-            LastStepName = lastStepName;
-            Status = status;
-            Operation = operation;
-            Steps = steps;
-            LastOperationId = lastOperationId;
-            CommandName = commandName;
-            CreatedOn = createdOn;
-            LastStatusUpdatedOn = lastStatusUpdatedOn;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
 
+        /// <summary> Workflow properties. </summary>
+        internal WorkflowProperties Properties { get; set; }
+
         /// <summary> last step name. </summary>
-        public string LastStepName { get; set; }
+        public string LastStepName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.LastStepName;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkflowProperties();
+                }
+                Properties.LastStepName = value;
+            }
+        }
+
         /// <summary> workflow status. </summary>
-        public StorageSyncWorkflowStatus? Status { get; set; }
+        public StorageSyncWorkflowStatus? Status
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Status;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkflowProperties();
+                }
+                Properties.Status = value.Value;
+            }
+        }
+
         /// <summary> operation direction. </summary>
-        public StorageSyncOperationDirection? Operation { get; set; }
+        public StorageSyncOperationDirection? Operation
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Operation;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkflowProperties();
+                }
+                Properties.Operation = value.Value;
+            }
+        }
+
         /// <summary> workflow steps. </summary>
-        public string Steps { get; set; }
+        public string Steps
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Steps;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkflowProperties();
+                }
+                Properties.Steps = value;
+            }
+        }
+
         /// <summary> workflow last operation identifier. </summary>
-        public Guid? LastOperationId { get; set; }
+        public Guid? LastOperationId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.LastOperationId;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkflowProperties();
+                }
+                Properties.LastOperationId = value.Value;
+            }
+        }
+
         /// <summary> workflow command name. </summary>
-        public string CommandName { get; }
+        public string CommandName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.CommandName;
+            }
+        }
+
         /// <summary> workflow created timestamp. </summary>
-        public DateTimeOffset? CreatedOn { get; }
+        public DateTimeOffset? CreatedOn
+        {
+            get
+            {
+                return Properties is null ? default : Properties.CreatedOn;
+            }
+        }
+
         /// <summary> workflow last status timestamp. </summary>
-        public DateTimeOffset? LastStatusUpdatedOn { get; }
+        public DateTimeOffset? LastStatusUpdatedOn
+        {
+            get
+            {
+                return Properties is null ? default : Properties.LastStatusUpdatedOn;
+            }
+        }
     }
 }

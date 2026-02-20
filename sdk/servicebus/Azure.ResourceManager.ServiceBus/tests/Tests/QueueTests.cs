@@ -3,15 +3,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using Azure.ResourceManager.Resources;
 using Azure.Core.TestFramework;
+using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.ServiceBus.Models;
-using Azure.ResourceManager.ServiceBus.Tests.Helpers;
+using NUnit.Framework;
 
 namespace Azure.ResourceManager.ServiceBus.Tests
 {
-    public class QueueTests : ServiceBusTestBase
+    public class QueueTests : ServiceBusManagementTestBase
     {
         private ResourceGroupResource _resourceGroup;
         private ServiceBusQueueCollection _queueCollection;

@@ -5,44 +5,84 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Avs.Models;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Avs
 {
-    /// <summary> A class representing the AvsPrivateCloudClusterVirtualMachine data model. </summary>
+    /// <summary> Virtual Machine. </summary>
     public partial class AvsPrivateCloudClusterVirtualMachineData : ResourceData
     {
-        /// <summary> Initializes a new instance of AvsPrivateCloudClusterVirtualMachineData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AvsPrivateCloudClusterVirtualMachineData"/>. </summary>
         public AvsPrivateCloudClusterVirtualMachineData()
         {
         }
 
-        /// <summary> Initializes a new instance of AvsPrivateCloudClusterVirtualMachineData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="displayName"> Display name of the VM. </param>
-        /// <param name="moRefId"> Virtual machine managed object reference id. </param>
-        /// <param name="folderPath"> Path to virtual machine&apos;s folder starting from datacenter virtual machine folder. </param>
-        /// <param name="restrictMovement"> Whether VM DRS-driven movement is restricted (enabled) or not (disabled). </param>
-        internal AvsPrivateCloudClusterVirtualMachineData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string displayName, string moRefId, string folderPath, VirtualMachineRestrictMovementState? restrictMovement) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="AvsPrivateCloudClusterVirtualMachineData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> The resource-specific properties for this resource. </param>
+        internal AvsPrivateCloudClusterVirtualMachineData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, VirtualMachineProperties properties) : base(id, name, resourceType, systemData)
         {
-            DisplayName = displayName;
-            MoRefId = moRefId;
-            FolderPath = folderPath;
-            RestrictMovement = restrictMovement;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
+        }
+
+        /// <summary> The resource-specific properties for this resource. </summary>
+        internal VirtualMachineProperties Properties { get; set; }
+
+        /// <summary> The provisioning state of the resource. </summary>
+        public AvsVirtualMachineProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
         }
 
         /// <summary> Display name of the VM. </summary>
-        public string DisplayName { get; }
-        /// <summary> Virtual machine managed object reference id. </summary>
-        public string MoRefId { get; }
-        /// <summary> Path to virtual machine&apos;s folder starting from datacenter virtual machine folder. </summary>
-        public string FolderPath { get; }
+        public string DisplayName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.DisplayName;
+            }
+        }
+
+        /// <summary> vCenter managed object reference ID of the virtual machine. </summary>
+        public string MoRefId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.MoRefId;
+            }
+        }
+
+        /// <summary> Path to virtual machine's folder starting from datacenter virtual machine folder. </summary>
+        public string FolderPath
+        {
+            get
+            {
+                return Properties is null ? default : Properties.FolderPath;
+            }
+        }
+
         /// <summary> Whether VM DRS-driven movement is restricted (enabled) or not (disabled). </summary>
-        public VirtualMachineRestrictMovementState? RestrictMovement { get; }
+        public VirtualMachineRestrictMovementState? RestrictMovement
+        {
+            get
+            {
+                return Properties is null ? default : Properties.RestrictMovement;
+            }
+        }
     }
 }

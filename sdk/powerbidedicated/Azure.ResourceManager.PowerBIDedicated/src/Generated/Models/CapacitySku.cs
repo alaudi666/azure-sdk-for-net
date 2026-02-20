@@ -6,14 +6,18 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.PowerBIDedicated;
 
 namespace Azure.ResourceManager.PowerBIDedicated.Models
 {
     /// <summary> Represents the SKU name and Azure pricing tier for PowerBI Dedicated capacity resource. </summary>
     public partial class CapacitySku
     {
-        /// <summary> Initializes a new instance of CapacitySku. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CapacitySku"/>. </summary>
         /// <param name="name"> Name of the SKU level. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="name"/> is null. </exception>
         public CapacitySku(string name)
@@ -23,21 +27,25 @@ namespace Azure.ResourceManager.PowerBIDedicated.Models
             Name = name;
         }
 
-        /// <summary> Initializes a new instance of CapacitySku. </summary>
+        /// <summary> Initializes a new instance of <see cref="CapacitySku"/>. </summary>
         /// <param name="name"> Name of the SKU level. </param>
         /// <param name="tier"> The name of the Azure pricing tier to which the SKU applies. </param>
         /// <param name="capacity"> The capacity of the SKU. </param>
-        internal CapacitySku(string name, CapacitySkuTier? tier, int? capacity)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CapacitySku(string name, CapacitySkuTier? tier, int? capacity, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Name = name;
             Tier = tier;
             Capacity = capacity;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Name of the SKU level. </summary>
         public string Name { get; set; }
+
         /// <summary> The name of the Azure pricing tier to which the SKU applies. </summary>
         public CapacitySkuTier? Tier { get; set; }
+
         /// <summary> The capacity of the SKU. </summary>
         public int? Capacity { get; set; }
     }

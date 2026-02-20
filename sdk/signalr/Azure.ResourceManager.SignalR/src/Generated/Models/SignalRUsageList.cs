@@ -5,38 +5,43 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
+using Azure.ResourceManager.SignalR;
 
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Object that includes an array of the resource usages and a possible link for next set. </summary>
     internal partial class SignalRUsageList
     {
-        /// <summary> Initializes a new instance of SignalRUsageList. </summary>
-        internal SignalRUsageList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRUsageList"/>. </summary>
+        /// <param name="value"> The SignalRUsage items on this page. </param>
+        internal SignalRUsageList(IEnumerable<SignalRUsage> value)
         {
-            Value = new ChangeTrackingList<SignalRUsage>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of SignalRUsageList. </summary>
-        /// <param name="value"> List of the resource usages. </param>
-        /// <param name="nextLink">
-        /// The URL the client should use to fetch the next page (per server side paging).
-        /// It&apos;s null for now, added for future use.
-        /// </param>
-        internal SignalRUsageList(IReadOnlyList<SignalRUsage> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="SignalRUsageList"/>. </summary>
+        /// <param name="value"> The SignalRUsage items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRUsageList(IList<SignalRUsage> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of the resource usages. </summary>
-        public IReadOnlyList<SignalRUsage> Value { get; }
-        /// <summary>
-        /// The URL the client should use to fetch the next page (per server side paging).
-        /// It&apos;s null for now, added for future use.
-        /// </summary>
-        public string NextLink { get; }
+        /// <summary> The SignalRUsage items on this page. </summary>
+        [WirePath("value")]
+        public IList<SignalRUsage> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        [WirePath("nextLink")]
+        public Uri NextLink { get; }
     }
 }

@@ -6,36 +6,177 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.Search.Documents.Indexes.Models
 {
-    public partial class IndexerExecutionResult
+    public partial class IndexerExecutionResult : IUtf8JsonSerializable, IJsonModel<IndexerExecutionResult>
     {
-        internal static IndexerExecutionResult DeserializeIndexerExecutionResult(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<IndexerExecutionResult>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<IndexerExecutionResult>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IndexerExecutionResult>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(IndexerExecutionResult)} does not support writing '{format}' format.");
+            }
+
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("status"u8);
+                writer.WriteStringValue(Status.ToSerialString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(StatusDetail))
+            {
+                if (StatusDetail != null)
+                {
+                    writer.WritePropertyName("statusDetail"u8);
+                    writer.WriteStringValue(StatusDetail.Value.ToString());
+                }
+                else
+                {
+                    writer.WriteNull("statusDetail");
+                }
+            }
+            if (options.Format != "W" && Optional.IsDefined(Mode))
+            {
+                writer.WritePropertyName("mode"u8);
+                writer.WriteStringValue(Mode.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(ErrorMessage))
+            {
+                writer.WritePropertyName("errorMessage"u8);
+                writer.WriteStringValue(ErrorMessage);
+            }
+            if (options.Format != "W" && Optional.IsDefined(StartTime))
+            {
+                writer.WritePropertyName("startTime"u8);
+                writer.WriteStringValue(StartTime.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(EndTime))
+            {
+                if (EndTime != null)
+                {
+                    writer.WritePropertyName("endTime"u8);
+                    writer.WriteStringValue(EndTime.Value, "O");
+                }
+                else
+                {
+                    writer.WriteNull("endTime");
+                }
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("errors"u8);
+                writer.WriteStartArray();
+                foreach (var item in Errors)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("warnings"u8);
+                writer.WriteStartArray();
+                foreach (var item in Warnings)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("itemsProcessed"u8);
+                writer.WriteNumberValue(ItemCount);
+            }
+            if (options.Format != "W")
+            {
+                writer.WritePropertyName("itemsFailed"u8);
+                writer.WriteNumberValue(FailedItemCount);
+            }
+            if (options.Format != "W" && Optional.IsDefined(InitialTrackingState))
+            {
+                writer.WritePropertyName("initialTrackingState"u8);
+                writer.WriteStringValue(InitialTrackingState);
+            }
+            if (options.Format != "W" && Optional.IsDefined(FinalTrackingState))
+            {
+                writer.WritePropertyName("finalTrackingState"u8);
+                writer.WriteStringValue(FinalTrackingState);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        IndexerExecutionResult IJsonModel<IndexerExecutionResult>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IndexerExecutionResult>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(IndexerExecutionResult)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeIndexerExecutionResult(document.RootElement, options);
+        }
+
+        internal static IndexerExecutionResult DeserializeIndexerExecutionResult(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             IndexerExecutionStatus status = default;
-            Optional<IndexerExecutionStatusDetail?> statusDetail = default;
-            Optional<IndexerState> currentState = default;
-            Optional<string> errorMessage = default;
-            Optional<DateTimeOffset> startTime = default;
-            Optional<DateTimeOffset?> endTime = default;
+            IndexerExecutionStatusDetail? statusDetail = default;
+            IndexingMode? mode = default;
+            string errorMessage = default;
+            DateTimeOffset? startTime = default;
+            DateTimeOffset? endTime = default;
             IReadOnlyList<SearchIndexerError> errors = default;
             IReadOnlyList<SearchIndexerWarning> warnings = default;
             int itemsProcessed = default;
             int itemsFailed = default;
-            Optional<string> initialTrackingState = default;
-            Optional<string> finalTrackingState = default;
+            string initialTrackingState = default;
+            string finalTrackingState = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("status"))
+                if (property.NameEquals("status"u8))
                 {
                     status = property.Value.GetString().ToIndexerExecutionStatus();
                     continue;
                 }
-                if (property.NameEquals("statusDetail"))
+                if (property.NameEquals("statusDetail"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -45,32 +186,30 @@ namespace Azure.Search.Documents.Indexes.Models
                     statusDetail = new IndexerExecutionStatusDetail(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("currentState"))
+                if (property.NameEquals("mode"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    currentState = IndexerState.DeserializeIndexerState(property.Value);
+                    mode = new IndexingMode(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("errorMessage"))
+                if (property.NameEquals("errorMessage"u8))
                 {
                     errorMessage = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("startTime"))
+                if (property.NameEquals("startTime"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     startTime = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("endTime"))
+                if (property.NameEquals("endTime"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -80,48 +219,113 @@ namespace Azure.Search.Documents.Indexes.Models
                     endTime = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("errors"))
+                if (property.NameEquals("errors"u8))
                 {
                     List<SearchIndexerError> array = new List<SearchIndexerError>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(SearchIndexerError.DeserializeSearchIndexerError(item));
+                        array.Add(SearchIndexerError.DeserializeSearchIndexerError(item, options));
                     }
                     errors = array;
                     continue;
                 }
-                if (property.NameEquals("warnings"))
+                if (property.NameEquals("warnings"u8))
                 {
                     List<SearchIndexerWarning> array = new List<SearchIndexerWarning>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(SearchIndexerWarning.DeserializeSearchIndexerWarning(item));
+                        array.Add(SearchIndexerWarning.DeserializeSearchIndexerWarning(item, options));
                     }
                     warnings = array;
                     continue;
                 }
-                if (property.NameEquals("itemsProcessed"))
+                if (property.NameEquals("itemsProcessed"u8))
                 {
                     itemsProcessed = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("itemsFailed"))
+                if (property.NameEquals("itemsFailed"u8))
                 {
                     itemsFailed = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("initialTrackingState"))
+                if (property.NameEquals("initialTrackingState"u8))
                 {
                     initialTrackingState = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("finalTrackingState"))
+                if (property.NameEquals("finalTrackingState"u8))
                 {
                     finalTrackingState = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new IndexerExecutionResult(status, Optional.ToNullable(statusDetail), currentState.Value, errorMessage.Value, Optional.ToNullable(startTime), Optional.ToNullable(endTime), errors, warnings, itemsProcessed, itemsFailed, initialTrackingState.Value, finalTrackingState.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new IndexerExecutionResult(
+                status,
+                statusDetail,
+                mode,
+                errorMessage,
+                startTime,
+                endTime,
+                errors,
+                warnings,
+                itemsProcessed,
+                itemsFailed,
+                initialTrackingState,
+                finalTrackingState,
+                serializedAdditionalRawData);
+        }
+
+        BinaryData IPersistableModel<IndexerExecutionResult>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IndexerExecutionResult>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureSearchDocumentsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(IndexerExecutionResult)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        IndexerExecutionResult IPersistableModel<IndexerExecutionResult>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IndexerExecutionResult>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeIndexerExecutionResult(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(IndexerExecutionResult)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<IndexerExecutionResult>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static IndexerExecutionResult FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeIndexerExecutionResult(document.RootElement);
+        }
+
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
+        internal virtual RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue(this, ModelSerializationExtensions.WireOptions);
+            return content;
         }
     }
 }

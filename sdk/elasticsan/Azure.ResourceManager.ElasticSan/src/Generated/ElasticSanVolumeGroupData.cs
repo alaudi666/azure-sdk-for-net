@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.ElasticSan.Models;
@@ -12,54 +13,139 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.ElasticSan
 {
-    /// <summary> A class representing the ElasticSanVolumeGroup data model. </summary>
+    /// <summary> Response for Volume Group request. </summary>
     public partial class ElasticSanVolumeGroupData : ResourceData
     {
-        /// <summary> Initializes a new instance of ElasticSanVolumeGroupData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ElasticSanVolumeGroupData"/>. </summary>
         public ElasticSanVolumeGroupData()
         {
-            Tags = new ChangeTrackingDictionary<string, string>();
         }
 
-        /// <summary> Initializes a new instance of ElasticSanVolumeGroupData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="provisioningState"> State of the operation on the resource. </param>
-        /// <param name="protocolType"> Type of storage target. </param>
-        /// <param name="encryption"> Type of encryption. </param>
-        /// <param name="networkAcls"> A collection of rules governing the accessibility from specific network locations. </param>
-        /// <param name="tags"> Azure resource tags. </param>
-        internal ElasticSanVolumeGroupData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, ElasticSanProvisioningState? provisioningState, StorageTargetType? protocolType, ElasticSanEncryptionType? encryption, NetworkRuleSet networkAcls, IDictionary<string, string> tags) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="ElasticSanVolumeGroupData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="identity"> The identity of the resource. </param>
+        /// <param name="properties"> Properties of VolumeGroup. </param>
+        internal ElasticSanVolumeGroupData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, ManagedServiceIdentity identity, VolumeGroupProperties properties) : base(id, name, resourceType, systemData)
         {
-            ProvisioningState = provisioningState;
-            ProtocolType = protocolType;
-            Encryption = encryption;
-            NetworkAcls = networkAcls;
-            Tags = tags;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Identity = identity;
+            Properties = properties;
         }
+
+        /// <summary> The identity of the resource. </summary>
+        public ManagedServiceIdentity Identity { get; set; }
+
+        /// <summary> Properties of VolumeGroup. </summary>
+        internal VolumeGroupProperties Properties { get; set; }
 
         /// <summary> State of the operation on the resource. </summary>
-        public ElasticSanProvisioningState? ProvisioningState { get; }
+        public ElasticSanProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+        }
+
         /// <summary> Type of storage target. </summary>
-        public StorageTargetType? ProtocolType { get; set; }
+        public ElasticSanStorageTargetType? ProtocolType
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProtocolType;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new VolumeGroupProperties();
+                }
+                Properties.ProtocolType = value.Value;
+            }
+        }
+
         /// <summary> Type of encryption. </summary>
-        public ElasticSanEncryptionType? Encryption { get; set; }
-        /// <summary> A collection of rules governing the accessibility from specific network locations. </summary>
-        internal NetworkRuleSet NetworkAcls { get; set; }
+        public ElasticSanEncryptionType? Encryption
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Encryption;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new VolumeGroupProperties();
+                }
+                Properties.Encryption = value.Value;
+            }
+        }
+
+        /// <summary> Encryption Properties describing Key Vault and Identity information. </summary>
+        public ElasticSanEncryptionProperties EncryptionProperties
+        {
+            get
+            {
+                return Properties is null ? default : Properties.EncryptionProperties;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new VolumeGroupProperties();
+                }
+                Properties.EncryptionProperties = value;
+            }
+        }
+
+        /// <summary> The list of Private Endpoint Connections. </summary>
+        public IReadOnlyList<ElasticSanPrivateEndpointConnectionData> PrivateEndpointConnections
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new VolumeGroupProperties();
+                }
+                return Properties.PrivateEndpointConnections;
+            }
+        }
+
+        /// <summary> A boolean indicating whether or not Data Integrity Check is enabled. </summary>
+        public bool? EnforceDataIntegrityCheckForIscsi
+        {
+            get
+            {
+                return Properties is null ? default : Properties.EnforceDataIntegrityCheckForIscsi;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new VolumeGroupProperties();
+                }
+                Properties.EnforceDataIntegrityCheckForIscsi = value.Value;
+            }
+        }
+
         /// <summary> The list of virtual network rules. </summary>
         public IList<ElasticSanVirtualNetworkRule> VirtualNetworkRules
         {
             get
             {
-                if (NetworkAcls is null)
-                    NetworkAcls = new NetworkRuleSet();
-                return NetworkAcls.VirtualNetworkRules;
+                if (Properties is null)
+                {
+                    Properties = new VolumeGroupProperties();
+                }
+                return Properties.VirtualNetworkRules;
             }
         }
-
-        /// <summary> Azure resource tags. </summary>
-        public IDictionary<string, string> Tags { get; }
     }
 }

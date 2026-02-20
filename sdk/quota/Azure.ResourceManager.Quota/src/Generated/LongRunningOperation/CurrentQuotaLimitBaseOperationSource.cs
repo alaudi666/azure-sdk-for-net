@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Quota
 {
-    internal class CurrentQuotaLimitBaseOperationSource : IOperationSource<CurrentQuotaLimitBaseResource>
+    /// <summary></summary>
+    internal partial class CurrentQuotaLimitBaseOperationSource : IOperationSource<CurrentQuotaLimitBaseResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal CurrentQuotaLimitBaseOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         CurrentQuotaLimitBaseResource IOperationSource<CurrentQuotaLimitBaseResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = CurrentQuotaLimitBaseData.DeserializeCurrentQuotaLimitBaseData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            CurrentQuotaLimitBaseData data = CurrentQuotaLimitBaseData.DeserializeCurrentQuotaLimitBaseData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new CurrentQuotaLimitBaseResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<CurrentQuotaLimitBaseResource> IOperationSource<CurrentQuotaLimitBaseResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = CurrentQuotaLimitBaseData.DeserializeCurrentQuotaLimitBaseData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            CurrentQuotaLimitBaseData data = CurrentQuotaLimitBaseData.DeserializeCurrentQuotaLimitBaseData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new CurrentQuotaLimitBaseResource(_client, data);
         }
     }

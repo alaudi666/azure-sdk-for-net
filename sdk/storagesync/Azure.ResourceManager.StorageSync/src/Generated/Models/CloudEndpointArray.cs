@@ -5,8 +5,8 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
@@ -14,20 +14,30 @@ namespace Azure.ResourceManager.StorageSync.Models
     /// <summary> Array of CloudEndpoint. </summary>
     internal partial class CloudEndpointArray
     {
-        /// <summary> Initializes a new instance of CloudEndpointArray. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CloudEndpointArray"/>. </summary>
         internal CloudEndpointArray()
         {
             Value = new ChangeTrackingList<CloudEndpointData>();
         }
 
-        /// <summary> Initializes a new instance of CloudEndpointArray. </summary>
+        /// <summary> Initializes a new instance of <see cref="CloudEndpointArray"/>. </summary>
         /// <param name="value"> Collection of CloudEndpoint. </param>
-        internal CloudEndpointArray(IReadOnlyList<CloudEndpointData> value)
+        /// <param name="nextLink"> The URL to get the next set of results. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CloudEndpointArray(IList<CloudEndpointData> value, string nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
+            NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Collection of CloudEndpoint. </summary>
-        public IReadOnlyList<CloudEndpointData> Value { get; }
+        public IList<CloudEndpointData> Value { get; }
+
+        /// <summary> The URL to get the next set of results. </summary>
+        public string NextLink { get; }
     }
 }

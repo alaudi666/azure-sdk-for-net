@@ -5,30 +5,40 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.SignalR;
+
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Managed identity settings for upstream. </summary>
     internal partial class ManagedIdentitySettings
     {
-        /// <summary> Initializes a new instance of ManagedIdentitySettings. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedIdentitySettings"/>. </summary>
         public ManagedIdentitySettings()
         {
         }
 
-        /// <summary> Initializes a new instance of ManagedIdentitySettings. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedIdentitySettings"/>. </summary>
         /// <param name="resource">
         /// The Resource indicating the App ID URI of the target resource.
         /// It also appears in the aud (audience) claim of the issued token.
         /// </param>
-        internal ManagedIdentitySettings(string resource)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedIdentitySettings(string resource, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Resource = resource;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary>
         /// The Resource indicating the App ID URI of the target resource.
         /// It also appears in the aud (audience) claim of the issued token.
         /// </summary>
+        [WirePath("resource")]
         public string Resource { get; set; }
     }
 }

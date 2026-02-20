@@ -11,6 +11,7 @@ namespace Azure.ResourceManager.DataBox.Models
 {
     internal static partial class CustomerResolutionCodeExtensions
     {
+        /// <param name="value"> The value to serialize. </param>
         public static string ToSerialString(this CustomerResolutionCode value) => value switch
         {
             CustomerResolutionCode.None => "None",
@@ -21,13 +22,29 @@ namespace Azure.ResourceManager.DataBox.Models
             _ => throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown CustomerResolutionCode value.")
         };
 
+        /// <param name="value"> The value to deserialize. </param>
         public static CustomerResolutionCode ToCustomerResolutionCode(this string value)
         {
-            if (string.Equals(value, "None", StringComparison.InvariantCultureIgnoreCase)) return CustomerResolutionCode.None;
-            if (string.Equals(value, "MoveToCleanUpDevice", StringComparison.InvariantCultureIgnoreCase)) return CustomerResolutionCode.MoveToCleanUpDevice;
-            if (string.Equals(value, "Resume", StringComparison.InvariantCultureIgnoreCase)) return CustomerResolutionCode.Resume;
-            if (string.Equals(value, "Restart", StringComparison.InvariantCultureIgnoreCase)) return CustomerResolutionCode.Restart;
-            if (string.Equals(value, "ReachOutToOperation", StringComparison.InvariantCultureIgnoreCase)) return CustomerResolutionCode.ReachOutToOperation;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "None"))
+            {
+                return CustomerResolutionCode.None;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "MoveToCleanUpDevice"))
+            {
+                return CustomerResolutionCode.MoveToCleanUpDevice;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Resume"))
+            {
+                return CustomerResolutionCode.Resume;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Restart"))
+            {
+                return CustomerResolutionCode.Restart;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "ReachOutToOperation"))
+            {
+                return CustomerResolutionCode.ReachOutToOperation;
+            }
             throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown CustomerResolutionCode value.");
         }
     }

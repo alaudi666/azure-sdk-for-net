@@ -5,33 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> A paged list of ExpressRoute Circuit Authorizations. </summary>
+    /// <summary> The response of a ExpressRouteAuthorization list operation. </summary>
     internal partial class ExpressRouteAuthorizationList
     {
-        /// <summary> Initializes a new instance of ExpressRouteAuthorizationList. </summary>
-        internal ExpressRouteAuthorizationList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ExpressRouteAuthorizationList"/>. </summary>
+        /// <param name="value"> The ExpressRouteAuthorization items on this page. </param>
+        internal ExpressRouteAuthorizationList(IEnumerable<ExpressRouteAuthorizationData> value)
         {
-            Value = new ChangeTrackingList<ExpressRouteAuthorizationData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of ExpressRouteAuthorizationList. </summary>
-        /// <param name="value"> The items on a page. </param>
-        /// <param name="nextLink"> URL to get the next page if any. </param>
-        internal ExpressRouteAuthorizationList(IReadOnlyList<ExpressRouteAuthorizationData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ExpressRouteAuthorizationList"/>. </summary>
+        /// <param name="value"> The ExpressRouteAuthorization items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ExpressRouteAuthorizationList(IList<ExpressRouteAuthorizationData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The items on a page. </summary>
-        public IReadOnlyList<ExpressRouteAuthorizationData> Value { get; }
-        /// <summary> URL to get the next page if any. </summary>
-        public string NextLink { get; }
+        /// <summary> The ExpressRouteAuthorization items on this page. </summary>
+        public IList<ExpressRouteAuthorizationData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

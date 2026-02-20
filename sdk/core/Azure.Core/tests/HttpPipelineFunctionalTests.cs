@@ -312,7 +312,7 @@ namespace Azure.Core.Tests
                     var originalStream = response.ContentStream;
                     disposeTrackingStream = new Mock<Stream>();
                     disposeTrackingStream
-                        .Setup(s=>s.Close())
+                        .Setup(s => s.Close())
                         .Callback(originalStream.Close)
                         .Verifiable();
                     response.ContentStream = disposeTrackingStream.Object;
@@ -571,7 +571,10 @@ namespace Azure.Core.Tests
             Assert.Throws<InvalidOperationException>(() => { var content = message.Response.Content; });
             var buffer = new byte[10];
             Assert.AreEqual(1, await responseContentStream.ReadAsync(buffer, 0, 1));
+
+#pragma warning disable CA2022 // The return value of ReadAsync is not needed for this test
             var exception = Assert.ThrowsAsync<TaskCanceledException>(async () => await responseContentStream.ReadAsync(buffer, 0, 10));
+#pragma warning restore CA2022
             Assert.AreEqual("The operation was cancelled because it exceeded the configured timeout of 0:00:00.5. " +
                             "Network timeout can be adjusted in ClientOptions.Retry.NetworkTimeout.", exception.Message);
 
@@ -628,7 +631,7 @@ namespace Azure.Core.Tests
         }
 
         [Test]
-        public async Task HandlesRedirects()
+        public async Task HandlesRedirects([Values(true, false)] bool allowRedirects)
         {
             HttpPipeline httpPipeline = HttpPipelineBuilder.Build(GetOptions());
             Uri testServerAddress = null;
@@ -649,16 +652,28 @@ namespace Azure.Core.Tests
 
             testServerAddress = testServer.Address;
 
-            using Request request = httpPipeline.CreateRequest();
+            using HttpMessage message = httpPipeline.CreateMessage();
+            if (allowRedirects)
+            {
+                RedirectPolicy.SetAllowAutoRedirect(message, true);
+            }
+            Request request = message.Request;
             request.Method = RequestMethod.Get;
             request.Uri.Reset(testServer.Address);
 
-            using Response response = await ExecuteRequest(request, httpPipeline);
-            Assert.AreEqual(response.Status, 200);
+            using Response response = await ExecuteRequest(message, httpPipeline);
+            if (allowRedirects)
+            {
+                Assert.AreEqual(response.Status, 200);
+            }
+            else
+            {
+                Assert.AreEqual(response.Status, 300);
+            }
         }
 
         [Test]
-        public async Task HandlesRelativeRedirects()
+        public async Task HandlesRelativeRedirects([Values(true, false)] bool allowRedirects)
         {
             HttpPipeline httpPipeline = HttpPipelineBuilder.Build(GetOptions());
             using TestServer testServer = new TestServer(
@@ -676,16 +691,28 @@ namespace Azure.Core.Tests
                     return Task.CompletedTask;
                 });
 
-            using Request request = httpPipeline.CreateRequest();
+            using HttpMessage message = httpPipeline.CreateMessage();
+            if (allowRedirects)
+            {
+                RedirectPolicy.SetAllowAutoRedirect(message, true);
+            }
+            Request request = message.Request;
             request.Method = RequestMethod.Get;
             request.Uri.Reset(testServer.Address);
 
-            using Response response = await ExecuteRequest(request, httpPipeline);
-            Assert.AreEqual(response.Status, 200);
+            using Response response = await ExecuteRequest(message, httpPipeline);
+            if (allowRedirects)
+            {
+                Assert.AreEqual(response.Status, 200);
+            }
+            else
+            {
+                Assert.AreEqual(response.Status, 300);
+            }
         }
 
         [Test]
-        public async Task PerRetryPolicyObservesRedirect()
+        public async Task PerRetryPolicyObservesRedirect([Values(true, false)] bool allowRedirects)
         {
             List<string> uris = new List<string>();
             var options = GetOptions();
@@ -710,14 +737,26 @@ namespace Azure.Core.Tests
 
             testServerAddress = testServer.Address;
 
-            using Request request = httpPipeline.CreateRequest();
+            using HttpMessage message = httpPipeline.CreateMessage();
+            if (allowRedirects)
+            {
+                RedirectPolicy.SetAllowAutoRedirect(message, true);
+            }
+            Request request = message.Request;
             request.Method = RequestMethod.Get;
             request.Uri.Reset(testServer.Address);
 
-            using Response response = await ExecuteRequest(request, httpPipeline);
-            Assert.AreEqual(response.Status, 200);
-            Assert.AreEqual(2, uris.Count);
-            Assert.AreEqual(1, uris.Count(u => u.Contains("/redirected")));
+            using Response response = await ExecuteRequest(message, httpPipeline);
+            if (allowRedirects)
+            {
+                Assert.AreEqual(response.Status, 200);
+                Assert.AreEqual(2, uris.Count);
+                Assert.AreEqual(1, uris.Count(u => u.Contains("/redirected")));
+            }
+            else
+            {
+                Assert.AreEqual(response.Status, 300);
+            }
         }
 
         [Test]
@@ -736,11 +775,13 @@ namespace Azure.Core.Tests
 
             testServerAddress = testServer.Address;
 
-            using Request request = httpPipeline.CreateRequest();
+            using HttpMessage message = httpPipeline.CreateMessage();
+            RedirectPolicy.SetAllowAutoRedirect(message, true);
+            Request request = message.Request;
             request.Method = RequestMethod.Get;
             request.Uri.Reset(testServer.Address);
 
-            using Response response = await ExecuteRequest(request, httpPipeline);
+            using Response response = await ExecuteRequest(message, httpPipeline);
             Assert.AreEqual(300, response.Status);
             Assert.AreEqual(51, count);
         }

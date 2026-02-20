@@ -5,24 +5,29 @@
 
 #nullable disable
 
-using Azure;
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the ExpressRouteCrossConnectionPeering data model. </summary>
+    /// <summary>
+    /// A class representing the ExpressRouteCrossConnectionPeering data model.
+    /// Peering in an ExpressRoute Cross Connection resource.
+    /// </summary>
     public partial class ExpressRouteCrossConnectionPeeringData : NetworkResourceData
     {
-        /// <summary> Initializes a new instance of ExpressRouteCrossConnectionPeeringData. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExpressRouteCrossConnectionPeeringData"/>. </summary>
         public ExpressRouteCrossConnectionPeeringData()
         {
         }
 
-        /// <summary> Initializes a new instance of ExpressRouteCrossConnectionPeeringData. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExpressRouteCrossConnectionPeeringData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="peeringType"> The peering type. </param>
         /// <param name="state"> The peering state. </param>
@@ -39,7 +44,7 @@ namespace Azure.ResourceManager.Network
         /// <param name="gatewayManagerETag"> The GatewayManager Etag. </param>
         /// <param name="lastModifiedBy"> Who was the last to modify the peering. </param>
         /// <param name="ipv6PeeringConfig"> The IPv6 peering configuration. </param>
-        internal ExpressRouteCrossConnectionPeeringData(ResourceIdentifier id, string name, ResourceType? resourceType, ETag? etag, ExpressRoutePeeringType? peeringType, ExpressRoutePeeringState? state, int? azureASN, long? peerASN, string primaryPeerAddressPrefix, string secondaryPeerAddressPrefix, string primaryAzurePort, string secondaryAzurePort, string sharedKey, int? vlanId, ExpressRouteCircuitPeeringConfig microsoftPeeringConfig, NetworkProvisioningState? provisioningState, string gatewayManagerETag, string lastModifiedBy, IPv6ExpressRouteCircuitPeeringConfig ipv6PeeringConfig) : base(id, name, resourceType)
+        internal ExpressRouteCrossConnectionPeeringData(ResourceIdentifier id, string name, ResourceType? resourceType, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, ExpressRoutePeeringType? peeringType, ExpressRoutePeeringState? state, int? azureASN, long? peerASN, string primaryPeerAddressPrefix, string secondaryPeerAddressPrefix, string primaryAzurePort, string secondaryAzurePort, string sharedKey, int? vlanId, ExpressRouteCircuitPeeringConfig microsoftPeeringConfig, NetworkProvisioningState? provisioningState, string gatewayManagerETag, string lastModifiedBy, IPv6ExpressRouteCircuitPeeringConfig ipv6PeeringConfig) : base(id, name, resourceType, serializedAdditionalRawData)
         {
             ETag = etag;
             PeeringType = peeringType;
@@ -60,36 +65,52 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> The peering type. </summary>
+        [WirePath("properties.peeringType")]
         public ExpressRoutePeeringType? PeeringType { get; set; }
         /// <summary> The peering state. </summary>
+        [WirePath("properties.state")]
         public ExpressRoutePeeringState? State { get; set; }
         /// <summary> The Azure ASN. </summary>
+        [WirePath("properties.azureASN")]
         public int? AzureASN { get; }
         /// <summary> The peer ASN. </summary>
+        [WirePath("properties.peerASN")]
         public long? PeerASN { get; set; }
         /// <summary> The primary address prefix. </summary>
+        [WirePath("properties.primaryPeerAddressPrefix")]
         public string PrimaryPeerAddressPrefix { get; set; }
         /// <summary> The secondary address prefix. </summary>
+        [WirePath("properties.secondaryPeerAddressPrefix")]
         public string SecondaryPeerAddressPrefix { get; set; }
         /// <summary> The primary port. </summary>
+        [WirePath("properties.primaryAzurePort")]
         public string PrimaryAzurePort { get; }
         /// <summary> The secondary port. </summary>
+        [WirePath("properties.secondaryAzurePort")]
         public string SecondaryAzurePort { get; }
         /// <summary> The shared key. </summary>
+        [WirePath("properties.sharedKey")]
         public string SharedKey { get; set; }
         /// <summary> The VLAN ID. </summary>
+        [WirePath("properties.vlanId")]
         public int? VlanId { get; set; }
         /// <summary> The Microsoft peering configuration. </summary>
+        [WirePath("properties.microsoftPeeringConfig")]
         public ExpressRouteCircuitPeeringConfig MicrosoftPeeringConfig { get; set; }
         /// <summary> The provisioning state of the express route cross connection peering resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
         /// <summary> The GatewayManager Etag. </summary>
+        [WirePath("properties.gatewayManagerEtag")]
         public string GatewayManagerETag { get; set; }
         /// <summary> Who was the last to modify the peering. </summary>
+        [WirePath("properties.lastModifiedBy")]
         public string LastModifiedBy { get; }
         /// <summary> The IPv6 peering configuration. </summary>
+        [WirePath("properties.ipv6PeeringConfig")]
         public IPv6ExpressRouteCircuitPeeringConfig IPv6PeeringConfig { get; set; }
     }
 }

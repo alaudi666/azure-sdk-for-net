@@ -5,33 +5,135 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    public partial class ManagedServicePartitionScheme : IUtf8JsonSerializable
+    /// <summary>
+    /// Describes how the service is partitioned.
+    /// Please note this is the abstract base class. The derived classes available for instantiation are: <see cref="UniformInt64RangePartitionScheme"/>, <see cref="SingletonPartitionScheme"/>, and <see cref="NamedPartitionScheme"/>.
+    /// </summary>
+    [PersistableModelProxy(typeof(UnknownPartition))]
+    public abstract partial class ManagedServicePartitionScheme : IJsonModel<ManagedServicePartitionScheme>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ManagedServicePartitionScheme PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedServicePartitionScheme>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeManagedServicePartitionScheme(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ManagedServicePartitionScheme)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ManagedServicePartitionScheme>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("partitionScheme");
-            writer.WriteStringValue(PartitionScheme.ToString());
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static ManagedServicePartitionScheme DeserializeManagedServicePartitionScheme(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            if (element.TryGetProperty("partitionScheme", out JsonElement discriminator))
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedServicePartitionScheme>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ManagedServicePartitionScheme)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("partitionScheme"u8);
+            writer.WriteStringValue(PartitionScheme.ToString());
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ManagedServicePartitionScheme IJsonModel<ManagedServicePartitionScheme>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ManagedServicePartitionScheme JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedServicePartitionScheme>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ManagedServicePartitionScheme)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeManagedServicePartitionScheme(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ManagedServicePartitionScheme DeserializeManagedServicePartitionScheme(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            if (element.TryGetProperty("partitionScheme"u8, out JsonElement discriminator))
             {
                 switch (discriminator.GetString())
                 {
-                    case "Named": return NamedPartitionScheme.DeserializeNamedPartitionScheme(element);
-                    case "Singleton": return SingletonPartitionScheme.DeserializeSingletonPartitionScheme(element);
-                    case "UniformInt64Range": return UniformInt64RangePartitionScheme.DeserializeUniformInt64RangePartitionScheme(element);
+                    case "UniformInt64Range":
+                        return UniformInt64RangePartitionScheme.DeserializeUniformInt64RangePartitionScheme(element, options);
+                    case "Singleton":
+                        return SingletonPartitionScheme.DeserializeSingletonPartitionScheme(element, options);
+                    case "Named":
+                        return NamedPartitionScheme.DeserializeNamedPartitionScheme(element, options);
                 }
             }
-            return UnknownPartition.DeserializeUnknownPartition(element);
+            return UnknownPartition.DeserializeUnknownPartition(element, options);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ManagedServicePartitionScheme>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedServicePartitionScheme>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerServiceFabricManagedClustersContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ManagedServicePartitionScheme)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ManagedServicePartitionScheme IPersistableModel<ManagedServicePartitionScheme>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ManagedServicePartitionScheme>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

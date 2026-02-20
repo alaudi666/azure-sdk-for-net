@@ -5,52 +5,229 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
-    public partial class ContinentsResponse
+    public partial class ContinentsResponse : IUtf8JsonSerializable, IJsonModel<ContinentsResponse>
     {
-        internal static ContinentsResponse DeserializeContinentsResponse(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ContinentsResponse>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ContinentsResponse>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<IReadOnlyList<ContinentsResponseContinentsItem>> continents = default;
-            Optional<IReadOnlyList<ContinentsResponseCountryOrRegionsItem>> countryOrRegions = default;
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ContinentsResponse>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ContinentsResponse)} does not support writing '{format}' format.");
+            }
+
+            if (Optional.IsCollectionDefined(Continents))
+            {
+                writer.WritePropertyName("continents"u8);
+                writer.WriteStartArray();
+                foreach (var item in Continents)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(CountryOrRegions))
+            {
+                writer.WritePropertyName("countryOrRegions"u8);
+                writer.WriteStartArray();
+                foreach (var item in CountryOrRegions)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        ContinentsResponse IJsonModel<ContinentsResponse>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ContinentsResponse>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ContinentsResponse)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeContinentsResponse(document.RootElement, options);
+        }
+
+        internal static ContinentsResponse DeserializeContinentsResponse(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IReadOnlyList<ContinentsResponseContinentsItem> continents = default;
+            IReadOnlyList<ContinentsResponseCountryOrRegionsItem> countryOrRegions = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("continents"))
+                if (property.NameEquals("continents"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ContinentsResponseContinentsItem> array = new List<ContinentsResponseContinentsItem>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ContinentsResponseContinentsItem.DeserializeContinentsResponseContinentsItem(item));
+                        array.Add(ContinentsResponseContinentsItem.DeserializeContinentsResponseContinentsItem(item, options));
                     }
                     continents = array;
                     continue;
                 }
-                if (property.NameEquals("countryOrRegions"))
+                if (property.NameEquals("countryOrRegions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ContinentsResponseCountryOrRegionsItem> array = new List<ContinentsResponseCountryOrRegionsItem>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ContinentsResponseCountryOrRegionsItem.DeserializeContinentsResponseCountryOrRegionsItem(item));
+                        array.Add(ContinentsResponseCountryOrRegionsItem.DeserializeContinentsResponseCountryOrRegionsItem(item, options));
                     }
                     countryOrRegions = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ContinentsResponse(Optional.ToList(continents), Optional.ToList(countryOrRegions));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ContinentsResponse(continents ?? new ChangeTrackingList<ContinentsResponseContinentsItem>(), countryOrRegions ?? new ChangeTrackingList<ContinentsResponseCountryOrRegionsItem>(), serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Continents), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  continents: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(Continents))
+                {
+                    if (Continents.Any())
+                    {
+                        builder.Append("  continents: ");
+                        builder.AppendLine("[");
+                        foreach (var item in Continents)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  continents: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(CountryOrRegions), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  countryOrRegions: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(CountryOrRegions))
+                {
+                    if (CountryOrRegions.Any())
+                    {
+                        builder.Append("  countryOrRegions: ");
+                        builder.AppendLine("[");
+                        foreach (var item in CountryOrRegions)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  countryOrRegions: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<ContinentsResponse>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ContinentsResponse>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerCdnContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(ContinentsResponse)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ContinentsResponse IPersistableModel<ContinentsResponse>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ContinentsResponse>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeContinentsResponse(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ContinentsResponse)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ContinentsResponse>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

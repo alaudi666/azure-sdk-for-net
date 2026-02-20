@@ -5,33 +5,76 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
-using Azure.ResourceManager.DnsResolver;
+using System.Linq;
 
 namespace Azure.ResourceManager.DnsResolver.Models
 {
-    /// <summary> The response to an enumeration operation on forwarding rules within a DNS forwarding ruleset. </summary>
+    /// <summary> The response of a ForwardingRule list operation. </summary>
     internal partial class ForwardingRuleListResult
     {
-        /// <summary> Initializes a new instance of ForwardingRuleListResult. </summary>
-        internal ForwardingRuleListResult()
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="ForwardingRuleListResult"/>. </summary>
+        /// <param name="value"> The ForwardingRule items on this page. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
+        internal ForwardingRuleListResult(IEnumerable<DnsForwardingRuleData> value)
         {
-            Value = new ChangeTrackingList<DnsForwardingRuleData>();
+            Argument.AssertNotNull(value, nameof(value));
+
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of ForwardingRuleListResult. </summary>
-        /// <param name="value"> Enumeration of the forwarding rules. </param>
-        /// <param name="nextLink"> The continuation token for the next page of results. </param>
-        internal ForwardingRuleListResult(IReadOnlyList<DnsForwardingRuleData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ForwardingRuleListResult"/>. </summary>
+        /// <param name="value"> The ForwardingRule items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal ForwardingRuleListResult(IReadOnlyList<DnsForwardingRuleData> value, Uri nextLink, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Value = value;
             NextLink = nextLink;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary> Enumeration of the forwarding rules. </summary>
+        /// <summary> Initializes a new instance of <see cref="ForwardingRuleListResult"/> for deserialization. </summary>
+        internal ForwardingRuleListResult()
+        {
+        }
+
+        /// <summary> The ForwardingRule items on this page. </summary>
         public IReadOnlyList<DnsForwardingRuleData> Value { get; }
-        /// <summary> The continuation token for the next page of results. </summary>
-        public string NextLink { get; }
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

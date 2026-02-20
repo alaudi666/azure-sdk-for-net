@@ -5,196 +5,332 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
+using Azure;
 using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class DataBoxCustomerDiskCopyProgress
+    /// <summary> DataBox CustomerDisk Copy Progress. </summary>
+    public partial class DataBoxCustomerDiskCopyProgress : DataBoxCopyProgress, IJsonModel<DataBoxCustomerDiskCopyProgress>
     {
-        internal static DataBoxCustomerDiskCopyProgress DeserializeDataBoxCustomerDiskCopyProgress(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override DataBoxCopyProgress PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<string> serialNumber = default;
-            Optional<DataBoxCopyStatus> copyStatus = default;
-            Optional<string> storageAccountName = default;
-            Optional<DataBoxJobTransferType> transferType = default;
-            Optional<DataAccountType> dataAccountType = default;
-            Optional<ResourceIdentifier> accountId = default;
-            Optional<long> bytesProcessed = default;
-            Optional<long> totalBytesToProcess = default;
-            Optional<long> filesProcessed = default;
-            Optional<long> totalFilesToProcess = default;
-            Optional<long> invalidFilesProcessed = default;
-            Optional<long> invalidFileBytesUploaded = default;
-            Optional<long> renamedContainerCount = default;
-            Optional<long> filesErroredOut = default;
-            Optional<long> directoriesErroredOut = default;
-            Optional<long> invalidDirectoriesProcessed = default;
-            Optional<bool> isEnumerationInProgress = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxCustomerDiskCopyProgress>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("serialNumber"))
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDataBoxCustomerDiskCopyProgress(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxCustomerDiskCopyProgress)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DataBoxCustomerDiskCopyProgress>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxCustomerDiskCopyProgress>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DataBoxCustomerDiskCopyProgress)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
+            if (options.Format != "W" && Optional.IsDefined(SerialNumber))
+            {
+                writer.WritePropertyName("serialNumber"u8);
+                writer.WriteStringValue(SerialNumber);
+            }
+            if (options.Format != "W" && Optional.IsDefined(CopyStatus))
+            {
+                writer.WritePropertyName("copyStatus"u8);
+                writer.WriteStringValue(CopyStatus.Value.ToString());
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxCustomerDiskCopyProgress IJsonModel<DataBoxCustomerDiskCopyProgress>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (DataBoxCustomerDiskCopyProgress)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override DataBoxCopyProgress JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxCustomerDiskCopyProgress>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DataBoxCustomerDiskCopyProgress)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDataBoxCustomerDiskCopyProgress(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DataBoxCustomerDiskCopyProgress DeserializeDataBoxCustomerDiskCopyProgress(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string storageAccountName = default;
+            DataBoxJobTransferType? transferType = default;
+            DataAccountType? dataAccountType = default;
+            ResourceIdentifier accountId = default;
+            long? bytesProcessed = default;
+            long? totalBytesToProcess = default;
+            long? filesProcessed = default;
+            long? totalFilesToProcess = default;
+            long? invalidFilesProcessed = default;
+            long? invalidFileBytesUploaded = default;
+            long? renamedContainerCount = default;
+            long? filesErroredOut = default;
+            long? directoriesErroredOut = default;
+            long? invalidDirectoriesProcessed = default;
+            bool? isEnumerationInProgress = default;
+            ResponseError error = default;
+            IReadOnlyList<CustomerResolutionCode> actions = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            string serialNumber = default;
+            DataBoxCopyStatus? copyStatus = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("storageAccountName"u8))
                 {
-                    serialNumber = property.Value.GetString();
+                    storageAccountName = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("copyStatus"))
+                if (prop.NameEquals("transferType"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    copyStatus = new DataBoxCopyStatus(property.Value.GetString());
+                    transferType = prop.Value.GetString().ToDataBoxJobTransferType();
                     continue;
                 }
-                if (property.NameEquals("storageAccountName"))
+                if (prop.NameEquals("dataAccountType"u8))
                 {
-                    storageAccountName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("transferType"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    transferType = property.Value.GetString().ToDataBoxJobTransferType();
+                    dataAccountType = prop.Value.GetString().ToDataAccountType();
                     continue;
                 }
-                if (property.NameEquals("dataAccountType"))
+                if (prop.NameEquals("accountId"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    dataAccountType = property.Value.GetString().ToDataAccountType();
+                    accountId = new ResourceIdentifier(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("accountId"))
+                if (prop.NameEquals("bytesProcessed"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    accountId = new ResourceIdentifier(property.Value.GetString());
+                    bytesProcessed = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("bytesProcessed"))
+                if (prop.NameEquals("totalBytesToProcess"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    bytesProcessed = property.Value.GetInt64();
+                    totalBytesToProcess = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("totalBytesToProcess"))
+                if (prop.NameEquals("filesProcessed"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    totalBytesToProcess = property.Value.GetInt64();
+                    filesProcessed = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("filesProcessed"))
+                if (prop.NameEquals("totalFilesToProcess"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    filesProcessed = property.Value.GetInt64();
+                    totalFilesToProcess = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("totalFilesToProcess"))
+                if (prop.NameEquals("invalidFilesProcessed"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    totalFilesToProcess = property.Value.GetInt64();
+                    invalidFilesProcessed = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("invalidFilesProcessed"))
+                if (prop.NameEquals("invalidFileBytesUploaded"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    invalidFilesProcessed = property.Value.GetInt64();
+                    invalidFileBytesUploaded = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("invalidFileBytesUploaded"))
+                if (prop.NameEquals("renamedContainerCount"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    invalidFileBytesUploaded = property.Value.GetInt64();
+                    renamedContainerCount = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("renamedContainerCount"))
+                if (prop.NameEquals("filesErroredOut"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    renamedContainerCount = property.Value.GetInt64();
+                    filesErroredOut = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("filesErroredOut"))
+                if (prop.NameEquals("directoriesErroredOut"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    filesErroredOut = property.Value.GetInt64();
+                    directoriesErroredOut = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("directoriesErroredOut"))
+                if (prop.NameEquals("invalidDirectoriesProcessed"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    directoriesErroredOut = property.Value.GetInt64();
+                    invalidDirectoriesProcessed = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("invalidDirectoriesProcessed"))
+                if (prop.NameEquals("isEnumerationInProgress"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    invalidDirectoriesProcessed = property.Value.GetInt64();
+                    isEnumerationInProgress = prop.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("isEnumerationInProgress"))
+                if (prop.NameEquals("error"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    isEnumerationInProgress = property.Value.GetBoolean();
+                    error = ModelReaderWriter.Read<ResponseError>(new BinaryData(Encoding.UTF8.GetBytes(prop.Value.GetRawText())), ModelSerializationExtensions.WireOptions, AzureResourceManagerDataBoxContext.Default);
                     continue;
+                }
+                if (prop.NameEquals("actions"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<CustomerResolutionCode> array = new List<CustomerResolutionCode>();
+                    foreach (var item in prop.Value.EnumerateArray())
+                    {
+                        array.Add(item.GetString().ToCustomerResolutionCode());
+                    }
+                    actions = array;
+                    continue;
+                }
+                if (prop.NameEquals("serialNumber"u8))
+                {
+                    serialNumber = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("copyStatus"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    copyStatus = new DataBoxCopyStatus(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new DataBoxCustomerDiskCopyProgress(storageAccountName.Value, Optional.ToNullable(transferType), Optional.ToNullable(dataAccountType), accountId.Value, Optional.ToNullable(bytesProcessed), Optional.ToNullable(totalBytesToProcess), Optional.ToNullable(filesProcessed), Optional.ToNullable(totalFilesToProcess), Optional.ToNullable(invalidFilesProcessed), Optional.ToNullable(invalidFileBytesUploaded), Optional.ToNullable(renamedContainerCount), Optional.ToNullable(filesErroredOut), Optional.ToNullable(directoriesErroredOut), Optional.ToNullable(invalidDirectoriesProcessed), Optional.ToNullable(isEnumerationInProgress), serialNumber.Value, Optional.ToNullable(copyStatus));
+            return new DataBoxCustomerDiskCopyProgress(
+                storageAccountName,
+                transferType,
+                dataAccountType,
+                accountId,
+                bytesProcessed,
+                totalBytesToProcess,
+                filesProcessed,
+                totalFilesToProcess,
+                invalidFilesProcessed,
+                invalidFileBytesUploaded,
+                renamedContainerCount,
+                filesErroredOut,
+                directoriesErroredOut,
+                invalidDirectoriesProcessed,
+                isEnumerationInProgress,
+                error,
+                actions ?? new ChangeTrackingList<CustomerResolutionCode>(),
+                additionalBinaryDataProperties,
+                serialNumber,
+                copyStatus);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DataBoxCustomerDiskCopyProgress>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxCustomerDiskCopyProgress>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxCustomerDiskCopyProgress)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxCustomerDiskCopyProgress IPersistableModel<DataBoxCustomerDiskCopyProgress>.Create(BinaryData data, ModelReaderWriterOptions options) => (DataBoxCustomerDiskCopyProgress)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DataBoxCustomerDiskCopyProgress>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

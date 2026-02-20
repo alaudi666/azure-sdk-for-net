@@ -2,14 +2,18 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Linq;
+using System.ComponentModel;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Storage.Common;
 using Microsoft.Azure.WebJobs.Extensions.Storage.Common.Listeners;
 using Microsoft.Azure.WebJobs.Extensions.Storage.Queues;
 using Microsoft.Azure.WebJobs.Extensions.Storage.Queues.Config;
+using Microsoft.Azure.WebJobs.Extensions.Storage.Queues.Listeners;
 using Microsoft.Azure.WebJobs.Extensions.Storage.Queues.Triggers;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Azure.WebJobs.Host.Queues;
+using Microsoft.Azure.WebJobs.Host.Scale;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -53,13 +57,36 @@ namespace Microsoft.Extensions.Hosting
             builder.Services.TryAddSingleton<IQueueProcessorFactory, DefaultQueueProcessorFactory>();
 
             builder.Services.AddOptions<QueuesOptions>()
-                .Configure<IHostingEnvironment>((options, env) =>
+                .Configure<IHostEnvironment>((options, env) =>
                 {
                     if (env.IsDevelopment() && options.MaxPollingInterval == QueuePollingIntervals.DefaultMaximum)
                     {
                         options.MaxPollingInterval = TimeSpan.FromSeconds(2);
                     }
                 });
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds the Storage Queues extension to the provided <see cref="IWebJobsBuilder"/>.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="triggerMetadata">Trigger metadata.</param>
+        /// <returns></returns>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static IWebJobsBuilder AddAzureStorageQueuesScaleForTrigger(this IWebJobsBuilder builder, TriggerMetadata triggerMetadata)
+        {
+            // We need to register an instance of QueueScalerProvider in the DI container and then map it to the interfaces IScaleMonitorProvider and ITargetScalerProvider.
+            // Since there can be more than one instance of QueueScalerProvider, we have to store a reference to the created instance to filter it out later.
+            QueueScalerProvider queueScalerProvider = null;
+            builder.Services.AddSingleton(serviceProvider =>
+            {
+                queueScalerProvider = new QueueScalerProvider(serviceProvider, triggerMetadata);
+                return queueScalerProvider;
+            });
+            builder.Services.AddSingleton<IScaleMonitorProvider>(serviceProvider => serviceProvider.GetServices<QueueScalerProvider>().Single(x => x == queueScalerProvider));
+            builder.Services.AddSingleton<ITargetScalerProvider>(serviceProvider => serviceProvider.GetServices<QueueScalerProvider>().Single(x => x == queueScalerProvider));
 
             return builder;
         }

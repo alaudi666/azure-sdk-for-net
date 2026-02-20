@@ -5,28 +5,40 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.Quota;
+
 namespace Azure.ResourceManager.Quota.Models
 {
     /// <summary> Error details. </summary>
     public partial class ServiceErrorDetail
     {
-        /// <summary> Initializes a new instance of ServiceErrorDetail. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ServiceErrorDetail"/>. </summary>
         internal ServiceErrorDetail()
         {
         }
 
-        /// <summary> Initializes a new instance of ServiceErrorDetail. </summary>
+        /// <summary> Initializes a new instance of <see cref="ServiceErrorDetail"/>. </summary>
         /// <param name="code"> Error code. </param>
         /// <param name="message"> Error message. </param>
-        internal ServiceErrorDetail(string code, string message)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ServiceErrorDetail(string code, string message, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Code = code;
             Message = message;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Error code. </summary>
+        [WirePath("code")]
         public string Code { get; }
+
         /// <summary> Error message. </summary>
+        [WirePath("message")]
         public string Message { get; }
     }
 }

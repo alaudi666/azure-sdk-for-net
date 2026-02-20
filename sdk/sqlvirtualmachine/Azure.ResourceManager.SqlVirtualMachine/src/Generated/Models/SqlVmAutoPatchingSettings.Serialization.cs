@@ -5,89 +5,207 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.SqlVirtualMachine;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
-    public partial class SqlVmAutoPatchingSettings : IUtf8JsonSerializable
+    /// <summary> Set a patching window during which Windows and SQL patches will be applied. </summary>
+    public partial class SqlVmAutoPatchingSettings : IJsonModel<SqlVmAutoPatchingSettings>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual SqlVmAutoPatchingSettings PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlVmAutoPatchingSettings>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeSqlVmAutoPatchingSettings(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SqlVmAutoPatchingSettings)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<SqlVmAutoPatchingSettings>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlVmAutoPatchingSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SqlVmAutoPatchingSettings)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(IsEnabled))
             {
-                writer.WritePropertyName("enable");
+                writer.WritePropertyName("enable"u8);
                 writer.WriteBooleanValue(IsEnabled.Value);
             }
             if (Optional.IsDefined(DayOfWeek))
             {
-                writer.WritePropertyName("dayOfWeek");
+                writer.WritePropertyName("dayOfWeek"u8);
                 writer.WriteStringValue(DayOfWeek.Value.ToSerialString());
             }
             if (Optional.IsDefined(MaintenanceWindowStartingHour))
             {
-                writer.WritePropertyName("maintenanceWindowStartingHour");
+                writer.WritePropertyName("maintenanceWindowStartingHour"u8);
                 writer.WriteNumberValue(MaintenanceWindowStartingHour.Value);
             }
             if (Optional.IsDefined(MaintenanceWindowDurationInMinutes))
             {
-                writer.WritePropertyName("maintenanceWindowDuration");
+                writer.WritePropertyName("maintenanceWindowDuration"u8);
                 writer.WriteNumberValue(MaintenanceWindowDurationInMinutes.Value);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static SqlVmAutoPatchingSettings DeserializeSqlVmAutoPatchingSettings(JsonElement element)
-        {
-            Optional<bool> enable = default;
-            Optional<SqlVmAutoPatchingDayOfWeek> dayOfWeek = default;
-            Optional<int> maintenanceWindowStartingHour = default;
-            Optional<int> maintenanceWindowDuration = default;
-            foreach (var property in element.EnumerateObject())
+            if (Optional.IsDefined(AdditionalVmPatch))
             {
-                if (property.NameEquals("enable"))
+                writer.WritePropertyName("additionalVmPatch"u8);
+                writer.WriteStringValue(AdditionalVmPatch.Value.ToString());
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    enable = property.Value.GetBoolean();
-                    continue;
-                }
-                if (property.NameEquals("dayOfWeek"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    dayOfWeek = property.Value.GetString().ToSqlVmAutoPatchingDayOfWeek();
-                    continue;
-                }
-                if (property.NameEquals("maintenanceWindowStartingHour"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    maintenanceWindowStartingHour = property.Value.GetInt32();
-                    continue;
-                }
-                if (property.NameEquals("maintenanceWindowDuration"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    maintenanceWindowDuration = property.Value.GetInt32();
-                    continue;
+#endif
                 }
             }
-            return new SqlVmAutoPatchingSettings(Optional.ToNullable(enable), Optional.ToNullable(dayOfWeek), Optional.ToNullable(maintenanceWindowStartingHour), Optional.ToNullable(maintenanceWindowDuration));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        SqlVmAutoPatchingSettings IJsonModel<SqlVmAutoPatchingSettings>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual SqlVmAutoPatchingSettings JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlVmAutoPatchingSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SqlVmAutoPatchingSettings)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSqlVmAutoPatchingSettings(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static SqlVmAutoPatchingSettings DeserializeSqlVmAutoPatchingSettings(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            bool? isEnabled = default;
+            SqlVmAutoPatchingDayOfWeek? dayOfWeek = default;
+            int? maintenanceWindowStartingHour = default;
+            int? maintenanceWindowDurationInMinutes = default;
+            SqlVmAdditionalVmPatch? additionalVmPatch = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("enable"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    isEnabled = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (prop.NameEquals("dayOfWeek"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    dayOfWeek = prop.Value.GetString().ToSqlVmAutoPatchingDayOfWeek();
+                    continue;
+                }
+                if (prop.NameEquals("maintenanceWindowStartingHour"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    maintenanceWindowStartingHour = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("maintenanceWindowDuration"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    maintenanceWindowDurationInMinutes = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("additionalVmPatch"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    additionalVmPatch = new SqlVmAdditionalVmPatch(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new SqlVmAutoPatchingSettings(
+                isEnabled,
+                dayOfWeek,
+                maintenanceWindowStartingHour,
+                maintenanceWindowDurationInMinutes,
+                additionalVmPatch,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<SqlVmAutoPatchingSettings>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlVmAutoPatchingSettings>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerSqlVirtualMachineContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(SqlVmAutoPatchingSettings)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        SqlVmAutoPatchingSettings IPersistableModel<SqlVmAutoPatchingSettings>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<SqlVmAutoPatchingSettings>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

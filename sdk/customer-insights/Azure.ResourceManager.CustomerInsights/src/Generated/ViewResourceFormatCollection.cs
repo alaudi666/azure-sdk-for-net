@@ -7,20 +7,18 @@
 
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.CustomerInsights
 {
     /// <summary>
-    /// A class representing a collection of <see cref="ViewResourceFormatResource" /> and their operations.
-    /// Each <see cref="ViewResourceFormatResource" /> in the collection will belong to the same instance of <see cref="HubResource" />.
-    /// To get a <see cref="ViewResourceFormatCollection" /> instance call the GetViewResourceFormats method from an instance of <see cref="HubResource" />.
+    /// A class representing a collection of <see cref="ViewResourceFormatResource"/> and their operations.
+    /// Each <see cref="ViewResourceFormatResource"/> in the collection will belong to the same instance of <see cref="HubResource"/>.
+    /// To get a <see cref="ViewResourceFormatCollection"/> instance call the GetViewResourceFormats method from an instance of <see cref="HubResource"/>.
     /// </summary>
     public partial class ViewResourceFormatCollection : ArmCollection
     {
@@ -53,8 +51,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Creates a view or updates an existing view in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}
-        /// Operation Id: Views_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Views_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ViewResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="viewName"> The name of the view. </param>
@@ -72,7 +86,9 @@ namespace Azure.ResourceManager.CustomerInsights
             try
             {
                 var response = await _viewResourceFormatViewsRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, viewName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new CustomerInsightsArmOperation<ViewResourceFormatResource>(Response.FromValue(new ViewResourceFormatResource(Client, response), response.GetRawResponse()));
+                var uri = _viewResourceFormatViewsRestClient.CreateCreateOrUpdateRequestUri(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, viewName, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new CustomerInsightsArmOperation<ViewResourceFormatResource>(Response.FromValue(new ViewResourceFormatResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -86,8 +102,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Creates a view or updates an existing view in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}
-        /// Operation Id: Views_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Views_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ViewResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="viewName"> The name of the view. </param>
@@ -105,7 +137,9 @@ namespace Azure.ResourceManager.CustomerInsights
             try
             {
                 var response = _viewResourceFormatViewsRestClient.CreateOrUpdate(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, viewName, data, cancellationToken);
-                var operation = new CustomerInsightsArmOperation<ViewResourceFormatResource>(Response.FromValue(new ViewResourceFormatResource(Client, response), response.GetRawResponse()));
+                var uri = _viewResourceFormatViewsRestClient.CreateCreateOrUpdateRequestUri(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, viewName, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new CustomerInsightsArmOperation<ViewResourceFormatResource>(Response.FromValue(new ViewResourceFormatResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -119,8 +153,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets a view in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}
-        /// Operation Id: Views_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Views_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ViewResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="viewName"> The name of the view. </param>
         /// <param name="userId"> The user ID. Use * to retrieve hub level view. </param>
@@ -150,8 +200,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets a view in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}
-        /// Operation Id: Views_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Views_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ViewResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="viewName"> The name of the view. </param>
         /// <param name="userId"> The user ID. Use * to retrieve hub level view. </param>
@@ -181,100 +247,92 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets all available views for given user in the specified hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views
-        /// Operation Id: Views_ListByHub
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Views_ListByHub</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ViewResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="userId"> The user ID. Use * to retrieve hub level views. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="userId"/> is null. </exception>
-        /// <returns> An async collection of <see cref="ViewResourceFormatResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="ViewResourceFormatResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<ViewResourceFormatResource> GetAllAsync(string userId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(userId, nameof(userId));
 
-            async Task<Page<ViewResourceFormatResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _viewResourceFormatViewsClientDiagnostics.CreateScope("ViewResourceFormatCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _viewResourceFormatViewsRestClient.ListByHubAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, userId, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new ViewResourceFormatResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<ViewResourceFormatResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _viewResourceFormatViewsClientDiagnostics.CreateScope("ViewResourceFormatCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _viewResourceFormatViewsRestClient.ListByHubNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, userId, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new ViewResourceFormatResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _viewResourceFormatViewsRestClient.CreateListByHubRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, userId);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _viewResourceFormatViewsRestClient.CreateListByHubNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, userId);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new ViewResourceFormatResource(Client, ViewResourceFormatData.DeserializeViewResourceFormatData(e)), _viewResourceFormatViewsClientDiagnostics, Pipeline, "ViewResourceFormatCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Gets all available views for given user in the specified hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views
-        /// Operation Id: Views_ListByHub
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Views_ListByHub</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ViewResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="userId"> The user ID. Use * to retrieve hub level views. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="userId"/> is null. </exception>
-        /// <returns> A collection of <see cref="ViewResourceFormatResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="ViewResourceFormatResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<ViewResourceFormatResource> GetAll(string userId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(userId, nameof(userId));
 
-            Page<ViewResourceFormatResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _viewResourceFormatViewsClientDiagnostics.CreateScope("ViewResourceFormatCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _viewResourceFormatViewsRestClient.ListByHub(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, userId, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new ViewResourceFormatResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<ViewResourceFormatResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _viewResourceFormatViewsClientDiagnostics.CreateScope("ViewResourceFormatCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _viewResourceFormatViewsRestClient.ListByHubNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, userId, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new ViewResourceFormatResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _viewResourceFormatViewsRestClient.CreateListByHubRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, userId);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _viewResourceFormatViewsRestClient.CreateListByHubNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, userId);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new ViewResourceFormatResource(Client, ViewResourceFormatData.DeserializeViewResourceFormatData(e)), _viewResourceFormatViewsClientDiagnostics, Pipeline, "ViewResourceFormatCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}
-        /// Operation Id: Views_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Views_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ViewResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="viewName"> The name of the view. </param>
         /// <param name="userId"> The user ID. Use * to retrieve hub level view. </param>
@@ -302,8 +360,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}
-        /// Operation Id: Views_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Views_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ViewResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="viewName"> The name of the view. </param>
         /// <param name="userId"> The user ID. Use * to retrieve hub level view. </param>
@@ -321,6 +395,100 @@ namespace Azure.ResourceManager.CustomerInsights
             {
                 var response = _viewResourceFormatViewsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, viewName, userId, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Views_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ViewResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="viewName"> The name of the view. </param>
+        /// <param name="userId"> The user ID. Use * to retrieve hub level view. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="viewName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="viewName"/> or <paramref name="userId"/> is null. </exception>
+        public virtual async Task<NullableResponse<ViewResourceFormatResource>> GetIfExistsAsync(string viewName, string userId, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(viewName, nameof(viewName));
+            Argument.AssertNotNull(userId, nameof(userId));
+
+            using var scope = _viewResourceFormatViewsClientDiagnostics.CreateScope("ViewResourceFormatCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _viewResourceFormatViewsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, viewName, userId, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<ViewResourceFormatResource>(response.GetRawResponse());
+                return Response.FromValue(new ViewResourceFormatResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Views_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ViewResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="viewName"> The name of the view. </param>
+        /// <param name="userId"> The user ID. Use * to retrieve hub level view. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="viewName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="viewName"/> or <paramref name="userId"/> is null. </exception>
+        public virtual NullableResponse<ViewResourceFormatResource> GetIfExists(string viewName, string userId, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(viewName, nameof(viewName));
+            Argument.AssertNotNull(userId, nameof(userId));
+
+            using var scope = _viewResourceFormatViewsClientDiagnostics.CreateScope("ViewResourceFormatCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _viewResourceFormatViewsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, viewName, userId, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<ViewResourceFormatResource>(response.GetRawResponse());
+                return Response.FromValue(new ViewResourceFormatResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

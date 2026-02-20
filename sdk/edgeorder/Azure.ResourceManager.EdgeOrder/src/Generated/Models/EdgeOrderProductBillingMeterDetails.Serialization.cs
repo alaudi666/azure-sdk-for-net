@@ -5,53 +5,199 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
-    public partial class EdgeOrderProductBillingMeterDetails
+    /// <summary> Holds billing meter details for each type of billing. </summary>
+    public partial class EdgeOrderProductBillingMeterDetails : IJsonModel<EdgeOrderProductBillingMeterDetails>
     {
-        internal static EdgeOrderProductBillingMeterDetails DeserializeEdgeOrderProductBillingMeterDetails(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual EdgeOrderProductBillingMeterDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<string> name = default;
-            Optional<EdgeOrderProductMeterDetails> meterDetails = default;
-            Optional<EdgeOrderProductMeteringType> meteringType = default;
-            Optional<string> frequency = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<EdgeOrderProductBillingMeterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("name"))
-                {
-                    name = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("meterDetails"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeEdgeOrderProductBillingMeterDetails(document.RootElement, options);
                     }
-                    meterDetails = EdgeOrderProductMeterDetails.DeserializeEdgeOrderProductMeterDetails(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("meteringType"))
+                default:
+                    throw new FormatException($"The model {nameof(EdgeOrderProductBillingMeterDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<EdgeOrderProductBillingMeterDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<EdgeOrderProductBillingMeterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(EdgeOrderProductBillingMeterDetails)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(Name))
+            {
+                writer.WritePropertyName("name"u8);
+                writer.WriteStringValue(Name);
+            }
+            if (options.Format != "W" && Optional.IsDefined(MeterDetails))
+            {
+                writer.WritePropertyName("meterDetails"u8);
+                writer.WriteObjectValue(MeterDetails, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(MeteringType))
+            {
+                writer.WritePropertyName("meteringType"u8);
+                writer.WriteStringValue(MeteringType.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(Frequency))
+            {
+                writer.WritePropertyName("frequency"u8);
+                writer.WriteStringValue(Frequency);
+            }
+            if (options.Format != "W" && Optional.IsDefined(TermTypeDetails))
+            {
+                writer.WritePropertyName("termTypeDetails"u8);
+                writer.WriteObjectValue(TermTypeDetails, options);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    meteringType = new EdgeOrderProductMeteringType(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("frequency"))
-                {
-                    frequency = property.Value.GetString();
-                    continue;
+#endif
                 }
             }
-            return new EdgeOrderProductBillingMeterDetails(name.Value, meterDetails.Value, Optional.ToNullable(meteringType), frequency.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        EdgeOrderProductBillingMeterDetails IJsonModel<EdgeOrderProductBillingMeterDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual EdgeOrderProductBillingMeterDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<EdgeOrderProductBillingMeterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(EdgeOrderProductBillingMeterDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeEdgeOrderProductBillingMeterDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static EdgeOrderProductBillingMeterDetails DeserializeEdgeOrderProductBillingMeterDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string name = default;
+            EdgeOrderProductMeterDetails meterDetails = default;
+            EdgeOrderProductMeteringType? meteringType = default;
+            string frequency = default;
+            EdgeOrderTermTypeDetails termTypeDetails = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("name"u8))
+                {
+                    name = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("meterDetails"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    meterDetails = EdgeOrderProductMeterDetails.DeserializeEdgeOrderProductMeterDetails(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("meteringType"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    meteringType = new EdgeOrderProductMeteringType(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("frequency"u8))
+                {
+                    frequency = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("termTypeDetails"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    termTypeDetails = EdgeOrderTermTypeDetails.DeserializeEdgeOrderTermTypeDetails(prop.Value, options);
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new EdgeOrderProductBillingMeterDetails(
+                name,
+                meterDetails,
+                meteringType,
+                frequency,
+                termTypeDetails,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<EdgeOrderProductBillingMeterDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<EdgeOrderProductBillingMeterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerEdgeOrderContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(EdgeOrderProductBillingMeterDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        EdgeOrderProductBillingMeterDetails IPersistableModel<EdgeOrderProductBillingMeterDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<EdgeOrderProductBillingMeterDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

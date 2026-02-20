@@ -5,137 +5,239 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    public partial class ApplicationUpgradePolicy : IUtf8JsonSerializable
+    /// <summary> Describes the policy for a monitored application upgrade. </summary>
+    public partial class ApplicationUpgradePolicy : IJsonModel<ApplicationUpgradePolicy>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ApplicationUpgradePolicy PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ApplicationUpgradePolicy>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeApplicationUpgradePolicy(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ApplicationUpgradePolicy)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ApplicationUpgradePolicy>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ApplicationUpgradePolicy>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ApplicationUpgradePolicy)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(ApplicationHealthPolicy))
             {
-                writer.WritePropertyName("applicationHealthPolicy");
-                writer.WriteObjectValue(ApplicationHealthPolicy);
+                writer.WritePropertyName("applicationHealthPolicy"u8);
+                writer.WriteObjectValue(ApplicationHealthPolicy, options);
             }
             if (Optional.IsDefined(ForceRestart))
             {
-                writer.WritePropertyName("forceRestart");
+                writer.WritePropertyName("forceRestart"u8);
                 writer.WriteBooleanValue(ForceRestart.Value);
             }
             if (Optional.IsDefined(RollingUpgradeMonitoringPolicy))
             {
-                writer.WritePropertyName("rollingUpgradeMonitoringPolicy");
-                writer.WriteObjectValue(RollingUpgradeMonitoringPolicy);
+                writer.WritePropertyName("rollingUpgradeMonitoringPolicy"u8);
+                writer.WriteObjectValue(RollingUpgradeMonitoringPolicy, options);
             }
             if (Optional.IsDefined(InstanceCloseDelayDurationInSeconds))
             {
-                writer.WritePropertyName("instanceCloseDelayDuration");
+                writer.WritePropertyName("instanceCloseDelayDuration"u8);
                 writer.WriteNumberValue(InstanceCloseDelayDurationInSeconds.Value);
             }
             if (Optional.IsDefined(UpgradeMode))
             {
-                writer.WritePropertyName("upgradeMode");
+                writer.WritePropertyName("upgradeMode"u8);
                 writer.WriteStringValue(UpgradeMode.Value.ToString());
             }
             if (Optional.IsDefined(UpgradeReplicaSetCheckTimeout))
             {
-                writer.WritePropertyName("upgradeReplicaSetCheckTimeout");
+                writer.WritePropertyName("upgradeReplicaSetCheckTimeout"u8);
                 writer.WriteNumberValue(UpgradeReplicaSetCheckTimeout.Value);
             }
             if (Optional.IsDefined(RecreateApplication))
             {
-                writer.WritePropertyName("recreateApplication");
+                writer.WritePropertyName("recreateApplication"u8);
                 writer.WriteBooleanValue(RecreateApplication.Value);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static ApplicationUpgradePolicy DeserializeApplicationUpgradePolicy(JsonElement element)
-        {
-            Optional<ApplicationHealthPolicy> applicationHealthPolicy = default;
-            Optional<bool> forceRestart = default;
-            Optional<RollingUpgradeMonitoringPolicy> rollingUpgradeMonitoringPolicy = default;
-            Optional<long> instanceCloseDelayDuration = default;
-            Optional<RollingUpgradeMode> upgradeMode = default;
-            Optional<long> upgradeReplicaSetCheckTimeout = default;
-            Optional<bool> recreateApplication = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("applicationHealthPolicy"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    applicationHealthPolicy = ApplicationHealthPolicy.DeserializeApplicationHealthPolicy(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("forceRestart"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    forceRestart = property.Value.GetBoolean();
-                    continue;
-                }
-                if (property.NameEquals("rollingUpgradeMonitoringPolicy"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    rollingUpgradeMonitoringPolicy = RollingUpgradeMonitoringPolicy.DeserializeRollingUpgradeMonitoringPolicy(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("instanceCloseDelayDuration"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    instanceCloseDelayDuration = property.Value.GetInt64();
-                    continue;
-                }
-                if (property.NameEquals("upgradeMode"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    upgradeMode = new RollingUpgradeMode(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("upgradeReplicaSetCheckTimeout"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    upgradeReplicaSetCheckTimeout = property.Value.GetInt64();
-                    continue;
-                }
-                if (property.NameEquals("recreateApplication"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    recreateApplication = property.Value.GetBoolean();
-                    continue;
+#endif
                 }
             }
-            return new ApplicationUpgradePolicy(applicationHealthPolicy.Value, Optional.ToNullable(forceRestart), rollingUpgradeMonitoringPolicy.Value, Optional.ToNullable(instanceCloseDelayDuration), Optional.ToNullable(upgradeMode), Optional.ToNullable(upgradeReplicaSetCheckTimeout), Optional.ToNullable(recreateApplication));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ApplicationUpgradePolicy IJsonModel<ApplicationUpgradePolicy>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ApplicationUpgradePolicy JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ApplicationUpgradePolicy>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ApplicationUpgradePolicy)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeApplicationUpgradePolicy(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ApplicationUpgradePolicy DeserializeApplicationUpgradePolicy(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ApplicationHealthPolicy applicationHealthPolicy = default;
+            bool? forceRestart = default;
+            RollingUpgradeMonitoringPolicy rollingUpgradeMonitoringPolicy = default;
+            long? instanceCloseDelayDurationInSeconds = default;
+            RollingUpgradeMode? upgradeMode = default;
+            long? upgradeReplicaSetCheckTimeout = default;
+            bool? recreateApplication = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("applicationHealthPolicy"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    applicationHealthPolicy = ApplicationHealthPolicy.DeserializeApplicationHealthPolicy(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("forceRestart"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    forceRestart = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (prop.NameEquals("rollingUpgradeMonitoringPolicy"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    rollingUpgradeMonitoringPolicy = RollingUpgradeMonitoringPolicy.DeserializeRollingUpgradeMonitoringPolicy(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("instanceCloseDelayDuration"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    instanceCloseDelayDurationInSeconds = prop.Value.GetInt64();
+                    continue;
+                }
+                if (prop.NameEquals("upgradeMode"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    upgradeMode = new RollingUpgradeMode(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("upgradeReplicaSetCheckTimeout"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    upgradeReplicaSetCheckTimeout = prop.Value.GetInt64();
+                    continue;
+                }
+                if (prop.NameEquals("recreateApplication"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    recreateApplication = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new ApplicationUpgradePolicy(
+                applicationHealthPolicy,
+                forceRestart,
+                rollingUpgradeMonitoringPolicy,
+                instanceCloseDelayDurationInSeconds,
+                upgradeMode,
+                upgradeReplicaSetCheckTimeout,
+                recreateApplication,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ApplicationUpgradePolicy>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ApplicationUpgradePolicy>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerServiceFabricManagedClustersContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ApplicationUpgradePolicy)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ApplicationUpgradePolicy IPersistableModel<ApplicationUpgradePolicy>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ApplicationUpgradePolicy>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

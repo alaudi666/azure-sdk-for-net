@@ -2,22 +2,10 @@
 
 trigger: none
 
-pr:
-  branches:
-    include:
-    - main
-    - feature/*
-    - hotfix/*
-    - release/*
-  paths:
-    include:
-    - sdk/ProviderNameLowercase/ci.mgmt.yml
-    - sdk/ProviderNameLowercase/Azure.ResourceManager.Template/
-
 extends:
   template: /eng/pipelines/templates/stages/archetype-sdk-client.yml
   parameters:
-    ServiceDirectory: ProviderNameLowercase
+    ServiceDirectory: LowercaseProviderShortName
     LimitForPullRequest: true
     Artifacts:
     - name: Azure.ResourceManager.Template

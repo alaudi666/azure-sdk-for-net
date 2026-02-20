@@ -5,31 +5,67 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Auto pause properties
-    /// Serialized Name: AutoPauseProperties
-    /// </summary>
+    /// <summary> Auto pause properties. </summary>
     public partial class MachineLearningAutoPauseProperties
     {
-        /// <summary> Initializes a new instance of MachineLearningAutoPauseProperties. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="MachineLearningAutoPauseProperties"/>. </summary>
         public MachineLearningAutoPauseProperties()
         {
         }
 
-        /// <summary> Initializes a new instance of MachineLearningAutoPauseProperties. </summary>
-        /// <param name="delayInMinutes"> Serialized Name: AutoPauseProperties.delayInMinutes. </param>
-        /// <param name="isEnabled"> Serialized Name: AutoPauseProperties.enabled. </param>
-        internal MachineLearningAutoPauseProperties(int? delayInMinutes, bool? isEnabled)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningAutoPauseProperties"/>. </summary>
+        /// <param name="delayInMinutes"></param>
+        /// <param name="isEnabled"></param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal MachineLearningAutoPauseProperties(int? delayInMinutes, bool? isEnabled, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             DelayInMinutes = delayInMinutes;
             IsEnabled = isEnabled;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary> Serialized Name: AutoPauseProperties.delayInMinutes. </summary>
+        /// <summary> Gets or sets the delay in minutes. </summary>
+        [WirePath("delayInMinutes")]
         public int? DelayInMinutes { get; set; }
-        /// <summary> Serialized Name: AutoPauseProperties.enabled. </summary>
+        /// <summary> Gets or sets the is enabled. </summary>
+        [WirePath("enabled")]
         public bool? IsEnabled { get; set; }
     }
 }

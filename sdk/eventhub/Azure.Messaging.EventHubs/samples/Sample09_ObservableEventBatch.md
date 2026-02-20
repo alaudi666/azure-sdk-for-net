@@ -93,10 +93,14 @@ An `EventHubProducerClient` is safe to cache and use for the lifetime of the app
 ## Accessing the EventData Instances
 
 ```C# Snippet:Sample09_AccessingEventData
-var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
 var eventHubName = "<< NAME OF THE EVENT HUB >>";
+var credential = new DefaultAzureCredential();
 
-var producer = new EventHubProducerClient(connectionString, eventHubName);
+var producer = new EventHubProducerClient(
+    fullyQualifiedNamespace,
+    eventHubName,
+    credential);
 
 try
 {
@@ -107,11 +111,11 @@ try
 
     for (var index = 0; index < 5; ++index)
     {
-        var eventData = new EventData($"Event #{ index }");
+        var eventData = new EventData($"Event #{index}");
 
         if (!observableBatch.TryAdd(eventData))
         {
-            throw new Exception($"The event at { index } could not be added.");
+            throw new Exception($"The event at {index} could not be added.");
         }
     }
 
@@ -119,7 +123,7 @@ try
 
     foreach (var singleEvent in observableBatch.Events)
     {
-        Debug.WriteLine($"Added event { singleEvent.EventBody } at time { singleEvent.EnqueuedTime }");
+        Debug.WriteLine($"Added event {singleEvent.EventBody} at time {singleEvent.EnqueuedTime}");
     }
 
     await producer.SendAsync(observableBatch);
@@ -135,10 +139,14 @@ finally
 This sample demonstrates how to add an `EventData` identification property that can be used to verify that a given event ID was added to the observable batch. 
 
 ```C# Snippet:Sample09_CheckingBatch
-var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
 var eventHubName = "<< NAME OF THE EVENT HUB >>";
+var credential = new DefaultAzureCredential();
 
-var producer = new EventHubProducerClient(connectionString, eventHubName);
+var producer = new EventHubProducerClient(
+    fullyQualifiedNamespace,
+    eventHubName,
+    credential);
 
 try
 {
@@ -149,14 +157,14 @@ try
 
     for (var index = 0; index < 5; ++index)
     {
-        var eventData = new EventData($"Event #{ index }")
+        var eventData = new EventData($"Event #{index}")
         {
             MessageId = index.ToString()
         };
 
         if (!observableBatch.TryAdd(eventData))
         {
-            throw new Exception($"The event at { index } could not be added.");
+            throw new Exception($"The event at {index} could not be added.");
         }
     }
 

@@ -5,49 +5,155 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    public partial class ServiceTypeHealthPolicy : IUtf8JsonSerializable
+    /// <summary> Represents the health policy used to evaluate the health of services belonging to a service type. </summary>
+    public partial class ServiceTypeHealthPolicy : IJsonModel<ServiceTypeHealthPolicy>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="ServiceTypeHealthPolicy"/> for deserialization. </summary>
+        internal ServiceTypeHealthPolicy()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServiceTypeHealthPolicy PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServiceTypeHealthPolicy>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeServiceTypeHealthPolicy(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ServiceTypeHealthPolicy)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ServiceTypeHealthPolicy>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("maxPercentUnhealthyServices");
-            writer.WriteNumberValue(MaxPercentUnhealthyServices);
-            writer.WritePropertyName("maxPercentUnhealthyPartitionsPerService");
-            writer.WriteNumberValue(MaxPercentUnhealthyPartitionsPerService);
-            writer.WritePropertyName("maxPercentUnhealthyReplicasPerPartition");
-            writer.WriteNumberValue(MaxPercentUnhealthyReplicasPerPartition);
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static ServiceTypeHealthPolicy DeserializeServiceTypeHealthPolicy(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            string format = options.Format == "W" ? ((IPersistableModel<ServiceTypeHealthPolicy>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServiceTypeHealthPolicy)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("maxPercentUnhealthyServices"u8);
+            writer.WriteNumberValue(MaxPercentUnhealthyServices);
+            writer.WritePropertyName("maxPercentUnhealthyPartitionsPerService"u8);
+            writer.WriteNumberValue(MaxPercentUnhealthyPartitionsPerService);
+            writer.WritePropertyName("maxPercentUnhealthyReplicasPerPartition"u8);
+            writer.WriteNumberValue(MaxPercentUnhealthyReplicasPerPartition);
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServiceTypeHealthPolicy IJsonModel<ServiceTypeHealthPolicy>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServiceTypeHealthPolicy JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServiceTypeHealthPolicy>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServiceTypeHealthPolicy)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeServiceTypeHealthPolicy(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ServiceTypeHealthPolicy DeserializeServiceTypeHealthPolicy(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             int maxPercentUnhealthyServices = default;
             int maxPercentUnhealthyPartitionsPerService = default;
             int maxPercentUnhealthyReplicasPerPartition = default;
-            foreach (var property in element.EnumerateObject())
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
             {
-                if (property.NameEquals("maxPercentUnhealthyServices"))
+                if (prop.NameEquals("maxPercentUnhealthyServices"u8))
                 {
-                    maxPercentUnhealthyServices = property.Value.GetInt32();
+                    maxPercentUnhealthyServices = prop.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("maxPercentUnhealthyPartitionsPerService"))
+                if (prop.NameEquals("maxPercentUnhealthyPartitionsPerService"u8))
                 {
-                    maxPercentUnhealthyPartitionsPerService = property.Value.GetInt32();
+                    maxPercentUnhealthyPartitionsPerService = prop.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("maxPercentUnhealthyReplicasPerPartition"))
+                if (prop.NameEquals("maxPercentUnhealthyReplicasPerPartition"u8))
                 {
-                    maxPercentUnhealthyReplicasPerPartition = property.Value.GetInt32();
+                    maxPercentUnhealthyReplicasPerPartition = prop.Value.GetInt32();
                     continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new ServiceTypeHealthPolicy(maxPercentUnhealthyServices, maxPercentUnhealthyPartitionsPerService, maxPercentUnhealthyReplicasPerPartition);
+            return new ServiceTypeHealthPolicy(maxPercentUnhealthyServices, maxPercentUnhealthyPartitionsPerService, maxPercentUnhealthyReplicasPerPartition, additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ServiceTypeHealthPolicy>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServiceTypeHealthPolicy>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerServiceFabricManagedClustersContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ServiceTypeHealthPolicy)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServiceTypeHealthPolicy IPersistableModel<ServiceTypeHealthPolicy>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ServiceTypeHealthPolicy>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

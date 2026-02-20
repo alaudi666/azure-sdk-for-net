@@ -34,7 +34,9 @@ namespace Azure.Storage.Cryptography
         {
             TransformMode = mode;
 
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
+#if NET8_0_OR_GREATER
+            _gcm = new AesGcm(key, TagLength);
+#elif NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_1_OR_GREATER
             _gcm = new AesGcm(key);
 #else
             _gcm = new AesGcmWindows(key);
@@ -80,7 +82,8 @@ namespace Azure.Storage.Cryptography
                         output.Slice(0, dataLength));
                     return input.Length - NonceLength - TagLength;
 
-                default: throw new InvalidOperationException("TransformMode invalid for this operation.");
+                default:
+                    throw new InvalidOperationException("TransformMode invalid for this operation.");
             }
         }
 

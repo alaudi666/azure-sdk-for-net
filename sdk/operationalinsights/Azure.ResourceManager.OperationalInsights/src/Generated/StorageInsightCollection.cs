@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.OperationalInsights
 {
     /// <summary>
-    /// A class representing a collection of <see cref="StorageInsightResource" /> and their operations.
-    /// Each <see cref="StorageInsightResource" /> in the collection will belong to the same instance of <see cref="OperationalInsightsWorkspaceResource" />.
-    /// To get a <see cref="StorageInsightCollection" /> instance call the GetStorageInsights method from an instance of <see cref="OperationalInsightsWorkspaceResource" />.
+    /// A class representing a collection of <see cref="StorageInsightResource"/> and their operations.
+    /// Each <see cref="StorageInsightResource"/> in the collection will belong to the same instance of <see cref="OperationalInsightsWorkspaceResource"/>.
+    /// To get a <see cref="StorageInsightCollection"/> instance call the GetStorageInsights method from an instance of <see cref="OperationalInsightsWorkspaceResource"/>.
     /// </summary>
     public partial class StorageInsightCollection : ArmCollection, IEnumerable<StorageInsightResource>, IAsyncEnumerable<StorageInsightResource>
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.OperationalInsights
 
         /// <summary>
         /// Create or update a storage insight.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}
-        /// Operation Id: StorageInsightConfigs_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageInsightConfigs_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StorageInsightResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="storageInsightName"> Name of the storageInsightsConfigs resource. </param>
@@ -74,7 +88,9 @@ namespace Azure.ResourceManager.OperationalInsights
             try
             {
                 var response = await _storageInsightStorageInsightConfigsRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageInsightName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new OperationalInsightsArmOperation<StorageInsightResource>(Response.FromValue(new StorageInsightResource(Client, response), response.GetRawResponse()));
+                var uri = _storageInsightStorageInsightConfigsRestClient.CreateCreateOrUpdateRequestUri(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageInsightName, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new OperationalInsightsArmOperation<StorageInsightResource>(Response.FromValue(new StorageInsightResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -88,8 +104,24 @@ namespace Azure.ResourceManager.OperationalInsights
 
         /// <summary>
         /// Create or update a storage insight.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}
-        /// Operation Id: StorageInsightConfigs_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageInsightConfigs_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StorageInsightResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="storageInsightName"> Name of the storageInsightsConfigs resource. </param>
@@ -107,7 +139,9 @@ namespace Azure.ResourceManager.OperationalInsights
             try
             {
                 var response = _storageInsightStorageInsightConfigsRestClient.CreateOrUpdate(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageInsightName, data, cancellationToken);
-                var operation = new OperationalInsightsArmOperation<StorageInsightResource>(Response.FromValue(new StorageInsightResource(Client, response), response.GetRawResponse()));
+                var uri = _storageInsightStorageInsightConfigsRestClient.CreateCreateOrUpdateRequestUri(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageInsightName, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new OperationalInsightsArmOperation<StorageInsightResource>(Response.FromValue(new StorageInsightResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -121,8 +155,24 @@ namespace Azure.ResourceManager.OperationalInsights
 
         /// <summary>
         /// Gets a storage insight instance.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}
-        /// Operation Id: StorageInsightConfigs_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageInsightConfigs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StorageInsightResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="storageInsightName"> Name of the storageInsightsConfigs resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -150,8 +200,24 @@ namespace Azure.ResourceManager.OperationalInsights
 
         /// <summary>
         /// Gets a storage insight instance.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}
-        /// Operation Id: StorageInsightConfigs_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageInsightConfigs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StorageInsightResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="storageInsightName"> Name of the storageInsightsConfigs resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -179,92 +245,84 @@ namespace Azure.ResourceManager.OperationalInsights
 
         /// <summary>
         /// Lists the storage insight instances within a workspace
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs
-        /// Operation Id: StorageInsightConfigs_ListByWorkspace
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageInsightConfigs_ListByWorkspace</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StorageInsightResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="StorageInsightResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="StorageInsightResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<StorageInsightResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<StorageInsightResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _storageInsightStorageInsightConfigsClientDiagnostics.CreateScope("StorageInsightCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _storageInsightStorageInsightConfigsRestClient.ListByWorkspaceAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new StorageInsightResource(Client, value)), response.Value.OdataNextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<StorageInsightResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _storageInsightStorageInsightConfigsClientDiagnostics.CreateScope("StorageInsightCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _storageInsightStorageInsightConfigsRestClient.ListByWorkspaceNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new StorageInsightResource(Client, value)), response.Value.OdataNextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _storageInsightStorageInsightConfigsRestClient.CreateListByWorkspaceRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _storageInsightStorageInsightConfigsRestClient.CreateListByWorkspaceNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new StorageInsightResource(Client, StorageInsightData.DeserializeStorageInsightData(e)), _storageInsightStorageInsightConfigsClientDiagnostics, Pipeline, "StorageInsightCollection.GetAll", "value", "@odata.nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Lists the storage insight instances within a workspace
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs
-        /// Operation Id: StorageInsightConfigs_ListByWorkspace
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageInsightConfigs_ListByWorkspace</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StorageInsightResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="StorageInsightResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="StorageInsightResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<StorageInsightResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<StorageInsightResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _storageInsightStorageInsightConfigsClientDiagnostics.CreateScope("StorageInsightCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _storageInsightStorageInsightConfigsRestClient.ListByWorkspace(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new StorageInsightResource(Client, value)), response.Value.OdataNextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<StorageInsightResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _storageInsightStorageInsightConfigsClientDiagnostics.CreateScope("StorageInsightCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _storageInsightStorageInsightConfigsRestClient.ListByWorkspaceNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new StorageInsightResource(Client, value)), response.Value.OdataNextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _storageInsightStorageInsightConfigsRestClient.CreateListByWorkspaceRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _storageInsightStorageInsightConfigsRestClient.CreateListByWorkspaceNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new StorageInsightResource(Client, StorageInsightData.DeserializeStorageInsightData(e)), _storageInsightStorageInsightConfigsClientDiagnostics, Pipeline, "StorageInsightCollection.GetAll", "value", "@odata.nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}
-        /// Operation Id: StorageInsightConfigs_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageInsightConfigs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StorageInsightResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="storageInsightName"> Name of the storageInsightsConfigs resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -290,8 +348,24 @@ namespace Azure.ResourceManager.OperationalInsights
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}
-        /// Operation Id: StorageInsightConfigs_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageInsightConfigs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StorageInsightResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="storageInsightName"> Name of the storageInsightsConfigs resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -307,6 +381,96 @@ namespace Azure.ResourceManager.OperationalInsights
             {
                 var response = _storageInsightStorageInsightConfigsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageInsightName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageInsightConfigs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StorageInsightResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="storageInsightName"> Name of the storageInsightsConfigs resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="storageInsightName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="storageInsightName"/> is null. </exception>
+        public virtual async Task<NullableResponse<StorageInsightResource>> GetIfExistsAsync(string storageInsightName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(storageInsightName, nameof(storageInsightName));
+
+            using var scope = _storageInsightStorageInsightConfigsClientDiagnostics.CreateScope("StorageInsightCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _storageInsightStorageInsightConfigsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageInsightName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<StorageInsightResource>(response.GetRawResponse());
+                return Response.FromValue(new StorageInsightResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.OperationalInsights/workspaces/{workspaceName}/storageInsightConfigs/{storageInsightName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>StorageInsightConfigs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-02-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StorageInsightResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="storageInsightName"> Name of the storageInsightsConfigs resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="storageInsightName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="storageInsightName"/> is null. </exception>
+        public virtual NullableResponse<StorageInsightResource> GetIfExists(string storageInsightName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(storageInsightName, nameof(storageInsightName));
+
+            using var scope = _storageInsightStorageInsightConfigsClientDiagnostics.CreateScope("StorageInsightCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _storageInsightStorageInsightConfigsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageInsightName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<StorageInsightResource>(response.GetRawResponse());
+                return Response.FromValue(new StorageInsightResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

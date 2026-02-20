@@ -4,7 +4,7 @@
     <RepoEngPath>$(MSBuildThisFileDirectory)eng</RepoEngPath>
     <RepoSrcPath>$(RepoRoot)src</RepoSrcPath>
     <RepoSdkPath>$(RepoRoot)src/SDKs</RepoSdkPath>
-    <IsLegacyMgmtProject Condition="'$(IsLegacyMgmtProject)' == '' and $(MSBuildProjectName.Contains('.Management.'))">true</IsLegacyMgmtProject>
+    <IsLegacyMgmtProject Condition="'$(IsLegacyMgmtProject)' == '' and !$(MSBuildProjectName.StartsWith('Azure.')) and $(MSBuildProjectDirectory.Contains('$(RepoRoot)sdk')) and $(MSBuildProjectName.Contains('.Management.'))">true</IsLegacyMgmtProject>
     <ProjectStartsWithStandardName Condition="$(MSBuildProjectName.StartsWith('Azure.')) or $(MSBuildProjectName.StartsWith('Microsoft.'))">true</ProjectStartsWithStandardName>
     <ImportRepoCommonSettings Condition="'$(ImportRepoCommonSettings)' == '' and '$(ProjectStartsWithStandardName)' == 'true' and '$(IsLegacyMgmtProject)' != 'true'">true</ImportRepoCommonSettings>
   </PropertyGroup>
@@ -39,6 +39,5 @@
     <RequiredTargetFrameworks>import-required-properties</RequiredTargetFrameworks>
   </PropertyGroup>
 
-  <Import Project="$(RepoEngPath)\mgmt\Directory.Build.Mgmt.props" Condition="'$(IsLegacyMgmtProject)' == 'true'" />
   <Import Project="$(RepoEngPath)\Directory.Build.Common.props" Condition="'$(ImportRepoCommonSettings)' == 'true'" />
 </Project>

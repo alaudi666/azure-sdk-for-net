@@ -15,16 +15,14 @@ namespace Azure.ResourceManager.MachineLearning.Models
     /// AutoMLJob class.
     /// Use this class for executing AutoML tasks like Classification/Regression etc.
     /// See TaskType enum for all the tasks supported.
-    /// Serialized Name: AutoMLJob
     /// </summary>
     public partial class AutoMLJob : MachineLearningJobProperties
     {
-        /// <summary> Initializes a new instance of AutoMLJob. </summary>
+        /// <summary> Initializes a new instance of <see cref="AutoMLJob"/>. </summary>
         /// <param name="taskDetails">
         /// [Required] This represents scenario which can be one of Tables/NLP/Image
-        /// Serialized Name: AutoMLJob.taskDetails
         /// Please note <see cref="AutoMLVertical"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="ClassificationTask"/>, <see cref="Forecasting"/>, <see cref="ImageClassification"/>, <see cref="ImageClassificationMultilabel"/>, <see cref="ImageInstanceSegmentation"/>, <see cref="ImageObjectDetection"/>, <see cref="AutoMLVerticalRegression"/>, <see cref="TextClassification"/>, <see cref="TextClassificationMultilabel"/> and <see cref="TextNer"/>.
+        /// The available derived classes include <see cref="ClassificationTask"/>, <see cref="MachineLearningForecasting"/>, <see cref="ImageClassification"/>, <see cref="ImageClassificationMultilabel"/>, <see cref="ImageInstanceSegmentation"/>, <see cref="ImageObjectDetection"/>, <see cref="AutoMLVerticalRegression"/>, <see cref="TextClassification"/>, <see cref="TextClassificationMultilabel"/> and <see cref="TextNer"/>.
         /// </param>
         /// <exception cref="ArgumentNullException"> <paramref name="taskDetails"/> is null. </exception>
         public AutoMLJob(AutoMLVertical taskDetails)
@@ -32,128 +30,106 @@ namespace Azure.ResourceManager.MachineLearning.Models
             Argument.AssertNotNull(taskDetails, nameof(taskDetails));
 
             EnvironmentVariables = new ChangeTrackingDictionary<string, string>();
-            Outputs = new ChangeTrackingDictionary<string, MachineLearningJobOutput>();
             TaskDetails = taskDetails;
+            Outputs = new ChangeTrackingDictionary<string, MachineLearningJobOutput>();
             JobType = JobType.AutoML;
         }
 
-        /// <summary> Initializes a new instance of AutoMLJob. </summary>
-        /// <param name="description">
-        /// The asset description text.
-        /// Serialized Name: ResourceBase.description
-        /// </param>
-        /// <param name="properties">
-        /// The asset property dictionary.
-        /// Serialized Name: ResourceBase.properties
-        /// </param>
-        /// <param name="tags">
-        /// Tag dictionary. Tags can be added, removed, and updated.
-        /// Serialized Name: ResourceBase.tags
-        /// </param>
-        /// <param name="componentId">
-        /// ARM resource ID of the component resource.
-        /// Serialized Name: JobBase.componentId
-        /// </param>
-        /// <param name="computeId">
-        /// ARM resource ID of the compute resource.
-        /// Serialized Name: JobBase.computeId
-        /// </param>
-        /// <param name="displayName">
-        /// Display name of job.
-        /// Serialized Name: JobBase.displayName
-        /// </param>
-        /// <param name="experimentName">
-        /// The name of the experiment the job belongs to. If not set, the job is placed in the &quot;Default&quot; experiment.
-        /// Serialized Name: JobBase.experimentName
-        /// </param>
-        /// <param name="identity">
-        /// Identity configuration. If set, this should be one of AmlToken, ManagedIdentity, UserIdentity or null.
-        /// Defaults to AmlToken if null.
-        /// Serialized Name: JobBase.identity
-        /// Please note <see cref="MachineLearningIdentityConfiguration"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AmlToken"/>, <see cref="MachineLearningManagedIdentity"/> and <see cref="MachineLearningUserIdentity"/>.
-        /// </param>
-        /// <param name="isArchived">
-        /// Is the asset archived?
-        /// Serialized Name: JobBase.isArchived
-        /// </param>
-        /// <param name="jobType">
-        /// [Required] Specifies the type of job.
-        /// Serialized Name: JobBase.jobType
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="AutoMLJob"/>. </summary>
+        /// <param name="description"> The asset description text. </param>
+        /// <param name="tags"> Tag dictionary. Tags can be added, removed, and updated. </param>
+        /// <param name="properties"> The asset property dictionary. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="jobType"> [Required] Specifies the type of job. </param>
+        /// <param name="displayName"> Display name of job. </param>
+        /// <param name="status"> Status of the job. </param>
+        /// <param name="experimentName"> The name of the experiment the job belongs to. If not set, the job is placed in the "Default" experiment. </param>
         /// <param name="services">
         /// List of JobEndpoints.
         /// For local jobs, a job endpoint will have an endpoint value of FileStreamObject.
-        /// Serialized Name: JobBase.services
         /// </param>
-        /// <param name="status">
-        /// Status of the job.
-        /// Serialized Name: JobBase.status
+        /// <param name="computeId"> ARM resource ID of the compute resource. </param>
+        /// <param name="isArchived"> Is the asset archived?. </param>
+        /// <param name="identity">
+        /// Identity configuration. If set, this should be one of AmlToken, ManagedIdentity, UserIdentity or null.
+        /// Defaults to AmlToken if null.
+        /// Please note <see cref="MachineLearningIdentityConfiguration"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="AmlToken"/>, <see cref="MachineLearningManagedIdentity"/> and <see cref="MachineLearningUserIdentity"/>.
         /// </param>
+        /// <param name="componentId"> ARM resource ID of the component resource. </param>
+        /// <param name="notificationSetting"> Notification setting for the job. </param>
+        /// <param name="resources"> Compute Resource configuration for the job. </param>
         /// <param name="environmentId">
         /// The ARM resource ID of the Environment specification for the job.
         /// This is optional value to provide, if not provided, AutoML will default this to Production AutoML curated environment version when running the job.
-        /// Serialized Name: AutoMLJob.environmentId
         /// </param>
-        /// <param name="environmentVariables">
-        /// Environment variables included in the job.
-        /// Serialized Name: AutoMLJob.environmentVariables
+        /// <param name="environmentVariables"> Environment variables included in the job. </param>
+        /// <param name="taskDetails">
+        /// [Required] This represents scenario which can be one of Tables/NLP/Image
+        /// Please note <see cref="AutoMLVertical"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="ClassificationTask"/>, <see cref="MachineLearningForecasting"/>, <see cref="ImageClassification"/>, <see cref="ImageClassificationMultilabel"/>, <see cref="ImageInstanceSegmentation"/>, <see cref="ImageObjectDetection"/>, <see cref="AutoMLVerticalRegression"/>, <see cref="TextClassification"/>, <see cref="TextClassificationMultilabel"/> and <see cref="TextNer"/>.
         /// </param>
         /// <param name="outputs">
         /// Mapping of output data bindings used in the job.
-        /// Serialized Name: AutoMLJob.outputs
         /// Please note <see cref="MachineLearningJobOutput"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
         /// The available derived classes include <see cref="MachineLearningCustomModelJobOutput"/>, <see cref="MachineLearningFlowModelJobOutput"/>, <see cref="MachineLearningTableJobOutput"/>, <see cref="MachineLearningTritonModelJobOutput"/>, <see cref="MachineLearningUriFileJobOutput"/> and <see cref="MachineLearningUriFolderJobOutput"/>.
         /// </param>
-        /// <param name="resources">
-        /// Compute Resource configuration for the job.
-        /// Serialized Name: AutoMLJob.resources
-        /// </param>
-        /// <param name="taskDetails">
-        /// [Required] This represents scenario which can be one of Tables/NLP/Image
-        /// Serialized Name: AutoMLJob.taskDetails
-        /// Please note <see cref="AutoMLVertical"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="ClassificationTask"/>, <see cref="Forecasting"/>, <see cref="ImageClassification"/>, <see cref="ImageClassificationMultilabel"/>, <see cref="ImageInstanceSegmentation"/>, <see cref="ImageObjectDetection"/>, <see cref="AutoMLVerticalRegression"/>, <see cref="TextClassification"/>, <see cref="TextClassificationMultilabel"/> and <see cref="TextNer"/>.
-        /// </param>
-        internal AutoMLJob(string description, IDictionary<string, string> properties, IDictionary<string, string> tags, string componentId, string computeId, string displayName, string experimentName, MachineLearningIdentityConfiguration identity, bool? isArchived, JobType jobType, IDictionary<string, MachineLearningJobService> services, MachineLearningJobStatus? status, string environmentId, IDictionary<string, string> environmentVariables, IDictionary<string, MachineLearningJobOutput> outputs, MachineLearningJobResourceConfiguration resources, AutoMLVertical taskDetails) : base(description, properties, tags, componentId, computeId, displayName, experimentName, identity, isArchived, jobType, services, status)
+        /// <param name="queueSettings"> Queue settings for the job. </param>
+        internal AutoMLJob(string description, IDictionary<string, string> tags, IDictionary<string, string> properties, IDictionary<string, BinaryData> serializedAdditionalRawData, JobType jobType, string displayName, MachineLearningJobStatus? status, string experimentName, IDictionary<string, MachineLearningJobService> services, ResourceIdentifier computeId, bool? isArchived, MachineLearningIdentityConfiguration identity, ResourceIdentifier componentId, NotificationSetting notificationSetting, MachineLearningJobResourceConfiguration resources, string environmentId, IDictionary<string, string> environmentVariables, AutoMLVertical taskDetails, IDictionary<string, MachineLearningJobOutput> outputs, JobQueueSettings queueSettings) : base(description, tags, properties, serializedAdditionalRawData, jobType, displayName, status, experimentName, services, computeId, isArchived, identity, componentId, notificationSetting)
         {
+            Resources = resources;
             EnvironmentId = environmentId;
             EnvironmentVariables = environmentVariables;
-            Outputs = outputs;
-            Resources = resources;
             TaskDetails = taskDetails;
+            Outputs = outputs;
+            QueueSettings = queueSettings;
             JobType = jobType;
         }
 
+        /// <summary> Initializes a new instance of <see cref="AutoMLJob"/> for deserialization. </summary>
+        internal AutoMLJob()
+        {
+        }
+
+        /// <summary> Compute Resource configuration for the job. </summary>
+        [WirePath("resources")]
+        public MachineLearningJobResourceConfiguration Resources { get; set; }
         /// <summary>
         /// The ARM resource ID of the Environment specification for the job.
         /// This is optional value to provide, if not provided, AutoML will default this to Production AutoML curated environment version when running the job.
-        /// Serialized Name: AutoMLJob.environmentId
         /// </summary>
+        [WirePath("environmentId")]
         public string EnvironmentId { get; set; }
-        /// <summary>
-        /// Environment variables included in the job.
-        /// Serialized Name: AutoMLJob.environmentVariables
-        /// </summary>
+        /// <summary> Environment variables included in the job. </summary>
+        [WirePath("environmentVariables")]
         public IDictionary<string, string> EnvironmentVariables { get; set; }
         /// <summary>
+        /// [Required] This represents scenario which can be one of Tables/NLP/Image
+        /// Please note <see cref="AutoMLVertical"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="ClassificationTask"/>, <see cref="MachineLearningForecasting"/>, <see cref="ImageClassification"/>, <see cref="ImageClassificationMultilabel"/>, <see cref="ImageInstanceSegmentation"/>, <see cref="ImageObjectDetection"/>, <see cref="AutoMLVerticalRegression"/>, <see cref="TextClassification"/>, <see cref="TextClassificationMultilabel"/> and <see cref="TextNer"/>.
+        /// </summary>
+        [WirePath("taskDetails")]
+        public AutoMLVertical TaskDetails { get; set; }
+        /// <summary>
         /// Mapping of output data bindings used in the job.
-        /// Serialized Name: AutoMLJob.outputs
         /// Please note <see cref="MachineLearningJobOutput"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
         /// The available derived classes include <see cref="MachineLearningCustomModelJobOutput"/>, <see cref="MachineLearningFlowModelJobOutput"/>, <see cref="MachineLearningTableJobOutput"/>, <see cref="MachineLearningTritonModelJobOutput"/>, <see cref="MachineLearningUriFileJobOutput"/> and <see cref="MachineLearningUriFolderJobOutput"/>.
         /// </summary>
+        [WirePath("outputs")]
         public IDictionary<string, MachineLearningJobOutput> Outputs { get; set; }
-        /// <summary>
-        /// Compute Resource configuration for the job.
-        /// Serialized Name: AutoMLJob.resources
-        /// </summary>
-        public MachineLearningJobResourceConfiguration Resources { get; set; }
-        /// <summary>
-        /// [Required] This represents scenario which can be one of Tables/NLP/Image
-        /// Serialized Name: AutoMLJob.taskDetails
-        /// Please note <see cref="AutoMLVertical"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="ClassificationTask"/>, <see cref="Forecasting"/>, <see cref="ImageClassification"/>, <see cref="ImageClassificationMultilabel"/>, <see cref="ImageInstanceSegmentation"/>, <see cref="ImageObjectDetection"/>, <see cref="AutoMLVerticalRegression"/>, <see cref="TextClassification"/>, <see cref="TextClassificationMultilabel"/> and <see cref="TextNer"/>.
-        /// </summary>
-        public AutoMLVertical TaskDetails { get; set; }
+        /// <summary> Queue settings for the job. </summary>
+        internal JobQueueSettings QueueSettings { get; set; }
+        /// <summary> Controls the compute job tier. </summary>
+        [WirePath("queueSettings.jobTier")]
+        public JobTier? QueueJobTier
+        {
+            get => QueueSettings is null ? default : QueueSettings.JobTier;
+            set
+            {
+                if (QueueSettings is null)
+                    QueueSettings = new JobQueueSettings();
+                QueueSettings.JobTier = value;
+            }
+        }
     }
 }

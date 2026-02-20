@@ -5,18 +5,36 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.PowerBIDedicated.Models
 {
     /// <summary> Details of capacity name request body. </summary>
     public partial class CheckCapacityNameAvailabilityContent
     {
-        /// <summary> Initializes a new instance of CheckCapacityNameAvailabilityContent. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CheckCapacityNameAvailabilityContent"/>. </summary>
         public CheckCapacityNameAvailabilityContent()
         {
         }
 
+        /// <summary> Initializes a new instance of <see cref="CheckCapacityNameAvailabilityContent"/>. </summary>
+        /// <param name="name"> Name for checking availability. </param>
+        /// <param name="resourceType"> The resource type of PowerBI dedicated. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CheckCapacityNameAvailabilityContent(string name, string resourceType, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Name = name;
+            ResourceType = resourceType;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> Name for checking availability. </summary>
         public string Name { get; set; }
+
         /// <summary> The resource type of PowerBI dedicated. </summary>
         public string ResourceType { get; set; }
     }

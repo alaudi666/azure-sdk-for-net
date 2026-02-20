@@ -6,20 +6,33 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.RecoveryServices.Models
 {
     /// <summary> Raw certificate data. </summary>
     public partial class RawCertificateData
     {
-        /// <summary> Initializes a new instance of RawCertificateData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="RawCertificateData"/>. </summary>
         public RawCertificateData()
         {
         }
 
+        /// <summary> Initializes a new instance of <see cref="RawCertificateData"/>. </summary>
+        /// <param name="authType"> Specifies the authentication type. </param>
+        /// <param name="certificate"> The base64 encoded certificate raw data string. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal RawCertificateData(RecoveryServicesAuthType? authType, byte[] certificate, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            AuthType = authType;
+            Certificate = certificate;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> Specifies the authentication type. </summary>
-        public AuthType? AuthType { get; set; }
-        /// <summary> The base64 encoded certificate raw data string. </summary>
-        public byte[] Certificate { get; set; }
+        public RecoveryServicesAuthType? AuthType { get; set; }
     }
 }

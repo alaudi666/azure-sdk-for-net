@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Automation.Models;
 
 namespace Azure.ResourceManager.Automation
 {
     /// <summary>
-    /// A class representing a collection of <see cref="DscNodeConfigurationResource" /> and their operations.
-    /// Each <see cref="DscNodeConfigurationResource" /> in the collection will belong to the same instance of <see cref="AutomationAccountResource" />.
-    /// To get a <see cref="DscNodeConfigurationCollection" /> instance call the GetDscNodeConfigurations method from an instance of <see cref="AutomationAccountResource" />.
+    /// A class representing a collection of <see cref="DscNodeConfigurationResource"/> and their operations.
+    /// Each <see cref="DscNodeConfigurationResource"/> in the collection will belong to the same instance of <see cref="AutomationAccountResource"/>.
+    /// To get a <see cref="DscNodeConfigurationCollection"/> instance call the GetDscNodeConfigurations method from an instance of <see cref="AutomationAccountResource"/>.
     /// </summary>
     public partial class DscNodeConfigurationCollection : ArmCollection, IEnumerable<DscNodeConfigurationResource>, IAsyncEnumerable<DscNodeConfigurationResource>
     {
@@ -56,8 +54,24 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Create the node configuration identified by node configuration name.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}
-        /// Operation Id: DscNodeConfiguration_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DscNodeConfiguration_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DscNodeConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="nodeConfigurationName"> The Dsc node configuration name. </param>
@@ -89,8 +103,24 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Create the node configuration identified by node configuration name.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}
-        /// Operation Id: DscNodeConfiguration_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DscNodeConfiguration_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DscNodeConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="nodeConfigurationName"> The Dsc node configuration name. </param>
@@ -122,8 +152,24 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Retrieve the Dsc node configurations by node configuration.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}
-        /// Operation Id: DscNodeConfiguration_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DscNodeConfiguration_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DscNodeConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="nodeConfigurationName"> The Dsc node configuration name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -151,8 +197,24 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Retrieve the Dsc node configurations by node configuration.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}
-        /// Operation Id: DscNodeConfiguration_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DscNodeConfiguration_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DscNodeConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="nodeConfigurationName"> The Dsc node configuration name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -180,100 +242,92 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Retrieve a list of dsc node configurations.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations
-        /// Operation Id: DscNodeConfiguration_ListByAutomationAccount
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DscNodeConfiguration_ListByAutomationAccount</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DscNodeConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="filter"> The filter to apply on the operation. </param>
         /// <param name="skip"> The number of rows to skip. </param>
         /// <param name="top"> The number of rows to take. </param>
         /// <param name="inlinecount"> Return total rows. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="DscNodeConfigurationResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="DscNodeConfigurationResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<DscNodeConfigurationResource> GetAllAsync(string filter = null, int? skip = null, int? top = null, string inlinecount = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<DscNodeConfigurationResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _dscNodeConfigurationClientDiagnostics.CreateScope("DscNodeConfigurationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _dscNodeConfigurationRestClient.ListByAutomationAccountAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, filter, skip, top, inlinecount, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new DscNodeConfigurationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<DscNodeConfigurationResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _dscNodeConfigurationClientDiagnostics.CreateScope("DscNodeConfigurationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _dscNodeConfigurationRestClient.ListByAutomationAccountNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, filter, skip, top, inlinecount, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new DscNodeConfigurationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _dscNodeConfigurationRestClient.CreateListByAutomationAccountRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, filter, skip, top, inlinecount);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _dscNodeConfigurationRestClient.CreateListByAutomationAccountNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, filter, skip, top, inlinecount);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new DscNodeConfigurationResource(Client, DscNodeConfigurationData.DeserializeDscNodeConfigurationData(e)), _dscNodeConfigurationClientDiagnostics, Pipeline, "DscNodeConfigurationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Retrieve a list of dsc node configurations.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations
-        /// Operation Id: DscNodeConfiguration_ListByAutomationAccount
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DscNodeConfiguration_ListByAutomationAccount</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DscNodeConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="filter"> The filter to apply on the operation. </param>
         /// <param name="skip"> The number of rows to skip. </param>
         /// <param name="top"> The number of rows to take. </param>
         /// <param name="inlinecount"> Return total rows. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="DscNodeConfigurationResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="DscNodeConfigurationResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<DscNodeConfigurationResource> GetAll(string filter = null, int? skip = null, int? top = null, string inlinecount = null, CancellationToken cancellationToken = default)
         {
-            Page<DscNodeConfigurationResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _dscNodeConfigurationClientDiagnostics.CreateScope("DscNodeConfigurationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _dscNodeConfigurationRestClient.ListByAutomationAccount(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, filter, skip, top, inlinecount, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new DscNodeConfigurationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<DscNodeConfigurationResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _dscNodeConfigurationClientDiagnostics.CreateScope("DscNodeConfigurationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _dscNodeConfigurationRestClient.ListByAutomationAccountNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, filter, skip, top, inlinecount, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new DscNodeConfigurationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _dscNodeConfigurationRestClient.CreateListByAutomationAccountRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, filter, skip, top, inlinecount);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _dscNodeConfigurationRestClient.CreateListByAutomationAccountNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, filter, skip, top, inlinecount);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new DscNodeConfigurationResource(Client, DscNodeConfigurationData.DeserializeDscNodeConfigurationData(e)), _dscNodeConfigurationClientDiagnostics, Pipeline, "DscNodeConfigurationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}
-        /// Operation Id: DscNodeConfiguration_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DscNodeConfiguration_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DscNodeConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="nodeConfigurationName"> The Dsc node configuration name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -299,8 +353,24 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}
-        /// Operation Id: DscNodeConfiguration_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DscNodeConfiguration_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DscNodeConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="nodeConfigurationName"> The Dsc node configuration name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -316,6 +386,96 @@ namespace Azure.ResourceManager.Automation
             {
                 var response = _dscNodeConfigurationRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, nodeConfigurationName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DscNodeConfiguration_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DscNodeConfigurationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="nodeConfigurationName"> The Dsc node configuration name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="nodeConfigurationName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="nodeConfigurationName"/> is null. </exception>
+        public virtual async Task<NullableResponse<DscNodeConfigurationResource>> GetIfExistsAsync(string nodeConfigurationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(nodeConfigurationName, nameof(nodeConfigurationName));
+
+            using var scope = _dscNodeConfigurationClientDiagnostics.CreateScope("DscNodeConfigurationCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _dscNodeConfigurationRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, nodeConfigurationName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<DscNodeConfigurationResource>(response.GetRawResponse());
+                return Response.FromValue(new DscNodeConfigurationResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/nodeConfigurations/{nodeConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DscNodeConfiguration_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DscNodeConfigurationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="nodeConfigurationName"> The Dsc node configuration name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="nodeConfigurationName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="nodeConfigurationName"/> is null. </exception>
+        public virtual NullableResponse<DscNodeConfigurationResource> GetIfExists(string nodeConfigurationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(nodeConfigurationName, nameof(nodeConfigurationName));
+
+            using var scope = _dscNodeConfigurationClientDiagnostics.CreateScope("DscNodeConfigurationCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _dscNodeConfigurationRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, nodeConfigurationName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<DscNodeConfigurationResource>(response.GetRawResponse());
+                return Response.FromValue(new DscNodeConfigurationResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

@@ -3,10 +3,10 @@
 
 using System;
 using System.Diagnostics;
-using Azure.Core.TestFramework;
-using Azure.Analytics.Synapse.Tests;
 using Azure.Analytics.Synapse.Spark;
 using Azure.Analytics.Synapse.Spark.Models;
+using Azure.Analytics.Synapse.Tests;
+using Azure.Core.TestFramework;
 using Azure.Identity;
 using NUnit.Framework;
 
@@ -30,7 +30,7 @@ namespace Azure.Analytics.Synapse.Spark.Samples
             string endpoint = TestEnvironment.EndpointUrl;
 #endif
 
-            SparkSessionClient client = new SparkSessionClient(new Uri(endpoint), sparkPoolName, new DefaultAzureCredential());
+            SparkSessionClient client = new SparkSessionClient(new Uri(endpoint), "2019-11-01-preview", sparkPoolName, new DefaultAzureCredential());
             #endregion
 
             #region Snippet:CreateSparkSession

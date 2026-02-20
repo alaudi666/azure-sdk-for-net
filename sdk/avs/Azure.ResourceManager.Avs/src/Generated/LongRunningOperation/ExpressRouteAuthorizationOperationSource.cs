@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Avs
 {
-    internal class ExpressRouteAuthorizationOperationSource : IOperationSource<ExpressRouteAuthorizationResource>
+    /// <summary></summary>
+    internal partial class ExpressRouteAuthorizationOperationSource : IOperationSource<ExpressRouteAuthorizationResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal ExpressRouteAuthorizationOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         ExpressRouteAuthorizationResource IOperationSource<ExpressRouteAuthorizationResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = ExpressRouteAuthorizationData.DeserializeExpressRouteAuthorizationData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            ExpressRouteAuthorizationData data = ExpressRouteAuthorizationData.DeserializeExpressRouteAuthorizationData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new ExpressRouteAuthorizationResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<ExpressRouteAuthorizationResource> IOperationSource<ExpressRouteAuthorizationResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = ExpressRouteAuthorizationData.DeserializeExpressRouteAuthorizationData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            ExpressRouteAuthorizationData data = ExpressRouteAuthorizationData.DeserializeExpressRouteAuthorizationData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new ExpressRouteAuthorizationResource(_client, data);
         }
     }

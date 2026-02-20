@@ -9,22 +9,21 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.SecurityCenter
 {
     /// <summary>
     /// A Class representing an AdvancedThreatProtectionSetting along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct an <see cref="AdvancedThreatProtectionSettingResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetAdvancedThreatProtectionSettingResource method.
-    /// Otherwise you can get one from its parent resource <see cref="ArmResource" /> using the GetAdvancedThreatProtectionSetting method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct an <see cref="AdvancedThreatProtectionSettingResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetAdvancedThreatProtectionSettingResource method.
+    /// Otherwise you can get one from its parent resource <see cref="ArmResource"/> using the GetAdvancedThreatProtectionSetting method.
     /// </summary>
     public partial class AdvancedThreatProtectionSettingResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="AdvancedThreatProtectionSettingResource"/> instance. </summary>
+        /// <param name="resourceId"> The resourceId. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string resourceId)
         {
             var resourceId0 = $"{resourceId}/providers/Microsoft.Security/advancedThreatProtectionSettings/current";
@@ -35,12 +34,15 @@ namespace Azure.ResourceManager.SecurityCenter
         private readonly AdvancedThreatProtectionRestOperations _advancedThreatProtectionSettingAdvancedThreatProtectionRestClient;
         private readonly AdvancedThreatProtectionSettingData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.Security/advancedThreatProtectionSettings";
+
         /// <summary> Initializes a new instance of the <see cref="AdvancedThreatProtectionSettingResource"/> class for mocking. </summary>
         protected AdvancedThreatProtectionSettingResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "AdvancedThreatProtectionSettingResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="AdvancedThreatProtectionSettingResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal AdvancedThreatProtectionSettingResource(ArmClient client, AdvancedThreatProtectionSettingData data) : this(client, data.Id)
@@ -61,9 +63,6 @@ namespace Azure.ResourceManager.SecurityCenter
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.Security/advancedThreatProtectionSettings";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -88,8 +87,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Gets the Advanced Threat Protection settings for the specified resource.
-        /// Request Path: /{resourceId}/providers/Microsoft.Security/advancedThreatProtectionSettings/{settingName}
-        /// Operation Id: AdvancedThreatProtection_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceId}/providers/Microsoft.Security/advancedThreatProtectionSettings/{settingName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AdvancedThreatProtection_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AdvancedThreatProtectionSettingResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<AdvancedThreatProtectionSettingResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -112,8 +127,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Gets the Advanced Threat Protection settings for the specified resource.
-        /// Request Path: /{resourceId}/providers/Microsoft.Security/advancedThreatProtectionSettings/{settingName}
-        /// Operation Id: AdvancedThreatProtection_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceId}/providers/Microsoft.Security/advancedThreatProtectionSettings/{settingName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AdvancedThreatProtection_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AdvancedThreatProtectionSettingResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<AdvancedThreatProtectionSettingResource> Get(CancellationToken cancellationToken = default)
@@ -136,8 +167,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Creates or updates the Advanced Threat Protection settings on a specified resource.
-        /// Request Path: /{resourceId}/providers/Microsoft.Security/advancedThreatProtectionSettings/{settingName}
-        /// Operation Id: AdvancedThreatProtection_Create
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceId}/providers/Microsoft.Security/advancedThreatProtectionSettings/{settingName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AdvancedThreatProtection_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AdvancedThreatProtectionSettingResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="data"> Advanced Threat Protection Settings. </param>
@@ -152,7 +199,9 @@ namespace Azure.ResourceManager.SecurityCenter
             try
             {
                 var response = await _advancedThreatProtectionSettingAdvancedThreatProtectionRestClient.CreateAsync(Id.Parent, data, cancellationToken).ConfigureAwait(false);
-                var operation = new SecurityCenterArmOperation<AdvancedThreatProtectionSettingResource>(Response.FromValue(new AdvancedThreatProtectionSettingResource(Client, response), response.GetRawResponse()));
+                var uri = _advancedThreatProtectionSettingAdvancedThreatProtectionRestClient.CreateCreateRequestUri(Id.Parent, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new SecurityCenterArmOperation<AdvancedThreatProtectionSettingResource>(Response.FromValue(new AdvancedThreatProtectionSettingResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -166,8 +215,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Creates or updates the Advanced Threat Protection settings on a specified resource.
-        /// Request Path: /{resourceId}/providers/Microsoft.Security/advancedThreatProtectionSettings/{settingName}
-        /// Operation Id: AdvancedThreatProtection_Create
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceId}/providers/Microsoft.Security/advancedThreatProtectionSettings/{settingName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AdvancedThreatProtection_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AdvancedThreatProtectionSettingResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="data"> Advanced Threat Protection Settings. </param>
@@ -182,7 +247,9 @@ namespace Azure.ResourceManager.SecurityCenter
             try
             {
                 var response = _advancedThreatProtectionSettingAdvancedThreatProtectionRestClient.Create(Id.Parent, data, cancellationToken);
-                var operation = new SecurityCenterArmOperation<AdvancedThreatProtectionSettingResource>(Response.FromValue(new AdvancedThreatProtectionSettingResource(Client, response), response.GetRawResponse()));
+                var uri = _advancedThreatProtectionSettingAdvancedThreatProtectionRestClient.CreateCreateRequestUri(Id.Parent, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new SecurityCenterArmOperation<AdvancedThreatProtectionSettingResource>(Response.FromValue(new AdvancedThreatProtectionSettingResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;

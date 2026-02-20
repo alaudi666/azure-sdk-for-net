@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.HealthBot
 {
-    internal class HealthBotOperationSource : IOperationSource<HealthBotResource>
+    /// <summary></summary>
+    internal partial class HealthBotOperationSource : IOperationSource<HealthBotResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal HealthBotOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         HealthBotResource IOperationSource<HealthBotResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = HealthBotData.DeserializeHealthBotData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            HealthBotData data = HealthBotData.DeserializeHealthBotData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new HealthBotResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<HealthBotResource> IOperationSource<HealthBotResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = HealthBotData.DeserializeHealthBotData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            HealthBotData data = HealthBotData.DeserializeHealthBotData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new HealthBotResource(_client, data);
         }
     }

@@ -8,8 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
@@ -21,125 +20,195 @@ using Azure.ResourceManager.Resources;
 namespace Azure.ResourceManager.Nginx
 {
     /// <summary>
-    /// A class representing a collection of <see cref="NginxDeploymentResource" /> and their operations.
-    /// Each <see cref="NginxDeploymentResource" /> in the collection will belong to the same instance of <see cref="ResourceGroupResource" />.
-    /// To get a <see cref="NginxDeploymentCollection" /> instance call the GetNginxDeployments method from an instance of <see cref="ResourceGroupResource" />.
+    /// A class representing a collection of <see cref="NginxDeploymentResource"/> and their operations.
+    /// Each <see cref="NginxDeploymentResource"/> in the collection will belong to the same instance of <see cref="ResourceGroupResource"/>.
+    /// To get a <see cref="NginxDeploymentCollection"/> instance call the GetNginxDeployments method from an instance of <see cref="ResourceGroupResource"/>.
     /// </summary>
     public partial class NginxDeploymentCollection : ArmCollection, IEnumerable<NginxDeploymentResource>, IAsyncEnumerable<NginxDeploymentResource>
     {
-        private readonly ClientDiagnostics _nginxDeploymentDeploymentsClientDiagnostics;
-        private readonly DeploymentsRestOperations _nginxDeploymentDeploymentsRestClient;
+        private readonly ClientDiagnostics _nginxDeploymentsClientDiagnostics;
+        private readonly NginxDeployments _nginxDeploymentsRestClient;
 
-        /// <summary> Initializes a new instance of the <see cref="NginxDeploymentCollection"/> class for mocking. </summary>
+        /// <summary> Initializes a new instance of NginxDeploymentCollection for mocking. </summary>
         protected NginxDeploymentCollection()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref="NginxDeploymentCollection"/> class. </summary>
+        /// <summary> Initializes a new instance of <see cref="NginxDeploymentCollection"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
-        /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
+        /// <param name="id"> The identifier of the resource that is the target of operations. </param>
         internal NginxDeploymentCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _nginxDeploymentDeploymentsClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Nginx", NginxDeploymentResource.ResourceType.Namespace, Diagnostics);
-            TryGetApiVersion(NginxDeploymentResource.ResourceType, out string nginxDeploymentDeploymentsApiVersion);
-            _nginxDeploymentDeploymentsRestClient = new DeploymentsRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, nginxDeploymentDeploymentsApiVersion);
-#if DEBUG
-			ValidateResourceId(Id);
-#endif
+            TryGetApiVersion(NginxDeploymentResource.ResourceType, out string nginxDeploymentApiVersion);
+            _nginxDeploymentsClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Nginx", NginxDeploymentResource.ResourceType.Namespace, Diagnostics);
+            _nginxDeploymentsRestClient = new NginxDeployments(_nginxDeploymentsClientDiagnostics, Pipeline, Endpoint, nginxDeploymentApiVersion ?? "2025-03-01-preview");
+            ValidateResourceId(id);
         }
 
+        /// <param name="id"></param>
+        [Conditional("DEBUG")]
         internal static void ValidateResourceId(ResourceIdentifier id)
         {
             if (id.ResourceType != ResourceGroupResource.ResourceType)
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, ResourceGroupResource.ResourceType), nameof(id));
+            {
+                throw new ArgumentException(string.Format("Invalid resource type {0} expected {1}", id.ResourceType, ResourceGroupResource.ResourceType), id);
+            }
         }
 
         /// <summary>
-        /// Create or update the Nginx deployment
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}
-        /// Operation Id: Deployments_Create
+        /// Create or update the NGINX deployment
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> NginxDeployments_CreateOrUpdate. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-03-01-preview. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="deploymentName"> The name of targeted Nginx deployment. </param>
-        /// <param name="data"> The NginxDeployment to use. </param>
+        /// <param name="deploymentName"> The name of targeted NGINX deployment. </param>
+        /// <param name="data"> The Nginx deployment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="deploymentName"/> or <paramref name="data"/> is null. </exception>
-        public virtual async Task<ArmOperation<NginxDeploymentResource>> CreateOrUpdateAsync(WaitUntil waitUntil, string deploymentName, NginxDeploymentData data, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNullOrEmpty(deploymentName, nameof(deploymentName));
-            Argument.AssertNotNull(data, nameof(data));
-
-            using var scope = _nginxDeploymentDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.CreateOrUpdate");
-            scope.Start();
-            try
-            {
-                var response = await _nginxDeploymentDeploymentsRestClient.CreateAsync(Id.SubscriptionId, Id.ResourceGroupName, deploymentName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new NginxArmOperation<NginxDeploymentResource>(new NginxDeploymentOperationSource(Client), _nginxDeploymentDeploymentsClientDiagnostics, Pipeline, _nginxDeploymentDeploymentsRestClient.CreateCreateRequest(Id.SubscriptionId, Id.ResourceGroupName, deploymentName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
-                if (waitUntil == WaitUntil.Completed)
-                    await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
-                return operation;
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Create or update the Nginx deployment
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}
-        /// Operation Id: Deployments_Create
-        /// </summary>
-        /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="deploymentName"> The name of targeted Nginx deployment. </param>
-        /// <param name="data"> The NginxDeployment to use. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="deploymentName"/> or <paramref name="data"/> is null. </exception>
-        public virtual ArmOperation<NginxDeploymentResource> CreateOrUpdate(WaitUntil waitUntil, string deploymentName, NginxDeploymentData data, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNullOrEmpty(deploymentName, nameof(deploymentName));
-            Argument.AssertNotNull(data, nameof(data));
-
-            using var scope = _nginxDeploymentDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.CreateOrUpdate");
-            scope.Start();
-            try
-            {
-                var response = _nginxDeploymentDeploymentsRestClient.Create(Id.SubscriptionId, Id.ResourceGroupName, deploymentName, data, cancellationToken);
-                var operation = new NginxArmOperation<NginxDeploymentResource>(new NginxDeploymentOperationSource(Client), _nginxDeploymentDeploymentsClientDiagnostics, Pipeline, _nginxDeploymentDeploymentsRestClient.CreateCreateRequest(Id.SubscriptionId, Id.ResourceGroupName, deploymentName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
-                if (waitUntil == WaitUntil.Completed)
-                    operation.WaitForCompletion(cancellationToken);
-                return operation;
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Get the Nginx deployment
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}
-        /// Operation Id: Deployments_Get
-        /// </summary>
-        /// <param name="deploymentName"> The name of targeted Nginx deployment. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="deploymentName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual async Task<ArmOperation<NginxDeploymentResource>> CreateOrUpdateAsync(WaitUntil waitUntil, string deploymentName, NginxDeploymentData data = default, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(deploymentName, nameof(deploymentName));
+
+            using DiagnosticScope scope = _nginxDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.CreateOrUpdate");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _nginxDeploymentsRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, deploymentName, NginxDeploymentData.ToRequestContent(data), context);
+                Response response = await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                NginxArmOperation<NginxDeploymentResource> operation = new NginxArmOperation<NginxDeploymentResource>(
+                    new NginxDeploymentOperationSource(Client),
+                    _nginxDeploymentsClientDiagnostics,
+                    Pipeline,
+                    message.Request,
+                    response,
+                    OperationFinalStateVia.AzureAsyncOperation);
+                if (waitUntil == WaitUntil.Completed)
+                {
+                    await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
+                }
+                return operation;
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Create or update the NGINX deployment
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> NginxDeployments_CreateOrUpdate. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-03-01-preview. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
+        /// <param name="deploymentName"> The name of targeted NGINX deployment. </param>
+        /// <param name="data"> The Nginx deployment. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="deploymentName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual ArmOperation<NginxDeploymentResource> CreateOrUpdate(WaitUntil waitUntil, string deploymentName, NginxDeploymentData data = default, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(deploymentName, nameof(deploymentName));
+
+            using DiagnosticScope scope = _nginxDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.CreateOrUpdate");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _nginxDeploymentsRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, deploymentName, NginxDeploymentData.ToRequestContent(data), context);
+                Response response = Pipeline.ProcessMessage(message, context);
+                NginxArmOperation<NginxDeploymentResource> operation = new NginxArmOperation<NginxDeploymentResource>(
+                    new NginxDeploymentOperationSource(Client),
+                    _nginxDeploymentsClientDiagnostics,
+                    Pipeline,
+                    message.Request,
+                    response,
+                    OperationFinalStateVia.AzureAsyncOperation);
+                if (waitUntil == WaitUntil.Completed)
+                {
+                    operation.WaitForCompletion(cancellationToken);
+                }
+                return operation;
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Get the NGINX deployment
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> NginxDeployments_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-03-01-preview. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="deploymentName"> The name of targeted NGINX deployment. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="deploymentName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<NginxDeploymentResource>> GetAsync(string deploymentName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(deploymentName, nameof(deploymentName));
 
-            using var scope = _nginxDeploymentDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.Get");
+            using DiagnosticScope scope = _nginxDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.Get");
             scope.Start();
             try
             {
-                var response = await _nginxDeploymentDeploymentsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, deploymentName, cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _nginxDeploymentsRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, deploymentName, context);
+                Response result = await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                Response<NginxDeploymentData> response = Response.FromValue(NginxDeploymentData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new NginxDeploymentResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -150,25 +219,45 @@ namespace Azure.ResourceManager.Nginx
         }
 
         /// <summary>
-        /// Get the Nginx deployment
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}
-        /// Operation Id: Deployments_Get
+        /// Get the NGINX deployment
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> NginxDeployments_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-03-01-preview. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="deploymentName"> The name of targeted Nginx deployment. </param>
+        /// <param name="deploymentName"> The name of targeted NGINX deployment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="deploymentName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<NginxDeploymentResource> Get(string deploymentName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(deploymentName, nameof(deploymentName));
 
-            using var scope = _nginxDeploymentDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.Get");
+            using DiagnosticScope scope = _nginxDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.Get");
             scope.Start();
             try
             {
-                var response = _nginxDeploymentDeploymentsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, deploymentName, cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _nginxDeploymentsRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, deploymentName, context);
+                Response result = Pipeline.ProcessMessage(message, context);
+                Response<NginxDeploymentData> response = Response.FromValue(NginxDeploymentData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new NginxDeploymentResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -179,107 +268,109 @@ namespace Azure.ResourceManager.Nginx
         }
 
         /// <summary>
-        /// List all Nginx deployments under the specified resource group.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments
-        /// Operation Id: Deployments_ListByResourceGroup
+        /// List all NGINX deployments under the specified resource group.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> NginxDeployments_ListByResourceGroup. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-03-01-preview. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="NginxDeploymentResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="NginxDeploymentResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<NginxDeploymentResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<NginxDeploymentResource>> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _nginxDeploymentDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _nginxDeploymentDeploymentsRestClient.ListByResourceGroupAsync(Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new NginxDeploymentResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<NginxDeploymentResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _nginxDeploymentDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _nginxDeploymentDeploymentsRestClient.ListByResourceGroupNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new NginxDeploymentResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new AsyncPageableWrapper<NginxDeploymentData, NginxDeploymentResource>(new NginxDeploymentsGetByResourceGroupAsyncCollectionResultOfT(_nginxDeploymentsRestClient, Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, context), data => new NginxDeploymentResource(Client, data));
         }
 
         /// <summary>
-        /// List all Nginx deployments under the specified resource group.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments
-        /// Operation Id: Deployments_ListByResourceGroup
+        /// List all NGINX deployments under the specified resource group.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> NginxDeployments_ListByResourceGroup. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-03-01-preview. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="NginxDeploymentResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="NginxDeploymentResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<NginxDeploymentResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<NginxDeploymentResource> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _nginxDeploymentDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _nginxDeploymentDeploymentsRestClient.ListByResourceGroup(Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new NginxDeploymentResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<NginxDeploymentResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _nginxDeploymentDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _nginxDeploymentDeploymentsRestClient.ListByResourceGroupNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new NginxDeploymentResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new PageableWrapper<NginxDeploymentData, NginxDeploymentResource>(new NginxDeploymentsGetByResourceGroupCollectionResultOfT(_nginxDeploymentsRestClient, Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, context), data => new NginxDeploymentResource(Client, data));
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}
-        /// Operation Id: Deployments_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> NginxDeployments_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-03-01-preview. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="deploymentName"> The name of targeted Nginx deployment. </param>
+        /// <param name="deploymentName"> The name of targeted NGINX deployment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="deploymentName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<bool>> ExistsAsync(string deploymentName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(deploymentName, nameof(deploymentName));
 
-            using var scope = _nginxDeploymentDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.Exists");
+            using DiagnosticScope scope = _nginxDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.Exists");
             scope.Start();
             try
             {
-                var response = await _nginxDeploymentDeploymentsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, deploymentName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _nginxDeploymentsRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, deploymentName, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<NginxDeploymentData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(NginxDeploymentData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((NginxDeploymentData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -291,23 +382,175 @@ namespace Azure.ResourceManager.Nginx
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}
-        /// Operation Id: Deployments_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> NginxDeployments_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-03-01-preview. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="deploymentName"> The name of targeted Nginx deployment. </param>
+        /// <param name="deploymentName"> The name of targeted NGINX deployment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="deploymentName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<bool> Exists(string deploymentName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(deploymentName, nameof(deploymentName));
 
-            using var scope = _nginxDeploymentDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.Exists");
+            using DiagnosticScope scope = _nginxDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.Exists");
             scope.Start();
             try
             {
-                var response = _nginxDeploymentDeploymentsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, deploymentName, cancellationToken: cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _nginxDeploymentsRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, deploymentName, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<NginxDeploymentData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(NginxDeploymentData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((NginxDeploymentData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> NginxDeployments_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-03-01-preview. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="deploymentName"> The name of targeted NGINX deployment. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="deploymentName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual async Task<NullableResponse<NginxDeploymentResource>> GetIfExistsAsync(string deploymentName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(deploymentName, nameof(deploymentName));
+
+            using DiagnosticScope scope = _nginxDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _nginxDeploymentsRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, deploymentName, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<NginxDeploymentData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(NginxDeploymentData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((NginxDeploymentData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<NginxDeploymentResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new NginxDeploymentResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> NginxDeployments_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-03-01-preview. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="deploymentName"> The name of targeted NGINX deployment. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="deploymentName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual NullableResponse<NginxDeploymentResource> GetIfExists(string deploymentName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(deploymentName, nameof(deploymentName));
+
+            using DiagnosticScope scope = _nginxDeploymentsClientDiagnostics.CreateScope("NginxDeploymentCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _nginxDeploymentsRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, deploymentName, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<NginxDeploymentData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(NginxDeploymentData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((NginxDeploymentData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<NginxDeploymentResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new NginxDeploymentResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {
@@ -326,6 +569,7 @@ namespace Azure.ResourceManager.Nginx
             return GetAll().GetEnumerator();
         }
 
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
         IAsyncEnumerator<NginxDeploymentResource> IAsyncEnumerable<NginxDeploymentResource>.GetAsyncEnumerator(CancellationToken cancellationToken)
         {
             return GetAllAsync(cancellationToken: cancellationToken).GetAsyncEnumerator(cancellationToken);

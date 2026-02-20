@@ -5,28 +5,34 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Chaos;
 
 namespace Azure.ResourceManager.Chaos.Models
 {
     /// <summary> The information of the experiment run. </summary>
     internal partial class ExperimentExecutionDetailsPropertiesRunInformation
     {
-        /// <summary> Initializes a new instance of ExperimentExecutionDetailsPropertiesRunInformation. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ExperimentExecutionDetailsPropertiesRunInformation"/>. </summary>
         internal ExperimentExecutionDetailsPropertiesRunInformation()
         {
-            Steps = new ChangeTrackingList<StepStatus>();
+            Steps = new ChangeTrackingList<ChaosExperimentRunStepStatus>();
         }
 
-        /// <summary> Initializes a new instance of ExperimentExecutionDetailsPropertiesRunInformation. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExperimentExecutionDetailsPropertiesRunInformation"/>. </summary>
         /// <param name="steps"> The steps of the experiment run. </param>
-        internal ExperimentExecutionDetailsPropertiesRunInformation(IReadOnlyList<StepStatus> steps)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ExperimentExecutionDetailsPropertiesRunInformation(IReadOnlyList<ChaosExperimentRunStepStatus> steps, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Steps = steps;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The steps of the experiment run. </summary>
-        public IReadOnlyList<StepStatus> Steps { get; }
+        public IReadOnlyList<ChaosExperimentRunStepStatus> Steps { get; }
     }
 }

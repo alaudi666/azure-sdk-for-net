@@ -6,8 +6,8 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
-using Azure.ResourceManager.Kusto;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Kusto.Models
@@ -15,19 +15,20 @@ namespace Azure.ResourceManager.Kusto.Models
     /// <summary> Class representing a CosmosDb data connection. </summary>
     public partial class KustoCosmosDBDataConnection : KustoDataConnectionData
     {
-        /// <summary> Initializes a new instance of KustoCosmosDBDataConnection. </summary>
+        /// <summary> Initializes a new instance of <see cref="KustoCosmosDBDataConnection"/>. </summary>
         public KustoCosmosDBDataConnection()
         {
             Kind = DataConnectionKind.CosmosDB;
         }
 
-        /// <summary> Initializes a new instance of KustoCosmosDBDataConnection. </summary>
+        /// <summary> Initializes a new instance of <see cref="KustoCosmosDBDataConnection"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
         /// <param name="systemData"> The systemData. </param>
         /// <param name="location"> Resource location. </param>
         /// <param name="kind"> Kind of the endpoint for the data connection. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="tableName"> The case-sensitive name of the existing target table in your cluster. Retrieved data is ingested into this table. </param>
         /// <param name="mappingRuleName"> The name of an existing mapping rule to use when ingesting the retrieved data. </param>
         /// <param name="managedIdentityResourceId"> The resource ID of a managed system or user-assigned identity. The identity is used to authenticate with Cosmos DB. </param>
@@ -37,7 +38,7 @@ namespace Azure.ResourceManager.Kusto.Models
         /// <param name="cosmosDBContainer"> The name of an existing container in the Cosmos DB database. </param>
         /// <param name="retrievalStartOn"> Optional. If defined, the data connection retrieves Cosmos DB documents created or updated after the specified retrieval start date. </param>
         /// <param name="provisioningState"> The provisioned state of the resource. </param>
-        internal KustoCosmosDBDataConnection(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, AzureLocation? location, DataConnectionKind kind, string tableName, string mappingRuleName, ResourceIdentifier managedIdentityResourceId, Guid? managedIdentityObjectId, ResourceIdentifier cosmosDBAccountResourceId, string cosmosDBDatabase, string cosmosDBContainer, DateTimeOffset? retrievalStartOn, KustoProvisioningState? provisioningState) : base(id, name, resourceType, systemData, location, kind)
+        internal KustoCosmosDBDataConnection(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, AzureLocation? location, DataConnectionKind kind, IDictionary<string, BinaryData> serializedAdditionalRawData, string tableName, string mappingRuleName, ResourceIdentifier managedIdentityResourceId, Guid? managedIdentityObjectId, ResourceIdentifier cosmosDBAccountResourceId, string cosmosDBDatabase, string cosmosDBContainer, DateTimeOffset? retrievalStartOn, KustoProvisioningState? provisioningState) : base(id, name, resourceType, systemData, location, kind, serializedAdditionalRawData)
         {
             TableName = tableName;
             MappingRuleName = mappingRuleName;
@@ -52,22 +53,31 @@ namespace Azure.ResourceManager.Kusto.Models
         }
 
         /// <summary> The case-sensitive name of the existing target table in your cluster. Retrieved data is ingested into this table. </summary>
+        [WirePath("properties.tableName")]
         public string TableName { get; set; }
         /// <summary> The name of an existing mapping rule to use when ingesting the retrieved data. </summary>
+        [WirePath("properties.mappingRuleName")]
         public string MappingRuleName { get; set; }
         /// <summary> The resource ID of a managed system or user-assigned identity. The identity is used to authenticate with Cosmos DB. </summary>
+        [WirePath("properties.managedIdentityResourceId")]
         public ResourceIdentifier ManagedIdentityResourceId { get; set; }
         /// <summary> The object ID of the managed identity resource. </summary>
+        [WirePath("properties.managedIdentityObjectId")]
         public Guid? ManagedIdentityObjectId { get; }
         /// <summary> The resource ID of the Cosmos DB account used to create the data connection. </summary>
+        [WirePath("properties.cosmosDbAccountResourceId")]
         public ResourceIdentifier CosmosDBAccountResourceId { get; set; }
         /// <summary> The name of an existing database in the Cosmos DB account. </summary>
+        [WirePath("properties.cosmosDbDatabase")]
         public string CosmosDBDatabase { get; set; }
         /// <summary> The name of an existing container in the Cosmos DB database. </summary>
+        [WirePath("properties.cosmosDbContainer")]
         public string CosmosDBContainer { get; set; }
         /// <summary> Optional. If defined, the data connection retrieves Cosmos DB documents created or updated after the specified retrieval start date. </summary>
+        [WirePath("properties.retrievalStartDate")]
         public DateTimeOffset? RetrievalStartOn { get; set; }
         /// <summary> The provisioned state of the resource. </summary>
+        [WirePath("properties.provisioningState")]
         public KustoProvisioningState? ProvisioningState { get; }
     }
 }

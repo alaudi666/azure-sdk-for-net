@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ProviderHub.Models;
@@ -33,8 +32,24 @@ namespace Azure.ResourceManager.ProviderHub
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-09-01-preview";
+            _apiVersion = apiVersion ?? "2024-09-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
+        }
+
+        internal RequestUriBuilder CreateGetRequestUri(string subscriptionId, string providerNamespace, string resourceType, string sku)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/skus/", false);
+            uri.AppendPath(sku, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetRequest(string subscriptionId, string providerNamespace, string resourceType, string sku)
@@ -60,14 +75,14 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the sku details for the given resource type and sku name. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="sku"> The SKU. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="sku"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceData>> GetAsync(string subscriptionId, string providerNamespace, string resourceType, string sku, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuData>> GetAsync(string subscriptionId, string providerNamespace, string resourceType, string sku, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -80,27 +95,27 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((SkuResourceData)null, message.Response);
+                    return Response.FromValue((ResourceTypeSkuData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Gets the sku details for the given resource type and sku name. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="sku"> The SKU. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="sku"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceData> Get(string subscriptionId, string providerNamespace, string resourceType, string sku, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuData> Get(string subscriptionId, string providerNamespace, string resourceType, string sku, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -113,19 +128,35 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((SkuResourceData)null, message.Response);
+                    return Response.FromValue((ResourceTypeSkuData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string providerNamespace, string resourceType, string sku, SkuResourceData data)
+        internal RequestUriBuilder CreateCreateOrUpdateRequestUri(string subscriptionId, string providerNamespace, string resourceType, string sku, ResourceTypeSkuData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/skus/", false);
+            uri.AppendPath(sku, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
+        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string providerNamespace, string resourceType, string sku, ResourceTypeSkuData data)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -145,14 +176,14 @@ namespace Azure.ResourceManager.ProviderHub
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Creates or updates the resource type skus in the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="sku"> The SKU. </param>
@@ -160,7 +191,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="sku"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceData>> CreateOrUpdateAsync(string subscriptionId, string providerNamespace, string resourceType, string sku, SkuResourceData data, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuData>> CreateOrUpdateAsync(string subscriptionId, string providerNamespace, string resourceType, string sku, ResourceTypeSkuData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -174,9 +205,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -185,7 +216,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Creates or updates the resource type skus in the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="sku"> The SKU. </param>
@@ -193,7 +224,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="sku"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceData> CreateOrUpdate(string subscriptionId, string providerNamespace, string resourceType, string sku, SkuResourceData data, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuData> CreateOrUpdate(string subscriptionId, string providerNamespace, string resourceType, string sku, ResourceTypeSkuData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -207,14 +238,30 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateDeleteRequestUri(string subscriptionId, string providerNamespace, string resourceType, string sku)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/skus/", false);
+            uri.AppendPath(sku, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateDeleteRequest(string subscriptionId, string providerNamespace, string resourceType, string sku)
@@ -240,7 +287,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Deletes a resource type sku. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="sku"> The SKU. </param>
@@ -267,7 +314,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Deletes a resource type sku. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="sku"> The SKU. </param>
@@ -291,6 +338,24 @@ namespace Azure.ResourceManager.ProviderHub
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetNestedResourceTypeFirstRequestUri(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeFirst, true);
+            uri.AppendPath("/skus/", false);
+            uri.AppendPath(sku, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetNestedResourceTypeFirstRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku)
@@ -318,7 +383,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the sku details for the given resource type and sku name. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -326,7 +391,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="sku"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceData>> GetNestedResourceTypeFirstAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuData>> GetNestedResourceTypeFirstAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -340,20 +405,20 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((SkuResourceData)null, message.Response);
+                    return Response.FromValue((ResourceTypeSkuData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Gets the sku details for the given resource type and sku name. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -361,7 +426,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="sku"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceData> GetNestedResourceTypeFirst(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuData> GetNestedResourceTypeFirst(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -375,19 +440,37 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((SkuResourceData)null, message.Response);
+                    return Response.FromValue((ResourceTypeSkuData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateCreateOrUpdateNestedResourceTypeFirstRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku, SkuResourceData data)
+        internal RequestUriBuilder CreateCreateOrUpdateNestedResourceTypeFirstRequestUri(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku, ResourceTypeSkuData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeFirst, true);
+            uri.AppendPath("/skus/", false);
+            uri.AppendPath(sku, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
+        internal HttpMessage CreateCreateOrUpdateNestedResourceTypeFirstRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku, ResourceTypeSkuData data)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -409,14 +492,14 @@ namespace Azure.ResourceManager.ProviderHub
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Creates or updates the resource type skus in the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -425,7 +508,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="sku"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceData>> CreateOrUpdateNestedResourceTypeFirstAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku, SkuResourceData data, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuData>> CreateOrUpdateNestedResourceTypeFirstAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku, ResourceTypeSkuData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -440,9 +523,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -451,7 +534,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Creates or updates the resource type skus in the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -460,7 +543,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="sku"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceData> CreateOrUpdateNestedResourceTypeFirst(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku, SkuResourceData data, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuData> CreateOrUpdateNestedResourceTypeFirst(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku, ResourceTypeSkuData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -475,14 +558,32 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateDeleteNestedResourceTypeFirstRequestUri(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeFirst, true);
+            uri.AppendPath("/skus/", false);
+            uri.AppendPath(sku, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateDeleteNestedResourceTypeFirstRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string sku)
@@ -510,7 +611,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Deletes a resource type sku. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -539,7 +640,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Deletes a resource type sku. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -565,6 +666,26 @@ namespace Azure.ResourceManager.ProviderHub
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetNestedResourceTypeSecondRequestUri(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeFirst, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeSecond, true);
+            uri.AppendPath("/skus/", false);
+            uri.AppendPath(sku, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetNestedResourceTypeSecondRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku)
@@ -594,7 +715,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the sku details for the given resource type and sku name. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -603,7 +724,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="sku"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceData>> GetNestedResourceTypeSecondAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuData>> GetNestedResourceTypeSecondAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -618,20 +739,20 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((SkuResourceData)null, message.Response);
+                    return Response.FromValue((ResourceTypeSkuData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Gets the sku details for the given resource type and sku name. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -640,7 +761,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="sku"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceData> GetNestedResourceTypeSecond(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuData> GetNestedResourceTypeSecond(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -655,19 +776,39 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((SkuResourceData)null, message.Response);
+                    return Response.FromValue((ResourceTypeSkuData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateCreateOrUpdateNestedResourceTypeSecondRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku, SkuResourceData data)
+        internal RequestUriBuilder CreateCreateOrUpdateNestedResourceTypeSecondRequestUri(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku, ResourceTypeSkuData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeFirst, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeSecond, true);
+            uri.AppendPath("/skus/", false);
+            uri.AppendPath(sku, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
+        internal HttpMessage CreateCreateOrUpdateNestedResourceTypeSecondRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku, ResourceTypeSkuData data)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -691,14 +832,14 @@ namespace Azure.ResourceManager.ProviderHub
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Creates or updates the resource type skus in the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -708,7 +849,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/>, <paramref name="sku"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceData>> CreateOrUpdateNestedResourceTypeSecondAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku, SkuResourceData data, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuData>> CreateOrUpdateNestedResourceTypeSecondAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku, ResourceTypeSkuData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -724,9 +865,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -735,7 +876,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Creates or updates the resource type skus in the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -745,7 +886,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/>, <paramref name="sku"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceData> CreateOrUpdateNestedResourceTypeSecond(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku, SkuResourceData data, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuData> CreateOrUpdateNestedResourceTypeSecond(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku, ResourceTypeSkuData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -761,14 +902,34 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateDeleteNestedResourceTypeSecondRequestUri(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeFirst, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeSecond, true);
+            uri.AppendPath("/skus/", false);
+            uri.AppendPath(sku, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateDeleteNestedResourceTypeSecondRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string sku)
@@ -798,7 +959,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Deletes a resource type sku. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -829,7 +990,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Deletes a resource type sku. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -857,6 +1018,28 @@ namespace Azure.ResourceManager.ProviderHub
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetNestedResourceTypeThirdRequestUri(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeFirst, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeSecond, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeThird, true);
+            uri.AppendPath("/skus/", false);
+            uri.AppendPath(sku, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetNestedResourceTypeThirdRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku)
@@ -888,7 +1071,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the sku details for the given resource type and sku name. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -898,7 +1081,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/>, <paramref name="nestedResourceTypeThird"/> or <paramref name="sku"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/>, <paramref name="nestedResourceTypeThird"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceData>> GetNestedResourceTypeThirdAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuData>> GetNestedResourceTypeThirdAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -914,20 +1097,20 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((SkuResourceData)null, message.Response);
+                    return Response.FromValue((ResourceTypeSkuData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Gets the sku details for the given resource type and sku name. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -937,7 +1120,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/>, <paramref name="nestedResourceTypeThird"/> or <paramref name="sku"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/>, <paramref name="nestedResourceTypeThird"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceData> GetNestedResourceTypeThird(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuData> GetNestedResourceTypeThird(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -953,19 +1136,41 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 case 404:
-                    return Response.FromValue((SkuResourceData)null, message.Response);
+                    return Response.FromValue((ResourceTypeSkuData)null, message.Response);
                 default:
                     throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateCreateOrUpdateNestedResourceTypeThirdRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku, SkuResourceData data)
+        internal RequestUriBuilder CreateCreateOrUpdateNestedResourceTypeThirdRequestUri(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku, ResourceTypeSkuData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeFirst, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeSecond, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeThird, true);
+            uri.AppendPath("/skus/", false);
+            uri.AppendPath(sku, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
+        internal HttpMessage CreateCreateOrUpdateNestedResourceTypeThirdRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku, ResourceTypeSkuData data)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -991,14 +1196,14 @@ namespace Azure.ResourceManager.ProviderHub
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Creates or updates the resource type skus in the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -1009,7 +1214,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/>, <paramref name="nestedResourceTypeThird"/>, <paramref name="sku"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/>, <paramref name="nestedResourceTypeThird"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceData>> CreateOrUpdateNestedResourceTypeThirdAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku, SkuResourceData data, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuData>> CreateOrUpdateNestedResourceTypeThirdAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku, ResourceTypeSkuData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -1026,9 +1231,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1037,7 +1242,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Creates or updates the resource type skus in the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -1048,7 +1253,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/>, <paramref name="nestedResourceTypeThird"/>, <paramref name="sku"/> or <paramref name="data"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/>, <paramref name="nestedResourceTypeThird"/> or <paramref name="sku"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceData> CreateOrUpdateNestedResourceTypeThird(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku, SkuResourceData data, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuData> CreateOrUpdateNestedResourceTypeThird(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku, ResourceTypeSkuData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -1065,14 +1270,36 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceData.DeserializeSkuResourceData(document.RootElement);
+                        ResourceTypeSkuData value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuData.DeserializeResourceTypeSkuData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateDeleteNestedResourceTypeThirdRequestUri(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeFirst, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeSecond, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeThird, true);
+            uri.AppendPath("/skus/", false);
+            uri.AppendPath(sku, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateDeleteNestedResourceTypeThirdRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, string sku)
@@ -1104,7 +1331,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Deletes a resource type sku. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -1137,7 +1364,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Deletes a resource type sku. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -1169,6 +1396,21 @@ namespace Azure.ResourceManager.ProviderHub
             }
         }
 
+        internal RequestUriBuilder CreateListByResourceTypeRegistrationsRequestUri(string subscriptionId, string providerNamespace, string resourceType)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/skus", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
         internal HttpMessage CreateListByResourceTypeRegistrationsRequest(string subscriptionId, string providerNamespace, string resourceType)
         {
             var message = _pipeline.CreateMessage();
@@ -1191,13 +1433,13 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/> or <paramref name="resourceType"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/> or <paramref name="resourceType"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceArrayResponseWithContinuation>> ListByResourceTypeRegistrationsAsync(string subscriptionId, string providerNamespace, string resourceType, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuListResult>> ListByResourceTypeRegistrationsAsync(string subscriptionId, string providerNamespace, string resourceType, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -1209,9 +1451,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1220,13 +1462,13 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/> or <paramref name="resourceType"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/> or <paramref name="resourceType"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceArrayResponseWithContinuation> ListByResourceTypeRegistrations(string subscriptionId, string providerNamespace, string resourceType, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuListResult> ListByResourceTypeRegistrations(string subscriptionId, string providerNamespace, string resourceType, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -1238,14 +1480,31 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListByResourceTypeRegistrationsNestedResourceTypeFirstRequestUri(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeFirst, true);
+            uri.AppendPath("/skus", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListByResourceTypeRegistrationsNestedResourceTypeFirstRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst)
@@ -1272,14 +1531,14 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="nestedResourceTypeFirst"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="nestedResourceTypeFirst"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceArrayResponseWithContinuation>> ListByResourceTypeRegistrationsNestedResourceTypeFirstAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuListResult>> ListByResourceTypeRegistrationsNestedResourceTypeFirstAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -1292,9 +1551,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1303,14 +1562,14 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="nestedResourceTypeFirst"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="nestedResourceTypeFirst"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceArrayResponseWithContinuation> ListByResourceTypeRegistrationsNestedResourceTypeFirst(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuListResult> ListByResourceTypeRegistrationsNestedResourceTypeFirst(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -1323,14 +1582,33 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListByResourceTypeRegistrationsNestedResourceTypeSecondRequestUri(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeFirst, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeSecond, true);
+            uri.AppendPath("/skus", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListByResourceTypeRegistrationsNestedResourceTypeSecondRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond)
@@ -1359,7 +1637,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -1367,7 +1645,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="nestedResourceTypeSecond"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="nestedResourceTypeSecond"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceArrayResponseWithContinuation>> ListByResourceTypeRegistrationsNestedResourceTypeSecondAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuListResult>> ListByResourceTypeRegistrationsNestedResourceTypeSecondAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -1381,9 +1659,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1392,7 +1670,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -1400,7 +1678,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="nestedResourceTypeSecond"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="nestedResourceTypeSecond"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceArrayResponseWithContinuation> ListByResourceTypeRegistrationsNestedResourceTypeSecond(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuListResult> ListByResourceTypeRegistrationsNestedResourceTypeSecond(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -1414,14 +1692,35 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListByResourceTypeRegistrationsNestedResourceTypeThirdRequestUri(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeFirst, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeSecond, true);
+            uri.AppendPath("/resourcetypeRegistrations/", false);
+            uri.AppendPath(nestedResourceTypeThird, true);
+            uri.AppendPath("/skus", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListByResourceTypeRegistrationsNestedResourceTypeThirdRequest(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird)
@@ -1452,7 +1751,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -1461,7 +1760,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="nestedResourceTypeThird"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="nestedResourceTypeThird"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceArrayResponseWithContinuation>> ListByResourceTypeRegistrationsNestedResourceTypeThirdAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuListResult>> ListByResourceTypeRegistrationsNestedResourceTypeThirdAsync(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -1476,9 +1775,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1487,7 +1786,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -1496,7 +1795,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="nestedResourceTypeThird"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="nestedResourceTypeThird"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceArrayResponseWithContinuation> ListByResourceTypeRegistrationsNestedResourceTypeThird(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuListResult> ListByResourceTypeRegistrationsNestedResourceTypeThird(string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -1511,14 +1810,22 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListByResourceTypeRegistrationsNextPageRequestUri(string nextLink, string subscriptionId, string providerNamespace, string resourceType)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListByResourceTypeRegistrationsNextPageRequest(string nextLink, string subscriptionId, string providerNamespace, string resourceType)
@@ -1537,13 +1844,13 @@ namespace Azure.ResourceManager.ProviderHub
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/> or <paramref name="resourceType"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/> or <paramref name="resourceType"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceArrayResponseWithContinuation>> ListByResourceTypeRegistrationsNextPageAsync(string nextLink, string subscriptionId, string providerNamespace, string resourceType, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuListResult>> ListByResourceTypeRegistrationsNextPageAsync(string nextLink, string subscriptionId, string providerNamespace, string resourceType, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -1556,9 +1863,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1568,13 +1875,13 @@ namespace Azure.ResourceManager.ProviderHub
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/> or <paramref name="resourceType"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/> or <paramref name="resourceType"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceArrayResponseWithContinuation> ListByResourceTypeRegistrationsNextPage(string nextLink, string subscriptionId, string providerNamespace, string resourceType, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuListResult> ListByResourceTypeRegistrationsNextPage(string nextLink, string subscriptionId, string providerNamespace, string resourceType, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -1587,14 +1894,22 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListByResourceTypeRegistrationsNestedResourceTypeFirstNextPageRequestUri(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListByResourceTypeRegistrationsNestedResourceTypeFirstNextPageRequest(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst)
@@ -1613,14 +1928,14 @@ namespace Azure.ResourceManager.ProviderHub
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="nestedResourceTypeFirst"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="nestedResourceTypeFirst"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceArrayResponseWithContinuation>> ListByResourceTypeRegistrationsNestedResourceTypeFirstNextPageAsync(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuListResult>> ListByResourceTypeRegistrationsNestedResourceTypeFirstNextPageAsync(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -1634,9 +1949,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1646,14 +1961,14 @@ namespace Azure.ResourceManager.ProviderHub
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="nestedResourceTypeFirst"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/> or <paramref name="nestedResourceTypeFirst"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceArrayResponseWithContinuation> ListByResourceTypeRegistrationsNestedResourceTypeFirstNextPage(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuListResult> ListByResourceTypeRegistrationsNestedResourceTypeFirstNextPage(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -1667,14 +1982,22 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListByResourceTypeRegistrationsNestedResourceTypeSecondNextPageRequestUri(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListByResourceTypeRegistrationsNestedResourceTypeSecondNextPageRequest(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond)
@@ -1693,7 +2016,7 @@ namespace Azure.ResourceManager.ProviderHub
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -1701,7 +2024,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="nestedResourceTypeSecond"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="nestedResourceTypeSecond"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceArrayResponseWithContinuation>> ListByResourceTypeRegistrationsNestedResourceTypeSecondNextPageAsync(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuListResult>> ListByResourceTypeRegistrationsNestedResourceTypeSecondNextPageAsync(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -1716,9 +2039,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1728,7 +2051,7 @@ namespace Azure.ResourceManager.ProviderHub
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -1736,7 +2059,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="nestedResourceTypeSecond"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/> or <paramref name="nestedResourceTypeSecond"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceArrayResponseWithContinuation> ListByResourceTypeRegistrationsNestedResourceTypeSecondNextPage(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuListResult> ListByResourceTypeRegistrationsNestedResourceTypeSecondNextPage(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -1751,14 +2074,22 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListByResourceTypeRegistrationsNestedResourceTypeThirdNextPageRequestUri(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListByResourceTypeRegistrationsNestedResourceTypeThirdNextPageRequest(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird)
@@ -1777,7 +2108,7 @@ namespace Azure.ResourceManager.ProviderHub
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -1786,7 +2117,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="nestedResourceTypeThird"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="nestedResourceTypeThird"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<SkuResourceArrayResponseWithContinuation>> ListByResourceTypeRegistrationsNestedResourceTypeThirdNextPageAsync(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceTypeSkuListResult>> ListByResourceTypeRegistrationsNestedResourceTypeThirdNextPageAsync(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -1802,9 +2133,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -1814,7 +2145,7 @@ namespace Azure.ResourceManager.ProviderHub
 
         /// <summary> Gets the list of skus for the given resource type. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="resourceType"> The resource type. </param>
         /// <param name="nestedResourceTypeFirst"> The first child resource type. </param>
@@ -1823,7 +2154,7 @@ namespace Azure.ResourceManager.ProviderHub
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="nestedResourceTypeThird"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="providerNamespace"/>, <paramref name="resourceType"/>, <paramref name="nestedResourceTypeFirst"/>, <paramref name="nestedResourceTypeSecond"/> or <paramref name="nestedResourceTypeThird"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<SkuResourceArrayResponseWithContinuation> ListByResourceTypeRegistrationsNestedResourceTypeThirdNextPage(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, CancellationToken cancellationToken = default)
+        public Response<ResourceTypeSkuListResult> ListByResourceTypeRegistrationsNestedResourceTypeThirdNextPage(string nextLink, string subscriptionId, string providerNamespace, string resourceType, string nestedResourceTypeFirst, string nestedResourceTypeSecond, string nestedResourceTypeThird, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -1839,9 +2170,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        SkuResourceArrayResponseWithContinuation value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = SkuResourceArrayResponseWithContinuation.DeserializeSkuResourceArrayResponseWithContinuation(document.RootElement);
+                        ResourceTypeSkuListResult value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = ResourceTypeSkuListResult.DeserializeResourceTypeSkuListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

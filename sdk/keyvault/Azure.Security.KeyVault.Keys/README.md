@@ -75,7 +75,7 @@ To activate the HSM you send at least 3 (maximum 10) RSA public keys to the HSM.
 Once this security domain is successfully downloaded, your HSM is ready to use.
 You also need to specify quorum, which is the minimum number of private keys required to decrypt the security domain.
 
-The example below shows how to use openssl to generate 3 self signed certificate.
+The example below shows how to use openssl to generate 3 self-signed certificate.
 
 ```PowerShell
 openssl req -newkey rsa:2048 -nodes -keyout cert_0.key -x509 -days 365 -out cert_0.cer
@@ -142,7 +142,7 @@ We guarantee that all client instance methods are thread-safe and independent of
 [Long-running operations](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/README.md#consuming-long-running-operations-using-operationt) |
 [Handling failures](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/README.md#reporting-errors-requestfailedexception) |
 [Diagnostics](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/Diagnostics.md) |
-[Mocking](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/README.md#mocking) |
+[Mocking](https://learn.microsoft.com/dotnet/azure/sdk/unit-testing-mocking) |
 [Client lifetime](https://devblogs.microsoft.com/azure-sdk/lifetime-management-and-thread-safety-guarantees-of-azure-sdk-net-clients/)
 <!-- CLIENT COMMON BAR -->
 
@@ -283,10 +283,10 @@ var cryptoClient = client.GetCryptographyClient(key.Name, key.Properties.Version
 byte[] plaintext = Encoding.UTF8.GetBytes("A single block of plaintext");
 
 // encrypt the data using the algorithm RSAOAEP
-EncryptResult encryptResult = cryptoClient.Encrypt(EncryptionAlgorithm.RsaOaep, plaintext);
+EncryptResult encryptResult = cryptoClient.Encrypt(EncryptionAlgorithm.RsaOaep256, plaintext);
 
 // decrypt the encrypted data.
-DecryptResult decryptResult = cryptoClient.Decrypt(EncryptionAlgorithm.RsaOaep, encryptResult.Ciphertext);
+DecryptResult decryptResult = cryptoClient.Decrypt(EncryptionAlgorithm.RsaOaep256, encryptResult.Ciphertext);
 ```
 
 ### Create a key asynchronously
@@ -442,7 +442,7 @@ When you submit a pull request, a CLA-bot will automatically determine whether y
 Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
 
 This project has adopted the [Microsoft Open Source Code of Conduct][code_of_conduct].
-For more information see the [Code of Conduct FAQ][coc_faq] or contact opencode@microsoft.com with any additional questions or comments.
+For more information see the [Code of Conduct FAQ][coc_faq] or contact <opencode@microsoft.com> with any additional questions or comments.
 
 <!-- LINKS -->
 [API_reference]: https://learn.microsoft.com/dotnet/api/azure.security.keyvault.keys
@@ -474,5 +474,3 @@ For more information see the [Code of Conduct FAQ][coc_faq] or contact opencode@
 [migration_guide]: https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/keyvault/Azure.Security.KeyVault.Keys/MigrationGuide.md
 [access_policy]: https://learn.microsoft.com/azure/key-vault/general/assign-access-policy
 [rbac_guide]: https://learn.microsoft.com/azure/key-vault/general/rbac-guide
-
-![Impressions](https://azure-sdk-impressions.azurewebsites.net/api/impressions/azure-sdk-for-net%2Fsdk%2Fkeyvault%2FAzure.Security.KeyVault.Keys%2FREADME.png)

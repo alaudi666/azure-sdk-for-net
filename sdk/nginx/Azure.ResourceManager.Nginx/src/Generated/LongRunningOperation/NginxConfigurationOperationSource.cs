@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Nginx
 {
-    internal class NginxConfigurationOperationSource : IOperationSource<NginxConfigurationResource>
+    /// <summary></summary>
+    internal partial class NginxConfigurationOperationSource : IOperationSource<NginxConfigurationResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal NginxConfigurationOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         NginxConfigurationResource IOperationSource<NginxConfigurationResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = NginxConfigurationData.DeserializeNginxConfigurationData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            NginxConfigurationData data = NginxConfigurationData.DeserializeNginxConfigurationData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new NginxConfigurationResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<NginxConfigurationResource> IOperationSource<NginxConfigurationResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = NginxConfigurationData.DeserializeNginxConfigurationData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            NginxConfigurationData data = NginxConfigurationData.DeserializeNginxConfigurationData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new NginxConfigurationResource(_client, data);
         }
     }

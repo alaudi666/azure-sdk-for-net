@@ -5,25 +5,43 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.Search.Documents.Indexes.Models
 {
-    public partial class ScoringProfile : IUtf8JsonSerializable
+    public partial class ScoringProfile : IUtf8JsonSerializable, IJsonModel<ScoringProfile>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ScoringProfile>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ScoringProfile>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("name");
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ScoringProfile>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ScoringProfile)} does not support writing '{format}' format.");
+            }
+
+            writer.WritePropertyName("name"u8);
             writer.WriteStringValue(Name);
             if (Optional.IsDefined(TextWeights))
             {
                 if (TextWeights != null)
                 {
-                    writer.WritePropertyName("text");
-                    writer.WriteObjectValue(TextWeights);
+                    writer.WritePropertyName("text"u8);
+                    writer.WriteObjectValue(TextWeights, options);
                 }
                 else
                 {
@@ -32,11 +50,11 @@ namespace Azure.Search.Documents.Indexes.Models
             }
             if (Optional.IsCollectionDefined(Functions))
             {
-                writer.WritePropertyName("functions");
+                writer.WritePropertyName("functions"u8);
                 writer.WriteStartArray();
                 foreach (var item in Functions)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<ScoringFunction>(item, options);
                 }
                 writer.WriteEndArray();
             }
@@ -44,7 +62,7 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 if (FunctionAggregation != null)
                 {
-                    writer.WritePropertyName("functionAggregation");
+                    writer.WritePropertyName("functionAggregation"u8);
                     writer.WriteStringValue(FunctionAggregation.Value.ToSerialString());
                 }
                 else
@@ -52,48 +70,81 @@ namespace Azure.Search.Documents.Indexes.Models
                     writer.WriteNull("functionAggregation");
                 }
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static ScoringProfile DeserializeScoringProfile(JsonElement element)
+        ScoringProfile IJsonModel<ScoringProfile>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<ScoringProfile>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ScoringProfile)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeScoringProfile(document.RootElement, options);
+        }
+
+        internal static ScoringProfile DeserializeScoringProfile(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string name = default;
-            Optional<TextWeights> text = default;
-            Optional<IList<ScoringFunction>> functions = default;
-            Optional<ScoringFunctionAggregation?> functionAggregation = default;
+            TextWeights text = default;
+            IList<ScoringFunction> functions = default;
+            ScoringFunctionAggregation? functionAggregation = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("text"))
+                if (property.NameEquals("text"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
                         text = null;
                         continue;
                     }
-                    text = TextWeights.DeserializeTextWeights(property.Value);
+                    text = TextWeights.DeserializeTextWeights(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("functions"))
+                if (property.NameEquals("functions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ScoringFunction> array = new List<ScoringFunction>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ScoringFunction.DeserializeScoringFunction(item));
+                        array.Add(ScoringFunction.DeserializeScoringFunction(item, options));
                     }
                     functions = array;
                     continue;
                 }
-                if (property.NameEquals("functionAggregation"))
+                if (property.NameEquals("functionAggregation"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -103,8 +154,60 @@ namespace Azure.Search.Documents.Indexes.Models
                     functionAggregation = property.Value.GetString().ToScoringFunctionAggregation();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ScoringProfile(name, text.Value, Optional.ToList(functions), Optional.ToNullable(functionAggregation));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ScoringProfile(name, text, functions ?? new ChangeTrackingList<ScoringFunction>(), functionAggregation, serializedAdditionalRawData);
+        }
+
+        BinaryData IPersistableModel<ScoringProfile>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ScoringProfile>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureSearchDocumentsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ScoringProfile)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ScoringProfile IPersistableModel<ScoringProfile>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ScoringProfile>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeScoringProfile(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ScoringProfile)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ScoringProfile>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static ScoringProfile FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeScoringProfile(document.RootElement);
+        }
+
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
+        internal virtual RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue(this, ModelSerializationExtensions.WireOptions);
+            return content;
         }
     }
 }

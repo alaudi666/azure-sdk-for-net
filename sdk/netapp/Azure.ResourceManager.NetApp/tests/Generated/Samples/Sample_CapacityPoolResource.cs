@@ -7,23 +7,20 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Identity;
-using Azure.ResourceManager;
-using Azure.ResourceManager.NetApp;
 using Azure.ResourceManager.NetApp.Models;
+using NUnit.Framework;
 
 namespace Azure.ResourceManager.NetApp.Samples
 {
     public partial class Sample_CapacityPoolResource
     {
-        // Pools_Get
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
+        [Test]
+        [Ignore("Only validating compilation of examples")]
         public async Task Get_PoolsGet()
         {
-            // Generated from example definition: specification/netapp/resource-manager/Microsoft.NetApp/stable/2022-05-01/examples/Pools_Get.json
+            // Generated from example definition: specification/netapp/resource-manager/Microsoft.NetApp/NetApp/preview/2025-09-01-preview/examples/Pools_Get.json
             // this example is just showing the usage of "Pools_Get" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -33,7 +30,7 @@ namespace Azure.ResourceManager.NetApp.Samples
 
             // this example assumes you already have this CapacityPoolResource created on azure
             // for more information of creating CapacityPoolResource, please refer to the document of CapacityPoolResource
-            string subscriptionId = "D633CC2E-722B-4AE1-B636-BBD9E4C60ED9";
+            string subscriptionId = "00000000-0000-0000-0000-000000000000";
             string resourceGroupName = "myRG";
             string accountName = "account1";
             string poolName = "pool1";
@@ -50,12 +47,69 @@ namespace Azure.ResourceManager.NetApp.Samples
             Console.WriteLine($"Succeeded on id: {resourceData.Id}");
         }
 
-        // Pools_Update
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
+        [Test]
+        [Ignore("Only validating compilation of examples")]
+        public async Task Get_PoolsGetCustomThroughput()
+        {
+            // Generated from example definition: specification/netapp/resource-manager/Microsoft.NetApp/NetApp/preview/2025-09-01-preview/examples/Pools_Get_CustomThroughput.json
+            // this example is just showing the usage of "Pools_Get" operation, for the dependent resources, they will have to be created separately.
+
+            // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
+            TokenCredential cred = new DefaultAzureCredential();
+            // authenticate your client
+            ArmClient client = new ArmClient(cred);
+
+            // this example assumes you already have this CapacityPoolResource created on azure
+            // for more information of creating CapacityPoolResource, please refer to the document of CapacityPoolResource
+            string subscriptionId = "00000000-0000-0000-0000-000000000000";
+            string resourceGroupName = "myRG";
+            string accountName = "account1";
+            string poolName = "customPool1";
+            ResourceIdentifier capacityPoolResourceId = CapacityPoolResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, accountName, poolName);
+            CapacityPoolResource capacityPool = client.GetCapacityPoolResource(capacityPoolResourceId);
+
+            // invoke the operation
+            CapacityPoolResource result = await capacityPool.GetAsync();
+
+            // the variable result is a resource, you could call other operations on this instance as well
+            // but just for demo, we get its data from this resource instance
+            CapacityPoolData resourceData = result.Data;
+            // for demo we just print out the id
+            Console.WriteLine($"Succeeded on id: {resourceData.Id}");
+        }
+
+        [Test]
+        [Ignore("Only validating compilation of examples")]
+        public async Task Delete_PoolsDelete()
+        {
+            // Generated from example definition: specification/netapp/resource-manager/Microsoft.NetApp/NetApp/preview/2025-09-01-preview/examples/Pools_Delete.json
+            // this example is just showing the usage of "Pools_Delete" operation, for the dependent resources, they will have to be created separately.
+
+            // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
+            TokenCredential cred = new DefaultAzureCredential();
+            // authenticate your client
+            ArmClient client = new ArmClient(cred);
+
+            // this example assumes you already have this CapacityPoolResource created on azure
+            // for more information of creating CapacityPoolResource, please refer to the document of CapacityPoolResource
+            string subscriptionId = "00000000-0000-0000-0000-000000000000";
+            string resourceGroupName = "myRG";
+            string accountName = "account1";
+            string poolName = "pool1";
+            ResourceIdentifier capacityPoolResourceId = CapacityPoolResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, accountName, poolName);
+            CapacityPoolResource capacityPool = client.GetCapacityPoolResource(capacityPoolResourceId);
+
+            // invoke the operation
+            await capacityPool.DeleteAsync(WaitUntil.Completed);
+
+            Console.WriteLine("Succeeded");
+        }
+
+        [Test]
+        [Ignore("Only validating compilation of examples")]
         public async Task Update_PoolsUpdate()
         {
-            // Generated from example definition: specification/netapp/resource-manager/Microsoft.NetApp/stable/2022-05-01/examples/Pools_Update.json
+            // Generated from example definition: specification/netapp/resource-manager/Microsoft.NetApp/NetApp/preview/2025-09-01-preview/examples/Pools_Update.json
             // this example is just showing the usage of "Pools_Update" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
@@ -65,7 +119,7 @@ namespace Azure.ResourceManager.NetApp.Samples
 
             // this example assumes you already have this CapacityPoolResource created on azure
             // for more information of creating CapacityPoolResource, please refer to the document of CapacityPoolResource
-            string subscriptionId = "D633CC2E-722B-4AE1-B636-BBD9E4C60ED9";
+            string subscriptionId = "00000000-0000-0000-0000-000000000000";
             string resourceGroupName = "myRG";
             string accountName = "account1";
             string poolName = "pool1";
@@ -73,7 +127,7 @@ namespace Azure.ResourceManager.NetApp.Samples
             CapacityPoolResource capacityPool = client.GetCapacityPoolResource(capacityPoolResourceId);
 
             // invoke the operation
-            CapacityPoolPatch patch = new CapacityPoolPatch(new AzureLocation("placeholder"));
+            CapacityPoolPatch patch = new CapacityPoolPatch(default);
             ArmOperation<CapacityPoolResource> lro = await capacityPool.UpdateAsync(WaitUntil.Completed, patch);
             CapacityPoolResource result = lro.Value;
 
@@ -84,13 +138,12 @@ namespace Azure.ResourceManager.NetApp.Samples
             Console.WriteLine($"Succeeded on id: {resourceData.Id}");
         }
 
-        // Pools_Delete
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
-        public async Task Delete_PoolsDelete()
+        [Test]
+        [Ignore("Only validating compilation of examples")]
+        public async Task Update_PoolsUpdateCustomThroughput()
         {
-            // Generated from example definition: specification/netapp/resource-manager/Microsoft.NetApp/stable/2022-05-01/examples/Pools_Delete.json
-            // this example is just showing the usage of "Pools_Delete" operation, for the dependent resources, they will have to be created separately.
+            // Generated from example definition: specification/netapp/resource-manager/Microsoft.NetApp/NetApp/preview/2025-09-01-preview/examples/Pools_Update_CustomThroughput.json
+            // this example is just showing the usage of "Pools_Update" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
             TokenCredential cred = new DefaultAzureCredential();
@@ -99,17 +152,23 @@ namespace Azure.ResourceManager.NetApp.Samples
 
             // this example assumes you already have this CapacityPoolResource created on azure
             // for more information of creating CapacityPoolResource, please refer to the document of CapacityPoolResource
-            string subscriptionId = "D633CC2E-722B-4AE1-B636-BBD9E4C60ED9";
+            string subscriptionId = "00000000-0000-0000-0000-000000000000";
             string resourceGroupName = "myRG";
             string accountName = "account1";
-            string poolName = "pool1";
+            string poolName = "customPool1";
             ResourceIdentifier capacityPoolResourceId = CapacityPoolResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, accountName, poolName);
             CapacityPoolResource capacityPool = client.GetCapacityPoolResource(capacityPoolResourceId);
 
             // invoke the operation
-            await capacityPool.DeleteAsync(WaitUntil.Completed);
+            CapacityPoolPatch patch = new CapacityPoolPatch(default);
+            ArmOperation<CapacityPoolResource> lro = await capacityPool.UpdateAsync(WaitUntil.Completed, patch);
+            CapacityPoolResource result = lro.Value;
 
-            Console.WriteLine($"Succeeded");
+            // the variable result is a resource, you could call other operations on this instance as well
+            // but just for demo, we get its data from this resource instance
+            CapacityPoolData resourceData = result.Data;
+            // for demo we just print out the id
+            Console.WriteLine($"Succeeded on id: {resourceData.Id}");
         }
     }
 }

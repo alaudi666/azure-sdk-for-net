@@ -6,111 +6,237 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Quota;
 
 namespace Azure.ResourceManager.Quota.Models
 {
-    public partial class QuotaProperties : IUtf8JsonSerializable
+    /// <summary> Quota properties for the specified resource. </summary>
+    public partial class QuotaProperties : IJsonModel<QuotaProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual QuotaProperties PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<QuotaProperties>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeQuotaProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(QuotaProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<QuotaProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(Limit))
-            {
-                writer.WritePropertyName("limit");
-                writer.WriteObjectValue(Limit);
-            }
-            if (Optional.IsDefined(Name))
-            {
-                writer.WritePropertyName("name");
-                writer.WriteObjectValue(Name);
-            }
-            if (Optional.IsDefined(ResourceType))
-            {
-                writer.WritePropertyName("resourceType");
-                writer.WriteStringValue(ResourceType);
-            }
-            if (Optional.IsDefined(Properties))
-            {
-                writer.WritePropertyName("properties");
-#if NET6_0_OR_GREATER
-				writer.WriteRawValue(Properties);
-#else
-                JsonSerializer.Serialize(writer, JsonDocument.Parse(Properties.ToString()).RootElement);
-#endif
-            }
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static QuotaProperties DeserializeQuotaProperties(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<LimitJsonObject> limit = default;
-            Optional<string> unit = default;
-            Optional<ResourceName> name = default;
-            Optional<string> resourceType = default;
-            Optional<string> quotaPeriod = default;
-            Optional<bool> isQuotaApplicable = default;
-            Optional<BinaryData> properties = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<QuotaProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("limit"))
+                throw new FormatException($"The model {nameof(QuotaProperties)} does not support writing '{format}' format.");
+            }
+            if (Optional.IsDefined(Limit))
+            {
+                writer.WritePropertyName("limit"u8);
+                writer.WriteObjectValue(Limit, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Unit))
+            {
+                writer.WritePropertyName("unit"u8);
+                writer.WriteStringValue(Unit);
+            }
+            if (Optional.IsDefined(Name))
+            {
+                writer.WritePropertyName("name"u8);
+                writer.WriteObjectValue(Name, options);
+            }
+            if (Optional.IsDefined(ResourceTypeName))
+            {
+                writer.WritePropertyName("resourceType"u8);
+                writer.WriteStringValue(ResourceTypeName);
+            }
+            if (options.Format != "W" && Optional.IsDefined(QuotaPeriod))
+            {
+                writer.WritePropertyName("quotaPeriod"u8);
+                writer.WriteStringValue(QuotaPeriod.Value, "P");
+            }
+            if (options.Format != "W" && Optional.IsDefined(IsQuotaApplicable))
+            {
+                writer.WritePropertyName("isQuotaApplicable"u8);
+                writer.WriteBooleanValue(IsQuotaApplicable.Value);
+            }
+            if (Optional.IsDefined(Properties))
+            {
+                writer.WritePropertyName("properties"u8);
+#if NET6_0_OR_GREATER
+                writer.WriteRawValue(Properties);
+#else
+                using (JsonDocument document = JsonDocument.Parse(Properties))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    JsonSerializer.Serialize(writer, document.RootElement);
+                }
+#endif
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    limit = LimitJsonObject.DeserializeLimitJsonObject(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("unit"))
-                {
-                    unit = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("name"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    name = ResourceName.DeserializeResourceName(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("resourceType"))
-                {
-                    resourceType = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("quotaPeriod"))
-                {
-                    quotaPeriod = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("isQuotaApplicable"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    isQuotaApplicable = property.Value.GetBoolean();
-                    continue;
-                }
-                if (property.NameEquals("properties"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    properties = BinaryData.FromString(property.Value.GetRawText());
-                    continue;
+#endif
                 }
             }
-            return new QuotaProperties(limit.Value, unit.Value, name.Value, resourceType.Value, quotaPeriod.Value, Optional.ToNullable(isQuotaApplicable), properties.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        QuotaProperties IJsonModel<QuotaProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual QuotaProperties JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<QuotaProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(QuotaProperties)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeQuotaProperties(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static QuotaProperties DeserializeQuotaProperties(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            QuotaLimitJsonObject limit = default;
+            string unit = default;
+            QuotaRequestResourceName name = default;
+            string resourceTypeName = default;
+            TimeSpan? quotaPeriod = default;
+            bool? isQuotaApplicable = default;
+            BinaryData properties = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("limit"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    limit = QuotaLimitJsonObject.DeserializeQuotaLimitJsonObject(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("unit"u8))
+                {
+                    unit = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("name"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    name = QuotaRequestResourceName.DeserializeQuotaRequestResourceName(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("resourceType"u8))
+                {
+                    resourceTypeName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("quotaPeriod"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    quotaPeriod = prop.Value.GetTimeSpan("P");
+                    continue;
+                }
+                if (prop.NameEquals("isQuotaApplicable"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    isQuotaApplicable = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (prop.NameEquals("properties"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    properties = BinaryData.FromString(prop.Value.GetRawText());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new QuotaProperties(
+                limit,
+                unit,
+                name,
+                resourceTypeName,
+                quotaPeriod,
+                isQuotaApplicable,
+                properties,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<QuotaProperties>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<QuotaProperties>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerQuotaContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(QuotaProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        QuotaProperties IPersistableModel<QuotaProperties>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<QuotaProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -8,8 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
@@ -20,63 +19,90 @@ using Azure.ResourceManager;
 namespace Azure.ResourceManager.Dynatrace
 {
     /// <summary>
-    /// A class representing a collection of <see cref="DynatraceSingleSignOnResource" /> and their operations.
-    /// Each <see cref="DynatraceSingleSignOnResource" /> in the collection will belong to the same instance of <see cref="DynatraceMonitorResource" />.
-    /// To get a <see cref="DynatraceSingleSignOnCollection" /> instance call the GetDynatraceSingleSignOns method from an instance of <see cref="DynatraceMonitorResource" />.
+    /// A class representing a collection of <see cref="DynatraceSingleSignOnResource"/> and their operations.
+    /// Each <see cref="DynatraceSingleSignOnResource"/> in the collection will belong to the same instance of <see cref="DynatraceMonitorResource"/>.
+    /// To get a <see cref="DynatraceSingleSignOnCollection"/> instance call the GetDynatraceSingleSignOns method from an instance of <see cref="DynatraceMonitorResource"/>.
     /// </summary>
     public partial class DynatraceSingleSignOnCollection : ArmCollection, IEnumerable<DynatraceSingleSignOnResource>, IAsyncEnumerable<DynatraceSingleSignOnResource>
     {
-        private readonly ClientDiagnostics _dynatraceSingleSignOnSingleSignOnClientDiagnostics;
-        private readonly SingleSignOnRestOperations _dynatraceSingleSignOnSingleSignOnRestClient;
+        private readonly ClientDiagnostics _singleSignOnClientDiagnostics;
+        private readonly SingleSignOn _singleSignOnRestClient;
 
-        /// <summary> Initializes a new instance of the <see cref="DynatraceSingleSignOnCollection"/> class for mocking. </summary>
+        /// <summary> Initializes a new instance of DynatraceSingleSignOnCollection for mocking. </summary>
         protected DynatraceSingleSignOnCollection()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref="DynatraceSingleSignOnCollection"/> class. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynatraceSingleSignOnCollection"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
-        /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
+        /// <param name="id"> The identifier of the resource that is the target of operations. </param>
         internal DynatraceSingleSignOnCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _dynatraceSingleSignOnSingleSignOnClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Dynatrace", DynatraceSingleSignOnResource.ResourceType.Namespace, Diagnostics);
-            TryGetApiVersion(DynatraceSingleSignOnResource.ResourceType, out string dynatraceSingleSignOnSingleSignOnApiVersion);
-            _dynatraceSingleSignOnSingleSignOnRestClient = new SingleSignOnRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, dynatraceSingleSignOnSingleSignOnApiVersion);
-#if DEBUG
-			ValidateResourceId(Id);
-#endif
+            TryGetApiVersion(DynatraceSingleSignOnResource.ResourceType, out string dynatraceSingleSignOnApiVersion);
+            _singleSignOnClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Dynatrace", DynatraceSingleSignOnResource.ResourceType.Namespace, Diagnostics);
+            _singleSignOnRestClient = new SingleSignOn(_singleSignOnClientDiagnostics, Pipeline, Endpoint, dynatraceSingleSignOnApiVersion ?? "2024-04-24");
+            ValidateResourceId(id);
         }
 
+        /// <param name="id"></param>
+        [Conditional("DEBUG")]
         internal static void ValidateResourceId(ResourceIdentifier id)
         {
             if (id.ResourceType != DynatraceMonitorResource.ResourceType)
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, DynatraceMonitorResource.ResourceType), nameof(id));
+            {
+                throw new ArgumentException(string.Format("Invalid resource type {0} expected {1}", id.ResourceType, DynatraceMonitorResource.ResourceType), id);
+            }
         }
 
         /// <summary>
         /// Create a DynatraceSingleSignOnResource
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}
-        /// Operation Id: SingleSignOn_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> DynatraceSingleSignOnResources_CreateOrUpdate. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-04-24. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="configurationName"> Single Sign On Configuration Name. </param>
         /// <param name="data"> Resource create parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="configurationName"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<ArmOperation<DynatraceSingleSignOnResource>> CreateOrUpdateAsync(WaitUntil waitUntil, string configurationName, DynatraceSingleSignOnData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(configurationName, nameof(configurationName));
             Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _dynatraceSingleSignOnSingleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.CreateOrUpdate");
+            using DiagnosticScope scope = _singleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = await _dynatraceSingleSignOnSingleSignOnRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, configurationName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new DynatraceArmOperation<DynatraceSingleSignOnResource>(new DynatraceSingleSignOnOperationSource(Client), _dynatraceSingleSignOnSingleSignOnClientDiagnostics, Pipeline, _dynatraceSingleSignOnSingleSignOnRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, configurationName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _singleSignOnRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, configurationName, DynatraceSingleSignOnData.ToRequestContent(data), context);
+                Response response = await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                DynatraceArmOperation<DynatraceSingleSignOnResource> operation = new DynatraceArmOperation<DynatraceSingleSignOnResource>(
+                    new DynatraceSingleSignOnOperationSource(Client),
+                    _singleSignOnClientDiagnostics,
+                    Pipeline,
+                    message.Request,
+                    response,
+                    OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
+                {
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
+                }
                 return operation;
             }
             catch (Exception e)
@@ -88,28 +114,53 @@ namespace Azure.ResourceManager.Dynatrace
 
         /// <summary>
         /// Create a DynatraceSingleSignOnResource
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}
-        /// Operation Id: SingleSignOn_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> DynatraceSingleSignOnResources_CreateOrUpdate. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-04-24. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="configurationName"> Single Sign On Configuration Name. </param>
         /// <param name="data"> Resource create parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="configurationName"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual ArmOperation<DynatraceSingleSignOnResource> CreateOrUpdate(WaitUntil waitUntil, string configurationName, DynatraceSingleSignOnData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(configurationName, nameof(configurationName));
             Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _dynatraceSingleSignOnSingleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.CreateOrUpdate");
+            using DiagnosticScope scope = _singleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = _dynatraceSingleSignOnSingleSignOnRestClient.CreateOrUpdate(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, configurationName, data, cancellationToken);
-                var operation = new DynatraceArmOperation<DynatraceSingleSignOnResource>(new DynatraceSingleSignOnOperationSource(Client), _dynatraceSingleSignOnSingleSignOnClientDiagnostics, Pipeline, _dynatraceSingleSignOnSingleSignOnRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, configurationName, data).Request, response, OperationFinalStateVia.AzureAsyncOperation);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _singleSignOnRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, configurationName, DynatraceSingleSignOnData.ToRequestContent(data), context);
+                Response response = Pipeline.ProcessMessage(message, context);
+                DynatraceArmOperation<DynatraceSingleSignOnResource> operation = new DynatraceArmOperation<DynatraceSingleSignOnResource>(
+                    new DynatraceSingleSignOnOperationSource(Client),
+                    _singleSignOnClientDiagnostics,
+                    Pipeline,
+                    message.Request,
+                    response,
+                    OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
+                {
                     operation.WaitForCompletion(cancellationToken);
+                }
                 return operation;
             }
             catch (Exception e)
@@ -121,24 +172,44 @@ namespace Azure.ResourceManager.Dynatrace
 
         /// <summary>
         /// Get a DynatraceSingleSignOnResource
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}
-        /// Operation Id: SingleSignOn_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> DynatraceSingleSignOnResources_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-04-24. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="configurationName"> Single Sign On Configuration Name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="configurationName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<DynatraceSingleSignOnResource>> GetAsync(string configurationName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(configurationName, nameof(configurationName));
 
-            using var scope = _dynatraceSingleSignOnSingleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.Get");
+            using DiagnosticScope scope = _singleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.Get");
             scope.Start();
             try
             {
-                var response = await _dynatraceSingleSignOnSingleSignOnRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, configurationName, cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _singleSignOnRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, configurationName, context);
+                Response result = await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                Response<DynatraceSingleSignOnData> response = Response.FromValue(DynatraceSingleSignOnData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new DynatraceSingleSignOnResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -150,24 +221,44 @@ namespace Azure.ResourceManager.Dynatrace
 
         /// <summary>
         /// Get a DynatraceSingleSignOnResource
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}
-        /// Operation Id: SingleSignOn_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> DynatraceSingleSignOnResources_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-04-24. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="configurationName"> Single Sign On Configuration Name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="configurationName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<DynatraceSingleSignOnResource> Get(string configurationName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(configurationName, nameof(configurationName));
 
-            using var scope = _dynatraceSingleSignOnSingleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.Get");
+            using DiagnosticScope scope = _singleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.Get");
             scope.Start();
             try
             {
-                var response = _dynatraceSingleSignOnSingleSignOnRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, configurationName, cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _singleSignOnRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, configurationName, context);
+                Response result = Pipeline.ProcessMessage(message, context);
+                Response<DynatraceSingleSignOnData> response = Response.FromValue(DynatraceSingleSignOnData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new DynatraceSingleSignOnResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -179,106 +270,108 @@ namespace Azure.ResourceManager.Dynatrace
 
         /// <summary>
         /// List all DynatraceSingleSignOnResource by monitorName
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations
-        /// Operation Id: SingleSignOn_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> DynatraceSingleSignOnResources_List. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-04-24. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="DynatraceSingleSignOnResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="DynatraceSingleSignOnResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<DynatraceSingleSignOnResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<DynatraceSingleSignOnResource>> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _dynatraceSingleSignOnSingleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _dynatraceSingleSignOnSingleSignOnRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new DynatraceSingleSignOnResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<DynatraceSingleSignOnResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _dynatraceSingleSignOnSingleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _dynatraceSingleSignOnSingleSignOnRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new DynatraceSingleSignOnResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new AsyncPageableWrapper<DynatraceSingleSignOnData, DynatraceSingleSignOnResource>(new SingleSignOnGetAllAsyncCollectionResultOfT(_singleSignOnRestClient, Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, context), data => new DynatraceSingleSignOnResource(Client, data));
         }
 
         /// <summary>
         /// List all DynatraceSingleSignOnResource by monitorName
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations
-        /// Operation Id: SingleSignOn_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> DynatraceSingleSignOnResources_List. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-04-24. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="DynatraceSingleSignOnResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="DynatraceSingleSignOnResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<DynatraceSingleSignOnResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<DynatraceSingleSignOnResource> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _dynatraceSingleSignOnSingleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _dynatraceSingleSignOnSingleSignOnRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new DynatraceSingleSignOnResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<DynatraceSingleSignOnResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _dynatraceSingleSignOnSingleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _dynatraceSingleSignOnSingleSignOnRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new DynatraceSingleSignOnResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new PageableWrapper<DynatraceSingleSignOnData, DynatraceSingleSignOnResource>(new SingleSignOnGetAllCollectionResultOfT(_singleSignOnRestClient, Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, context), data => new DynatraceSingleSignOnResource(Client, data));
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}
-        /// Operation Id: SingleSignOn_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> DynatraceSingleSignOnResources_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-04-24. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="configurationName"> Single Sign On Configuration Name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="configurationName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<bool>> ExistsAsync(string configurationName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(configurationName, nameof(configurationName));
 
-            using var scope = _dynatraceSingleSignOnSingleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.Exists");
+            using DiagnosticScope scope = _singleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.Exists");
             scope.Start();
             try
             {
-                var response = await _dynatraceSingleSignOnSingleSignOnRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, configurationName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _singleSignOnRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, configurationName, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<DynatraceSingleSignOnData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(DynatraceSingleSignOnData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((DynatraceSingleSignOnData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -290,23 +383,175 @@ namespace Azure.ResourceManager.Dynatrace
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}
-        /// Operation Id: SingleSignOn_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> DynatraceSingleSignOnResources_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-04-24. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="configurationName"> Single Sign On Configuration Name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="configurationName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<bool> Exists(string configurationName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(configurationName, nameof(configurationName));
 
-            using var scope = _dynatraceSingleSignOnSingleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.Exists");
+            using DiagnosticScope scope = _singleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.Exists");
             scope.Start();
             try
             {
-                var response = _dynatraceSingleSignOnSingleSignOnRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, configurationName, cancellationToken: cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _singleSignOnRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, configurationName, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<DynatraceSingleSignOnData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(DynatraceSingleSignOnData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((DynatraceSingleSignOnData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> DynatraceSingleSignOnResources_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-04-24. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="configurationName"> Single Sign On Configuration Name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="configurationName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual async Task<NullableResponse<DynatraceSingleSignOnResource>> GetIfExistsAsync(string configurationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(configurationName, nameof(configurationName));
+
+            using DiagnosticScope scope = _singleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _singleSignOnRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, configurationName, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<DynatraceSingleSignOnData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(DynatraceSingleSignOnData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((DynatraceSingleSignOnData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<DynatraceSingleSignOnResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new DynatraceSingleSignOnResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}/singleSignOnConfigurations/{configurationName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> DynatraceSingleSignOnResources_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-04-24. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="configurationName"> Single Sign On Configuration Name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="configurationName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="configurationName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual NullableResponse<DynatraceSingleSignOnResource> GetIfExists(string configurationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(configurationName, nameof(configurationName));
+
+            using DiagnosticScope scope = _singleSignOnClientDiagnostics.CreateScope("DynatraceSingleSignOnCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _singleSignOnRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, configurationName, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<DynatraceSingleSignOnData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(DynatraceSingleSignOnData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((DynatraceSingleSignOnData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<DynatraceSingleSignOnResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new DynatraceSingleSignOnResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {
@@ -325,6 +570,7 @@ namespace Azure.ResourceManager.Dynatrace
             return GetAll().GetEnumerator();
         }
 
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
         IAsyncEnumerator<DynatraceSingleSignOnResource> IAsyncEnumerable<DynatraceSingleSignOnResource>.GetAsyncEnumerator(CancellationToken cancellationToken)
         {
             return GetAllAsync(cancellationToken: cancellationToken).GetAsyncEnumerator(cancellationToken);

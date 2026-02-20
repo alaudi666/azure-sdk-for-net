@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Synapse.Models;
@@ -37,6 +36,22 @@ namespace Azure.ResourceManager.Synapse
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
+        internal RequestUriBuilder CreateUpdateRequestUri(string subscriptionId, string resourceGroupName, string workspaceName, SynapseDedicatedSqlMinimalTlsSettingName dedicatedSQLminimalTlsSettingsName, SynapseDedicatedSqlMinimalTlsSettingData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.Synapse/workspaces/", false);
+            uri.AppendPath(workspaceName, true);
+            uri.AppendPath("/dedicatedSQLminimalTlsSettings/", false);
+            uri.AppendPath(dedicatedSQLminimalTlsSettingsName.ToString(), true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
         internal HttpMessage CreateUpdateRequest(string subscriptionId, string resourceGroupName, string workspaceName, SynapseDedicatedSqlMinimalTlsSettingName dedicatedSQLminimalTlsSettingsName, SynapseDedicatedSqlMinimalTlsSettingData data)
         {
             var message = _pipeline.CreateMessage();
@@ -57,13 +72,13 @@ namespace Azure.ResourceManager.Synapse
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> Update workspace managed sql server&apos;s minimal tls settings. </summary>
+        /// <summary> Update workspace managed sql server's minimal tls settings. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -91,7 +106,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Update workspace managed sql server&apos;s minimal tls settings. </summary>
+        /// <summary> Update workspace managed sql server's minimal tls settings. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -119,6 +134,22 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
+        internal RequestUriBuilder CreateGetRequestUri(string subscriptionId, string resourceGroupName, string workspaceName, string dedicatedSQLminimalTlsSettingsName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.Synapse/workspaces/", false);
+            uri.AppendPath(workspaceName, true);
+            uri.AppendPath("/dedicatedSQLminimalTlsSettings/", false);
+            uri.AppendPath(dedicatedSQLminimalTlsSettingsName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
         internal HttpMessage CreateGetRequest(string subscriptionId, string resourceGroupName, string workspaceName, string dedicatedSQLminimalTlsSettingsName)
         {
             var message = _pipeline.CreateMessage();
@@ -141,7 +172,7 @@ namespace Azure.ResourceManager.Synapse
             return message;
         }
 
-        /// <summary> Get workspace managed sql server&apos;s minimal tls settings. </summary>
+        /// <summary> Get workspace managed sql server's minimal tls settings. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -163,7 +194,7 @@ namespace Azure.ResourceManager.Synapse
                 case 200:
                     {
                         SynapseDedicatedSqlMinimalTlsSettingData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = SynapseDedicatedSqlMinimalTlsSettingData.DeserializeSynapseDedicatedSqlMinimalTlsSettingData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -174,7 +205,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Get workspace managed sql server&apos;s minimal tls settings. </summary>
+        /// <summary> Get workspace managed sql server's minimal tls settings. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -196,7 +227,7 @@ namespace Azure.ResourceManager.Synapse
                 case 200:
                     {
                         SynapseDedicatedSqlMinimalTlsSettingData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = SynapseDedicatedSqlMinimalTlsSettingData.DeserializeSynapseDedicatedSqlMinimalTlsSettingData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -205,6 +236,21 @@ namespace Azure.ResourceManager.Synapse
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListRequestUri(string subscriptionId, string resourceGroupName, string workspaceName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.Synapse/workspaces/", false);
+            uri.AppendPath(workspaceName, true);
+            uri.AppendPath("/dedicatedSQLminimalTlsSettings", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListRequest(string subscriptionId, string resourceGroupName, string workspaceName)
@@ -228,7 +274,7 @@ namespace Azure.ResourceManager.Synapse
             return message;
         }
 
-        /// <summary> List workspace managed sql server&apos;s minimal tls settings. </summary>
+        /// <summary> List workspace managed sql server's minimal tls settings. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -248,7 +294,7 @@ namespace Azure.ResourceManager.Synapse
                 case 200:
                     {
                         SynapseDedicatedSqlMinimalTlsSettingListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = SynapseDedicatedSqlMinimalTlsSettingListResult.DeserializeSynapseDedicatedSqlMinimalTlsSettingListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -257,7 +303,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> List workspace managed sql server&apos;s minimal tls settings. </summary>
+        /// <summary> List workspace managed sql server's minimal tls settings. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -277,13 +323,21 @@ namespace Azure.ResourceManager.Synapse
                 case 200:
                     {
                         SynapseDedicatedSqlMinimalTlsSettingListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = SynapseDedicatedSqlMinimalTlsSettingListResult.DeserializeSynapseDedicatedSqlMinimalTlsSettingListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListNextPageRequestUri(string nextLink, string subscriptionId, string resourceGroupName, string workspaceName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListNextPageRequest(string nextLink, string subscriptionId, string resourceGroupName, string workspaceName)
@@ -300,7 +354,7 @@ namespace Azure.ResourceManager.Synapse
             return message;
         }
 
-        /// <summary> List workspace managed sql server&apos;s minimal tls settings. </summary>
+        /// <summary> List workspace managed sql server's minimal tls settings. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
@@ -322,7 +376,7 @@ namespace Azure.ResourceManager.Synapse
                 case 200:
                     {
                         SynapseDedicatedSqlMinimalTlsSettingListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = SynapseDedicatedSqlMinimalTlsSettingListResult.DeserializeSynapseDedicatedSqlMinimalTlsSettingListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -331,7 +385,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> List workspace managed sql server&apos;s minimal tls settings. </summary>
+        /// <summary> List workspace managed sql server's minimal tls settings. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
@@ -353,7 +407,7 @@ namespace Azure.ResourceManager.Synapse
                 case 200:
                     {
                         SynapseDedicatedSqlMinimalTlsSettingListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = SynapseDedicatedSqlMinimalTlsSettingListResult.DeserializeSynapseDedicatedSqlMinimalTlsSettingListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

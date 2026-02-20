@@ -7,27 +7,42 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    /// <summary> Parameters for Node type action. </summary>
+    /// <summary> Parameters for Node type action. If nodes are not specified on the parameters, the operation will be performed in all nodes of the node type one upgrade domain at a time. </summary>
     public partial class NodeTypeActionContent
     {
-        /// <summary> Initializes a new instance of NodeTypeActionContent. </summary>
-        /// <param name="nodes"> List of node names from the node type. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="nodes"/> is null. </exception>
-        public NodeTypeActionContent(IEnumerable<string> nodes)
-        {
-            Argument.AssertNotNull(nodes, nameof(nodes));
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-            Nodes = nodes.ToList();
+        /// <summary> Initializes a new instance of <see cref="NodeTypeActionContent"/>. </summary>
+        public NodeTypeActionContent()
+        {
+            Nodes = new ChangeTrackingList<string>();
+        }
+
+        /// <summary> Initializes a new instance of <see cref="NodeTypeActionContent"/>. </summary>
+        /// <param name="nodes"> List of node names from the node type. </param>
+        /// <param name="isForced"> Force the action to go through. </param>
+        /// <param name="updateType"> Specifies the way the operation will be performed. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NodeTypeActionContent(IList<string> nodes, bool? isForced, ServiceFabricManagedClusterUpdateType? updateType, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Nodes = nodes;
+            IsForced = isForced;
+            UpdateType = updateType;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> List of node names from the node type. </summary>
         public IList<string> Nodes { get; }
+
         /// <summary> Force the action to go through. </summary>
         public bool? IsForced { get; set; }
+
+        /// <summary> Specifies the way the operation will be performed. </summary>
+        public ServiceFabricManagedClusterUpdateType? UpdateType { get; set; }
     }
 }

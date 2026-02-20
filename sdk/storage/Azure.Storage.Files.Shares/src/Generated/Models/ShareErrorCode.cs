@@ -30,6 +30,8 @@ namespace Azure.Storage.Files.Shares.Models
         private const string ConditionHeadersNotSupportedValue = "ConditionHeadersNotSupported";
         private const string ConditionNotMetValue = "ConditionNotMet";
         private const string EmptyMetadataKeyValue = "EmptyMetadataKey";
+        private const string FileShareProvisionedBandwidthDowngradeNotAllowedValue = "FileShareProvisionedBandwidthDowngradeNotAllowed";
+        private const string FileShareProvisionedIopsDowngradeNotAllowedValue = "FileShareProvisionedIopsDowngradeNotAllowed";
         private const string InsufficientAccountPermissionsValue = "InsufficientAccountPermissions";
         private const string InternalErrorValue = "InternalError";
         private const string InvalidAuthenticationInfoValue = "InvalidAuthenticationInfo";
@@ -81,6 +83,7 @@ namespace Azure.Storage.Files.Shares.Models
         private const string ShareSnapshotCountExceededValue = "ShareSnapshotCountExceeded";
         private const string ShareSnapshotOperationNotSupportedValue = "ShareSnapshotOperationNotSupported";
         private const string ShareHasSnapshotsValue = "ShareHasSnapshots";
+        private const string PreviousSnapshotNotFoundValue = "PreviousSnapshotNotFound";
         private const string ContainerQuotaDowngradeNotAllowedValue = "ContainerQuotaDowngradeNotAllowed";
         private const string AuthorizationSourceIPMismatchValue = "AuthorizationSourceIPMismatch";
         private const string AuthorizationProtocolMismatchValue = "AuthorizationProtocolMismatch";
@@ -88,6 +91,14 @@ namespace Azure.Storage.Files.Shares.Models
         private const string AuthorizationServiceMismatchValue = "AuthorizationServiceMismatch";
         private const string AuthorizationResourceTypeMismatchValue = "AuthorizationResourceTypeMismatch";
         private const string FeatureVersionMismatchValue = "FeatureVersionMismatch";
+        private const string ShareSnapshotNotFoundValue = "ShareSnapshotNotFound";
+        private const string FileShareProvisionedIopsInvalidValue = "FileShareProvisionedIopsInvalid";
+        private const string FileShareProvisionedBandwidthInvalidValue = "FileShareProvisionedBandwidthInvalid";
+        private const string FileShareProvisionedStorageInvalidValue = "FileShareProvisionedStorageInvalid";
+        private const string TotalSharesProvisionedCapacityExceedsAccountLimitValue = "TotalSharesProvisionedCapacityExceedsAccountLimit";
+        private const string TotalSharesProvisionedIopsExceedsAccountLimitValue = "TotalSharesProvisionedIopsExceedsAccountLimit";
+        private const string TotalSharesProvisionedBandwidthExceedsAccountLimitValue = "TotalSharesProvisionedBandwidthExceedsAccountLimit";
+        private const string TotalSharesCountExceedsAccountLimitValue = "TotalSharesCountExceedsAccountLimit";
 
         /// <summary> AccountAlreadyExists. </summary>
         public static ShareErrorCode AccountAlreadyExists { get; } = new ShareErrorCode(AccountAlreadyExistsValue);
@@ -105,6 +116,10 @@ namespace Azure.Storage.Files.Shares.Models
         public static ShareErrorCode ConditionNotMet { get; } = new ShareErrorCode(ConditionNotMetValue);
         /// <summary> EmptyMetadataKey. </summary>
         public static ShareErrorCode EmptyMetadataKey { get; } = new ShareErrorCode(EmptyMetadataKeyValue);
+        /// <summary> FileShareProvisionedBandwidthDowngradeNotAllowed. </summary>
+        public static ShareErrorCode FileShareProvisionedBandwidthDowngradeNotAllowed { get; } = new ShareErrorCode(FileShareProvisionedBandwidthDowngradeNotAllowedValue);
+        /// <summary> FileShareProvisionedIopsDowngradeNotAllowed. </summary>
+        public static ShareErrorCode FileShareProvisionedIopsDowngradeNotAllowed { get; } = new ShareErrorCode(FileShareProvisionedIopsDowngradeNotAllowedValue);
         /// <summary> InsufficientAccountPermissions. </summary>
         public static ShareErrorCode InsufficientAccountPermissions { get; } = new ShareErrorCode(InsufficientAccountPermissionsValue);
         /// <summary> InternalError. </summary>
@@ -207,6 +222,8 @@ namespace Azure.Storage.Files.Shares.Models
         public static ShareErrorCode ShareSnapshotOperationNotSupported { get; } = new ShareErrorCode(ShareSnapshotOperationNotSupportedValue);
         /// <summary> ShareHasSnapshots. </summary>
         public static ShareErrorCode ShareHasSnapshots { get; } = new ShareErrorCode(ShareHasSnapshotsValue);
+        /// <summary> PreviousSnapshotNotFound. </summary>
+        public static ShareErrorCode PreviousSnapshotNotFound { get; } = new ShareErrorCode(PreviousSnapshotNotFoundValue);
         /// <summary> ContainerQuotaDowngradeNotAllowed. </summary>
         public static ShareErrorCode ContainerQuotaDowngradeNotAllowed { get; } = new ShareErrorCode(ContainerQuotaDowngradeNotAllowedValue);
         /// <summary> AuthorizationSourceIPMismatch. </summary>
@@ -221,11 +238,27 @@ namespace Azure.Storage.Files.Shares.Models
         public static ShareErrorCode AuthorizationResourceTypeMismatch { get; } = new ShareErrorCode(AuthorizationResourceTypeMismatchValue);
         /// <summary> FeatureVersionMismatch. </summary>
         public static ShareErrorCode FeatureVersionMismatch { get; } = new ShareErrorCode(FeatureVersionMismatchValue);
+        /// <summary> ShareSnapshotNotFound. </summary>
+        public static ShareErrorCode ShareSnapshotNotFound { get; } = new ShareErrorCode(ShareSnapshotNotFoundValue);
+        /// <summary> FileShareProvisionedIopsInvalid. </summary>
+        public static ShareErrorCode FileShareProvisionedIopsInvalid { get; } = new ShareErrorCode(FileShareProvisionedIopsInvalidValue);
+        /// <summary> FileShareProvisionedBandwidthInvalid. </summary>
+        public static ShareErrorCode FileShareProvisionedBandwidthInvalid { get; } = new ShareErrorCode(FileShareProvisionedBandwidthInvalidValue);
+        /// <summary> FileShareProvisionedStorageInvalid. </summary>
+        public static ShareErrorCode FileShareProvisionedStorageInvalid { get; } = new ShareErrorCode(FileShareProvisionedStorageInvalidValue);
+        /// <summary> TotalSharesProvisionedCapacityExceedsAccountLimit. </summary>
+        public static ShareErrorCode TotalSharesProvisionedCapacityExceedsAccountLimit { get; } = new ShareErrorCode(TotalSharesProvisionedCapacityExceedsAccountLimitValue);
+        /// <summary> TotalSharesProvisionedIopsExceedsAccountLimit. </summary>
+        public static ShareErrorCode TotalSharesProvisionedIopsExceedsAccountLimit { get; } = new ShareErrorCode(TotalSharesProvisionedIopsExceedsAccountLimitValue);
+        /// <summary> TotalSharesProvisionedBandwidthExceedsAccountLimit. </summary>
+        public static ShareErrorCode TotalSharesProvisionedBandwidthExceedsAccountLimit { get; } = new ShareErrorCode(TotalSharesProvisionedBandwidthExceedsAccountLimitValue);
+        /// <summary> TotalSharesCountExceedsAccountLimit. </summary>
+        public static ShareErrorCode TotalSharesCountExceedsAccountLimit { get; } = new ShareErrorCode(TotalSharesCountExceedsAccountLimitValue);
         /// <summary> Determines if two <see cref="ShareErrorCode"/> values are the same. </summary>
         public static bool operator ==(ShareErrorCode left, ShareErrorCode right) => left.Equals(right);
         /// <summary> Determines if two <see cref="ShareErrorCode"/> values are not the same. </summary>
         public static bool operator !=(ShareErrorCode left, ShareErrorCode right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="ShareErrorCode"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="ShareErrorCode"/>. </summary>
         public static implicit operator ShareErrorCode(string value) => new ShareErrorCode(value);
 
         /// <inheritdoc />
@@ -236,7 +269,7 @@ namespace Azure.Storage.Files.Shares.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

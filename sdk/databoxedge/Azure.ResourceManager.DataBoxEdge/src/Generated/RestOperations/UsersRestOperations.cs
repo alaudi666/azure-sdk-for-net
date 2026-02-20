@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.DataBoxEdge.Models;
@@ -35,6 +34,25 @@ namespace Azure.ResourceManager.DataBoxEdge
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
             _apiVersion = apiVersion ?? "2022-03-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
+        }
+
+        internal RequestUriBuilder CreateListByDataBoxEdgeDeviceRequestUri(string subscriptionId, string resourceGroupName, string deviceName, string filter)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/", false);
+            uri.AppendPath(deviceName, true);
+            uri.AppendPath("/users", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            if (filter != null)
+            {
+                uri.AppendQuery("$filter", filter, true);
+            }
+            return uri;
         }
 
         internal HttpMessage CreateListByDataBoxEdgeDeviceRequest(string subscriptionId, string resourceGroupName, string deviceName, string filter)
@@ -66,7 +84,7 @@ namespace Azure.ResourceManager.DataBoxEdge
         /// <param name="subscriptionId"> The subscription ID. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="deviceName"> The device name. </param>
-        /// <param name="filter"> Specify $filter=&apos;Type eq &lt;type&gt;&apos; to filter on user type property. </param>
+        /// <param name="filter"> Specify $filter='Type eq &lt;type&gt;' to filter on user type property. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -83,7 +101,7 @@ namespace Azure.ResourceManager.DataBoxEdge
                 case 200:
                     {
                         UserList value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = UserList.DeserializeUserList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -96,7 +114,7 @@ namespace Azure.ResourceManager.DataBoxEdge
         /// <param name="subscriptionId"> The subscription ID. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="deviceName"> The device name. </param>
-        /// <param name="filter"> Specify $filter=&apos;Type eq &lt;type&gt;&apos; to filter on user type property. </param>
+        /// <param name="filter"> Specify $filter='Type eq &lt;type&gt;' to filter on user type property. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -113,13 +131,29 @@ namespace Azure.ResourceManager.DataBoxEdge
                 case 200:
                     {
                         UserList value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = UserList.DeserializeUserList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetRequestUri(string subscriptionId, string resourceGroupName, string deviceName, string name)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/", false);
+            uri.AppendPath(deviceName, true);
+            uri.AppendPath("/users/", false);
+            uri.AppendPath(name, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetRequest(string subscriptionId, string resourceGroupName, string deviceName, string name)
@@ -166,7 +200,7 @@ namespace Azure.ResourceManager.DataBoxEdge
                 case 200:
                     {
                         DataBoxEdgeUserData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = DataBoxEdgeUserData.DeserializeDataBoxEdgeUserData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -199,7 +233,7 @@ namespace Azure.ResourceManager.DataBoxEdge
                 case 200:
                     {
                         DataBoxEdgeUserData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = DataBoxEdgeUserData.DeserializeDataBoxEdgeUserData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -208,6 +242,22 @@ namespace Azure.ResourceManager.DataBoxEdge
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateCreateOrUpdateRequestUri(string subscriptionId, string resourceGroupName, string deviceName, string name, DataBoxEdgeUserData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/", false);
+            uri.AppendPath(deviceName, true);
+            uri.AppendPath("/users/", false);
+            uri.AppendPath(name, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string deviceName, string name, DataBoxEdgeUserData data)
@@ -230,13 +280,13 @@ namespace Azure.ResourceManager.DataBoxEdge
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> Creates a new user or updates an existing user&apos;s information on a Data Box Edge/Data Box Gateway device. </summary>
+        /// <summary> Creates a new user or updates an existing user's information on a Data Box Edge/Data Box Gateway device. </summary>
         /// <param name="subscriptionId"> The subscription ID. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="deviceName"> The device name. </param>
@@ -265,7 +315,7 @@ namespace Azure.ResourceManager.DataBoxEdge
             }
         }
 
-        /// <summary> Creates a new user or updates an existing user&apos;s information on a Data Box Edge/Data Box Gateway device. </summary>
+        /// <summary> Creates a new user or updates an existing user's information on a Data Box Edge/Data Box Gateway device. </summary>
         /// <param name="subscriptionId"> The subscription ID. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="deviceName"> The device name. </param>
@@ -292,6 +342,22 @@ namespace Azure.ResourceManager.DataBoxEdge
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateDeleteRequestUri(string subscriptionId, string resourceGroupName, string deviceName, string name)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/", false);
+            uri.AppendPath(deviceName, true);
+            uri.AppendPath("/users/", false);
+            uri.AppendPath(name, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateDeleteRequest(string subscriptionId, string resourceGroupName, string deviceName, string name)
@@ -372,6 +438,14 @@ namespace Azure.ResourceManager.DataBoxEdge
             }
         }
 
+        internal RequestUriBuilder CreateListByDataBoxEdgeDeviceNextPageRequestUri(string nextLink, string subscriptionId, string resourceGroupName, string deviceName, string filter)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
+        }
+
         internal HttpMessage CreateListByDataBoxEdgeDeviceNextPageRequest(string nextLink, string subscriptionId, string resourceGroupName, string deviceName, string filter)
         {
             var message = _pipeline.CreateMessage();
@@ -391,7 +465,7 @@ namespace Azure.ResourceManager.DataBoxEdge
         /// <param name="subscriptionId"> The subscription ID. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="deviceName"> The device name. </param>
-        /// <param name="filter"> Specify $filter=&apos;Type eq &lt;type&gt;&apos; to filter on user type property. </param>
+        /// <param name="filter"> Specify $filter='Type eq &lt;type&gt;' to filter on user type property. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -409,7 +483,7 @@ namespace Azure.ResourceManager.DataBoxEdge
                 case 200:
                     {
                         UserList value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = UserList.DeserializeUserList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -423,7 +497,7 @@ namespace Azure.ResourceManager.DataBoxEdge
         /// <param name="subscriptionId"> The subscription ID. </param>
         /// <param name="resourceGroupName"> The resource group name. </param>
         /// <param name="deviceName"> The device name. </param>
-        /// <param name="filter"> Specify $filter=&apos;Type eq &lt;type&gt;&apos; to filter on user type property. </param>
+        /// <param name="filter"> Specify $filter='Type eq &lt;type&gt;' to filter on user type property. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/> or <paramref name="deviceName"/> is an empty string, and was expected to be non-empty. </exception>
@@ -441,7 +515,7 @@ namespace Azure.ResourceManager.DataBoxEdge
                 case 200:
                     {
                         UserList value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = UserList.DeserializeUserList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

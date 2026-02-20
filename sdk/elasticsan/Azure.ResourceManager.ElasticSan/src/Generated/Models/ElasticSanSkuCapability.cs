@@ -5,27 +5,36 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.ElasticSan.Models
 {
     /// <summary> The capability information in the specified SKU. </summary>
     public partial class ElasticSanSkuCapability
     {
-        /// <summary> Initializes a new instance of ElasticSanSkuCapability. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ElasticSanSkuCapability"/>. </summary>
         internal ElasticSanSkuCapability()
         {
         }
 
-        /// <summary> Initializes a new instance of ElasticSanSkuCapability. </summary>
+        /// <summary> Initializes a new instance of <see cref="ElasticSanSkuCapability"/>. </summary>
         /// <param name="name"> The name of capability. </param>
         /// <param name="value"> A string value to indicate states of given capability. </param>
-        internal ElasticSanSkuCapability(string name, string value)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ElasticSanSkuCapability(string name, string value, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Name = name;
             Value = value;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The name of capability. </summary>
         public string Name { get; }
+
         /// <summary> A string value to indicate states of given capability. </summary>
         public string Value { get; }
     }

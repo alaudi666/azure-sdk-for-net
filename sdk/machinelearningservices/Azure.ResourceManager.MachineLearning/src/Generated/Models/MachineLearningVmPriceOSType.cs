@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Operating system type used by the VM.
-    /// Serialized Name: VMPriceOSType
-    /// </summary>
+    /// <summary> Operating system type used by the VM. </summary>
     public readonly partial struct MachineLearningVmPriceOSType : IEquatable<MachineLearningVmPriceOSType>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string LinuxValue = "Linux";
         private const string WindowsValue = "Windows";
 
-        /// <summary>
-        /// Linux
-        /// Serialized Name: VMPriceOSType.Linux
-        /// </summary>
+        /// <summary> Linux. </summary>
         public static MachineLearningVmPriceOSType Linux { get; } = new MachineLearningVmPriceOSType(LinuxValue);
-        /// <summary>
-        /// Windows
-        /// Serialized Name: VMPriceOSType.Windows
-        /// </summary>
+        /// <summary> Windows. </summary>
         public static MachineLearningVmPriceOSType Windows { get; } = new MachineLearningVmPriceOSType(WindowsValue);
         /// <summary> Determines if two <see cref="MachineLearningVmPriceOSType"/> values are the same. </summary>
         public static bool operator ==(MachineLearningVmPriceOSType left, MachineLearningVmPriceOSType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningVmPriceOSType"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningVmPriceOSType left, MachineLearningVmPriceOSType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningVmPriceOSType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningVmPriceOSType"/>. </summary>
         public static implicit operator MachineLearningVmPriceOSType(string value) => new MachineLearningVmPriceOSType(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

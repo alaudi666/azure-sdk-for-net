@@ -5,92 +5,194 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class TransferFilterDetails : IUtf8JsonSerializable
+    /// <summary> Details of the filtering the transfer of data. </summary>
+    public partial class TransferFilterDetails : IJsonModel<TransferFilterDetails>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="TransferFilterDetails"/> for deserialization. </summary>
+        internal TransferFilterDetails()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual TransferFilterDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<TransferFilterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeTransferFilterDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(TransferFilterDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<TransferFilterDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("dataAccountType");
-            writer.WriteStringValue(DataAccountType.ToSerialString());
-            if (Optional.IsDefined(BlobFilterDetails))
-            {
-                writer.WritePropertyName("blobFilterDetails");
-                writer.WriteObjectValue(BlobFilterDetails);
-            }
-            if (Optional.IsDefined(AzureFileFilterDetails))
-            {
-                writer.WritePropertyName("azureFileFilterDetails");
-                writer.WriteObjectValue(AzureFileFilterDetails);
-            }
-            if (Optional.IsCollectionDefined(FilterFileDetails))
-            {
-                writer.WritePropertyName("filterFileDetails");
-                writer.WriteStartArray();
-                foreach (var item in FilterFileDetails)
-                {
-                    writer.WriteObjectValue(item);
-                }
-                writer.WriteEndArray();
-            }
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static TransferFilterDetails DeserializeTransferFilterDetails(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            DataAccountType dataAccountType = default;
-            Optional<BlobFilterDetails> blobFilterDetails = default;
-            Optional<AzureFileFilterDetails> azureFileFilterDetails = default;
-            Optional<IList<FilterFileDetails>> filterFileDetails = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<TransferFilterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("dataAccountType"))
+                throw new FormatException($"The model {nameof(TransferFilterDetails)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("dataAccountType"u8);
+            writer.WriteStringValue(DataAccountType.ToSerialString());
+            if (Optional.IsDefined(BlobFilterDetails))
+            {
+                writer.WritePropertyName("blobFilterDetails"u8);
+                writer.WriteObjectValue(BlobFilterDetails, options);
+            }
+            if (Optional.IsDefined(AzureFileFilterDetails))
+            {
+                writer.WritePropertyName("azureFileFilterDetails"u8);
+                writer.WriteObjectValue(AzureFileFilterDetails, options);
+            }
+            if (Optional.IsCollectionDefined(FilterFileDetails))
+            {
+                writer.WritePropertyName("filterFileDetails"u8);
+                writer.WriteStartArray();
+                foreach (FilterFileDetails item in FilterFileDetails)
                 {
-                    dataAccountType = property.Value.GetString().ToDataAccountType();
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        TransferFilterDetails IJsonModel<TransferFilterDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual TransferFilterDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<TransferFilterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(TransferFilterDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeTransferFilterDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static TransferFilterDetails DeserializeTransferFilterDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DataAccountType dataAccountType = default;
+            BlobFilterDetails blobFilterDetails = default;
+            AzureFileFilterDetails azureFileFilterDetails = default;
+            IList<FilterFileDetails> filterFileDetails = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("dataAccountType"u8))
+                {
+                    dataAccountType = prop.Value.GetString().ToDataAccountType();
                     continue;
                 }
-                if (property.NameEquals("blobFilterDetails"))
+                if (prop.NameEquals("blobFilterDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    blobFilterDetails = BlobFilterDetails.DeserializeBlobFilterDetails(property.Value);
+                    blobFilterDetails = BlobFilterDetails.DeserializeBlobFilterDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("azureFileFilterDetails"))
+                if (prop.NameEquals("azureFileFilterDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    azureFileFilterDetails = AzureFileFilterDetails.DeserializeAzureFileFilterDetails(property.Value);
+                    azureFileFilterDetails = AzureFileFilterDetails.DeserializeAzureFileFilterDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("filterFileDetails"))
+                if (prop.NameEquals("filterFileDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<FilterFileDetails> array = new List<FilterFileDetails>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(Models.FilterFileDetails.DeserializeFilterFileDetails(item));
+                        array.Add(Models.FilterFileDetails.DeserializeFilterFileDetails(item, options));
                     }
                     filterFileDetails = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
             }
-            return new TransferFilterDetails(dataAccountType, blobFilterDetails.Value, azureFileFilterDetails.Value, Optional.ToList(filterFileDetails));
+            return new TransferFilterDetails(dataAccountType, blobFilterDetails, azureFileFilterDetails, filterFileDetails ?? new ChangeTrackingList<FilterFileDetails>(), additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<TransferFilterDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<TransferFilterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(TransferFilterDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        TransferFilterDetails IPersistableModel<TransferFilterDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<TransferFilterDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

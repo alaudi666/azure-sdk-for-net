@@ -9,18 +9,124 @@ using System;
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Identity;
-using Azure.ResourceManager;
-using Azure.ResourceManager.Maintenance;
 using Azure.ResourceManager.Maintenance.Models;
 using Azure.ResourceManager.Resources;
+using NUnit.Framework;
 
 namespace Azure.ResourceManager.Maintenance.Samples
 {
     public partial class Sample_ResourceGroupResourceExtensions
     {
-        // ConfigurationAssignments_CreateOrUpdateParent
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
+        [Test]
+        [Ignore("Only validating compilation of examples")]
+        public async Task GetApplyUpdatesByParent_ApplyUpdatesGetParent()
+        {
+            // Generated from example definition: specification/maintenance/resource-manager/Microsoft.Maintenance/stable/2021-05-01/examples/ApplyUpdates_GetParent.json
+            // this example is just showing the usage of "ApplyUpdates_GetParent" operation, for the dependent resources, they will have to be created separately.
+
+            // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
+            TokenCredential cred = new DefaultAzureCredential();
+            // authenticate your client
+            ArmClient client = new ArmClient(cred);
+
+            // this example assumes you already have this ResourceGroupResource created on azure
+            // for more information of creating ResourceGroupResource, please refer to the document of ResourceGroupResource
+            string subscriptionId = "5b4b650e-28b9-4790-b3ab-ddbd88d727c4";
+            string resourceGroupName = "examplerg";
+            ResourceIdentifier resourceGroupResourceId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroupName);
+            ResourceGroupResource resourceGroupResource = client.GetResourceGroupResource(resourceGroupResourceId);
+
+            // invoke the operation
+            string providerName = "Microsoft.Compute";
+            string resourceParentType = "virtualMachineScaleSets";
+            string resourceParentName = "smdtest1";
+            string resourceType = "virtualMachines";
+            string resourceName = "smdvm1";
+            string applyUpdateName = "e9b9685d-78e4-44c4-a81c-64a14f9b87b6";
+            ResourceGroupResourceGetApplyUpdatesByParentOptions options = new ResourceGroupResourceGetApplyUpdatesByParentOptions(
+                providerName,
+                resourceParentType,
+                resourceParentName,
+                resourceType,
+                resourceName,
+                applyUpdateName);
+            MaintenanceApplyUpdateResource result = await resourceGroupResource.GetApplyUpdatesByParentAsync(options);
+
+            // the variable result is a resource, you could call other operations on this instance as well
+            // but just for demo, we get its data from this resource instance
+            MaintenanceApplyUpdateData resourceData = result.Data;
+            // for demo we just print out the id
+            Console.WriteLine($"Succeeded on id: {resourceData.Id}");
+        }
+
+        [Test]
+        [Ignore("Only validating compilation of examples")]
+        public async Task CreateOrUpdateApplyUpdateByParent_ApplyUpdatesCreateOrUpdateParent()
+        {
+            // Generated from example definition: specification/maintenance/resource-manager/Microsoft.Maintenance/stable/2021-05-01/examples/ApplyUpdates_CreateOrUpdateParent.json
+            // this example is just showing the usage of "ApplyUpdates_CreateOrUpdateParent" operation, for the dependent resources, they will have to be created separately.
+
+            // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
+            TokenCredential cred = new DefaultAzureCredential();
+            // authenticate your client
+            ArmClient client = new ArmClient(cred);
+
+            // this example assumes you already have this ResourceGroupResource created on azure
+            // for more information of creating ResourceGroupResource, please refer to the document of ResourceGroupResource
+            string subscriptionId = "5b4b650e-28b9-4790-b3ab-ddbd88d727c4";
+            string resourceGroupName = "examplerg";
+            ResourceIdentifier resourceGroupResourceId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroupName);
+            ResourceGroupResource resourceGroupResource = client.GetResourceGroupResource(resourceGroupResourceId);
+
+            // invoke the operation
+            string providerName = "Microsoft.Compute";
+            string resourceParentType = "virtualMachineScaleSets";
+            string resourceParentName = "smdtest1";
+            string resourceType = "virtualMachines";
+            string resourceName = "smdvm1";
+            MaintenanceApplyUpdateResource result = await resourceGroupResource.CreateOrUpdateApplyUpdateByParentAsync(providerName, resourceParentType, resourceParentName, resourceType, resourceName);
+
+            // the variable result is a resource, you could call other operations on this instance as well
+            // but just for demo, we get its data from this resource instance
+            MaintenanceApplyUpdateData resourceData = result.Data;
+            // for demo we just print out the id
+            Console.WriteLine($"Succeeded on id: {resourceData.Id}");
+        }
+
+        [Test]
+        [Ignore("Only validating compilation of examples")]
+        public async Task CreateOrUpdateApplyUpdate_ApplyUpdatesCreateOrUpdate()
+        {
+            // Generated from example definition: specification/maintenance/resource-manager/Microsoft.Maintenance/stable/2021-05-01/examples/ApplyUpdates_CreateOrUpdate.json
+            // this example is just showing the usage of "ApplyUpdates_CreateOrUpdate" operation, for the dependent resources, they will have to be created separately.
+
+            // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
+            TokenCredential cred = new DefaultAzureCredential();
+            // authenticate your client
+            ArmClient client = new ArmClient(cred);
+
+            // this example assumes you already have this ResourceGroupResource created on azure
+            // for more information of creating ResourceGroupResource, please refer to the document of ResourceGroupResource
+            string subscriptionId = "5b4b650e-28b9-4790-b3ab-ddbd88d727c4";
+            string resourceGroupName = "examplerg";
+            ResourceIdentifier resourceGroupResourceId = ResourceGroupResource.CreateResourceIdentifier(subscriptionId, resourceGroupName);
+            ResourceGroupResource resourceGroupResource = client.GetResourceGroupResource(resourceGroupResourceId);
+
+            // invoke the operation
+            string providerName = "Microsoft.Compute";
+            string resourceType = "virtualMachineScaleSets";
+            string resourceName = "smdtest1";
+            MaintenanceApplyUpdateResource result = await resourceGroupResource.CreateOrUpdateApplyUpdateAsync(providerName, resourceType, resourceName);
+
+            // the variable result is a resource, you could call other operations on this instance as well
+            // but just for demo, we get its data from this resource instance
+            MaintenanceApplyUpdateData resourceData = result.Data;
+            // for demo we just print out the id
+            Console.WriteLine($"Succeeded on id: {resourceData.Id}");
+        }
+
+        [Test]
+        [Ignore("Only validating compilation of examples")]
         public async Task CreateOrUpdateConfigurationAssignmentByParent_ConfigurationAssignmentsCreateOrUpdateParent()
         {
             // Generated from example definition: specification/maintenance/resource-manager/Microsoft.Maintenance/stable/2021-05-01/examples/ConfigurationAssignments_CreateOrUpdateParent.json
@@ -45,18 +151,25 @@ namespace Azure.ResourceManager.Maintenance.Samples
             string resourceType = "virtualMachines";
             string resourceName = "smdvm1";
             string configurationAssignmentName = "workervmPolicy";
-            MaintenanceConfigurationAssignmentData data = new MaintenanceConfigurationAssignmentData()
+            MaintenanceConfigurationAssignmentData data = new MaintenanceConfigurationAssignmentData
             {
                 MaintenanceConfigurationId = new ResourceIdentifier("/subscriptions/5b4b650e-28b9-4790-b3ab-ddbd88d727c4/resourcegroups/examplerg/providers/Microsoft.Maintenance/maintenanceConfigurations/policy1"),
             };
-            MaintenanceConfigurationAssignmentData result = await resourceGroupResource.CreateOrUpdateConfigurationAssignmentByParentAsync(providerName, resourceParentType, resourceParentName, resourceType, resourceName, configurationAssignmentName, data);
+            ResourceGroupResourceCreateOrUpdateConfigurationAssignmentByParentOptions options = new ResourceGroupResourceCreateOrUpdateConfigurationAssignmentByParentOptions(
+                providerName,
+                resourceParentType,
+                resourceParentName,
+                resourceType,
+                resourceName,
+                configurationAssignmentName,
+                data);
+            MaintenanceConfigurationAssignmentData result = await resourceGroupResource.CreateOrUpdateConfigurationAssignmentByParentAsync(options);
 
             Console.WriteLine($"Succeeded: {result}");
         }
 
-        // ConfigurationAssignments_DeleteParent
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
+        [Test]
+        [Ignore("Only validating compilation of examples")]
         public async Task DeleteConfigurationAssignmentByParent_ConfigurationAssignmentsDeleteParent()
         {
             // Generated from example definition: specification/maintenance/resource-manager/Microsoft.Maintenance/stable/2021-05-01/examples/ConfigurationAssignments_DeleteParent.json
@@ -81,14 +194,20 @@ namespace Azure.ResourceManager.Maintenance.Samples
             string resourceType = "virtualMachines";
             string resourceName = "smdvm1";
             string configurationAssignmentName = "workervmConfiguration";
-            MaintenanceConfigurationAssignmentData result = await resourceGroupResource.DeleteConfigurationAssignmentByParentAsync(providerName, resourceParentType, resourceParentName, resourceType, resourceName, configurationAssignmentName);
+            ResourceGroupResourceDeleteConfigurationAssignmentByParentOptions options = new ResourceGroupResourceDeleteConfigurationAssignmentByParentOptions(
+                providerName,
+                resourceParentType,
+                resourceParentName,
+                resourceType,
+                resourceName,
+                configurationAssignmentName);
+            MaintenanceConfigurationAssignmentData result = await resourceGroupResource.DeleteConfigurationAssignmentByParentAsync(options);
 
             Console.WriteLine($"Succeeded: {result}");
         }
 
-        // ConfigurationAssignments_CreateOrUpdate
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
+        [Test]
+        [Ignore("Only validating compilation of examples")]
         public async Task CreateOrUpdateConfigurationAssignment_ConfigurationAssignmentsCreateOrUpdate()
         {
             // Generated from example definition: specification/maintenance/resource-manager/Microsoft.Maintenance/stable/2021-05-01/examples/ConfigurationAssignments_CreateOrUpdate.json
@@ -111,7 +230,7 @@ namespace Azure.ResourceManager.Maintenance.Samples
             string resourceType = "virtualMachineScaleSets";
             string resourceName = "smdtest1";
             string configurationAssignmentName = "workervmConfiguration";
-            MaintenanceConfigurationAssignmentData data = new MaintenanceConfigurationAssignmentData()
+            MaintenanceConfigurationAssignmentData data = new MaintenanceConfigurationAssignmentData
             {
                 MaintenanceConfigurationId = new ResourceIdentifier("/subscriptions/5b4b650e-28b9-4790-b3ab-ddbd88d727c4/resourcegroups/examplerg/providers/Microsoft.Maintenance/maintenanceConfigurations/configuration1"),
             };
@@ -120,9 +239,8 @@ namespace Azure.ResourceManager.Maintenance.Samples
             Console.WriteLine($"Succeeded: {result}");
         }
 
-        // ConfigurationAssignments_Delete
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
+        [Test]
+        [Ignore("Only validating compilation of examples")]
         public async Task DeleteConfigurationAssignment_ConfigurationAssignmentsDelete()
         {
             // Generated from example definition: specification/maintenance/resource-manager/Microsoft.Maintenance/stable/2021-05-01/examples/ConfigurationAssignments_Delete.json
@@ -150,9 +268,8 @@ namespace Azure.ResourceManager.Maintenance.Samples
             Console.WriteLine($"Succeeded: {result}");
         }
 
-        // ConfigurationAssignments_ListParent
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
+        [Test]
+        [Ignore("Only validating compilation of examples")]
         public async Task GetConfigurationAssignmentsByParent_ConfigurationAssignmentsListParent()
         {
             // Generated from example definition: specification/maintenance/resource-manager/Microsoft.Maintenance/stable/2021-05-01/examples/ConfigurationAssignments_ListParent.json
@@ -181,12 +298,11 @@ namespace Azure.ResourceManager.Maintenance.Samples
                 Console.WriteLine($"Succeeded: {item}");
             }
 
-            Console.WriteLine($"Succeeded");
+            Console.WriteLine("Succeeded");
         }
 
-        // ConfigurationAssignments_List
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
+        [Test]
+        [Ignore("Only validating compilation of examples")]
         public async Task GetConfigurationAssignments_ConfigurationAssignmentsList()
         {
             // Generated from example definition: specification/maintenance/resource-manager/Microsoft.Maintenance/stable/2021-05-01/examples/ConfigurationAssignments_List.json
@@ -213,12 +329,11 @@ namespace Azure.ResourceManager.Maintenance.Samples
                 Console.WriteLine($"Succeeded: {item}");
             }
 
-            Console.WriteLine($"Succeeded");
+            Console.WriteLine("Succeeded");
         }
 
-        // ApplyUpdatesResourceGroup_List
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
+        [Test]
+        [Ignore("Only validating compilation of examples")]
         public async Task GetMaintenanceApplyUpdates_ApplyUpdatesResourceGroupList()
         {
             // Generated from example definition: specification/maintenance/resource-manager/Microsoft.Maintenance/stable/2021-05-01/examples/ApplyUpdatesResourceGroup_List.json
@@ -246,12 +361,11 @@ namespace Azure.ResourceManager.Maintenance.Samples
                 Console.WriteLine($"Succeeded on id: {resourceData.Id}");
             }
 
-            Console.WriteLine($"Succeeded");
+            Console.WriteLine("Succeeded");
         }
 
-        // Updates_ListParent
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
+        [Test]
+        [Ignore("Only validating compilation of examples")]
         public async Task GetUpdatesByParent_UpdatesListParent()
         {
             // Generated from example definition: specification/maintenance/resource-manager/Microsoft.Maintenance/stable/2021-05-01/examples/Updates_ListParent.json
@@ -280,12 +394,11 @@ namespace Azure.ResourceManager.Maintenance.Samples
                 Console.WriteLine($"Succeeded: {item}");
             }
 
-            Console.WriteLine($"Succeeded");
+            Console.WriteLine("Succeeded");
         }
 
-        // Updates_List
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
+        [Test]
+        [Ignore("Only validating compilation of examples")]
         public async Task GetUpdates_UpdatesList()
         {
             // Generated from example definition: specification/maintenance/resource-manager/Microsoft.Maintenance/stable/2021-05-01/examples/Updates_List.json
@@ -312,7 +425,7 @@ namespace Azure.ResourceManager.Maintenance.Samples
                 Console.WriteLine($"Succeeded: {item}");
             }
 
-            Console.WriteLine($"Succeeded");
+            Console.WriteLine("Succeeded");
         }
     }
 }

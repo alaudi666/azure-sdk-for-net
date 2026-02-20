@@ -8,26 +8,31 @@
 using System;
 using System.Collections.Generic;
 using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> Properties of the deleted vault. </summary>
     public partial class DeletedKeyVaultProperties
     {
-        /// <summary> Initializes a new instance of DeletedKeyVaultProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DeletedKeyVaultProperties"/>. </summary>
         internal DeletedKeyVaultProperties()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
-        /// <summary> Initializes a new instance of DeletedKeyVaultProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="DeletedKeyVaultProperties"/>. </summary>
         /// <param name="vaultId"> The resource id of the original vault. </param>
         /// <param name="location"> The location of the original vault. </param>
         /// <param name="deletedOn"> The deleted date. </param>
         /// <param name="scheduledPurgeOn"> The scheduled purged date. </param>
         /// <param name="tags"> Tags of the original vault. </param>
         /// <param name="purgeProtectionEnabled"> Purge protection status of the original vault. </param>
-        internal DeletedKeyVaultProperties(ResourceIdentifier vaultId, AzureLocation? location, DateTimeOffset? deletedOn, DateTimeOffset? scheduledPurgeOn, IReadOnlyDictionary<string, string> tags, bool? purgeProtectionEnabled)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DeletedKeyVaultProperties(ResourceIdentifier vaultId, AzureLocation? location, DateTimeOffset? deletedOn, DateTimeOffset? scheduledPurgeOn, IReadOnlyDictionary<string, string> tags, bool? purgeProtectionEnabled, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             VaultId = vaultId;
             Location = location;
@@ -35,19 +40,31 @@ namespace Azure.ResourceManager.KeyVault.Models
             ScheduledPurgeOn = scheduledPurgeOn;
             Tags = tags;
             PurgeProtectionEnabled = purgeProtectionEnabled;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The resource id of the original vault. </summary>
+        [WirePath("vaultId")]
         public ResourceIdentifier VaultId { get; }
+
         /// <summary> The location of the original vault. </summary>
+        [WirePath("location")]
         public AzureLocation? Location { get; }
+
         /// <summary> The deleted date. </summary>
+        [WirePath("deletionDate")]
         public DateTimeOffset? DeletedOn { get; }
+
         /// <summary> The scheduled purged date. </summary>
+        [WirePath("scheduledPurgeDate")]
         public DateTimeOffset? ScheduledPurgeOn { get; }
+
         /// <summary> Tags of the original vault. </summary>
+        [WirePath("tags")]
         public IReadOnlyDictionary<string, string> Tags { get; }
+
         /// <summary> Purge protection status of the original vault. </summary>
+        [WirePath("purgeProtectionEnabled")]
         public bool? PurgeProtectionEnabled { get; }
     }
 }

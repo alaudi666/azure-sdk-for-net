@@ -5,12 +5,18 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Port range details. </summary>
     public partial class EndpointRangeDescription
     {
-        /// <summary> Initializes a new instance of EndpointRangeDescription. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EndpointRangeDescription"/>. </summary>
         /// <param name="startPort"> Starting port of a range of ports. </param>
         /// <param name="endPort"> End port of a range of ports. </param>
         public EndpointRangeDescription(int startPort, int endPort)
@@ -19,8 +25,20 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
             EndPort = endPort;
         }
 
+        /// <summary> Initializes a new instance of <see cref="EndpointRangeDescription"/>. </summary>
+        /// <param name="startPort"> Starting port of a range of ports. </param>
+        /// <param name="endPort"> End port of a range of ports. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EndpointRangeDescription(int startPort, int endPort, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            StartPort = startPort;
+            EndPort = endPort;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> Starting port of a range of ports. </summary>
         public int StartPort { get; set; }
+
         /// <summary> End port of a range of ports. </summary>
         public int EndPort { get; set; }
     }

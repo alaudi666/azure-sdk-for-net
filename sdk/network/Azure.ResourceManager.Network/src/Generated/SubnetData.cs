@@ -5,18 +5,21 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the Subnet data model. </summary>
+    /// <summary>
+    /// A class representing the Subnet data model.
+    /// Subnet in a virtual network resource.
+    /// </summary>
     public partial class SubnetData : NetworkWritableResourceData
     {
-        /// <summary> Initializes a new instance of SubnetData. </summary>
+        /// <summary> Initializes a new instance of <see cref="SubnetData"/>. </summary>
         public SubnetData()
         {
             AddressPrefixes = new ChangeTrackingList<string>();
@@ -30,12 +33,14 @@ namespace Azure.ResourceManager.Network
             ServiceAssociationLinks = new ChangeTrackingList<ServiceAssociationLink>();
             Delegations = new ChangeTrackingList<ServiceDelegation>();
             ApplicationGatewayIPConfigurations = new ChangeTrackingList<ApplicationGatewayIPConfiguration>();
+            IpamPoolPrefixAllocations = new ChangeTrackingList<IpamPoolPrefixAllocation>();
         }
 
-        /// <summary> Initializes a new instance of SubnetData. </summary>
+        /// <summary> Initializes a new instance of <see cref="SubnetData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="addressPrefix"> The address prefix for the subnet. </param>
         /// <param name="addressPrefixes"> List of address prefixes for the subnet. </param>
@@ -56,7 +61,11 @@ namespace Azure.ResourceManager.Network
         /// <param name="privateEndpointNetworkPolicy"> Enable or Disable apply network policies on private end point in the subnet. </param>
         /// <param name="privateLinkServiceNetworkPolicy"> Enable or Disable apply network policies on private link service in the subnet. </param>
         /// <param name="applicationGatewayIPConfigurations"> Application gateway IP configurations of virtual network resource. </param>
-        internal SubnetData(ResourceIdentifier id, string name, ResourceType? resourceType, ETag? etag, string addressPrefix, IList<string> addressPrefixes, NetworkSecurityGroupData networkSecurityGroup, RouteTableData routeTable, WritableSubResource natGateway, IList<ServiceEndpointProperties> serviceEndpoints, IList<ServiceEndpointPolicyData> serviceEndpointPolicies, IReadOnlyList<PrivateEndpointData> privateEndpoints, IReadOnlyList<NetworkIPConfiguration> ipConfigurations, IReadOnlyList<NetworkIPConfigurationProfile> ipConfigurationProfiles, IList<WritableSubResource> ipAllocations, IReadOnlyList<ResourceNavigationLink> resourceNavigationLinks, IReadOnlyList<ServiceAssociationLink> serviceAssociationLinks, IList<ServiceDelegation> delegations, string purpose, NetworkProvisioningState? provisioningState, VirtualNetworkPrivateEndpointNetworkPolicy? privateEndpointNetworkPolicy, VirtualNetworkPrivateLinkServiceNetworkPolicy? privateLinkServiceNetworkPolicy, IList<ApplicationGatewayIPConfiguration> applicationGatewayIPConfigurations) : base(id, name, resourceType)
+        /// <param name="sharingScope"> Set this property to Tenant to allow sharing subnet with other subscriptions in your AAD tenant. This property can only be set if defaultOutboundAccess is set to false, both properties can only be set if subnet is empty. </param>
+        /// <param name="defaultOutboundAccess"> Set this property to false to disable default outbound connectivity for all VMs in the subnet. </param>
+        /// <param name="ipamPoolPrefixAllocations"> A list of IPAM Pools for allocating IP address prefixes. </param>
+        /// <param name="serviceGateway"> Reference to an existing service gateway. </param>
+        internal SubnetData(ResourceIdentifier id, string name, ResourceType? resourceType, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, string addressPrefix, IList<string> addressPrefixes, NetworkSecurityGroupData networkSecurityGroup, RouteTableData routeTable, WritableSubResource natGateway, IList<ServiceEndpointProperties> serviceEndpoints, IList<ServiceEndpointPolicyData> serviceEndpointPolicies, IReadOnlyList<PrivateEndpointData> privateEndpoints, IReadOnlyList<NetworkIPConfiguration> ipConfigurations, IReadOnlyList<NetworkIPConfigurationProfile> ipConfigurationProfiles, IList<WritableSubResource> ipAllocations, IReadOnlyList<ResourceNavigationLink> resourceNavigationLinks, IReadOnlyList<ServiceAssociationLink> serviceAssociationLinks, IList<ServiceDelegation> delegations, string purpose, NetworkProvisioningState? provisioningState, VirtualNetworkPrivateEndpointNetworkPolicy? privateEndpointNetworkPolicy, VirtualNetworkPrivateLinkServiceNetworkPolicy? privateLinkServiceNetworkPolicy, IList<ApplicationGatewayIPConfiguration> applicationGatewayIPConfigurations, SharingScope? sharingScope, bool? defaultOutboundAccess, IList<IpamPoolPrefixAllocation> ipamPoolPrefixAllocations, WritableSubResource serviceGateway) : base(id, name, resourceType, serializedAdditionalRawData)
         {
             ETag = etag;
             AddressPrefix = addressPrefix;
@@ -78,21 +87,31 @@ namespace Azure.ResourceManager.Network
             PrivateEndpointNetworkPolicy = privateEndpointNetworkPolicy;
             PrivateLinkServiceNetworkPolicy = privateLinkServiceNetworkPolicy;
             ApplicationGatewayIPConfigurations = applicationGatewayIPConfigurations;
+            SharingScope = sharingScope;
+            DefaultOutboundAccess = defaultOutboundAccess;
+            IpamPoolPrefixAllocations = ipamPoolPrefixAllocations;
+            ServiceGateway = serviceGateway;
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> The address prefix for the subnet. </summary>
+        [WirePath("properties.addressPrefix")]
         public string AddressPrefix { get; set; }
         /// <summary> List of address prefixes for the subnet. </summary>
+        [WirePath("properties.addressPrefixes")]
         public IList<string> AddressPrefixes { get; }
         /// <summary> The reference to the NetworkSecurityGroup resource. </summary>
+        [WirePath("properties.networkSecurityGroup")]
         public NetworkSecurityGroupData NetworkSecurityGroup { get; set; }
         /// <summary> The reference to the RouteTable resource. </summary>
+        [WirePath("properties.routeTable")]
         public RouteTableData RouteTable { get; set; }
         /// <summary> Nat gateway associated with this subnet. </summary>
         internal WritableSubResource NatGateway { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.natGateway.id")]
         public ResourceIdentifier NatGatewayId
         {
             get => NatGateway is null ? default : NatGateway.Id;
@@ -105,32 +124,69 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> An array of service endpoints. </summary>
+        [WirePath("properties.serviceEndpoints")]
         public IList<ServiceEndpointProperties> ServiceEndpoints { get; }
         /// <summary> An array of service endpoint policies. </summary>
+        [WirePath("properties.serviceEndpointPolicies")]
         public IList<ServiceEndpointPolicyData> ServiceEndpointPolicies { get; }
         /// <summary> An array of references to private endpoints. </summary>
+        [WirePath("properties.privateEndpoints")]
         public IReadOnlyList<PrivateEndpointData> PrivateEndpoints { get; }
         /// <summary> An array of references to the network interface IP configurations using subnet. </summary>
+        [WirePath("properties.ipConfigurations")]
         public IReadOnlyList<NetworkIPConfiguration> IPConfigurations { get; }
         /// <summary> Array of IP configuration profiles which reference this subnet. </summary>
+        [WirePath("properties.ipConfigurationProfiles")]
         public IReadOnlyList<NetworkIPConfigurationProfile> IPConfigurationProfiles { get; }
         /// <summary> Array of IpAllocation which reference this subnet. </summary>
+        [WirePath("properties.ipAllocations")]
         public IList<WritableSubResource> IPAllocations { get; }
         /// <summary> An array of references to the external resources using subnet. </summary>
+        [WirePath("properties.resourceNavigationLinks")]
         public IReadOnlyList<ResourceNavigationLink> ResourceNavigationLinks { get; }
         /// <summary> An array of references to services injecting into this subnet. </summary>
+        [WirePath("properties.serviceAssociationLinks")]
         public IReadOnlyList<ServiceAssociationLink> ServiceAssociationLinks { get; }
         /// <summary> An array of references to the delegations on the subnet. </summary>
+        [WirePath("properties.delegations")]
         public IList<ServiceDelegation> Delegations { get; }
         /// <summary> A read-only string identifying the intention of use for this subnet based on delegations and other user-defined properties. </summary>
+        [WirePath("properties.purpose")]
         public string Purpose { get; }
         /// <summary> The provisioning state of the subnet resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
         /// <summary> Enable or Disable apply network policies on private end point in the subnet. </summary>
+        [WirePath("properties.privateEndpointNetworkPolicies")]
         public VirtualNetworkPrivateEndpointNetworkPolicy? PrivateEndpointNetworkPolicy { get; set; }
         /// <summary> Enable or Disable apply network policies on private link service in the subnet. </summary>
+        [WirePath("properties.privateLinkServiceNetworkPolicies")]
         public VirtualNetworkPrivateLinkServiceNetworkPolicy? PrivateLinkServiceNetworkPolicy { get; set; }
         /// <summary> Application gateway IP configurations of virtual network resource. </summary>
+        [WirePath("properties.applicationGatewayIPConfigurations")]
         public IList<ApplicationGatewayIPConfiguration> ApplicationGatewayIPConfigurations { get; }
+        /// <summary> Set this property to Tenant to allow sharing subnet with other subscriptions in your AAD tenant. This property can only be set if defaultOutboundAccess is set to false, both properties can only be set if subnet is empty. </summary>
+        [WirePath("properties.sharingScope")]
+        public SharingScope? SharingScope { get; set; }
+        /// <summary> Set this property to false to disable default outbound connectivity for all VMs in the subnet. </summary>
+        [WirePath("properties.defaultOutboundAccess")]
+        public bool? DefaultOutboundAccess { get; set; }
+        /// <summary> A list of IPAM Pools for allocating IP address prefixes. </summary>
+        [WirePath("properties.ipamPoolPrefixAllocations")]
+        public IList<IpamPoolPrefixAllocation> IpamPoolPrefixAllocations { get; }
+        /// <summary> Reference to an existing service gateway. </summary>
+        internal WritableSubResource ServiceGateway { get; set; }
+        /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.serviceGateway.id")]
+        public ResourceIdentifier ServiceGatewayId
+        {
+            get => ServiceGateway is null ? default : ServiceGateway.Id;
+            set
+            {
+                if (ServiceGateway is null)
+                    ServiceGateway = new WritableSubResource();
+                ServiceGateway.Id = value;
+            }
+        }
     }
 }

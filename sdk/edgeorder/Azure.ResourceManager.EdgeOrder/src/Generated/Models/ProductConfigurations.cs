@@ -5,32 +5,39 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> The list of configurations. </summary>
     internal partial class ProductConfigurations
     {
-        /// <summary> Initializes a new instance of ProductConfigurations. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ProductConfigurations"/>. </summary>
         internal ProductConfigurations()
         {
             Value = new ChangeTrackingList<ProductConfiguration>();
         }
 
-        /// <summary> Initializes a new instance of ProductConfigurations. </summary>
-        /// <param name="value"> List of configurations. </param>
-        /// <param name="nextLink"> Link for the next set of configurations. </param>
-        internal ProductConfigurations(IReadOnlyList<ProductConfiguration> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ProductConfigurations"/>. </summary>
+        /// <param name="value"> The Configuration items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ProductConfigurations(IReadOnlyList<ProductConfiguration> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of configurations. </summary>
+        /// <summary> The Configuration items on this page. </summary>
         public IReadOnlyList<ProductConfiguration> Value { get; }
-        /// <summary> Link for the next set of configurations. </summary>
-        public string NextLink { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

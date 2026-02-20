@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.PowerBIDedicated
 {
-    internal class DedicatedCapacityOperationSource : IOperationSource<DedicatedCapacityResource>
+    /// <summary></summary>
+    internal partial class DedicatedCapacityOperationSource : IOperationSource<DedicatedCapacityResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal DedicatedCapacityOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         DedicatedCapacityResource IOperationSource<DedicatedCapacityResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = DedicatedCapacityData.DeserializeDedicatedCapacityData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            DedicatedCapacityData data = DedicatedCapacityData.DeserializeDedicatedCapacityData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new DedicatedCapacityResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<DedicatedCapacityResource> IOperationSource<DedicatedCapacityResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = DedicatedCapacityData.DeserializeDedicatedCapacityData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            DedicatedCapacityData data = DedicatedCapacityData.DeserializeDedicatedCapacityData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new DedicatedCapacityResource(_client, data);
         }
     }

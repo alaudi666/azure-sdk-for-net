@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
-
+using Azure.Messaging.WebPubSub;
 using Microsoft.Azure.WebJobs.Description;
 
 namespace Microsoft.Azure.WebJobs.Extensions.WebPubSub
@@ -15,10 +15,9 @@ namespace Microsoft.Azure.WebJobs.Extensions.WebPubSub
     public class WebPubSubConnectionAttribute : Attribute
     {
         /// <summary>
-        /// Target Web PubSub service connection string.
+        /// The configuration section name that resolves to an identity-based connection or a connection string of the service.
         /// </summary>
-        [ConnectionString]
-        public string Connection { get; set; } = Constants.WebPubSubConnectionStringName;
+        public string Connection { get; set; }
 
         /// <summary>
         /// Target hub name.
@@ -31,5 +30,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.WebPubSub
         /// </summary>
         [AutoResolve]
         public string UserId { get; set; }
+
+        /// <summary>
+        /// The client protocol.
+        /// </summary>
+        public WebPubSubClientProtocol ClientProtocol { get; set; } = WebPubSubClientProtocol.Default;
     }
 }

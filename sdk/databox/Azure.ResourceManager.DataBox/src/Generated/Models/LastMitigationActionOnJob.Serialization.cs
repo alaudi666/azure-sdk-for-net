@@ -6,52 +6,170 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class LastMitigationActionOnJob
+    /// <summary> Last Mitigation Action Performed On Job. </summary>
+    public partial class LastMitigationActionOnJob : IJsonModel<LastMitigationActionOnJob>
     {
-        internal static LastMitigationActionOnJob DeserializeLastMitigationActionOnJob(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual LastMitigationActionOnJob PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<DateTimeOffset> actionDateTimeInUtc = default;
-            Optional<bool> isPerformedByCustomer = default;
-            Optional<CustomerResolutionCode> customerResolution = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<LastMitigationActionOnJob>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("actionDateTimeInUtc"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeLastMitigationActionOnJob(document.RootElement, options);
                     }
-                    actionDateTimeInUtc = property.Value.GetDateTimeOffset("O");
-                    continue;
-                }
-                if (property.NameEquals("isPerformedByCustomer"))
+                default:
+                    throw new FormatException($"The model {nameof(LastMitigationActionOnJob)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<LastMitigationActionOnJob>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<LastMitigationActionOnJob>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(LastMitigationActionOnJob)} does not support writing '{format}' format.");
+            }
+            if (Optional.IsDefined(ActionPerformedOn))
+            {
+                writer.WritePropertyName("actionDateTimeInUtc"u8);
+                writer.WriteStringValue(ActionPerformedOn.Value, "O");
+            }
+            if (Optional.IsDefined(IsPerformedByCustomer))
+            {
+                writer.WritePropertyName("isPerformedByCustomer"u8);
+                writer.WriteBooleanValue(IsPerformedByCustomer.Value);
+            }
+            if (Optional.IsDefined(CustomerResolution))
+            {
+                writer.WritePropertyName("customerResolution"u8);
+                writer.WriteStringValue(CustomerResolution.Value.ToSerialString());
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    isPerformedByCustomer = property.Value.GetBoolean();
-                    continue;
-                }
-                if (property.NameEquals("customerResolution"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    customerResolution = property.Value.GetString().ToCustomerResolutionCode();
-                    continue;
+#endif
                 }
             }
-            return new LastMitigationActionOnJob(Optional.ToNullable(actionDateTimeInUtc), Optional.ToNullable(isPerformedByCustomer), Optional.ToNullable(customerResolution));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        LastMitigationActionOnJob IJsonModel<LastMitigationActionOnJob>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual LastMitigationActionOnJob JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<LastMitigationActionOnJob>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(LastMitigationActionOnJob)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeLastMitigationActionOnJob(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static LastMitigationActionOnJob DeserializeLastMitigationActionOnJob(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DateTimeOffset? actionPerformedOn = default;
+            bool? isPerformedByCustomer = default;
+            CustomerResolutionCode? customerResolution = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("actionDateTimeInUtc"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    actionPerformedOn = prop.Value.GetDateTimeOffset("O");
+                    continue;
+                }
+                if (prop.NameEquals("isPerformedByCustomer"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    isPerformedByCustomer = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (prop.NameEquals("customerResolution"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    customerResolution = prop.Value.GetString().ToCustomerResolutionCode();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new LastMitigationActionOnJob(actionPerformedOn, isPerformedByCustomer, customerResolution, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<LastMitigationActionOnJob>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<LastMitigationActionOnJob>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(LastMitigationActionOnJob)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        LastMitigationActionOnJob IPersistableModel<LastMitigationActionOnJob>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<LastMitigationActionOnJob>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

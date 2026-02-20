@@ -14,7 +14,6 @@ using Microsoft.Azure.WebJobs.Host.Listeners;
 using Microsoft.Azure.WebJobs.Host.Protocols;
 using Microsoft.Azure.WebJobs.Host.Timers;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 using Microsoft.Azure.WebJobs.Host.Scale;
 
 namespace Microsoft.Azure.WebJobs.Extensions.Storage.Blobs.Listeners
@@ -40,8 +39,10 @@ namespace Microsoft.Azure.WebJobs.Extensions.Storage.Blobs.Listeners
         private readonly ITriggeredFunctionExecutor _executor;
         private readonly IHostSingletonManager _singletonManager;
         private readonly ConcurrencyManager _concurrencyManager;
+        private readonly IDrainModeManager _drainModeManager;
 
-        public BlobListenerFactory(IHostIdProvider hostIdProvider,
+        public BlobListenerFactory(
+            IHostIdProvider hostIdProvider,
             BlobsOptions blobsOptions,
             IWebJobsExceptionHandler exceptionHandler,
             IContextSetter<IBlobWrittenWatcher> blobWrittenWatcherSetter,
@@ -58,7 +59,8 @@ namespace Microsoft.Azure.WebJobs.Extensions.Storage.Blobs.Listeners
             BlobTriggerSource triggerKind,
             ITriggeredFunctionExecutor executor,
             IHostSingletonManager singletonManager,
-            ConcurrencyManager concurrencyManager)
+            ConcurrencyManager concurrencyManager,
+            IDrainModeManager drainModeManager)
         {
             _hostIdProvider = hostIdProvider ?? throw new ArgumentNullException(nameof(hostIdProvider));
             _blobTriggerQueueWriterFactory = blobTriggerQueueWriterFactory ?? throw new ArgumentNullException(nameof(blobTriggerQueueWriterFactory));
@@ -78,6 +80,7 @@ namespace Microsoft.Azure.WebJobs.Extensions.Storage.Blobs.Listeners
             _executor = executor ?? throw new ArgumentNullException(nameof(executor));
             _singletonManager = singletonManager ?? throw new ArgumentNullException(nameof(singletonManager));
             _concurrencyManager = concurrencyManager ?? throw new ArgumentNullException(nameof(concurrencyManager));
+            _drainModeManager = drainModeManager ?? throw new ArgumentNullException(nameof(drainModeManager));
         }
 
         public async Task<IListener> CreateAsync(CancellationToken cancellationToken)
@@ -104,15 +107,30 @@ namespace Microsoft.Azure.WebJobs.Extensions.Storage.Blobs.Listeners
                     new SharedBlobListenerFactory(hostId, _hostBlobServiceClient, _exceptionHandler, _blobWrittenWatcherSetter, _loggerFactory.CreateLogger<BlobListener>()));
 
                 // Register the blob container we wish to monitor with the shared blob listener.
-                await RegisterWithSharedBlobListenerAsync(hostId, sharedBlobListener, primaryBlobClient,
-                    blobTriggerQueueWriter, cancellationToken).ConfigureAwait(false);
+                await RegisterWithSharedBlobListenerAsync(
+                    hostId,
+                    sharedBlobListener,
+                    primaryBlobClient,
+                    targetBlobClient,
+                    blobTriggerQueueWriter,
+                    cancellationToken).ConfigureAwait(false);
             }
 
             // Create a "bridge" listener that will monitor the blob
             // notification queue and dispatch to the target job function.
             SharedBlobQueueListener sharedBlobQueueListener = _sharedContextProvider.GetOrCreateInstance<SharedBlobQueueListener>(
-                new SharedBlobQueueListenerFactory(_hostQueueServiceClient, blobTriggerQueueWriter.SharedQueueWatcher, blobTriggerQueueWriter.QueueClient,
-                     _blobsOptions, _exceptionHandler, _loggerFactory, sharedBlobListener?.BlobWritterWatcher, _functionDescriptor, _blobTriggerSource, _concurrencyManager));
+                new SharedBlobQueueListenerFactory(
+                    _hostQueueServiceClient,
+                    blobTriggerQueueWriter.SharedQueueWatcher,
+                    blobTriggerQueueWriter.QueueClient,
+                    _blobsOptions,
+                    _exceptionHandler,
+                    _loggerFactory,
+                    sharedBlobListener?.BlobWritterWatcher,
+                    _functionDescriptor,
+                    _blobTriggerSource,
+                    _concurrencyManager,
+                    _drainModeManager));
             var queueListener = new BlobListener(sharedBlobQueueListener, _container, _input, _loggerFactory);
 
             // the client to use for the poison queue
@@ -152,14 +170,24 @@ namespace Microsoft.Azure.WebJobs.Extensions.Storage.Blobs.Listeners
         private async Task RegisterWithSharedBlobListenerAsync(
             string hostId,
             SharedBlobListener sharedBlobListener,
-            BlobServiceClient blobClient,
+            BlobServiceClient primaryBlobClient,
+            BlobServiceClient targetBlobClient,
             BlobTriggerQueueWriter blobTriggerQueueWriter,
             CancellationToken cancellationToken)
         {
-            BlobTriggerExecutor triggerExecutor = new BlobTriggerExecutor(hostId, _functionDescriptor, _input, new BlobReceiptManager(blobClient),
-                blobTriggerQueueWriter, _loggerFactory.CreateLogger<BlobListener>());
+            BlobTriggerExecutor triggerExecutor = new BlobTriggerExecutor(
+                hostId,
+                _functionDescriptor,
+                _input,
+                new BlobReceiptManager(primaryBlobClient),
+                blobTriggerQueueWriter,
+                _loggerFactory.CreateLogger<BlobListener>());
 
-            await sharedBlobListener.RegisterAsync(blobClient, _container, triggerExecutor, cancellationToken).ConfigureAwait(false);
+            await sharedBlobListener.RegisterAsync(
+                targetBlobClient,
+                _container,
+                triggerExecutor,
+                cancellationToken).ConfigureAwait(false);
         }
 
         private void RegisterWithSharedBlobQueueListenerAsync(

@@ -5,33 +5,43 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
-    /// <summary> List of private endpoint connections. </summary>
+    /// <summary> The response of a PrivateEndpointConnection list operation. </summary>
     internal partial class KeyVaultPrivateEndpointConnectionListResult
     {
-        /// <summary> Initializes a new instance of KeyVaultPrivateEndpointConnectionListResult. </summary>
-        internal KeyVaultPrivateEndpointConnectionListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="KeyVaultPrivateEndpointConnectionListResult"/>. </summary>
+        /// <param name="value"> The PrivateEndpointConnection items on this page. </param>
+        internal KeyVaultPrivateEndpointConnectionListResult(IEnumerable<KeyVaultPrivateEndpointConnectionData> value)
         {
-            Value = new ChangeTrackingList<KeyVaultPrivateEndpointConnectionData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of KeyVaultPrivateEndpointConnectionListResult. </summary>
-        /// <param name="value"> The list of private endpoint connections. </param>
-        /// <param name="nextLink"> The URL to get the next set of private endpoint connections. </param>
-        internal KeyVaultPrivateEndpointConnectionListResult(IReadOnlyList<KeyVaultPrivateEndpointConnectionData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="KeyVaultPrivateEndpointConnectionListResult"/>. </summary>
+        /// <param name="value"> The PrivateEndpointConnection items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal KeyVaultPrivateEndpointConnectionListResult(IList<KeyVaultPrivateEndpointConnectionData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The list of private endpoint connections. </summary>
-        public IReadOnlyList<KeyVaultPrivateEndpointConnectionData> Value { get; }
-        /// <summary> The URL to get the next set of private endpoint connections. </summary>
-        public string NextLink { get; }
+        /// <summary> The PrivateEndpointConnection items on this page. </summary>
+        [WirePath("value")]
+        public IList<KeyVaultPrivateEndpointConnectionData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        [WirePath("nextLink")]
+        public Uri NextLink { get; }
     }
 }

@@ -9,23 +9,26 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Automation.Models;
 
 namespace Azure.ResourceManager.Automation
 {
     /// <summary>
     /// A Class representing an AutomationSourceControl along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct an <see cref="AutomationSourceControlResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetAutomationSourceControlResource method.
-    /// Otherwise you can get one from its parent resource <see cref="AutomationAccountResource" /> using the GetAutomationSourceControl method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct an <see cref="AutomationSourceControlResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetAutomationSourceControlResource method.
+    /// Otherwise you can get one from its parent resource <see cref="AutomationAccountResource"/> using the GetAutomationSourceControl method.
     /// </summary>
     public partial class AutomationSourceControlResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="AutomationSourceControlResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="resourceGroupName"> The resourceGroupName. </param>
+        /// <param name="automationAccountName"> The automationAccountName. </param>
+        /// <param name="sourceControlName"> The sourceControlName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string resourceGroupName, string automationAccountName, string sourceControlName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}";
@@ -40,12 +43,15 @@ namespace Azure.ResourceManager.Automation
         private readonly SourceControlSyncJobStreamsRestOperations _sourceControlSyncJobStreamsRestClient;
         private readonly AutomationSourceControlData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.Automation/automationAccounts/sourceControls";
+
         /// <summary> Initializes a new instance of the <see cref="AutomationSourceControlResource"/> class for mocking. </summary>
         protected AutomationSourceControlResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "AutomationSourceControlResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="AutomationSourceControlResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal AutomationSourceControlResource(ArmClient client, AutomationSourceControlData data) : this(client, data.Id)
@@ -71,9 +77,6 @@ namespace Azure.ResourceManager.Automation
 #endif
         }
 
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.Automation/automationAccounts/sourceControls";
-
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
 
@@ -97,8 +100,24 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Retrieve the source control identified by source control name.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}
-        /// Operation Id: SourceControl_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControl_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AutomationSourceControlResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<AutomationSourceControlResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -121,8 +140,24 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Retrieve the source control identified by source control name.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}
-        /// Operation Id: SourceControl_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControl_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AutomationSourceControlResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<AutomationSourceControlResource> Get(CancellationToken cancellationToken = default)
@@ -145,8 +180,24 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Delete the source control.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}
-        /// Operation Id: SourceControl_Delete
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControl_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AutomationSourceControlResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -157,7 +208,9 @@ namespace Azure.ResourceManager.Automation
             try
             {
                 var response = await _automationSourceControlSourceControlRestClient.DeleteAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, cancellationToken).ConfigureAwait(false);
-                var operation = new AutomationArmOperation(response);
+                var uri = _automationSourceControlSourceControlRestClient.CreateDeleteRequestUri(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Delete, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new AutomationArmOperation(response, rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionResponseAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -171,8 +224,24 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Delete the source control.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}
-        /// Operation Id: SourceControl_Delete
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControl_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AutomationSourceControlResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -183,7 +252,9 @@ namespace Azure.ResourceManager.Automation
             try
             {
                 var response = _automationSourceControlSourceControlRestClient.Delete(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, cancellationToken);
-                var operation = new AutomationArmOperation(response);
+                var uri = _automationSourceControlSourceControlRestClient.CreateDeleteRequestUri(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Delete, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new AutomationArmOperation(response, rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletionResponse(cancellationToken);
                 return operation;
@@ -197,8 +268,24 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Update a source control.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}
-        /// Operation Id: SourceControl_Update
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControl_Update</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AutomationSourceControlResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="patch"> The parameters supplied to the update source control operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -223,8 +310,24 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Update a source control.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}
-        /// Operation Id: SourceControl_Update
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControl_Update</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AutomationSourceControlResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="patch"> The parameters supplied to the update source control operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -249,8 +352,20 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Creates the sync job for a source control.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}
-        /// Operation Id: SourceControlSyncJob_Create
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControlSyncJob_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="sourceControlSyncJobId"> The source control sync job id. </param>
         /// <param name="content"> The parameters supplied to the create source control sync job operation. </param>
@@ -276,8 +391,20 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Creates the sync job for a source control.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}
-        /// Operation Id: SourceControlSyncJob_Create
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControlSyncJob_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="sourceControlSyncJobId"> The source control sync job id. </param>
         /// <param name="content"> The parameters supplied to the create source control sync job operation. </param>
@@ -303,8 +430,20 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Retrieve the source control sync job identified by job id.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}
-        /// Operation Id: SourceControlSyncJob_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControlSyncJob_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="sourceControlSyncJobId"> The source control sync job id. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -326,8 +465,20 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Retrieve the source control sync job identified by job id.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}
-        /// Operation Id: SourceControlSyncJob_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControlSyncJob_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="sourceControlSyncJobId"> The source control sync job id. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -349,182 +500,130 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Retrieve a list of source control sync jobs.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs
-        /// Operation Id: SourceControlSyncJob_ListByAutomationAccount
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControlSyncJob_ListByAutomationAccount</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="filter"> The filter to apply on the operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="SourceControlSyncJob" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SourceControlSyncJob"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SourceControlSyncJob> GetSourceControlSyncJobsAsync(string filter = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<SourceControlSyncJob>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _sourceControlSyncJobClientDiagnostics.CreateScope("AutomationSourceControlResource.GetSourceControlSyncJobs");
-                scope.Start();
-                try
-                {
-                    var response = await _sourceControlSyncJobRestClient.ListByAutomationAccountAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, filter, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<SourceControlSyncJob>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _sourceControlSyncJobClientDiagnostics.CreateScope("AutomationSourceControlResource.GetSourceControlSyncJobs");
-                scope.Start();
-                try
-                {
-                    var response = await _sourceControlSyncJobRestClient.ListByAutomationAccountNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, filter, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _sourceControlSyncJobRestClient.CreateListByAutomationAccountRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, filter);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _sourceControlSyncJobRestClient.CreateListByAutomationAccountNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, filter);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => SourceControlSyncJob.DeserializeSourceControlSyncJob(e), _sourceControlSyncJobClientDiagnostics, Pipeline, "AutomationSourceControlResource.GetSourceControlSyncJobs", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Retrieve a list of source control sync jobs.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs
-        /// Operation Id: SourceControlSyncJob_ListByAutomationAccount
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControlSyncJob_ListByAutomationAccount</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="filter"> The filter to apply on the operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="SourceControlSyncJob" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SourceControlSyncJob"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SourceControlSyncJob> GetSourceControlSyncJobs(string filter = null, CancellationToken cancellationToken = default)
         {
-            Page<SourceControlSyncJob> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _sourceControlSyncJobClientDiagnostics.CreateScope("AutomationSourceControlResource.GetSourceControlSyncJobs");
-                scope.Start();
-                try
-                {
-                    var response = _sourceControlSyncJobRestClient.ListByAutomationAccount(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, filter, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<SourceControlSyncJob> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _sourceControlSyncJobClientDiagnostics.CreateScope("AutomationSourceControlResource.GetSourceControlSyncJobs");
-                scope.Start();
-                try
-                {
-                    var response = _sourceControlSyncJobRestClient.ListByAutomationAccountNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, filter, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _sourceControlSyncJobRestClient.CreateListByAutomationAccountRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, filter);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _sourceControlSyncJobRestClient.CreateListByAutomationAccountNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, filter);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => SourceControlSyncJob.DeserializeSourceControlSyncJob(e), _sourceControlSyncJobClientDiagnostics, Pipeline, "AutomationSourceControlResource.GetSourceControlSyncJobs", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Retrieve a list of sync job streams identified by sync job id.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}/streams
-        /// Operation Id: SourceControlSyncJobStreams_ListBySyncJob
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}/streams</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControlSyncJobStreams_ListBySyncJob</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="sourceControlSyncJobId"> The source control sync job id. </param>
         /// <param name="filter"> The filter to apply on the operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="SourceControlSyncJobStream" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SourceControlSyncJobStream"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SourceControlSyncJobStream> GetSourceControlSyncJobStreamsAsync(Guid sourceControlSyncJobId, string filter = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<SourceControlSyncJobStream>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _sourceControlSyncJobStreamsClientDiagnostics.CreateScope("AutomationSourceControlResource.GetSourceControlSyncJobStreams");
-                scope.Start();
-                try
-                {
-                    var response = await _sourceControlSyncJobStreamsRestClient.ListBySyncJobAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, sourceControlSyncJobId, filter, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<SourceControlSyncJobStream>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _sourceControlSyncJobStreamsClientDiagnostics.CreateScope("AutomationSourceControlResource.GetSourceControlSyncJobStreams");
-                scope.Start();
-                try
-                {
-                    var response = await _sourceControlSyncJobStreamsRestClient.ListBySyncJobNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, sourceControlSyncJobId, filter, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _sourceControlSyncJobStreamsRestClient.CreateListBySyncJobRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, sourceControlSyncJobId, filter);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _sourceControlSyncJobStreamsRestClient.CreateListBySyncJobNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, sourceControlSyncJobId, filter);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => SourceControlSyncJobStream.DeserializeSourceControlSyncJobStream(e), _sourceControlSyncJobStreamsClientDiagnostics, Pipeline, "AutomationSourceControlResource.GetSourceControlSyncJobStreams", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Retrieve a list of sync job streams identified by sync job id.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}/streams
-        /// Operation Id: SourceControlSyncJobStreams_ListBySyncJob
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}/streams</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControlSyncJobStreams_ListBySyncJob</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="sourceControlSyncJobId"> The source control sync job id. </param>
         /// <param name="filter"> The filter to apply on the operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="SourceControlSyncJobStream" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SourceControlSyncJobStream"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SourceControlSyncJobStream> GetSourceControlSyncJobStreams(Guid sourceControlSyncJobId, string filter = null, CancellationToken cancellationToken = default)
         {
-            Page<SourceControlSyncJobStream> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _sourceControlSyncJobStreamsClientDiagnostics.CreateScope("AutomationSourceControlResource.GetSourceControlSyncJobStreams");
-                scope.Start();
-                try
-                {
-                    var response = _sourceControlSyncJobStreamsRestClient.ListBySyncJob(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, sourceControlSyncJobId, filter, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<SourceControlSyncJobStream> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _sourceControlSyncJobStreamsClientDiagnostics.CreateScope("AutomationSourceControlResource.GetSourceControlSyncJobStreams");
-                scope.Start();
-                try
-                {
-                    var response = _sourceControlSyncJobStreamsRestClient.ListBySyncJobNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, sourceControlSyncJobId, filter, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _sourceControlSyncJobStreamsRestClient.CreateListBySyncJobRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, sourceControlSyncJobId, filter);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _sourceControlSyncJobStreamsRestClient.CreateListBySyncJobNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, sourceControlSyncJobId, filter);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => SourceControlSyncJobStream.DeserializeSourceControlSyncJobStream(e), _sourceControlSyncJobStreamsClientDiagnostics, Pipeline, "AutomationSourceControlResource.GetSourceControlSyncJobStreams", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Retrieve a sync job stream identified by stream id.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}/streams/{streamId}
-        /// Operation Id: SourceControlSyncJobStreams_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}/streams/{streamId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControlSyncJobStreams_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="sourceControlSyncJobId"> The source control sync job id. </param>
         /// <param name="streamId"> The id of the sync job stream. </param>
@@ -551,8 +650,20 @@ namespace Azure.ResourceManager.Automation
 
         /// <summary>
         /// Retrieve a sync job stream identified by stream id.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}/streams/{streamId}
-        /// Operation Id: SourceControlSyncJobStreams_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Automation/automationAccounts/{automationAccountName}/sourceControls/{sourceControlName}/sourceControlSyncJobs/{sourceControlSyncJobId}/streams/{streamId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SourceControlSyncJobStreams_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-13-preview</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="sourceControlSyncJobId"> The source control sync job id. </param>
         /// <param name="streamId"> The id of the sync job stream. </param>

@@ -5,29 +5,33 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the ExpressRouteCrossConnection data model. </summary>
+    /// <summary>
+    /// A class representing the ExpressRouteCrossConnection data model.
+    /// ExpressRouteCrossConnection resource.
+    /// </summary>
     public partial class ExpressRouteCrossConnectionData : NetworkTrackedResourceData
     {
-        /// <summary> Initializes a new instance of ExpressRouteCrossConnectionData. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExpressRouteCrossConnectionData"/>. </summary>
         public ExpressRouteCrossConnectionData()
         {
             Peerings = new ChangeTrackingList<ExpressRouteCrossConnectionPeeringData>();
         }
 
-        /// <summary> Initializes a new instance of ExpressRouteCrossConnectionData. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExpressRouteCrossConnectionData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
         /// <param name="location"> Resource location. </param>
         /// <param name="tags"> Resource tags. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="primaryAzurePort"> The name of the primary port. </param>
         /// <param name="secondaryAzurePort"> The name of the secondary port. </param>
@@ -39,7 +43,7 @@ namespace Azure.ResourceManager.Network
         /// <param name="serviceProviderNotes"> Additional read only notes set by the connectivity provider. </param>
         /// <param name="provisioningState"> The provisioning state of the express route cross connection resource. </param>
         /// <param name="peerings"> The list of peerings. </param>
-        internal ExpressRouteCrossConnectionData(ResourceIdentifier id, string name, ResourceType? resourceType, AzureLocation? location, IDictionary<string, string> tags, ETag? etag, string primaryAzurePort, string secondaryAzurePort, int? stag, string peeringLocation, int? bandwidthInMbps, WritableSubResource expressRouteCircuit, ServiceProviderProvisioningState? serviceProviderProvisioningState, string serviceProviderNotes, NetworkProvisioningState? provisioningState, IList<ExpressRouteCrossConnectionPeeringData> peerings) : base(id, name, resourceType, location, tags)
+        internal ExpressRouteCrossConnectionData(ResourceIdentifier id, string name, ResourceType? resourceType, AzureLocation? location, IDictionary<string, string> tags, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, string primaryAzurePort, string secondaryAzurePort, int? stag, string peeringLocation, int? bandwidthInMbps, WritableSubResource expressRouteCircuit, ServiceProviderProvisioningState? serviceProviderProvisioningState, string serviceProviderNotes, NetworkProvisioningState? provisioningState, IList<ExpressRouteCrossConnectionPeeringData> peerings) : base(id, name, resourceType, location, tags, serializedAdditionalRawData)
         {
             ETag = etag;
             PrimaryAzurePort = primaryAzurePort;
@@ -55,20 +59,27 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> The name of the primary port. </summary>
+        [WirePath("properties.primaryAzurePort")]
         public string PrimaryAzurePort { get; }
         /// <summary> The name of the secondary port. </summary>
+        [WirePath("properties.secondaryAzurePort")]
         public string SecondaryAzurePort { get; }
         /// <summary> The identifier of the circuit traffic. </summary>
+        [WirePath("properties.sTag")]
         public int? STag { get; }
         /// <summary> The peering location of the ExpressRoute circuit. </summary>
+        [WirePath("properties.peeringLocation")]
         public string PeeringLocation { get; }
         /// <summary> The circuit bandwidth In Mbps. </summary>
+        [WirePath("properties.bandwidthInMbps")]
         public int? BandwidthInMbps { get; }
         /// <summary> The ExpressRouteCircuit. </summary>
         internal WritableSubResource ExpressRouteCircuit { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.expressRouteCircuit.id")]
         public ResourceIdentifier ExpressRouteCircuitId
         {
             get => ExpressRouteCircuit is null ? default : ExpressRouteCircuit.Id;
@@ -81,12 +92,16 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> The provisioning state of the circuit in the connectivity provider system. </summary>
+        [WirePath("properties.serviceProviderProvisioningState")]
         public ServiceProviderProvisioningState? ServiceProviderProvisioningState { get; set; }
         /// <summary> Additional read only notes set by the connectivity provider. </summary>
+        [WirePath("properties.serviceProviderNotes")]
         public string ServiceProviderNotes { get; set; }
         /// <summary> The provisioning state of the express route cross connection resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
         /// <summary> The list of peerings. </summary>
+        [WirePath("properties.peerings")]
         public IList<ExpressRouteCrossConnectionPeeringData> Peerings { get; }
     }
 }

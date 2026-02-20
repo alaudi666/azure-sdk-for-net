@@ -6,15 +6,19 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> A rule governing the accessibility of a vault from a specific virtual network. </summary>
     public partial class KeyVaultVirtualNetworkRule
     {
-        /// <summary> Initializes a new instance of KeyVaultVirtualNetworkRule. </summary>
-        /// <param name="id"> Full resource id of a vnet subnet, such as &apos;/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1&apos;. </param>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="KeyVaultVirtualNetworkRule"/>. </summary>
+        /// <param name="id"> Full resource id of a vnet subnet, such as '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1'. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="id"/> is null. </exception>
         public KeyVaultVirtualNetworkRule(string id)
         {
@@ -23,18 +27,23 @@ namespace Azure.ResourceManager.KeyVault.Models
             Id = id;
         }
 
-        /// <summary> Initializes a new instance of KeyVaultVirtualNetworkRule. </summary>
-        /// <param name="id"> Full resource id of a vnet subnet, such as &apos;/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1&apos;. </param>
+        /// <summary> Initializes a new instance of <see cref="KeyVaultVirtualNetworkRule"/>. </summary>
+        /// <param name="id"> Full resource id of a vnet subnet, such as '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1'. </param>
         /// <param name="ignoreMissingVnetServiceEndpoint"> Property to specify whether NRP will ignore the check if parent subnet has serviceEndpoints configured. </param>
-        internal KeyVaultVirtualNetworkRule(string id, bool? ignoreMissingVnetServiceEndpoint)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal KeyVaultVirtualNetworkRule(string id, bool? ignoreMissingVnetServiceEndpoint, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Id = id;
             IgnoreMissingVnetServiceEndpoint = ignoreMissingVnetServiceEndpoint;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Full resource id of a vnet subnet, such as &apos;/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1&apos;. </summary>
+        /// <summary> Full resource id of a vnet subnet, such as '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1'. </summary>
+        [WirePath("id")]
         public string Id { get; set; }
+
         /// <summary> Property to specify whether NRP will ignore the check if parent subnet has serviceEndpoints configured. </summary>
+        [WirePath("ignoreMissingVnetServiceEndpoint")]
         public bool? IgnoreMissingVnetServiceEndpoint { get; set; }
     }
 }

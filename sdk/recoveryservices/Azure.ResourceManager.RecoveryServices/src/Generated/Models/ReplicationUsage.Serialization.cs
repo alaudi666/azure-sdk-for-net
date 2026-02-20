@@ -5,85 +5,223 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.RecoveryServices;
 
 namespace Azure.ResourceManager.RecoveryServices.Models
 {
-    public partial class ReplicationUsage
+    /// <summary> Replication usages of a vault. </summary>
+    public partial class ReplicationUsage : IJsonModel<ReplicationUsage>
     {
-        internal static ReplicationUsage DeserializeReplicationUsage(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ReplicationUsage PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<MonitoringSummary> monitoringSummary = default;
-            Optional<JobsSummary> jobsSummary = default;
-            Optional<int> protectedItemCount = default;
-            Optional<int> recoveryPlanCount = default;
-            Optional<int> registeredServersCount = default;
-            Optional<int> recoveryServicesProviderAuthType = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ReplicationUsage>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("monitoringSummary"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeReplicationUsage(document.RootElement, options);
                     }
-                    monitoringSummary = MonitoringSummary.DeserializeMonitoringSummary(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("jobsSummary"))
+                default:
+                    throw new FormatException($"The model {nameof(ReplicationUsage)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ReplicationUsage>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ReplicationUsage>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ReplicationUsage)} does not support writing '{format}' format.");
+            }
+            if (Optional.IsDefined(MonitoringSummary))
+            {
+                writer.WritePropertyName("monitoringSummary"u8);
+                writer.WriteObjectValue(MonitoringSummary, options);
+            }
+            if (Optional.IsDefined(JobsSummary))
+            {
+                writer.WritePropertyName("jobsSummary"u8);
+                writer.WriteObjectValue(JobsSummary, options);
+            }
+            if (Optional.IsDefined(ProtectedItemCount))
+            {
+                writer.WritePropertyName("protectedItemCount"u8);
+                writer.WriteNumberValue(ProtectedItemCount.Value);
+            }
+            if (Optional.IsDefined(RecoveryPlanCount))
+            {
+                writer.WritePropertyName("recoveryPlanCount"u8);
+                writer.WriteNumberValue(RecoveryPlanCount.Value);
+            }
+            if (Optional.IsDefined(RegisteredServersCount))
+            {
+                writer.WritePropertyName("registeredServersCount"u8);
+                writer.WriteNumberValue(RegisteredServersCount.Value);
+            }
+            if (Optional.IsDefined(RecoveryServicesProviderAuthType))
+            {
+                writer.WritePropertyName("recoveryServicesProviderAuthType"u8);
+                writer.WriteNumberValue(RecoveryServicesProviderAuthType.Value);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    jobsSummary = JobsSummary.DeserializeJobsSummary(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("protectedItemCount"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    protectedItemCount = property.Value.GetInt32();
-                    continue;
-                }
-                if (property.NameEquals("recoveryPlanCount"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    recoveryPlanCount = property.Value.GetInt32();
-                    continue;
-                }
-                if (property.NameEquals("registeredServersCount"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    registeredServersCount = property.Value.GetInt32();
-                    continue;
-                }
-                if (property.NameEquals("recoveryServicesProviderAuthType"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    recoveryServicesProviderAuthType = property.Value.GetInt32();
-                    continue;
+#endif
                 }
             }
-            return new ReplicationUsage(monitoringSummary.Value, jobsSummary.Value, Optional.ToNullable(protectedItemCount), Optional.ToNullable(recoveryPlanCount), Optional.ToNullable(registeredServersCount), Optional.ToNullable(recoveryServicesProviderAuthType));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ReplicationUsage IJsonModel<ReplicationUsage>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ReplicationUsage JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ReplicationUsage>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ReplicationUsage)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeReplicationUsage(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ReplicationUsage DeserializeReplicationUsage(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            VaultMonitoringSummary monitoringSummary = default;
+            ReplicationJobSummary jobsSummary = default;
+            int? protectedItemCount = default;
+            int? recoveryPlanCount = default;
+            int? registeredServersCount = default;
+            int? recoveryServicesProviderAuthType = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("monitoringSummary"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    monitoringSummary = VaultMonitoringSummary.DeserializeVaultMonitoringSummary(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("jobsSummary"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    jobsSummary = ReplicationJobSummary.DeserializeReplicationJobSummary(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("protectedItemCount"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    protectedItemCount = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("recoveryPlanCount"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    recoveryPlanCount = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("registeredServersCount"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    registeredServersCount = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("recoveryServicesProviderAuthType"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    recoveryServicesProviderAuthType = prop.Value.GetInt32();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new ReplicationUsage(
+                monitoringSummary,
+                jobsSummary,
+                protectedItemCount,
+                recoveryPlanCount,
+                registeredServersCount,
+                recoveryServicesProviderAuthType,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ReplicationUsage>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ReplicationUsage>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerRecoveryServicesContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ReplicationUsage)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ReplicationUsage IPersistableModel<ReplicationUsage>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ReplicationUsage>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -5,27 +5,36 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Avs.Models
 {
     /// <summary> The properties of customer managed encryption key. </summary>
     public partial class CustomerManagedEncryption
     {
-        /// <summary> Initializes a new instance of CustomerManagedEncryption. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CustomerManagedEncryption"/>. </summary>
         public CustomerManagedEncryption()
         {
         }
 
-        /// <summary> Initializes a new instance of CustomerManagedEncryption. </summary>
+        /// <summary> Initializes a new instance of <see cref="CustomerManagedEncryption"/>. </summary>
         /// <param name="status"> Status of customer managed encryption key. </param>
         /// <param name="keyVaultProperties"> The key vault where the encryption key is stored. </param>
-        internal CustomerManagedEncryption(AvsEncryptionState? status, AvsEncryptionKeyVaultProperties keyVaultProperties)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CustomerManagedEncryption(AvsEncryptionState? status, AvsEncryptionKeyVaultProperties keyVaultProperties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Status = status;
             KeyVaultProperties = keyVaultProperties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Status of customer managed encryption key. </summary>
         public AvsEncryptionState? Status { get; set; }
+
         /// <summary> The key vault where the encryption key is stored. </summary>
         public AvsEncryptionKeyVaultProperties KeyVaultProperties { get; set; }
     }

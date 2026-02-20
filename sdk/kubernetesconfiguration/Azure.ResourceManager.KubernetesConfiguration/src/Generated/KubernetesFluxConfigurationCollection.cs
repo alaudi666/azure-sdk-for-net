@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.KubernetesConfiguration
 {
     /// <summary>
-    /// A class representing a collection of <see cref="KubernetesFluxConfigurationResource" /> and their operations.
-    /// Each <see cref="KubernetesFluxConfigurationResource" /> in the collection will belong to the same instance of <see cref="ResourceGroupResource" />.
-    /// To get a <see cref="KubernetesFluxConfigurationCollection" /> instance call the GetKubernetesFluxConfigurations method from an instance of <see cref="ResourceGroupResource" />.
+    /// A class representing a collection of <see cref="KubernetesFluxConfigurationResource"/> and their operations.
+    /// Each <see cref="KubernetesFluxConfigurationResource"/> in the collection will belong to the same instance of <see cref="ResourceGroupResource"/>.
+    /// To get a <see cref="KubernetesFluxConfigurationCollection"/> instance call the GetKubernetesFluxConfigurations method from an instance of <see cref="ResourceGroupResource"/>.
     /// </summary>
     public partial class KubernetesFluxConfigurationCollection : ArmCollection, IEnumerable<KubernetesFluxConfigurationResource>, IAsyncEnumerable<KubernetesFluxConfigurationResource>
     {
@@ -67,8 +65,24 @@ namespace Azure.ResourceManager.KubernetesConfiguration
 
         /// <summary>
         /// Create a new Kubernetes Flux Configuration.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}
-        /// Operation Id: FluxConfigurations_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FluxConfigurations_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="KubernetesFluxConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="fluxConfigurationName"> Name of the Flux Configuration. </param>
@@ -100,8 +114,24 @@ namespace Azure.ResourceManager.KubernetesConfiguration
 
         /// <summary>
         /// Create a new Kubernetes Flux Configuration.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}
-        /// Operation Id: FluxConfigurations_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FluxConfigurations_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="KubernetesFluxConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="fluxConfigurationName"> Name of the Flux Configuration. </param>
@@ -133,8 +163,24 @@ namespace Azure.ResourceManager.KubernetesConfiguration
 
         /// <summary>
         /// Gets details of the Flux Configuration.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}
-        /// Operation Id: FluxConfigurations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FluxConfigurations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="KubernetesFluxConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="fluxConfigurationName"> Name of the Flux Configuration. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -162,8 +208,24 @@ namespace Azure.ResourceManager.KubernetesConfiguration
 
         /// <summary>
         /// Gets details of the Flux Configuration.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}
-        /// Operation Id: FluxConfigurations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FluxConfigurations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="KubernetesFluxConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="fluxConfigurationName"> Name of the Flux Configuration. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -191,92 +253,84 @@ namespace Azure.ResourceManager.KubernetesConfiguration
 
         /// <summary>
         /// List all Flux Configurations.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations
-        /// Operation Id: FluxConfigurations_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FluxConfigurations_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="KubernetesFluxConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="KubernetesFluxConfigurationResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="KubernetesFluxConfigurationResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<KubernetesFluxConfigurationResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<KubernetesFluxConfigurationResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _kubernetesFluxConfigurationFluxConfigurationsClientDiagnostics.CreateScope("KubernetesFluxConfigurationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _kubernetesFluxConfigurationFluxConfigurationsRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, _clusterRp, _clusterResourceName, _clusterName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new KubernetesFluxConfigurationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<KubernetesFluxConfigurationResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _kubernetesFluxConfigurationFluxConfigurationsClientDiagnostics.CreateScope("KubernetesFluxConfigurationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _kubernetesFluxConfigurationFluxConfigurationsRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, _clusterRp, _clusterResourceName, _clusterName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new KubernetesFluxConfigurationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _kubernetesFluxConfigurationFluxConfigurationsRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, _clusterRp, _clusterResourceName, _clusterName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _kubernetesFluxConfigurationFluxConfigurationsRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, _clusterRp, _clusterResourceName, _clusterName);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new KubernetesFluxConfigurationResource(Client, KubernetesFluxConfigurationData.DeserializeKubernetesFluxConfigurationData(e)), _kubernetesFluxConfigurationFluxConfigurationsClientDiagnostics, Pipeline, "KubernetesFluxConfigurationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// List all Flux Configurations.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations
-        /// Operation Id: FluxConfigurations_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FluxConfigurations_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="KubernetesFluxConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="KubernetesFluxConfigurationResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="KubernetesFluxConfigurationResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<KubernetesFluxConfigurationResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<KubernetesFluxConfigurationResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _kubernetesFluxConfigurationFluxConfigurationsClientDiagnostics.CreateScope("KubernetesFluxConfigurationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _kubernetesFluxConfigurationFluxConfigurationsRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, _clusterRp, _clusterResourceName, _clusterName, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new KubernetesFluxConfigurationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<KubernetesFluxConfigurationResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _kubernetesFluxConfigurationFluxConfigurationsClientDiagnostics.CreateScope("KubernetesFluxConfigurationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _kubernetesFluxConfigurationFluxConfigurationsRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, _clusterRp, _clusterResourceName, _clusterName, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new KubernetesFluxConfigurationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _kubernetesFluxConfigurationFluxConfigurationsRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, _clusterRp, _clusterResourceName, _clusterName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _kubernetesFluxConfigurationFluxConfigurationsRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, _clusterRp, _clusterResourceName, _clusterName);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new KubernetesFluxConfigurationResource(Client, KubernetesFluxConfigurationData.DeserializeKubernetesFluxConfigurationData(e)), _kubernetesFluxConfigurationFluxConfigurationsClientDiagnostics, Pipeline, "KubernetesFluxConfigurationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}
-        /// Operation Id: FluxConfigurations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FluxConfigurations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="KubernetesFluxConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="fluxConfigurationName"> Name of the Flux Configuration. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -302,8 +356,24 @@ namespace Azure.ResourceManager.KubernetesConfiguration
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}
-        /// Operation Id: FluxConfigurations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FluxConfigurations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="KubernetesFluxConfigurationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="fluxConfigurationName"> Name of the Flux Configuration. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -319,6 +389,96 @@ namespace Azure.ResourceManager.KubernetesConfiguration
             {
                 var response = _kubernetesFluxConfigurationFluxConfigurationsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, _clusterRp, _clusterResourceName, _clusterName, fluxConfigurationName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FluxConfigurations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="KubernetesFluxConfigurationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="fluxConfigurationName"> Name of the Flux Configuration. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="fluxConfigurationName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="fluxConfigurationName"/> is null. </exception>
+        public virtual async Task<NullableResponse<KubernetesFluxConfigurationResource>> GetIfExistsAsync(string fluxConfigurationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(fluxConfigurationName, nameof(fluxConfigurationName));
+
+            using var scope = _kubernetesFluxConfigurationFluxConfigurationsClientDiagnostics.CreateScope("KubernetesFluxConfigurationCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _kubernetesFluxConfigurationFluxConfigurationsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, _clusterRp, _clusterResourceName, _clusterName, fluxConfigurationName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<KubernetesFluxConfigurationResource>(response.GetRawResponse());
+                return Response.FromValue(new KubernetesFluxConfigurationResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{clusterRp}/{clusterResourceName}/{clusterName}/providers/Microsoft.KubernetesConfiguration/fluxConfigurations/{fluxConfigurationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FluxConfigurations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="KubernetesFluxConfigurationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="fluxConfigurationName"> Name of the Flux Configuration. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="fluxConfigurationName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="fluxConfigurationName"/> is null. </exception>
+        public virtual NullableResponse<KubernetesFluxConfigurationResource> GetIfExists(string fluxConfigurationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(fluxConfigurationName, nameof(fluxConfigurationName));
+
+            using var scope = _kubernetesFluxConfigurationFluxConfigurationsClientDiagnostics.CreateScope("KubernetesFluxConfigurationCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _kubernetesFluxConfigurationFluxConfigurationsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, _clusterRp, _clusterResourceName, _clusterName, fluxConfigurationName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<KubernetesFluxConfigurationResource>(response.GetRawResponse());
+                return Response.FromValue(new KubernetesFluxConfigurationResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

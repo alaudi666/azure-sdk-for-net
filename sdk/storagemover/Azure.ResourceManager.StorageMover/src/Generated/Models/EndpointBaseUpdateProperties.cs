@@ -5,15 +5,40 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.StorageMover.Models
 {
-    /// <summary> The Endpoint resource, which contains information about file sources and targets. </summary>
-    internal partial class EndpointBaseUpdateProperties
+    /// <summary>
+    /// The Endpoint resource, which contains information about file sources and targets.
+    /// Please note this is the abstract base class. The derived classes available for instantiation are: <see cref="AzureStorageBlobContainerEndpointUpdateProperties"/>, <see cref="NfsMountEndpointUpdateProperties"/>, <see cref="AzureStorageSmbFileShareEndpointUpdateProperties"/>, <see cref="AzureStorageNfsFileShareEndpointUpdateProperties"/>, <see cref="AzureMultiCloudConnectorEndpointUpdateProperties"/>, and <see cref="SmbMountEndpointUpdateProperties"/>.
+    /// </summary>
+    public abstract partial class EndpointBaseUpdateProperties
     {
-        /// <summary> Initializes a new instance of EndpointBaseUpdateProperties. </summary>
-        public EndpointBaseUpdateProperties()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EndpointBaseUpdateProperties"/>. </summary>
+        /// <param name="endpointType"> The Endpoint resource type. </param>
+        private protected EndpointBaseUpdateProperties(EndpointType endpointType)
         {
+            EndpointType = endpointType;
         }
+
+        /// <summary> Initializes a new instance of <see cref="EndpointBaseUpdateProperties"/>. </summary>
+        /// <param name="endpointType"> The Endpoint resource type. </param>
+        /// <param name="description"> A description for the Endpoint. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EndpointBaseUpdateProperties(EndpointType endpointType, string description, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            EndpointType = endpointType;
+            Description = description;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> The Endpoint resource type. </summary>
+        internal EndpointType EndpointType { get; set; }
 
         /// <summary> A description for the Endpoint. </summary>
         public string Description { get; set; }

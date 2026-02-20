@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Core;
 using Azure.ResourceManager;
+using Azure.ResourceManager.Elastic.Mocking;
+using Azure.ResourceManager.Elastic.Models;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.Elastic
@@ -18,126 +20,297 @@ namespace Azure.ResourceManager.Elastic
     /// <summary> A class to add extension methods to Azure.ResourceManager.Elastic. </summary>
     public static partial class ElasticExtensions
     {
-        private static SubscriptionResourceExtensionClient GetExtensionClient(SubscriptionResource subscriptionResource)
+        /// <param name="client"></param>
+        private static MockableElasticArmClient GetMockableElasticArmClient(ArmClient client)
         {
-            return subscriptionResource.GetCachedClient((client) =>
-            {
-                return new SubscriptionResourceExtensionClient(client, subscriptionResource.Id);
-            }
-            );
+            return client.GetCachedClient(client0 => new MockableElasticArmClient(client0, ResourceIdentifier.Root));
+        }
+
+        /// <param name="resourceGroupResource"></param>
+        private static MockableElasticResourceGroupResource GetMockableElasticResourceGroupResource(ResourceGroupResource resourceGroupResource)
+        {
+            return resourceGroupResource.GetCachedClient(client => new MockableElasticResourceGroupResource(client, resourceGroupResource.Id));
+        }
+
+        /// <param name="subscriptionResource"></param>
+        private static MockableElasticSubscriptionResource GetMockableElasticSubscriptionResource(SubscriptionResource subscriptionResource)
+        {
+            return subscriptionResource.GetCachedClient(client => new MockableElasticSubscriptionResource(client, subscriptionResource.Id));
         }
 
         /// <summary>
-        /// List all monitors under the specified subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Elastic/monitors
-        /// Operation Id: Monitors_List
+        /// Gets an object representing a <see cref="ElasticMonitorResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticArmClient.GetElasticMonitorResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="ElasticMonitorResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<ElasticMonitorResource> GetElasticMonitorResourcesAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
-        {
-            return GetExtensionClient(subscriptionResource).GetElasticMonitorResourcesAsync(cancellationToken);
-        }
-
-        /// <summary>
-        /// List all monitors under the specified subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Elastic/monitors
-        /// Operation Id: Monitors_List
-        /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="ElasticMonitorResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<ElasticMonitorResource> GetElasticMonitorResources(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
-        {
-            return GetExtensionClient(subscriptionResource).GetElasticMonitorResources(cancellationToken);
-        }
-
-        private static ResourceGroupResourceExtensionClient GetExtensionClient(ResourceGroupResource resourceGroupResource)
-        {
-            return resourceGroupResource.GetCachedClient((client) =>
-            {
-                return new ResourceGroupResourceExtensionClient(client, resourceGroupResource.Id);
-            }
-            );
-        }
-
-        /// <summary> Gets a collection of ElasticMonitorResources in the ResourceGroupResource. </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
-        /// <returns> An object representing collection of ElasticMonitorResources and their operations over a ElasticMonitorResource. </returns>
-        public static ElasticMonitorResourceCollection GetElasticMonitorResources(this ResourceGroupResource resourceGroupResource)
-        {
-            return GetExtensionClient(resourceGroupResource).GetElasticMonitorResources();
-        }
-
-        /// <summary>
-        /// Get the properties of a specific monitor resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Elastic/monitors/{monitorName}
-        /// Operation Id: Monitors_Get
-        /// </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
-        /// <param name="monitorName"> Monitor resource name. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="monitorName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="monitorName"/> is null. </exception>
-        [ForwardsClientCalls]
-        public static async Task<Response<ElasticMonitorResource>> GetElasticMonitorResourceAsync(this ResourceGroupResource resourceGroupResource, string monitorName, CancellationToken cancellationToken = default)
-        {
-            return await resourceGroupResource.GetElasticMonitorResources().GetAsync(monitorName, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Get the properties of a specific monitor resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Elastic/monitors/{monitorName}
-        /// Operation Id: Monitors_Get
-        /// </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
-        /// <param name="monitorName"> Monitor resource name. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="monitorName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="monitorName"/> is null. </exception>
-        [ForwardsClientCalls]
-        public static Response<ElasticMonitorResource> GetElasticMonitorResource(this ResourceGroupResource resourceGroupResource, string monitorName, CancellationToken cancellationToken = default)
-        {
-            return resourceGroupResource.GetElasticMonitorResources().Get(monitorName, cancellationToken);
-        }
-
-        #region ElasticMonitorResource
-        /// <summary>
-        /// Gets an object representing an <see cref="ElasticMonitorResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="ElasticMonitorResource.CreateResourceIdentifier" /> to create an <see cref="ElasticMonitorResource" /> <see cref="ResourceIdentifier" /> from its components.
-        /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
         /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="ElasticMonitorResource" /> object. </returns>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="ElasticMonitorResource"/> object. </returns>
         public static ElasticMonitorResource GetElasticMonitorResource(this ArmClient client, ResourceIdentifier id)
         {
-            return client.GetResourceClient(() =>
-            {
-                ElasticMonitorResource.ValidateResourceId(id);
-                return new ElasticMonitorResource(client, id);
-            }
-            );
-        }
-        #endregion
+            Argument.AssertNotNull(client, nameof(client));
 
-        #region MonitoringTagRuleResource
-        /// <summary>
-        /// Gets an object representing a <see cref="MonitoringTagRuleResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="MonitoringTagRuleResource.CreateResourceIdentifier" /> to create a <see cref="MonitoringTagRuleResource" /> <see cref="ResourceIdentifier" /> from its components.
-        /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="MonitoringTagRuleResource" /> object. </returns>
-        public static MonitoringTagRuleResource GetMonitoringTagRuleResource(this ArmClient client, ResourceIdentifier id)
-        {
-            return client.GetResourceClient(() =>
-            {
-                MonitoringTagRuleResource.ValidateResourceId(id);
-                return new MonitoringTagRuleResource(client, id);
-            }
-            );
+            return GetMockableElasticArmClient(client).GetElasticMonitorResource(id);
         }
-        #endregion
+
+        /// <summary>
+        /// Gets an object representing a <see cref="ElasticMonitoredSubscriptionResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticArmClient.GetElasticMonitoredSubscriptionResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="ElasticMonitoredSubscriptionResource"/> object. </returns>
+        public static ElasticMonitoredSubscriptionResource GetElasticMonitoredSubscriptionResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableElasticArmClient(client).GetElasticMonitoredSubscriptionResource(id);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="ElasticOpenAIIntegrationResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticArmClient.GetElasticOpenAIIntegrationResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="ElasticOpenAIIntegrationResource"/> object. </returns>
+        public static ElasticOpenAIIntegrationResource GetElasticOpenAIIntegrationResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableElasticArmClient(client).GetElasticOpenAIIntegrationResource(id);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="ElasticTagRuleResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticArmClient.GetElasticTagRuleResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="ElasticTagRuleResource"/> object. </returns>
+        public static ElasticTagRuleResource GetElasticTagRuleResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableElasticArmClient(client).GetElasticTagRuleResource(id);
+        }
+
+        /// <summary>
+        /// Gets a collection of ElasticMonitors in the <see cref="ResourceGroupResource"/>
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticResourceGroupResource.GetElasticMonitors()"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        /// <returns> An object representing collection of ElasticMonitors and their operations over a ElasticMonitorResource. </returns>
+        public static ElasticMonitorCollection GetElasticMonitors(this ResourceGroupResource resourceGroupResource)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableElasticResourceGroupResource(resourceGroupResource).GetElasticMonitors();
+        }
+
+        /// <summary>
+        /// Get detailed properties of a specific Elastic monitor resource, helping you manage observability and performance.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticResourceGroupResource.GetElasticMonitorAsync(string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <param name="monitorName"> Monitor resource name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static async Task<Response<ElasticMonitorResource>> GetElasticMonitorAsync(this ResourceGroupResource resourceGroupResource, string monitorName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return await GetMockableElasticResourceGroupResource(resourceGroupResource).GetElasticMonitorAsync(monitorName, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get detailed properties of a specific Elastic monitor resource, helping you manage observability and performance.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticResourceGroupResource.GetElasticMonitor(string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <param name="monitorName"> Monitor resource name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static Response<ElasticMonitorResource> GetElasticMonitor(this ResourceGroupResource resourceGroupResource, string monitorName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableElasticResourceGroupResource(resourceGroupResource).GetElasticMonitor(monitorName, cancellationToken);
+        }
+
+        /// <summary>
+        /// List all Elastic monitor resources within a specified subscription, helping you audit and manage your monitoring setup.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticSubscriptionResource.GetElasticMonitorsAsync(CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="ElasticMonitorResource"/> that may take multiple service requests to iterate over. </returns>
+        public static AsyncPageable<ElasticMonitorResource> GetElasticMonitorsAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableElasticSubscriptionResource(subscriptionResource).GetElasticMonitorsAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// List all Elastic monitor resources within a specified subscription, helping you audit and manage your monitoring setup.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticSubscriptionResource.GetElasticMonitors(CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="ElasticMonitorResource"/> that may take multiple service requests to iterate over. </returns>
+        public static Pageable<ElasticMonitorResource> GetElasticMonitors(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableElasticSubscriptionResource(subscriptionResource).GetElasticMonitors(cancellationToken);
+        }
+
+        /// <summary>
+        /// Retrieve a list of all available Elastic versions for a specified region, helping you choose the best version for your deployment.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticSubscriptionResource.GetElasticVersionsAsync(string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="region"> Region where elastic deployment will take place. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="ElasticVersion"/> that may take multiple service requests to iterate over. </returns>
+        public static AsyncPageable<ElasticVersion> GetElasticVersionsAsync(this SubscriptionResource subscriptionResource, string region, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableElasticSubscriptionResource(subscriptionResource).GetElasticVersionsAsync(region, cancellationToken);
+        }
+
+        /// <summary>
+        /// Retrieve a list of all available Elastic versions for a specified region, helping you choose the best version for your deployment.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticSubscriptionResource.GetElasticVersions(string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="region"> Region where elastic deployment will take place. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="ElasticVersion"/> that may take multiple service requests to iterate over. </returns>
+        public static Pageable<ElasticVersion> GetElasticVersions(this SubscriptionResource subscriptionResource, string region, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableElasticSubscriptionResource(subscriptionResource).GetElasticVersions(region, cancellationToken);
+        }
+
+        /// <summary>
+        /// Fetch the User API Key from the internal database, if it was generated and stored during the creation of the Elasticsearch Organization.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticSubscriptionResource.GetApiKeyAsync(ElasticUserEmailId, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="body"> The request body. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        public static async Task<Response<ElasticUserApiKeyResult>> GetApiKeyAsync(this SubscriptionResource subscriptionResource, ElasticUserEmailId body = default, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return await GetMockableElasticSubscriptionResource(subscriptionResource).GetApiKeyAsync(body, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Fetch the User API Key from the internal database, if it was generated and stored during the creation of the Elasticsearch Organization.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticSubscriptionResource.GetApiKey(ElasticUserEmailId, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="body"> The request body. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        public static Response<ElasticUserApiKeyResult> GetApiKey(this SubscriptionResource subscriptionResource, ElasticUserEmailId body = default, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableElasticSubscriptionResource(subscriptionResource).GetApiKey(body, cancellationToken);
+        }
+
+        /// <summary>
+        /// &gt;;
+        ///   /**
+        /// Retrieve mapping details between the Elastic Organization and Azure Subscription for the logged-in user.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticSubscriptionResource.GetElasticToAzureSubscriptionMappingAsync(CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        public static async Task<Response<ElasticOrganizationToAzureSubscriptionMappingResult>> GetElasticToAzureSubscriptionMappingAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return await GetMockableElasticSubscriptionResource(subscriptionResource).GetElasticToAzureSubscriptionMappingAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// &gt;;
+        ///   /**
+        /// Retrieve mapping details between the Elastic Organization and Azure Subscription for the logged-in user.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableElasticSubscriptionResource.GetElasticToAzureSubscriptionMapping(CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        public static Response<ElasticOrganizationToAzureSubscriptionMappingResult> GetElasticToAzureSubscriptionMapping(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableElasticSubscriptionResource(subscriptionResource).GetElasticToAzureSubscriptionMapping(cancellationToken);
+        }
     }
 }

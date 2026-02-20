@@ -5,39 +5,49 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary>
     /// Datacenter address for given storage location.
-    /// Please note <see cref="DataCenterAddressResult"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-    /// The available derived classes include <see cref="DataCenterAddressInstructionResult"/> and <see cref="DataCenterAddressLocationResult"/>.
+    /// Please note this is the abstract base class. The derived classes available for instantiation are: <see cref="DataCenterAddressInstructionResult"/> and <see cref="DataCenterAddressLocationResult"/>.
     /// </summary>
     public abstract partial class DataCenterAddressResult
     {
-        /// <summary> Initializes a new instance of DataCenterAddressResult. </summary>
-        protected DataCenterAddressResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DataCenterAddressResult"/>. </summary>
+        /// <param name="datacenterAddressType"> Data center address type. </param>
+        private protected DataCenterAddressResult(DatacenterAddressType datacenterAddressType)
         {
+            DatacenterAddressType = datacenterAddressType;
             SupportedCarriersForReturnShipment = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of DataCenterAddressResult. </summary>
-        /// <param name="dataCenterAddressType"> Data center address type. </param>
+        /// <summary> Initializes a new instance of <see cref="DataCenterAddressResult"/>. </summary>
+        /// <param name="datacenterAddressType"> Data center address type. </param>
         /// <param name="supportedCarriersForReturnShipment"> List of supported carriers for return shipment. </param>
         /// <param name="dataCenterAzureLocation"> Azure Location where the Data Center serves primarily. </param>
-        internal DataCenterAddressResult(DataCenterAddressType dataCenterAddressType, IReadOnlyList<string> supportedCarriersForReturnShipment, AzureLocation? dataCenterAzureLocation)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DataCenterAddressResult(DatacenterAddressType datacenterAddressType, IReadOnlyList<string> supportedCarriersForReturnShipment, AzureLocation? dataCenterAzureLocation, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            DataCenterAddressType = dataCenterAddressType;
+            DatacenterAddressType = datacenterAddressType;
             SupportedCarriersForReturnShipment = supportedCarriersForReturnShipment;
             DataCenterAzureLocation = dataCenterAzureLocation;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Data center address type. </summary>
-        internal DataCenterAddressType DataCenterAddressType { get; set; }
+        internal DatacenterAddressType DatacenterAddressType { get; set; }
+
         /// <summary> List of supported carriers for return shipment. </summary>
         public IReadOnlyList<string> SupportedCarriersForReturnShipment { get; }
+
         /// <summary> Azure Location where the Data Center serves primarily. </summary>
         public AzureLocation? DataCenterAzureLocation { get; }
     }

@@ -5,8 +5,10 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.KeyVault.Models
@@ -14,40 +16,82 @@ namespace Azure.ResourceManager.KeyVault.Models
     /// <summary> A private link resource. </summary>
     public partial class ManagedHsmPrivateLinkResourceData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of ManagedHsmPrivateLinkResourceData. </summary>
-        /// <param name="location"> The location. </param>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmPrivateLinkResourceData"/>. </summary>
+        /// <param name="location"> The geo-location where the resource lives. </param>
         public ManagedHsmPrivateLinkResourceData(AzureLocation location) : base(location)
         {
-            RequiredMembers = new ChangeTrackingList<string>();
-            RequiredZoneNames = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of ManagedHsmPrivateLinkResourceData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="tags"> The tags. </param>
-        /// <param name="location"> The location. </param>
-        /// <param name="groupId"> Group identifier of private link resource. </param>
-        /// <param name="requiredMembers"> Required member names of private link resource. </param>
-        /// <param name="requiredZoneNames"> Required DNS zone names of the the private link resource. </param>
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmPrivateLinkResourceData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="tags"> Resource tags. </param>
+        /// <param name="location"> The geo-location where the resource lives. </param>
+        /// <param name="properties"> Resource properties. </param>
         /// <param name="sku"> SKU details. </param>
-        internal ManagedHsmPrivateLinkResourceData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, string groupId, IReadOnlyList<string> requiredMembers, IList<string> requiredZoneNames, ManagedHsmSku sku) : base(id, name, resourceType, systemData, tags, location)
+        /// <param name="identity"> Managed service identity (system assigned and/or user assigned identities). </param>
+        internal ManagedHsmPrivateLinkResourceData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, IDictionary<string, string> tags, AzureLocation location, MhsmPrivateLinkResourceProperties properties, ManagedHsmSku sku, ManagedServiceIdentity identity) : base(id, name, resourceType, systemData, tags, location)
         {
-            GroupId = groupId;
-            RequiredMembers = requiredMembers;
-            RequiredZoneNames = requiredZoneNames;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
             Sku = sku;
+            Identity = identity;
         }
+
+        /// <summary> Resource properties. </summary>
+        [WirePath("properties")]
+        internal MhsmPrivateLinkResourceProperties Properties { get; set; }
+
+        /// <summary> SKU details. </summary>
+        [WirePath("sku")]
+        public ManagedHsmSku Sku { get; set; }
+
+        /// <summary> Managed service identity (system assigned and/or user assigned identities). </summary>
+        [WirePath("identity")]
+        public ManagedServiceIdentity Identity { get; set; }
 
         /// <summary> Group identifier of private link resource. </summary>
-        public string GroupId { get; }
+        [WirePath("properties.groupId")]
+        public string GroupId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.GroupId;
+            }
+        }
+
         /// <summary> Required member names of private link resource. </summary>
-        public IReadOnlyList<string> RequiredMembers { get; }
+        [WirePath("properties.requiredMembers")]
+        public IReadOnlyList<string> RequiredMembers
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new MhsmPrivateLinkResourceProperties();
+                }
+                return Properties.RequiredMembers;
+            }
+        }
+
         /// <summary> Required DNS zone names of the the private link resource. </summary>
-        public IList<string> RequiredZoneNames { get; }
-        /// <summary> SKU details. </summary>
-        public ManagedHsmSku Sku { get; set; }
+        [WirePath("properties.requiredZoneNames")]
+        public IList<string> RequiredZoneNames
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new MhsmPrivateLinkResourceProperties();
+                }
+                return Properties.RequiredZoneNames;
+            }
+        }
     }
 }

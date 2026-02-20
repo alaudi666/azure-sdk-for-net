@@ -8,15 +8,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
 using Azure.ResourceManager.Resources.Models;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Specifies set of certificates that should be installed onto the virtual machines. </summary>
     public partial class NodeTypeVaultSecretGroup
     {
-        /// <summary> Initializes a new instance of NodeTypeVaultSecretGroup. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NodeTypeVaultSecretGroup"/>. </summary>
         /// <param name="sourceVault"> The relative URL of the Key Vault containing all of the certificates in VaultCertificates. </param>
         /// <param name="vaultCertificates"> The list of key vault references in SourceVault which contain certificates. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="sourceVault"/> or <paramref name="vaultCertificates"/> is null. </exception>
@@ -29,28 +32,19 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
             VaultCertificates = vaultCertificates.ToList();
         }
 
-        /// <summary> Initializes a new instance of NodeTypeVaultSecretGroup. </summary>
+        /// <summary> Initializes a new instance of <see cref="NodeTypeVaultSecretGroup"/>. </summary>
         /// <param name="sourceVault"> The relative URL of the Key Vault containing all of the certificates in VaultCertificates. </param>
         /// <param name="vaultCertificates"> The list of key vault references in SourceVault which contain certificates. </param>
-        internal NodeTypeVaultSecretGroup(WritableSubResource sourceVault, IList<NodeTypeVaultCertificate> vaultCertificates)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NodeTypeVaultSecretGroup(WritableSubResource sourceVault, IList<NodeTypeVaultCertificate> vaultCertificates, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             SourceVault = sourceVault;
             VaultCertificates = vaultCertificates;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The relative URL of the Key Vault containing all of the certificates in VaultCertificates. </summary>
-        internal WritableSubResource SourceVault { get; set; }
-        /// <summary> Gets or sets Id. </summary>
-        public ResourceIdentifier SourceVaultId
-        {
-            get => SourceVault is null ? default : SourceVault.Id;
-            set
-            {
-                if (SourceVault is null)
-                    SourceVault = new WritableSubResource();
-                SourceVault.Id = value;
-            }
-        }
+        public WritableSubResource SourceVault { get; set; }
 
         /// <summary> The list of key vault references in SourceVault which contain certificates. </summary>
         public IList<NodeTypeVaultCertificate> VaultCertificates { get; }

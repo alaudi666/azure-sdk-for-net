@@ -5,28 +5,32 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the ExpressRouteCircuitPeering data model. </summary>
+    /// <summary>
+    /// A class representing the ExpressRouteCircuitPeering data model.
+    /// Peering in an ExpressRouteCircuit resource.
+    /// </summary>
     public partial class ExpressRouteCircuitPeeringData : NetworkResourceData
     {
-        /// <summary> Initializes a new instance of ExpressRouteCircuitPeeringData. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExpressRouteCircuitPeeringData"/>. </summary>
         public ExpressRouteCircuitPeeringData()
         {
             Connections = new ChangeTrackingList<ExpressRouteCircuitConnectionData>();
             PeeredConnections = new ChangeTrackingList<PeerExpressRouteCircuitConnectionData>();
         }
 
-        /// <summary> Initializes a new instance of ExpressRouteCircuitPeeringData. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExpressRouteCircuitPeeringData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="peeringType"> The peering type. </param>
         /// <param name="state"> The peering state. </param>
@@ -48,7 +52,7 @@ namespace Azure.ResourceManager.Network
         /// <param name="expressRouteConnection"> The ExpressRoute connection. </param>
         /// <param name="connections"> The list of circuit connections associated with Azure Private Peering for this circuit. </param>
         /// <param name="peeredConnections"> The list of peered circuit connections associated with Azure Private Peering for this circuit. </param>
-        internal ExpressRouteCircuitPeeringData(ResourceIdentifier id, string name, ResourceType? resourceType, ETag? etag, ExpressRoutePeeringType? peeringType, ExpressRoutePeeringState? state, int? azureASN, long? peerASN, string primaryPeerAddressPrefix, string secondaryPeerAddressPrefix, string primaryAzurePort, string secondaryAzurePort, string sharedKey, int? vlanId, ExpressRouteCircuitPeeringConfig microsoftPeeringConfig, ExpressRouteCircuitStats stats, NetworkProvisioningState? provisioningState, string gatewayManagerETag, string lastModifiedBy, WritableSubResource routeFilter, IPv6ExpressRouteCircuitPeeringConfig ipv6PeeringConfig, SubResource expressRouteConnection, IList<ExpressRouteCircuitConnectionData> connections, IReadOnlyList<PeerExpressRouteCircuitConnectionData> peeredConnections) : base(id, name, resourceType)
+        internal ExpressRouteCircuitPeeringData(ResourceIdentifier id, string name, ResourceType? resourceType, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, ExpressRoutePeeringType? peeringType, ExpressRoutePeeringState? state, int? azureASN, long? peerASN, string primaryPeerAddressPrefix, string secondaryPeerAddressPrefix, string primaryAzurePort, string secondaryAzurePort, string sharedKey, int? vlanId, ExpressRouteCircuitPeeringConfig microsoftPeeringConfig, ExpressRouteCircuitStats stats, NetworkProvisioningState? provisioningState, string gatewayManagerETag, string lastModifiedBy, WritableSubResource routeFilter, IPv6ExpressRouteCircuitPeeringConfig ipv6PeeringConfig, SubResource expressRouteConnection, IList<ExpressRouteCircuitConnectionData> connections, IReadOnlyList<PeerExpressRouteCircuitConnectionData> peeredConnections) : base(id, name, resourceType, serializedAdditionalRawData)
         {
             ETag = etag;
             PeeringType = peeringType;
@@ -74,40 +78,57 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> The peering type. </summary>
+        [WirePath("properties.peeringType")]
         public ExpressRoutePeeringType? PeeringType { get; set; }
         /// <summary> The peering state. </summary>
+        [WirePath("properties.state")]
         public ExpressRoutePeeringState? State { get; set; }
         /// <summary> The Azure ASN. </summary>
+        [WirePath("properties.azureASN")]
         public int? AzureASN { get; set; }
         /// <summary> The peer ASN. </summary>
+        [WirePath("properties.peerASN")]
         public long? PeerASN { get; set; }
         /// <summary> The primary address prefix. </summary>
+        [WirePath("properties.primaryPeerAddressPrefix")]
         public string PrimaryPeerAddressPrefix { get; set; }
         /// <summary> The secondary address prefix. </summary>
+        [WirePath("properties.secondaryPeerAddressPrefix")]
         public string SecondaryPeerAddressPrefix { get; set; }
         /// <summary> The primary port. </summary>
+        [WirePath("properties.primaryAzurePort")]
         public string PrimaryAzurePort { get; set; }
         /// <summary> The secondary port. </summary>
+        [WirePath("properties.secondaryAzurePort")]
         public string SecondaryAzurePort { get; set; }
         /// <summary> The shared key. </summary>
+        [WirePath("properties.sharedKey")]
         public string SharedKey { get; set; }
         /// <summary> The VLAN ID. </summary>
+        [WirePath("properties.vlanId")]
         public int? VlanId { get; set; }
         /// <summary> The Microsoft peering configuration. </summary>
+        [WirePath("properties.microsoftPeeringConfig")]
         public ExpressRouteCircuitPeeringConfig MicrosoftPeeringConfig { get; set; }
         /// <summary> The peering stats of express route circuit. </summary>
+        [WirePath("properties.stats")]
         public ExpressRouteCircuitStats Stats { get; set; }
         /// <summary> The provisioning state of the express route circuit peering resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
         /// <summary> The GatewayManager Etag. </summary>
+        [WirePath("properties.gatewayManagerEtag")]
         public string GatewayManagerETag { get; set; }
         /// <summary> Who was the last to modify the peering. </summary>
+        [WirePath("properties.lastModifiedBy")]
         public string LastModifiedBy { get; }
         /// <summary> The reference to the RouteFilter resource. </summary>
         internal WritableSubResource RouteFilter { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.routeFilter.id")]
         public ResourceIdentifier RouteFilterId
         {
             get => RouteFilter is null ? default : RouteFilter.Id;
@@ -120,18 +141,22 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> The IPv6 peering configuration. </summary>
+        [WirePath("properties.ipv6PeeringConfig")]
         public IPv6ExpressRouteCircuitPeeringConfig IPv6PeeringConfig { get; set; }
         /// <summary> The ExpressRoute connection. </summary>
         internal SubResource ExpressRouteConnection { get; set; }
         /// <summary> Gets Id. </summary>
+        [WirePath("properties.expressRouteConnection.id")]
         public ResourceIdentifier ExpressRouteConnectionId
         {
             get => ExpressRouteConnection is null ? default : ExpressRouteConnection.Id;
         }
 
         /// <summary> The list of circuit connections associated with Azure Private Peering for this circuit. </summary>
+        [WirePath("properties.connections")]
         public IList<ExpressRouteCircuitConnectionData> Connections { get; }
         /// <summary> The list of peered circuit connections associated with Azure Private Peering for this circuit. </summary>
+        [WirePath("properties.peeredConnections")]
         public IReadOnlyList<PeerExpressRouteCircuitConnectionData> PeeredConnections { get; }
     }
 }

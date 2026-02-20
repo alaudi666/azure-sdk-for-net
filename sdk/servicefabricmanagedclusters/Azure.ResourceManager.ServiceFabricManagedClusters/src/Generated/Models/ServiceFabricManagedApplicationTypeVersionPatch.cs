@@ -5,18 +5,31 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Application type version update request. </summary>
     public partial class ServiceFabricManagedApplicationTypeVersionPatch
     {
-        /// <summary> Initializes a new instance of ServiceFabricManagedApplicationTypeVersionPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedApplicationTypeVersionPatch"/>. </summary>
         public ServiceFabricManagedApplicationTypeVersionPatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
+        }
+
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedApplicationTypeVersionPatch"/>. </summary>
+        /// <param name="tags"> Application type version update parameters. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ServiceFabricManagedApplicationTypeVersionPatch(IDictionary<string, string> tags, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Tags = tags;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Application type version update parameters. </summary>

@@ -206,7 +206,7 @@ namespace Azure.Messaging.ServiceBus.Tests
         /// </summary>
         ///
         [Test]
-        public void ContructorWithConnectionStringCreatesTheTransportClient()
+        public void ConstructorWithConnectionStringCreatesTheTransportClient()
         {
             var connection = new ServiceBusConnection("Endpoint=sb://not-real.servicebus.windows.net/;SharedAccessKeyName=DummyKey;SharedAccessKey=[not_real]", new ServiceBusClientOptions());
             Assert.That(connection.InnerClient, Is.Not.Null);
@@ -218,10 +218,10 @@ namespace Azure.Messaging.ServiceBus.Tests
         /// </summary>
         ///
         [Test]
-        public void ContructorWithConnectionStringUsingSharedAccessSignatureCreatesTheCorrectTransportCredential()
+        public void ConstructorWithConnectionStringUsingSharedAccessSignatureCreatesTheCorrectTransportCredential()
         {
             var sasToken = new SharedAccessSignature("hub", "root", "abc1234").Value;
-            var connection = new ObservableTransportClientMock($"Endpoint=sb://not-real.servicebus.windows.net/;EntityPath=fake;SharedAccessSignature={ sasToken }", new ServiceBusClientOptions());
+            var connection = new ObservableTransportClientMock($"Endpoint=sb://not-real.servicebus.windows.net/;EntityPath=fake;SharedAccessSignature={sasToken}", new ServiceBusClientOptions());
 
             Assert.That(connection.TransportClientCredential, Is.Not.Null, "The transport client should have been given a credential.");
             Assert.That(connection.TransportClientCredential.GetToken(default, default).Token, Is.EqualTo(sasToken), "The transport client credential should use the provided SAS token.");
@@ -233,12 +233,44 @@ namespace Azure.Messaging.ServiceBus.Tests
         /// </summary>
         ///
         [Test]
-        public void ContructorWithTokenCredentialCreatesTheTransportClient()
+        public void ConstructorWithConnectionStringAndDevelopmentEmulatorDoesNotUseTls()
+        {
+            var endpoint = new Uri("sb://localhost:1234", UriKind.Absolute);
+            var fakeConnection = $"Endpoint={endpoint};SharedAccessKeyName=DummyKey;SharedAccessKey=[not_real];EntityPath=ehName;UseDevelopmentEmulator=true";
+            var connection = new ReadableTransportOptionsMock(fakeConnection);
+
+            Assert.That(connection.UseTls.HasValue, Is.True, "The connection should have initialized the TLS flag.");
+            Assert.That(connection.UseTls.Value, Is.False, "The options should not use TLS for the development emulator.");
+        }
+
+        /// <summary>
+        ///    Verifies functionality of the <see cref="ServiceBusConnection" />
+        ///    constructor.
+        /// </summary>
+        ///
+        [Test]
+        public void ConstructorWithConnectionStringAnNoDevelopmentEmulatorUsesTls()
+        {
+            var endpoint = new Uri("sb://localhost:1234", UriKind.Absolute);
+            var fakeConnection = $"Endpoint={endpoint};SharedAccessKeyName=DummyKey;SharedAccessKey=[not_real];EntityPath=ehName";
+            var connection = new ReadableTransportOptionsMock(fakeConnection);
+
+            Assert.That(connection.UseTls.HasValue, Is.True, "The connection should have initialized the TLS flag.");
+            Assert.That(connection.UseTls.Value, Is.True, "The options should use TLS for communcating with the service.");
+        }
+
+        /// <summary>
+        ///    Verifies functionality of the <see cref="ServiceBusConnection" />
+        ///    constructor.
+        /// </summary>
+        ///
+        [Test]
+        public void ConstructorWithTokenCredentialCreatesTheTransportClient()
         {
             var fullyQualifiedNamespace = "my.ServiceBus.com";
             var keyName = "aWonderfulKey";
             var key = "ABC4223";
-            var resource = $"amqps://{ fullyQualifiedNamespace }";
+            var resource = $"amqps://{fullyQualifiedNamespace}";
             var options = new ServiceBusClientOptions { TransportType = ServiceBusTransportType.AmqpTcp };
             var signature = new SharedAccessSignature(resource, keyName, key);
             var connection = new ServiceBusConnection(fullyQualifiedNamespace, new SharedAccessCredential(signature), options);
@@ -252,7 +284,7 @@ namespace Azure.Messaging.ServiceBus.Tests
         /// </summary>
         ///
         [Test]
-        public void ContructorWithSharedKeyCredentialCreatesTheTransportClient()
+        public void ConstructorWithSharedKeyCredentialCreatesTheTransportClient()
         {
             var fullyQualifiedNamespace = "my.ServiceBus.com";
             var keyName = "aWonderfulKey";
@@ -270,13 +302,13 @@ namespace Azure.Messaging.ServiceBus.Tests
         /// </summary>
         ///
         [Test]
-        public void ContructorWithSasCredentialCreatesTheTransportClient()
+        public void ConstructorWithSasCredentialCreatesTheTransportClient()
         {
             var fullyQualifiedNamespace = "my.ServiceBus.com";
             var keyName = "aWonderfulKey";
             var key = "ABC4223";
             var options = new ServiceBusClientOptions { TransportType = ServiceBusTransportType.AmqpTcp };
-            var signature = new SharedAccessSignature($"amqps://{ fullyQualifiedNamespace }", keyName, key);
+            var signature = new SharedAccessSignature($"amqps://{fullyQualifiedNamespace}", keyName, key);
             var credential = new AzureSasCredential(signature.Value);
             var connection = new ServiceBusConnection(fullyQualifiedNamespace, credential, options);
 
@@ -295,7 +327,7 @@ namespace Azure.Messaging.ServiceBus.Tests
             var fullyQualifiedNamespace = "my.ServiceBus.com";
             var keyName = "aWonderfulKey";
             var key = "ABC4223";
-            var resource = $"amqps://{ fullyQualifiedNamespace }";
+            var resource = $"amqps://{fullyQualifiedNamespace}";
             var options = new ServiceBusClientOptions { TransportType = connectionType };
             var signature = new SharedAccessSignature(resource, keyName, key);
             var credential = new SharedAccessCredential(signature);
@@ -316,7 +348,7 @@ namespace Azure.Messaging.ServiceBus.Tests
             var fullyQualifiedNamespace = "my.servicebus.com";
             var keyName = "aWonderfulKey";
             var key = "ABC4223";
-            var resource = $"amqps://{ fullyQualifiedNamespace }";
+            var resource = $"amqps://{fullyQualifiedNamespace}";
             var connectionType = (ServiceBusTransportType)int.MinValue;
             var options = new ServiceBusClientOptions { TransportType = connectionType };
             var signature = new SharedAccessSignature(resource, keyName, key);
@@ -390,7 +422,7 @@ namespace Azure.Messaging.ServiceBus.Tests
         {
             var fullyQualifiedNamespace = "my.servicebus.com";
             var path = "someHub";
-            var expectedPath = $"/{ path.ToLowerInvariant() }";
+            var expectedPath = $"/{path.ToLowerInvariant()}";
             var resource = ServiceBusConnection.BuildConnectionResource(ServiceBusTransportType.AmqpTcp, fullyQualifiedNamespace, path);
 
             Assert.That(resource, Is.Not.Null.Or.Empty, "The resource should have been populated.");
@@ -428,6 +460,50 @@ namespace Azure.Messaging.ServiceBus.Tests
             var options = new ServiceBusClientOptions();
 
             Assert.That(() => ServiceBusConnection.CreateWithCredential("fqns", credential, options), Throws.InstanceOf<ArgumentException>());
+        }
+
+        /// <summary>
+        ///   Allows for the options used by the client to be exposed for testing purposes.
+        /// </summary>
+        ///
+        internal class ReadableTransportOptionsMock : ServiceBusConnection
+        {
+            public ServiceBusClientOptions TransportClientOptions;
+
+            public bool? UseTls;
+
+            private ObservableTransportClient _transportClient;
+
+            public ReadableTransportOptionsMock(string connectionString,
+                                       ServiceBusClientOptions clientOptions = default) : base(connectionString, clientOptions ?? new())
+            {
+            }
+
+            public ReadableTransportOptionsMock(string fullyQualifiedNamespace,
+                                       TokenCredential credential,
+                                       ServiceBusClientOptions clientOptions = default) : base(fullyQualifiedNamespace, credential, clientOptions ?? new())
+            {
+            }
+
+            public ReadableTransportOptionsMock(string fullyQualifiedNamespace,
+                                       AzureNamedKeyCredential credential,
+                                       ServiceBusClientOptions clientOptions = default) : base(fullyQualifiedNamespace, credential, clientOptions ?? new())
+            {
+            }
+
+            public ReadableTransportOptionsMock(string fullyQualifiedNamespace,
+                                       AzureSasCredential credential,
+                                       ServiceBusClientOptions clientOptions = default) : base(fullyQualifiedNamespace, credential, clientOptions ?? new())
+            {
+            }
+
+            internal override TransportClient CreateTransportClient(ServiceBusTokenCredential credential, ServiceBusClientOptions options, bool useTls = true)
+            {
+                UseTls = useTls;
+                TransportClientOptions = options;
+                _transportClient = new ObservableTransportClient();
+                return _transportClient;
+            }
         }
 
         /// <summary>
@@ -501,7 +577,8 @@ namespace Azure.Messaging.ServiceBus.Tests
             }
 
             internal override TransportClient CreateTransportClient(ServiceBusTokenCredential credential,
-                                                                    ServiceBusClientOptions options)
+                                                                    ServiceBusClientOptions options,
+                                                                    bool useTls)
             {
                 TransportClientCredential = credential;
                 TransportClient ??= new();

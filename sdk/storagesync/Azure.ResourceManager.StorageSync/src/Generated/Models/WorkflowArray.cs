@@ -5,8 +5,8 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
@@ -14,20 +14,30 @@ namespace Azure.ResourceManager.StorageSync.Models
     /// <summary> Array of Workflow. </summary>
     internal partial class WorkflowArray
     {
-        /// <summary> Initializes a new instance of WorkflowArray. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="WorkflowArray"/>. </summary>
         internal WorkflowArray()
         {
             Value = new ChangeTrackingList<StorageSyncWorkflowData>();
         }
 
-        /// <summary> Initializes a new instance of WorkflowArray. </summary>
+        /// <summary> Initializes a new instance of <see cref="WorkflowArray"/>. </summary>
         /// <param name="value"> Collection of workflow items. </param>
-        internal WorkflowArray(IReadOnlyList<StorageSyncWorkflowData> value)
+        /// <param name="nextLink"> The URL to get the next set of results. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal WorkflowArray(IList<StorageSyncWorkflowData> value, string nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
+            NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Collection of workflow items. </summary>
-        public IReadOnlyList<StorageSyncWorkflowData> Value { get; }
+        public IList<StorageSyncWorkflowData> Value { get; }
+
+        /// <summary> The URL to get the next set of results. </summary>
+        public string NextLink { get; }
     }
 }

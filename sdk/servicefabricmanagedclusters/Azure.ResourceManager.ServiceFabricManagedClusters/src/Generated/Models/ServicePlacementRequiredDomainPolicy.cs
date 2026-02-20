@@ -6,31 +6,31 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Describes the policy to be used for placement of a Service Fabric service where the instances or replicas of that service must be placed in a particular domain. </summary>
     public partial class ServicePlacementRequiredDomainPolicy : ManagedServicePlacementPolicy
     {
-        /// <summary> Initializes a new instance of ServicePlacementRequiredDomainPolicy. </summary>
+        /// <summary> Initializes a new instance of <see cref="ServicePlacementRequiredDomainPolicy"/>. </summary>
         /// <param name="domainName"> The name of the domain that should used for placement as per this policy. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="domainName"/> is null. </exception>
-        public ServicePlacementRequiredDomainPolicy(string domainName)
+        public ServicePlacementRequiredDomainPolicy(string domainName) : base(ServicePlacementPolicyType.RequiredDomain)
         {
             Argument.AssertNotNull(domainName, nameof(domainName));
 
             DomainName = domainName;
-            ServicePlacementPolicyType = ServicePlacementPolicyType.RequiredDomain;
         }
 
-        /// <summary> Initializes a new instance of ServicePlacementRequiredDomainPolicy. </summary>
-        /// <param name="servicePlacementPolicyType"> The type of placement policy for a service fabric service. Following are the possible values. </param>
+        /// <summary> Initializes a new instance of <see cref="ServicePlacementRequiredDomainPolicy"/>. </summary>
+        /// <param name="type"></param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
         /// <param name="domainName"> The name of the domain that should used for placement as per this policy. </param>
-        internal ServicePlacementRequiredDomainPolicy(ServicePlacementPolicyType servicePlacementPolicyType, string domainName) : base(servicePlacementPolicyType)
+        internal ServicePlacementRequiredDomainPolicy(ServicePlacementPolicyType @type, IDictionary<string, BinaryData> additionalBinaryDataProperties, string domainName) : base(@type, additionalBinaryDataProperties)
         {
             DomainName = domainName;
-            ServicePlacementPolicyType = servicePlacementPolicyType;
         }
 
         /// <summary> The name of the domain that should used for placement as per this policy. </summary>

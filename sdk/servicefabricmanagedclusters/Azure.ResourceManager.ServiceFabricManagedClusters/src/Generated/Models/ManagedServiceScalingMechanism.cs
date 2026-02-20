@@ -5,28 +5,37 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary>
     /// Describes the mechanism for performing a scaling operation.
-    /// Please note <see cref="ManagedServiceScalingMechanism"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-    /// The available derived classes include <see cref="NamedPartitionAddOrRemoveScalingMechanism"/> and <see cref="PartitionInstanceCountScalingMechanism"/>.
+    /// Please note this is the abstract base class. The derived classes available for instantiation are: <see cref="NamedPartitionAddOrRemoveScalingMechanism"/> and <see cref="PartitionInstanceCountScalingMechanism"/>.
     /// </summary>
     public abstract partial class ManagedServiceScalingMechanism
     {
-        /// <summary> Initializes a new instance of ManagedServiceScalingMechanism. </summary>
-        protected ManagedServiceScalingMechanism()
-        {
-        }
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        /// <summary> Initializes a new instance of ManagedServiceScalingMechanism. </summary>
-        /// <param name="kind"> Specifies the mechanism associated with this scaling policy. </param>
-        internal ManagedServiceScalingMechanism(ServiceScalingMechanismKind kind)
+        /// <summary> Initializes a new instance of <see cref="ManagedServiceScalingMechanism"/>. </summary>
+        /// <param name="kind"></param>
+        private protected ManagedServiceScalingMechanism(ServiceScalingMechanismKind kind)
         {
             Kind = kind;
         }
 
-        /// <summary> Specifies the mechanism associated with this scaling policy. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedServiceScalingMechanism"/>. </summary>
+        /// <param name="kind"></param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedServiceScalingMechanism(ServiceScalingMechanismKind kind, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Kind = kind;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> Gets or sets the Kind. </summary>
         internal ServiceScalingMechanismKind Kind { get; set; }
     }
 }

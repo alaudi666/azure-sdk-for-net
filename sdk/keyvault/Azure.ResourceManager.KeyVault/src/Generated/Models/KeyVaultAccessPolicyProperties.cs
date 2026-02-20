@@ -8,15 +8,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> Properties of the vault access policy. </summary>
     public partial class KeyVaultAccessPolicyProperties
     {
-        /// <summary> Initializes a new instance of KeyVaultAccessPolicyProperties. </summary>
-        /// <param name="accessPolicies"> An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault&apos;s tenant ID. </param>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="KeyVaultAccessPolicyProperties"/>. </summary>
+        /// <param name="accessPolicies"> An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="accessPolicies"/> is null. </exception>
         public KeyVaultAccessPolicyProperties(IEnumerable<KeyVaultAccessPolicy> accessPolicies)
         {
@@ -25,14 +28,17 @@ namespace Azure.ResourceManager.KeyVault.Models
             AccessPolicies = accessPolicies.ToList();
         }
 
-        /// <summary> Initializes a new instance of KeyVaultAccessPolicyProperties. </summary>
-        /// <param name="accessPolicies"> An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault&apos;s tenant ID. </param>
-        internal KeyVaultAccessPolicyProperties(IList<KeyVaultAccessPolicy> accessPolicies)
+        /// <summary> Initializes a new instance of <see cref="KeyVaultAccessPolicyProperties"/>. </summary>
+        /// <param name="accessPolicies"> An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal KeyVaultAccessPolicyProperties(IList<KeyVaultAccessPolicy> accessPolicies, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             AccessPolicies = accessPolicies;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault&apos;s tenant ID. </summary>
+        /// <summary> An array of 0 to 16 identities that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. </summary>
+        [WirePath("accessPolicies")]
         public IList<KeyVaultAccessPolicy> AccessPolicies { get; }
     }
 }

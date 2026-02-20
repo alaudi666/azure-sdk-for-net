@@ -9,7 +9,9 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
+using Azure.Core.Shared;
 using Azure.Messaging.EventHubs.Authorization;
+using Azure.Messaging.EventHubs.Consumer;
 using Azure.Messaging.EventHubs.Core;
 using Azure.Messaging.EventHubs.Producer;
 using Moq;
@@ -78,7 +80,7 @@ namespace Azure.Messaging.EventHubs.Tests
         public void ConstructorAllowsMultipleEventHubNamesFromTheConnectionStringIfEqual()
         {
             var eventHubName = "myHub";
-            var connectionString = $"Endpoint=sb://not-real.servicebus.windows.net/;SharedAccessKeyName=DummyKey;SharedAccessKey=[not_real];EntityPath={ eventHubName }";
+            var connectionString = $"Endpoint=sb://not-real.servicebus.windows.net/;SharedAccessKeyName=DummyKey;SharedAccessKey=[not_real];EntityPath={eventHubName}";
 
             Assert.That(() => new EventHubProducerClient(connectionString, eventHubName), Throws.Nothing);
         }
@@ -90,7 +92,7 @@ namespace Azure.Messaging.EventHubs.Tests
         [Test]
         [TestCase(null)]
         [TestCase("")]
-        [TestCase("sb://test.place.com")]
+        [TestCase("[192.168.1.1]")]
         public void ConstructorValidatesTheNamespace(string constructorArgument)
         {
             var credential = new Mock<EventHubTokenCredential>(Mock.Of<TokenCredential>());
@@ -389,6 +391,51 @@ namespace Azure.Messaging.EventHubs.Tests
 
             var actual = ((BasicRetryPolicy)policy).Options;
             Assert.That(actual.IsEquivalentTo(expected), Is.True, "The default retry policy should be based on the default retry options.");
+        }
+
+        /// <summary>
+        ///   Verifies functionality of the constructor.
+        /// </summary>
+        ///
+        [Test]
+        public void TokenCredentialConstructorParsesNamespaceFromUri()
+        {
+            var credential = Mock.Of<TokenCredential>();
+            var host = "mynamespace.servicebus.windows.net";
+            var namespaceUri = $"sb://{host}";
+            var producer = new EventHubProducerClient(namespaceUri, "eventHub", credential);
+
+            Assert.That(producer.FullyQualifiedNamespace, Is.EqualTo(host), "The constructor should parse the namespace from the URI");
+        }
+
+        /// <summary>
+        ///   Verifies functionality of the constructor.
+        /// </summary>
+        ///
+        [Test]
+        public void SharedKeyCredentialConstructorParsesNamespaceFromUri()
+        {
+            var credential = new AzureNamedKeyCredential("key", "value");
+            var host = "mynamespace.servicebus.windows.net";
+            var namespaceUri = $"sb://{host}";
+            var producer = new EventHubProducerClient(namespaceUri, "eventHub", credential);
+
+            Assert.That(producer.FullyQualifiedNamespace, Is.EqualTo(host), "The constructor should parse the namespace from the URI");
+        }
+
+        /// <summary>
+        ///   Verifies functionality of the constructor.
+        /// </summary>
+        ///
+        [Test]
+        public void SasCredentialConstructorParsesNamespaceFromUri()
+        {
+            var credential = new AzureSasCredential(new SharedAccessSignature("sb://this.is.Fake/blah", "key", "value").Value);
+            var host = "mynamespace.servicebus.windows.net";
+            var namespaceUri = $"sb://{host}";
+            var producer = new EventHubProducerClient(namespaceUri, "eventHub", credential);
+
+            Assert.That(producer.FullyQualifiedNamespace, Is.EqualTo(host), "The constructor should parse the namespace from the URI");
         }
 
         /// <summary>
@@ -1098,8 +1145,8 @@ namespace Azure.Messaging.EventHubs.Tests
 
             for (var index = 0; index < events.Length; ++index)
             {
-                Assert.That(events[index].PublishedSequenceNumber, Is.EqualTo(startingSequence + 1 + index), $"The event in position `{ index }` was not in the proper sequence.");
-                Assert.That(events[index].PendingPublishSequenceNumber, Is.Null, $"The event in position `{ index }` should not have a pending sequence number remaining.");
+                Assert.That(events[index].PublishedSequenceNumber, Is.EqualTo(startingSequence + 1 + index), $"The event in position `{index}` was not in the proper sequence.");
+                Assert.That(events[index].PendingPublishSequenceNumber, Is.Null, $"The event in position `{index}` should not have a pending sequence number remaining.");
             }
 
             var partitionStateCollection = GetPartitionState(producer);
@@ -1148,8 +1195,8 @@ namespace Azure.Messaging.EventHubs.Tests
 
             for (var index = 0; index < events.Length; ++index)
             {
-                Assert.That(events[index].PublishedSequenceNumber, Is.EqualTo(index), $"The event in position `{ index }` was not in the proper sequence.");
-                Assert.That(events[index].PendingPublishSequenceNumber, Is.Null, $"The event in position `{ index }` should not have a pending sequence number remaining.");
+                Assert.That(events[index].PublishedSequenceNumber, Is.EqualTo(index), $"The event in position `{index}` was not in the proper sequence.");
+                Assert.That(events[index].PendingPublishSequenceNumber, Is.Null, $"The event in position `{index}` should not have a pending sequence number remaining.");
             }
 
             var partitionStateCollection = GetPartitionState(producer);
@@ -1197,8 +1244,8 @@ namespace Azure.Messaging.EventHubs.Tests
 
             for (var index = 0; index < events.Length; ++index)
             {
-                Assert.That(events[index].PublishedSequenceNumber, Is.Null, $"The event in position `{ index }`should not have a sequence number.");
-                Assert.That(events[index].PendingPublishSequenceNumber, Is.Null, $"The event in position `{ index }` should not have a pending sequence number remaining.");
+                Assert.That(events[index].PublishedSequenceNumber, Is.Null, $"The event in position `{index}`should not have a sequence number.");
+                Assert.That(events[index].PendingPublishSequenceNumber, Is.Null, $"The event in position `{index}` should not have a pending sequence number remaining.");
             }
 
             var partitionStateCollection = GetPartitionState(producer);
@@ -1336,8 +1383,8 @@ namespace Azure.Messaging.EventHubs.Tests
                 {
                     ++eventPosition;
 
-                    Assert.That(batch[index].PublishedSequenceNumber, Is.EqualTo(startingSequence + eventPosition), $"The event in position `{ eventPosition }` was not in the proper sequence.");
-                    Assert.That(batch[index].PendingPublishSequenceNumber, Is.Null, $"The event in position `{ eventPosition }` should not have a pending sequence number remaining.");
+                    Assert.That(batch[index].PublishedSequenceNumber, Is.EqualTo(startingSequence + eventPosition), $"The event in position `{eventPosition}` was not in the proper sequence.");
+                    Assert.That(batch[index].PendingPublishSequenceNumber, Is.Null, $"The event in position `{eventPosition}` should not have a pending sequence number remaining.");
                 }
             }
 
@@ -1398,7 +1445,7 @@ namespace Azure.Messaging.EventHubs.Tests
 
                 for (var index = 0; index < batch.Length; ++index)
                 {
-                    Assert.That(batch[index].PublishedSequenceNumber, Is.EqualTo(startingSequence + 1 + index), $"The event in batch `{ batchIndex }` position `{ index }` was not in the proper sequence.");
+                    Assert.That(batch[index].PublishedSequenceNumber, Is.EqualTo(startingSequence + 1 + index), $"The event in batch `{batchIndex}` position `{index}` was not in the proper sequence.");
                 }
             }
 
@@ -1407,8 +1454,8 @@ namespace Azure.Messaging.EventHubs.Tests
 
             foreach (var stateKey in partitionStateCollection.Keys)
             {
-                Assert.That(partitionStateCollection.TryGetValue(stateKey, out var partitionState), Is.True, $"The state collection should have an entry for the partition `{ stateKey }`.");
-                Assert.That(partitionState.LastPublishedSequenceNumber, Is.EqualTo(startingSequence + eventCount), $"The sequence number for partition `{ stateKey }` state should have been updated.");
+                Assert.That(partitionStateCollection.TryGetValue(stateKey, out var partitionState), Is.True, $"The state collection should have an entry for the partition `{stateKey}`.");
+                Assert.That(partitionState.LastPublishedSequenceNumber, Is.EqualTo(startingSequence + eventCount), $"The sequence number for partition `{stateKey}` state should have been updated.");
             }
         }
 
@@ -1615,7 +1662,7 @@ namespace Azure.Messaging.EventHubs.Tests
             var mockTransport = new Mock<TransportProducer>();
             var connection = new MockConnection(() => mockTransport.Object);
 
-            using var batch = EventHubsModelFactory.EventDataBatch(long.MaxValue, EventGenerator.CreateEvents(1).ToList(), new CreateBatchOptions { PartitionId = expectedPartition });;
+            using var batch = EventHubsModelFactory.EventDataBatch(long.MaxValue, EventGenerator.CreateEvents(1).ToList(), new CreateBatchOptions { PartitionId = expectedPartition });
 
             var producer = new EventHubProducerClient(connection, new EventHubProducerClientOptions
             {
@@ -1862,7 +1909,7 @@ namespace Azure.Messaging.EventHubs.Tests
 
             try
             {
-            // Each send operation will wait less time before completing to give later operations an
+                // Each send operation will wait less time before completing to give later operations an
                 // advantage to complete first if synchronization does not take place properly.
 
                 var sendCountdown = batches.Length;
@@ -1879,7 +1926,7 @@ namespace Azure.Messaging.EventHubs.Tests
                 for (var index = 0; index < batches.Length; ++index)
                 {
                     var batch = batches[index];
-                    Assert.That(batch.StartingPublishedSequenceNumber, Is.EqualTo(startingSequence + 1 + (index * eventCount)), $"The batch in position `{ index }` did not have the correct starting sequence number.");
+                    Assert.That(batch.StartingPublishedSequenceNumber, Is.EqualTo(startingSequence + 1 + (index * eventCount)), $"The batch in position `{index}` did not have the correct starting sequence number.");
                 }
 
                 var partitionStateCollection = GetPartitionState(producer);
@@ -1946,7 +1993,7 @@ namespace Azure.Messaging.EventHubs.Tests
                 for (var index = 0; index < batches.Length; ++index)
                 {
                     var batch = batches[index];
-                    Assert.That(batch.StartingPublishedSequenceNumber, Is.EqualTo(startingSequence + 1), $"The batch in position `{ index }` did not have the correct starting sequence number.");
+                    Assert.That(batch.StartingPublishedSequenceNumber, Is.EqualTo(startingSequence + 1), $"The batch in position `{index}` did not have the correct starting sequence number.");
                 }
 
                 var partitionStateCollection = GetPartitionState(producer);
@@ -1954,8 +2001,8 @@ namespace Azure.Messaging.EventHubs.Tests
 
                 foreach (var stateKey in partitionStateCollection.Keys)
                 {
-                    Assert.That(partitionStateCollection.TryGetValue(stateKey, out var partitionState), Is.True, $"The state collection should have an entry for the partition `{ stateKey }`.");
-                    Assert.That(partitionState.LastPublishedSequenceNumber, Is.EqualTo(startingSequence + eventCount), $"The sequence number for partition `{ stateKey }` state should have been updated.");
+                    Assert.That(partitionStateCollection.TryGetValue(stateKey, out var partitionState), Is.True, $"The state collection should have an entry for the partition `{stateKey}`.");
+                    Assert.That(partitionState.LastPublishedSequenceNumber, Is.EqualTo(startingSequence + eventCount), $"The sequence number for partition `{stateKey}` state should have been updated.");
                 }
             }
             finally
@@ -1982,7 +2029,7 @@ namespace Azure.Messaging.EventHubs.Tests
             var completionSource = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
             var mockTransportBatch = new Mock<TransportEventBatch>();
             var mockTransportProducer = new Mock<TransportProducer>();
-            var batch = new EventDataBatch(mockTransportBatch.Object, "ns", "eh", batchOptions);
+            var batch = new EventDataBatch(mockTransportBatch.Object, "ns", "eh", batchOptions, new MessagingClientDiagnostics("mock", "mock", "mock", "mock", "mock"));
             var producer = new EventHubProducerClient(new MockConnection(() => mockTransportProducer.Object));
 
             mockTransportBatch
@@ -2179,7 +2226,7 @@ namespace Azure.Messaging.EventHubs.Tests
             var events = new EventData[0];
 
             await producerClient.SendAsync(events, options);
-            Assert.That(mockTransportProducerPool.GetPooledProducerWasCalled, Is.True, $"The method { nameof(TransportProducerPool.GetPooledProducer) } should have been called.");
+            Assert.That(mockTransportProducerPool.GetPooledProducerWasCalled, Is.True, $"The method {nameof(TransportProducerPool.GetPooledProducer)} should have been called.");
         }
 
         /// <summary>
@@ -2201,7 +2248,7 @@ namespace Azure.Messaging.EventHubs.Tests
             using var batch = EventHubsModelFactory.EventDataBatch(long.MaxValue, new List<EventData>(), batchOptions);
 
             await producerClient.SendAsync(batch);
-            Assert.That(mockTransportProducerPool.GetPooledProducerWasCalled, Is.True, $"The method { nameof(TransportProducerPool.GetPooledProducer) } should have been called (for a batch).");
+            Assert.That(mockTransportProducerPool.GetPooledProducerWasCalled, Is.True, $"The method {nameof(TransportProducerPool.GetPooledProducer)} should have been called (for a batch).");
         }
 
         /// <summary>
@@ -2229,7 +2276,7 @@ namespace Azure.Messaging.EventHubs.Tests
             using var batch = EventHubsModelFactory.EventDataBatch(long.MaxValue, EventGenerator.CreateEvents(1).ToList(), batchOptions);
             await producerClient.SendAsync(batch);
 
-            Assert.That(mockPooledProducer.WasClosed, Is.True, $"A { nameof(TransportProducerPool.PooledProducer) } should be closed when disposed.");
+            Assert.That(mockPooledProducer.WasClosed, Is.True, $"A {nameof(TransportProducerPool.PooledProducer)} should be closed when disposed.");
         }
 
         /// <summary>
@@ -2256,7 +2303,7 @@ namespace Azure.Messaging.EventHubs.Tests
             var producerClient = new EventHubProducerClient(eventHubConnection, transportProducer, mockTransportProducerPool);
 
             await producerClient.SendAsync(events, options);
-            Assert.That(mockPooledProducer.WasClosed, Is.True, $"A { nameof(TransportProducerPool.PooledProducer) } should be closed when disposed (for a batch).");
+            Assert.That(mockPooledProducer.WasClosed, Is.True, $"A {nameof(TransportProducerPool.PooledProducer)} should be closed when disposed (for a batch).");
         }
 
         /// <summary>
@@ -2293,7 +2340,7 @@ namespace Azure.Messaging.EventHubs.Tests
                                                       It.IsAny<SendEventOptions>(),
                                                       It.IsAny<CancellationToken>()),
                                      Times.Exactly(EventHubProducerClient.MaximumCreateProducerAttempts),
-                                     $"The retry logic should have called { nameof(TransportProducer.SendAsync) } { EventHubProducerClient.MaximumCreateProducerAttempts } times.");
+                                     $"The retry logic should have called {nameof(TransportProducer.SendAsync)} {EventHubProducerClient.MaximumCreateProducerAttempts} times.");
         }
 
         /// <summary>
@@ -2327,7 +2374,7 @@ namespace Azure.Messaging.EventHubs.Tests
             transportProducer.Verify(t => t.SendAsync(It.IsAny<EventDataBatch>(),
                                                       It.IsAny<CancellationToken>()),
                                      Times.Exactly(EventHubProducerClient.MaximumCreateProducerAttempts),
-                                     $"The retry logic should have called { nameof(TransportProducer.SendAsync) } { EventHubProducerClient.MaximumCreateProducerAttempts } times (for a batch).");
+                                     $"The retry logic should have called {nameof(TransportProducer.SendAsync)} {EventHubProducerClient.MaximumCreateProducerAttempts} times (for a batch).");
         }
 
         /// <summary>
@@ -2489,7 +2536,7 @@ namespace Azure.Messaging.EventHubs.Tests
                                                       It.IsAny<SendEventOptions>(),
                                                       It.IsAny<CancellationToken>()),
                                      Times.Once,
-                                     $"The retry logic should not start when the { nameof(EventHubConnection) } was closed.");
+                                     $"The retry logic should not start when the {nameof(EventHubConnection)} was closed.");
         }
 
         /// <summary>
@@ -2524,7 +2571,7 @@ namespace Azure.Messaging.EventHubs.Tests
             transportProducer.Verify(t => t.SendAsync(It.IsAny<EventDataBatch>(),
                                                       It.IsAny<CancellationToken>()),
                                      Times.Once,
-                                     $"The retry logic should not start when the { nameof(EventHubConnection) } was closed (for a batch).");
+                                     $"The retry logic should not start when the {nameof(EventHubConnection)} was closed (for a batch).");
         }
 
         /// <summary>
@@ -2561,7 +2608,7 @@ namespace Azure.Messaging.EventHubs.Tests
                                                       It.IsAny<SendEventOptions>(),
                                                       It.IsAny<CancellationToken>()),
                                      Times.Once,
-                                     $"The retry logic should not start when a { nameof(TransportProducer) } was closed.");
+                                     $"The retry logic should not start when a {nameof(TransportProducer)} was closed.");
         }
 
         /// <summary>
@@ -2596,7 +2643,7 @@ namespace Azure.Messaging.EventHubs.Tests
             transportProducer.Verify(t => t.SendAsync(It.IsAny<EventDataBatch>(),
                                                       It.IsAny<CancellationToken>()),
                                      Times.Once,
-                                     $"The retry logic should not start when a { nameof(TransportProducer) } was closed (for a batch).");
+                                     $"The retry logic should not start when a {nameof(TransportProducer)} was closed (for a batch).");
         }
 
         /// <summary>
@@ -2841,7 +2888,7 @@ namespace Azure.Messaging.EventHubs.Tests
                                                                           CancellationToken cancellationToken = default)
             {
                 GetPropertiesInvokedWith = retryPolicy;
-                return Task.FromResult(new EventHubProperties(EventHubName, DateTimeOffset.Parse("2015-10-27T00:00:00Z"), new string[] { "0", "1" }));
+                return Task.FromResult(new EventHubProperties(EventHubName, DateTimeOffset.Parse("2015-10-27T00:00:00Z"), new string[] { "0", "1" }, false));
             }
 
             internal override async Task<string[]> GetPartitionIdsAsync(EventHubsRetryPolicy retryPolicy,
@@ -2869,13 +2916,14 @@ namespace Azure.Messaging.EventHubs.Tests
                                                                     string eventHubName,
                                                                     TimeSpan operationTimeout,
                                                                     EventHubTokenCredential credential,
-                                                                    EventHubConnectionOptions options)
+                                                                    EventHubConnectionOptions options,
+                                                                    bool useTls = true)
             {
                 InnerClientMock = new Mock<TransportClient>();
 
                 InnerClientMock
                     .Setup(client => client.ServiceEndpoint)
-                    .Returns(new Uri($"amgp://{ fullyQualifiedNamespace }.com/{ eventHubName }"));
+                    .Returns(new Uri($"amgp://{fullyQualifiedNamespace}.com/{eventHubName}"));
 
                 return InnerClientMock.Object;
             }

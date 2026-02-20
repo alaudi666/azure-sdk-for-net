@@ -5,20 +5,61 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class DataBoxDiskJobDetails : IUtf8JsonSerializable
+    /// <summary> DataBox Disk Job Details. </summary>
+    public partial class DataBoxDiskJobDetails : DataBoxBasicJobDetails, IJsonModel<DataBoxDiskJobDetails>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="DataBoxDiskJobDetails"/> for deserialization. </summary>
+        internal DataBoxDiskJobDetails()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override DataBoxBasicJobDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxDiskJobDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDataBoxDiskJobDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxDiskJobDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DataBoxDiskJobDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxDiskJobDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DataBoxDiskJobDetails)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsCollectionDefined(PreferredDisks))
             {
-                writer.WritePropertyName("preferredDisks");
+                writer.WritePropertyName("preferredDisks"u8);
                 writer.WriteStartObject();
                 foreach (var item in PreferredDisks)
                 {
@@ -27,348 +68,428 @@ namespace Azure.ResourceManager.DataBox.Models
                 }
                 writer.WriteEndObject();
             }
+            if (options.Format != "W" && Optional.IsCollectionDefined(CopyProgress))
+            {
+                writer.WritePropertyName("copyProgress"u8);
+                writer.WriteStartArray();
+                foreach (DataBoxDiskCopyProgress item in CopyProgress)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(GranularCopyProgress))
+            {
+                writer.WritePropertyName("granularCopyProgress"u8);
+                writer.WriteStartArray();
+                foreach (DataBoxDiskGranularCopyProgress item in GranularCopyProgress)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(GranularCopyLogDetails))
+            {
+                writer.WritePropertyName("granularCopyLogDetails"u8);
+                writer.WriteStartArray();
+                foreach (DataBoxDiskGranularCopyLogDetails item in GranularCopyLogDetails)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(DisksAndSizeDetails))
+            {
+                writer.WritePropertyName("disksAndSizeDetails"u8);
+                writer.WriteStartObject();
+                foreach (var item in DisksAndSizeDetails)
+                {
+                    writer.WritePropertyName(item.Key);
+                    writer.WriteNumberValue(item.Value);
+                }
+                writer.WriteEndObject();
+            }
             if (Optional.IsDefined(Passkey))
             {
-                writer.WritePropertyName("passkey");
+                writer.WritePropertyName("passkey"u8);
                 writer.WriteStringValue(Passkey);
             }
-            writer.WritePropertyName("contactDetails");
-            writer.WriteObjectValue(ContactDetails);
-            if (Optional.IsDefined(ShippingAddress))
-            {
-                writer.WritePropertyName("shippingAddress");
-                writer.WriteObjectValue(ShippingAddress);
-            }
-            if (Optional.IsCollectionDefined(DataImportDetails))
-            {
-                writer.WritePropertyName("dataImportDetails");
-                writer.WriteStartArray();
-                foreach (var item in DataImportDetails)
-                {
-                    writer.WriteObjectValue(item);
-                }
-                writer.WriteEndArray();
-            }
-            if (Optional.IsCollectionDefined(DataExportDetails))
-            {
-                writer.WritePropertyName("dataExportDetails");
-                writer.WriteStartArray();
-                foreach (var item in DataExportDetails)
-                {
-                    writer.WriteObjectValue(item);
-                }
-                writer.WriteEndArray();
-            }
-            writer.WritePropertyName("jobDetailsType");
-            writer.WriteStringValue(JobDetailsType.ToSerialString());
-            if (Optional.IsDefined(Preferences))
-            {
-                writer.WritePropertyName("preferences");
-                writer.WriteObjectValue(Preferences);
-            }
-            if (Optional.IsDefined(KeyEncryptionKey))
-            {
-                writer.WritePropertyName("keyEncryptionKey");
-                writer.WriteObjectValue(KeyEncryptionKey);
-            }
-            if (Optional.IsDefined(ExpectedDataSizeInTerabytes))
-            {
-                writer.WritePropertyName("expectedDataSizeInTeraBytes");
-                writer.WriteNumberValue(ExpectedDataSizeInTerabytes.Value);
-            }
-            writer.WriteEndObject();
         }
 
-        internal static DataBoxDiskJobDetails DeserializeDataBoxDiskJobDetails(JsonElement element)
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxDiskJobDetails IJsonModel<DataBoxDiskJobDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (DataBoxDiskJobDetails)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override DataBoxBasicJobDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<IDictionary<string, int>> preferredDisks = default;
-            Optional<IReadOnlyList<DataBoxDiskCopyProgress>> copyProgress = default;
-            Optional<IReadOnlyList<DataBoxDiskGranularCopyProgress>> granularCopyProgress = default;
-            Optional<IReadOnlyDictionary<string, int>> disksAndSizeDetails = default;
-            Optional<string> passkey = default;
-            Optional<IReadOnlyList<DataBoxJobStage>> jobStages = default;
-            DataBoxContactDetails contactDetails = default;
-            Optional<DataBoxShippingAddress> shippingAddress = default;
-            Optional<PackageShippingDetails> deliveryPackage = default;
-            Optional<PackageShippingDetails> returnPackage = default;
-            Optional<IList<DataImportDetails>> dataImportDetails = default;
-            Optional<IList<DataExportDetails>> dataExportDetails = default;
-            DataBoxOrderType jobDetailsType = default;
-            Optional<DataBoxOrderPreferences> preferences = default;
-            Optional<IReadOnlyList<CopyLogDetails>> copyLogDetails = default;
-            Optional<string> reverseShipmentLabelSasKey = default;
-            Optional<string> chainOfCustodySasKey = default;
-            Optional<DeviceErasureDetails> deviceErasureDetails = default;
-            Optional<DataBoxKeyEncryptionKey> keyEncryptionKey = default;
-            Optional<int> expectedDataSizeInTerabytes = default;
-            Optional<IReadOnlyList<CustomerResolutionCode>> actions = default;
-            Optional<LastMitigationActionOnJob> lastMitigationActionOnJob = default;
-            Optional<DataCenterAddressResult> dataCenterAddress = default;
-            Optional<DataCenterCode> dataCenterCode = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxDiskJobDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("preferredDisks"))
+                throw new FormatException($"The model {nameof(DataBoxDiskJobDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDataBoxDiskJobDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DataBoxDiskJobDetails DeserializeDataBoxDiskJobDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IReadOnlyList<DataBoxJobStage> jobStages = default;
+            DataBoxContactDetails contactDetails = default;
+            DataBoxShippingAddress shippingAddress = default;
+            PackageShippingDetails deliveryPackage = default;
+            PackageShippingDetails returnPackage = default;
+            IList<DataImportDetails> dataImportDetails = default;
+            IList<DataExportDetails> dataExportDetails = default;
+            DataBoxOrderType jobDetailsType = default;
+            DataBoxOrderPreferences preferences = default;
+            ReverseShippingDetails reverseShippingDetails = default;
+            IReadOnlyList<CopyLogDetails> copyLogDetails = default;
+            string reverseShipmentLabelSasKey = default;
+            string chainOfCustodySasKey = default;
+            DeviceErasureDetails deviceErasureDetails = default;
+            DataBoxKeyEncryptionKey keyEncryptionKey = default;
+            int? expectedDataSizeInTerabytes = default;
+            IReadOnlyList<CustomerResolutionCode> actions = default;
+            LastMitigationActionOnJob lastMitigationActionOnJob = default;
+            DataCenterAddressResult dataCenterAddress = default;
+            DataCenterCode? dataCenterCode = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            IDictionary<string, int> preferredDisks = default;
+            IReadOnlyList<DataBoxDiskCopyProgress> copyProgress = default;
+            IReadOnlyList<DataBoxDiskGranularCopyProgress> granularCopyProgress = default;
+            IReadOnlyList<DataBoxDiskGranularCopyLogDetails> granularCopyLogDetails = default;
+            IReadOnlyDictionary<string, int> disksAndSizeDetails = default;
+            string passkey = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("jobStages"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    Dictionary<string, int> dictionary = new Dictionary<string, int>();
-                    foreach (var property0 in property.Value.EnumerateObject())
-                    {
-                        dictionary.Add(property0.Name, property0.Value.GetInt32());
-                    }
-                    preferredDisks = dictionary;
-                    continue;
-                }
-                if (property.NameEquals("copyProgress"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    List<DataBoxDiskCopyProgress> array = new List<DataBoxDiskCopyProgress>();
-                    foreach (var item in property.Value.EnumerateArray())
-                    {
-                        array.Add(DataBoxDiskCopyProgress.DeserializeDataBoxDiskCopyProgress(item));
-                    }
-                    copyProgress = array;
-                    continue;
-                }
-                if (property.NameEquals("granularCopyProgress"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    List<DataBoxDiskGranularCopyProgress> array = new List<DataBoxDiskGranularCopyProgress>();
-                    foreach (var item in property.Value.EnumerateArray())
-                    {
-                        array.Add(DataBoxDiskGranularCopyProgress.DeserializeDataBoxDiskGranularCopyProgress(item));
-                    }
-                    granularCopyProgress = array;
-                    continue;
-                }
-                if (property.NameEquals("disksAndSizeDetails"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    Dictionary<string, int> dictionary = new Dictionary<string, int>();
-                    foreach (var property0 in property.Value.EnumerateObject())
-                    {
-                        dictionary.Add(property0.Name, property0.Value.GetInt32());
-                    }
-                    disksAndSizeDetails = dictionary;
-                    continue;
-                }
-                if (property.NameEquals("passkey"))
-                {
-                    passkey = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("jobStages"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<DataBoxJobStage> array = new List<DataBoxJobStage>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(DataBoxJobStage.DeserializeDataBoxJobStage(item));
+                        array.Add(DataBoxJobStage.DeserializeDataBoxJobStage(item, options));
                     }
                     jobStages = array;
                     continue;
                 }
-                if (property.NameEquals("contactDetails"))
+                if (prop.NameEquals("contactDetails"u8))
                 {
-                    contactDetails = DataBoxContactDetails.DeserializeDataBoxContactDetails(property.Value);
+                    contactDetails = DataBoxContactDetails.DeserializeDataBoxContactDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("shippingAddress"))
+                if (prop.NameEquals("shippingAddress"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    shippingAddress = DataBoxShippingAddress.DeserializeDataBoxShippingAddress(property.Value);
+                    shippingAddress = DataBoxShippingAddress.DeserializeDataBoxShippingAddress(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("deliveryPackage"))
+                if (prop.NameEquals("deliveryPackage"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    deliveryPackage = PackageShippingDetails.DeserializePackageShippingDetails(property.Value);
+                    deliveryPackage = PackageShippingDetails.DeserializePackageShippingDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("returnPackage"))
+                if (prop.NameEquals("returnPackage"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    returnPackage = PackageShippingDetails.DeserializePackageShippingDetails(property.Value);
+                    returnPackage = PackageShippingDetails.DeserializePackageShippingDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("dataImportDetails"))
+                if (prop.NameEquals("dataImportDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<DataImportDetails> array = new List<DataImportDetails>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(Models.DataImportDetails.DeserializeDataImportDetails(item));
+                        array.Add(Models.DataImportDetails.DeserializeDataImportDetails(item, options));
                     }
                     dataImportDetails = array;
                     continue;
                 }
-                if (property.NameEquals("dataExportDetails"))
+                if (prop.NameEquals("dataExportDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<DataExportDetails> array = new List<DataExportDetails>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(Models.DataExportDetails.DeserializeDataExportDetails(item));
+                        array.Add(Models.DataExportDetails.DeserializeDataExportDetails(item, options));
                     }
                     dataExportDetails = array;
                     continue;
                 }
-                if (property.NameEquals("jobDetailsType"))
+                if (prop.NameEquals("jobDetailsType"u8))
                 {
-                    jobDetailsType = property.Value.GetString().ToDataBoxOrderType();
+                    jobDetailsType = prop.Value.GetString().ToDataBoxOrderType();
                     continue;
                 }
-                if (property.NameEquals("preferences"))
+                if (prop.NameEquals("preferences"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    preferences = DataBoxOrderPreferences.DeserializeDataBoxOrderPreferences(property.Value);
+                    preferences = DataBoxOrderPreferences.DeserializeDataBoxOrderPreferences(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("copyLogDetails"))
+                if (prop.NameEquals("reverseShippingDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    reverseShippingDetails = ReverseShippingDetails.DeserializeReverseShippingDetails(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("copyLogDetails"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
                     List<CopyLogDetails> array = new List<CopyLogDetails>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(Models.CopyLogDetails.DeserializeCopyLogDetails(item));
+                        array.Add(Models.CopyLogDetails.DeserializeCopyLogDetails(item, options));
                     }
                     copyLogDetails = array;
                     continue;
                 }
-                if (property.NameEquals("reverseShipmentLabelSasKey"))
+                if (prop.NameEquals("reverseShipmentLabelSasKey"u8))
                 {
-                    reverseShipmentLabelSasKey = property.Value.GetString();
+                    reverseShipmentLabelSasKey = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("chainOfCustodySasKey"))
+                if (prop.NameEquals("chainOfCustodySasKey"u8))
                 {
-                    chainOfCustodySasKey = property.Value.GetString();
+                    chainOfCustodySasKey = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("deviceErasureDetails"))
+                if (prop.NameEquals("deviceErasureDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    deviceErasureDetails = DeviceErasureDetails.DeserializeDeviceErasureDetails(property.Value);
+                    deviceErasureDetails = DeviceErasureDetails.DeserializeDeviceErasureDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("keyEncryptionKey"))
+                if (prop.NameEquals("keyEncryptionKey"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    keyEncryptionKey = DataBoxKeyEncryptionKey.DeserializeDataBoxKeyEncryptionKey(property.Value);
+                    keyEncryptionKey = DataBoxKeyEncryptionKey.DeserializeDataBoxKeyEncryptionKey(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("expectedDataSizeInTeraBytes"))
+                if (prop.NameEquals("expectedDataSizeInTeraBytes"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    expectedDataSizeInTerabytes = property.Value.GetInt32();
+                    expectedDataSizeInTerabytes = prop.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("actions"))
+                if (prop.NameEquals("actions"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<CustomerResolutionCode> array = new List<CustomerResolutionCode>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
                         array.Add(item.GetString().ToCustomerResolutionCode());
                     }
                     actions = array;
                     continue;
                 }
-                if (property.NameEquals("lastMitigationActionOnJob"))
+                if (prop.NameEquals("lastMitigationActionOnJob"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    lastMitigationActionOnJob = LastMitigationActionOnJob.DeserializeLastMitigationActionOnJob(property.Value);
+                    lastMitigationActionOnJob = LastMitigationActionOnJob.DeserializeLastMitigationActionOnJob(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("datacenterAddress"))
+                if (prop.NameEquals("datacenterAddress"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    dataCenterAddress = DataCenterAddressResult.DeserializeDataCenterAddressResult(property.Value);
+                    dataCenterAddress = DataCenterAddressResult.DeserializeDataCenterAddressResult(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("dataCenterCode"))
+                if (prop.NameEquals("dataCenterCode"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    dataCenterCode = new DataCenterCode(property.Value.GetString());
+                    dataCenterCode = new DataCenterCode(prop.Value.GetString());
                     continue;
+                }
+                if (prop.NameEquals("preferredDisks"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    Dictionary<string, int> dictionary = new Dictionary<string, int>();
+                    foreach (var prop0 in prop.Value.EnumerateObject())
+                    {
+                        dictionary.Add(prop0.Name, prop0.Value.GetInt32());
+                    }
+                    preferredDisks = dictionary;
+                    continue;
+                }
+                if (prop.NameEquals("copyProgress"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<DataBoxDiskCopyProgress> array = new List<DataBoxDiskCopyProgress>();
+                    foreach (var item in prop.Value.EnumerateArray())
+                    {
+                        array.Add(DataBoxDiskCopyProgress.DeserializeDataBoxDiskCopyProgress(item, options));
+                    }
+                    copyProgress = array;
+                    continue;
+                }
+                if (prop.NameEquals("granularCopyProgress"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<DataBoxDiskGranularCopyProgress> array = new List<DataBoxDiskGranularCopyProgress>();
+                    foreach (var item in prop.Value.EnumerateArray())
+                    {
+                        array.Add(DataBoxDiskGranularCopyProgress.DeserializeDataBoxDiskGranularCopyProgress(item, options));
+                    }
+                    granularCopyProgress = array;
+                    continue;
+                }
+                if (prop.NameEquals("granularCopyLogDetails"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<DataBoxDiskGranularCopyLogDetails> array = new List<DataBoxDiskGranularCopyLogDetails>();
+                    foreach (var item in prop.Value.EnumerateArray())
+                    {
+                        array.Add(DataBoxDiskGranularCopyLogDetails.DeserializeDataBoxDiskGranularCopyLogDetails(item, options));
+                    }
+                    granularCopyLogDetails = array;
+                    continue;
+                }
+                if (prop.NameEquals("disksAndSizeDetails"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    Dictionary<string, int> dictionary = new Dictionary<string, int>();
+                    foreach (var prop0 in prop.Value.EnumerateObject())
+                    {
+                        dictionary.Add(prop0.Name, prop0.Value.GetInt32());
+                    }
+                    disksAndSizeDetails = dictionary;
+                    continue;
+                }
+                if (prop.NameEquals("passkey"u8))
+                {
+                    passkey = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new DataBoxDiskJobDetails(Optional.ToList(jobStages), contactDetails, shippingAddress.Value, deliveryPackage.Value, returnPackage.Value, Optional.ToList(dataImportDetails), Optional.ToList(dataExportDetails), jobDetailsType, preferences.Value, Optional.ToList(copyLogDetails), reverseShipmentLabelSasKey.Value, chainOfCustodySasKey.Value, deviceErasureDetails.Value, keyEncryptionKey.Value, Optional.ToNullable(expectedDataSizeInTerabytes), Optional.ToList(actions), lastMitigationActionOnJob.Value, dataCenterAddress.Value, Optional.ToNullable(dataCenterCode), Optional.ToDictionary(preferredDisks), Optional.ToList(copyProgress), Optional.ToList(granularCopyProgress), Optional.ToDictionary(disksAndSizeDetails), passkey.Value);
+            return new DataBoxDiskJobDetails(
+                jobStages ?? new ChangeTrackingList<DataBoxJobStage>(),
+                contactDetails,
+                shippingAddress,
+                deliveryPackage,
+                returnPackage,
+                dataImportDetails ?? new ChangeTrackingList<DataImportDetails>(),
+                dataExportDetails ?? new ChangeTrackingList<DataExportDetails>(),
+                jobDetailsType,
+                preferences,
+                reverseShippingDetails,
+                copyLogDetails ?? new ChangeTrackingList<CopyLogDetails>(),
+                reverseShipmentLabelSasKey,
+                chainOfCustodySasKey,
+                deviceErasureDetails,
+                keyEncryptionKey,
+                expectedDataSizeInTerabytes,
+                actions ?? new ChangeTrackingList<CustomerResolutionCode>(),
+                lastMitigationActionOnJob,
+                dataCenterAddress,
+                dataCenterCode,
+                additionalBinaryDataProperties,
+                preferredDisks ?? new ChangeTrackingDictionary<string, int>(),
+                copyProgress ?? new ChangeTrackingList<DataBoxDiskCopyProgress>(),
+                granularCopyProgress ?? new ChangeTrackingList<DataBoxDiskGranularCopyProgress>(),
+                granularCopyLogDetails ?? new ChangeTrackingList<DataBoxDiskGranularCopyLogDetails>(),
+                disksAndSizeDetails ?? new ChangeTrackingDictionary<string, int>(),
+                passkey);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DataBoxDiskJobDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxDiskJobDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxDiskJobDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxDiskJobDetails IPersistableModel<DataBoxDiskJobDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => (DataBoxDiskJobDetails)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DataBoxDiskJobDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -1,5 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
     <ProjectReference Include="..\src\Azure.ResourceManager.ServiceFabricManagedClusters.csproj" />
+    <PackageReference Include="Azure.ResourceManager.ManagedServiceIdentities" />
+    <ProjectReference Include="$(AzureCoreTestFramework)" />
   </ItemGroup>
 </Project>

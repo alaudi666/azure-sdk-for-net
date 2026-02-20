@@ -9,23 +9,25 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.MarketplaceOrdering
 {
     /// <summary>
     /// A Class representing a MarketplaceAgreement along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="MarketplaceAgreementResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetMarketplaceAgreementResource method.
-    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource" /> using the GetMarketplaceAgreement method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="MarketplaceAgreementResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetMarketplaceAgreementResource method.
+    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource"/> using the GetMarketplaceAgreement method.
     /// </summary>
     public partial class MarketplaceAgreementResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="MarketplaceAgreementResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="publisherId"> The publisherId. </param>
+        /// <param name="offerId"> The offerId. </param>
+        /// <param name="planId"> The planId. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string publisherId, string offerId, string planId)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}";
@@ -36,12 +38,15 @@ namespace Azure.ResourceManager.MarketplaceOrdering
         private readonly MarketplaceAgreementsRestOperations _marketplaceAgreementRestClient;
         private readonly MarketplaceAgreementTermData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.MarketplaceOrdering/agreements/offers/plans";
+
         /// <summary> Initializes a new instance of the <see cref="MarketplaceAgreementResource"/> class for mocking. </summary>
         protected MarketplaceAgreementResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "MarketplaceAgreementResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="MarketplaceAgreementResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal MarketplaceAgreementResource(ArmClient client, MarketplaceAgreementTermData data) : this(client, data.Id)
@@ -62,9 +67,6 @@ namespace Azure.ResourceManager.MarketplaceOrdering
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.MarketplaceOrdering/agreements/offers/plans";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -89,8 +91,24 @@ namespace Azure.ResourceManager.MarketplaceOrdering
 
         /// <summary>
         /// Get marketplace agreement.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}
-        /// Operation Id: MarketplaceAgreements_GetAgreement
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>MarketplaceAgreements_GetAgreement</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MarketplaceAgreementResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<MarketplaceAgreementResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -113,8 +131,24 @@ namespace Azure.ResourceManager.MarketplaceOrdering
 
         /// <summary>
         /// Get marketplace agreement.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}
-        /// Operation Id: MarketplaceAgreements_GetAgreement
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>MarketplaceAgreements_GetAgreement</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MarketplaceAgreementResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<MarketplaceAgreementResource> Get(CancellationToken cancellationToken = default)
@@ -137,8 +171,24 @@ namespace Azure.ResourceManager.MarketplaceOrdering
 
         /// <summary>
         /// Sign marketplace terms.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}/sign
-        /// Operation Id: MarketplaceAgreements_Sign
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}/sign</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>MarketplaceAgreements_Sign</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MarketplaceAgreementResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<MarketplaceAgreementResource>> SignAsync(CancellationToken cancellationToken = default)
@@ -159,8 +209,24 @@ namespace Azure.ResourceManager.MarketplaceOrdering
 
         /// <summary>
         /// Sign marketplace terms.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}/sign
-        /// Operation Id: MarketplaceAgreements_Sign
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}/sign</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>MarketplaceAgreements_Sign</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MarketplaceAgreementResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<MarketplaceAgreementResource> Sign(CancellationToken cancellationToken = default)
@@ -181,8 +247,24 @@ namespace Azure.ResourceManager.MarketplaceOrdering
 
         /// <summary>
         /// Cancel marketplace terms.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}/cancel
-        /// Operation Id: MarketplaceAgreements_Cancel
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}/cancel</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>MarketplaceAgreements_Cancel</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MarketplaceAgreementResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<MarketplaceAgreementResource>> CancelAsync(CancellationToken cancellationToken = default)
@@ -203,8 +285,24 @@ namespace Azure.ResourceManager.MarketplaceOrdering
 
         /// <summary>
         /// Cancel marketplace terms.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}/cancel
-        /// Operation Id: MarketplaceAgreements_Cancel
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.MarketplaceOrdering/agreements/{publisherId}/offers/{offerId}/plans/{planId}/cancel</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>MarketplaceAgreements_Cancel</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MarketplaceAgreementResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<MarketplaceAgreementResource> Cancel(CancellationToken cancellationToken = default)

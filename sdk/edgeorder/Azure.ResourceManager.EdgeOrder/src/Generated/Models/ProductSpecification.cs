@@ -5,27 +5,36 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
-    /// <summary> Specifications of the configurations. </summary>
+    /// <summary> Specification of the configurations. </summary>
     public partial class ProductSpecification
     {
-        /// <summary> Initializes a new instance of ProductSpecification. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ProductSpecification"/>. </summary>
         internal ProductSpecification()
         {
         }
 
-        /// <summary> Initializes a new instance of ProductSpecification. </summary>
+        /// <summary> Initializes a new instance of <see cref="ProductSpecification"/>. </summary>
         /// <param name="name"> Name of the specification. </param>
         /// <param name="value"> Value of the specification. </param>
-        internal ProductSpecification(string name, string value)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ProductSpecification(string name, string value, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Name = name;
             Value = value;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Name of the specification. </summary>
         public string Name { get; }
+
         /// <summary> Value of the specification. </summary>
         public string Value { get; }
     }

@@ -5,31 +5,41 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.PowerBIDedicated.Models
 {
     /// <summary> The checking result of capacity name availability. </summary>
     public partial class CheckCapacityNameAvailabilityResult
     {
-        /// <summary> Initializes a new instance of CheckCapacityNameAvailabilityResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CheckCapacityNameAvailabilityResult"/>. </summary>
         internal CheckCapacityNameAvailabilityResult()
         {
         }
 
-        /// <summary> Initializes a new instance of CheckCapacityNameAvailabilityResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="CheckCapacityNameAvailabilityResult"/>. </summary>
         /// <param name="nameAvailable"> Indicator of availability of the capacity name. </param>
         /// <param name="reason"> The reason of unavailability. </param>
         /// <param name="message"> The detailed message of the request unavailability. </param>
-        internal CheckCapacityNameAvailabilityResult(bool? nameAvailable, string reason, string message)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CheckCapacityNameAvailabilityResult(bool? nameAvailable, string reason, string message, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             NameAvailable = nameAvailable;
             Reason = reason;
             Message = message;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Indicator of availability of the capacity name. </summary>
         public bool? NameAvailable { get; }
+
         /// <summary> The reason of unavailability. </summary>
         public string Reason { get; }
+
         /// <summary> The detailed message of the request unavailability. </summary>
         public string Message { get; }
     }

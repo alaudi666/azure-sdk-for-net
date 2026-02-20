@@ -5,36 +5,66 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Avs.Models;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Avs
 {
-    /// <summary> A class representing the HcxEnterpriseSite data model. </summary>
+    /// <summary> An HCX Enterprise Site resource. </summary>
     public partial class HcxEnterpriseSiteData : ResourceData
     {
-        /// <summary> Initializes a new instance of HcxEnterpriseSiteData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="HcxEnterpriseSiteData"/>. </summary>
         public HcxEnterpriseSiteData()
         {
         }
 
-        /// <summary> Initializes a new instance of HcxEnterpriseSiteData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="activationKey"> The activation key. </param>
-        /// <param name="status"> The status of the HCX Enterprise Site. </param>
-        internal HcxEnterpriseSiteData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string activationKey, HcxEnterpriseSiteStatus? status) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="HcxEnterpriseSiteData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> The resource-specific properties for this resource. </param>
+        internal HcxEnterpriseSiteData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, HcxEnterpriseSiteProperties properties) : base(id, name, resourceType, systemData)
         {
-            ActivationKey = activationKey;
-            Status = status;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
+        }
+
+        /// <summary> The resource-specific properties for this resource. </summary>
+        internal HcxEnterpriseSiteProperties Properties { get; set; }
+
+        /// <summary> The provisioning state of the resource. </summary>
+        public HcxEnterpriseSiteProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
         }
 
         /// <summary> The activation key. </summary>
-        public string ActivationKey { get; }
+        public string ActivationKey
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ActivationKey;
+            }
+        }
+
         /// <summary> The status of the HCX Enterprise Site. </summary>
-        public HcxEnterpriseSiteStatus? Status { get; }
+        public HcxEnterpriseSiteStatus? Status
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Status;
+            }
+        }
     }
 }

@@ -5,33 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> A list of NSX DNS Zones. </summary>
+    /// <summary> The response of a WorkloadNetworkDnsZone list operation. </summary>
     internal partial class WorkloadNetworkDnsZonesList
     {
-        /// <summary> Initializes a new instance of WorkloadNetworkDnsZonesList. </summary>
-        internal WorkloadNetworkDnsZonesList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkDnsZonesList"/>. </summary>
+        /// <param name="value"> The WorkloadNetworkDnsZone items on this page. </param>
+        internal WorkloadNetworkDnsZonesList(IEnumerable<WorkloadNetworkDnsZoneData> value)
         {
-            Value = new ChangeTrackingList<WorkloadNetworkDnsZoneData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of WorkloadNetworkDnsZonesList. </summary>
-        /// <param name="value"> The items on the page. </param>
-        /// <param name="nextLink"> URL to get the next page if any. </param>
-        internal WorkloadNetworkDnsZonesList(IReadOnlyList<WorkloadNetworkDnsZoneData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkDnsZonesList"/>. </summary>
+        /// <param name="value"> The WorkloadNetworkDnsZone items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal WorkloadNetworkDnsZonesList(IList<WorkloadNetworkDnsZoneData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The items on the page. </summary>
-        public IReadOnlyList<WorkloadNetworkDnsZoneData> Value { get; }
-        /// <summary> URL to get the next page if any. </summary>
-        public string NextLink { get; }
+        /// <summary> The WorkloadNetworkDnsZone items on this page. </summary>
+        public IList<WorkloadNetworkDnsZoneData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

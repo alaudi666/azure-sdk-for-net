@@ -1,12 +1,12 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
-using System.Threading.Tasks;
 
 namespace Azure.ResourceManager.RecoveryServicesBackup.Tests
 {
@@ -17,11 +17,13 @@ namespace Azure.ResourceManager.RecoveryServicesBackup.Tests
         protected RecoveryServicesBackupManagementTestBase(bool isAsync, RecordedTestMode mode)
         : base(isAsync, mode)
         {
+            IgnoreAuthorizationDependencyVersions();
         }
 
         protected RecoveryServicesBackupManagementTestBase(bool isAsync)
             : base(isAsync)
         {
+            IgnoreAuthorizationDependencyVersions();
         }
 
         [SetUp]

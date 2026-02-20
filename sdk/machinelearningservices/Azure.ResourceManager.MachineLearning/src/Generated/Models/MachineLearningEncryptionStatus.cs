@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Indicates whether or not the encryption is enabled for the workspace.
-    /// Serialized Name: EncryptionStatus
-    /// </summary>
+    /// <summary> Indicates whether or not the encryption is enabled for the workspace. </summary>
     public readonly partial struct MachineLearningEncryptionStatus : IEquatable<MachineLearningEncryptionStatus>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string EnabledValue = "Enabled";
         private const string DisabledValue = "Disabled";
 
-        /// <summary>
-        /// Enabled
-        /// Serialized Name: EncryptionStatus.Enabled
-        /// </summary>
+        /// <summary> Enabled. </summary>
         public static MachineLearningEncryptionStatus Enabled { get; } = new MachineLearningEncryptionStatus(EnabledValue);
-        /// <summary>
-        /// Disabled
-        /// Serialized Name: EncryptionStatus.Disabled
-        /// </summary>
+        /// <summary> Disabled. </summary>
         public static MachineLearningEncryptionStatus Disabled { get; } = new MachineLearningEncryptionStatus(DisabledValue);
         /// <summary> Determines if two <see cref="MachineLearningEncryptionStatus"/> values are the same. </summary>
         public static bool operator ==(MachineLearningEncryptionStatus left, MachineLearningEncryptionStatus right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningEncryptionStatus"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningEncryptionStatus left, MachineLearningEncryptionStatus right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningEncryptionStatus"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningEncryptionStatus"/>. </summary>
         public static implicit operator MachineLearningEncryptionStatus(string value) => new MachineLearningEncryptionStatus(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

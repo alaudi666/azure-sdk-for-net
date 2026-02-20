@@ -5,26 +5,24 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// N-Cross validations determined automatically.
-    /// Serialized Name: AutoNCrossValidations
-    /// </summary>
+    /// <summary> N-Cross validations determined automatically. </summary>
     public partial class AutoNCrossValidations : NCrossValidations
     {
-        /// <summary> Initializes a new instance of AutoNCrossValidations. </summary>
+        /// <summary> Initializes a new instance of <see cref="AutoNCrossValidations"/>. </summary>
         public AutoNCrossValidations()
         {
             Mode = NCrossValidationsMode.Auto;
         }
 
-        /// <summary> Initializes a new instance of AutoNCrossValidations. </summary>
-        /// <param name="mode">
-        /// [Required] Mode for determining N-Cross validations.
-        /// Serialized Name: NCrossValidations.mode
-        /// </param>
-        internal AutoNCrossValidations(NCrossValidationsMode mode) : base(mode)
+        /// <summary> Initializes a new instance of <see cref="AutoNCrossValidations"/>. </summary>
+        /// <param name="mode"> [Required] Mode for determining N-Cross validations. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal AutoNCrossValidations(NCrossValidationsMode mode, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(mode, serializedAdditionalRawData)
         {
             Mode = mode;
         }

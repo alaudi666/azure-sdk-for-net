@@ -6,219 +6,404 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
-    public partial class ManagedHsmProperties : IUtf8JsonSerializable
+    /// <summary> Properties of the managed HSM Pool. </summary>
+    public partial class ManagedHsmProperties : IJsonModel<ManagedHsmProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ManagedHsmProperties PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedHsmProperties>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeManagedHsmProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ManagedHsmProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ManagedHsmProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedHsmProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ManagedHsmProperties)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(TenantId))
             {
-                writer.WritePropertyName("tenantId");
+                writer.WritePropertyName("tenantId"u8);
                 writer.WriteStringValue(TenantId.Value);
             }
             if (Optional.IsCollectionDefined(InitialAdminObjectIds))
             {
-                writer.WritePropertyName("initialAdminObjectIds");
+                writer.WritePropertyName("initialAdminObjectIds"u8);
                 writer.WriteStartArray();
-                foreach (var item in InitialAdminObjectIds)
+                foreach (string item in InitialAdminObjectIds)
                 {
+                    if (item == null)
+                    {
+                        writer.WriteNullValue();
+                        continue;
+                    }
                     writer.WriteStringValue(item);
                 }
                 writer.WriteEndArray();
             }
+            if (options.Format != "W" && Optional.IsDefined(HsmUri))
+            {
+                writer.WritePropertyName("hsmUri"u8);
+                writer.WriteStringValue(HsmUri.AbsoluteUri);
+            }
             if (Optional.IsDefined(EnableSoftDelete))
             {
-                writer.WritePropertyName("enableSoftDelete");
+                writer.WritePropertyName("enableSoftDelete"u8);
                 writer.WriteBooleanValue(EnableSoftDelete.Value);
             }
             if (Optional.IsDefined(SoftDeleteRetentionInDays))
             {
-                writer.WritePropertyName("softDeleteRetentionInDays");
+                writer.WritePropertyName("softDeleteRetentionInDays"u8);
                 writer.WriteNumberValue(SoftDeleteRetentionInDays.Value);
             }
             if (Optional.IsDefined(EnablePurgeProtection))
             {
-                writer.WritePropertyName("enablePurgeProtection");
+                writer.WritePropertyName("enablePurgeProtection"u8);
                 writer.WriteBooleanValue(EnablePurgeProtection.Value);
             }
             if (Optional.IsDefined(CreateMode))
             {
-                writer.WritePropertyName("createMode");
+                writer.WritePropertyName("createMode"u8);
                 writer.WriteStringValue(CreateMode.Value.ToSerialString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(StatusMessage))
+            {
+                writer.WritePropertyName("statusMessage"u8);
+                writer.WriteStringValue(StatusMessage);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ProvisioningState))
+            {
+                writer.WritePropertyName("provisioningState"u8);
+                writer.WriteStringValue(ProvisioningState.Value.ToString());
             }
             if (Optional.IsDefined(NetworkRuleSet))
             {
-                writer.WritePropertyName("networkAcls");
-                writer.WriteObjectValue(NetworkRuleSet);
+                writer.WritePropertyName("networkAcls"u8);
+                writer.WriteObjectValue(NetworkRuleSet, options);
+            }
+            if (Optional.IsCollectionDefined(Regions))
+            {
+                writer.WritePropertyName("regions"u8);
+                writer.WriteStartArray();
+                foreach (ManagedHsmGeoReplicatedRegion item in Regions)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(PrivateEndpointConnections))
+            {
+                writer.WritePropertyName("privateEndpointConnections"u8);
+                writer.WriteStartArray();
+                foreach (ManagedHsmPrivateEndpointConnectionItemData item in PrivateEndpointConnections)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
             }
             if (Optional.IsDefined(PublicNetworkAccess))
             {
-                writer.WritePropertyName("publicNetworkAccess");
+                writer.WritePropertyName("publicNetworkAccess"u8);
                 writer.WriteStringValue(PublicNetworkAccess.Value.ToString());
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && Optional.IsDefined(ScheduledPurgeOn))
+            {
+                writer.WritePropertyName("scheduledPurgeDate"u8);
+                writer.WriteStringValue(ScheduledPurgeOn.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(SecurityDomainProperties))
+            {
+                writer.WritePropertyName("securityDomainProperties"u8);
+                writer.WriteObjectValue(SecurityDomainProperties, options);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static ManagedHsmProperties DeserializeManagedHsmProperties(JsonElement element)
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ManagedHsmProperties IJsonModel<ManagedHsmProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ManagedHsmProperties JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<Guid> tenantId = default;
-            Optional<IList<string>> initialAdminObjectIds = default;
-            Optional<Uri> hsmUri = default;
-            Optional<bool> enableSoftDelete = default;
-            Optional<int> softDeleteRetentionInDays = default;
-            Optional<bool> enablePurgeProtection = default;
-            Optional<ManagedHsmCreateMode> createMode = default;
-            Optional<string> statusMessage = default;
-            Optional<ManagedHsmProvisioningState> provisioningState = default;
-            Optional<ManagedHsmNetworkRuleSet> networkAcls = default;
-            Optional<IReadOnlyList<ManagedHsmPrivateEndpointConnectionItemData>> privateEndpointConnections = default;
-            Optional<ManagedHsmPublicNetworkAccess> publicNetworkAccess = default;
-            Optional<DateTimeOffset> scheduledPurgeDate = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedHsmProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("tenantId"))
+                throw new FormatException($"The model {nameof(ManagedHsmProperties)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeManagedHsmProperties(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ManagedHsmProperties DeserializeManagedHsmProperties(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            Guid? tenantId = default;
+            IList<string> initialAdminObjectIds = default;
+            Uri hsmUri = default;
+            bool? enableSoftDelete = default;
+            int? softDeleteRetentionInDays = default;
+            bool? enablePurgeProtection = default;
+            ManagedHsmCreateMode? createMode = default;
+            string statusMessage = default;
+            ManagedHsmProvisioningState? provisioningState = default;
+            ManagedHsmNetworkRuleSet networkRuleSet = default;
+            IList<ManagedHsmGeoReplicatedRegion> regions = default;
+            IReadOnlyList<ManagedHsmPrivateEndpointConnectionItemData> privateEndpointConnections = default;
+            ManagedHsmPublicNetworkAccess? publicNetworkAccess = default;
+            DateTimeOffset? scheduledPurgeOn = default;
+            ManagedHSMSecurityDomainProperties securityDomainProperties = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("tenantId"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    tenantId = property.Value.GetGuid();
+                    tenantId = new Guid(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("initialAdminObjectIds"))
+                if (prop.NameEquals("initialAdminObjectIds"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(item.GetString());
+                        if (item.ValueKind == JsonValueKind.Null)
+                        {
+                            array.Add(null);
+                        }
+                        else
+                        {
+                            array.Add(item.GetString());
+                        }
                     }
                     initialAdminObjectIds = array;
                     continue;
                 }
-                if (property.NameEquals("hsmUri"))
+                if (prop.NameEquals("hsmUri"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        hsmUri = null;
                         continue;
                     }
-                    hsmUri = new Uri(property.Value.GetString());
+                    hsmUri = string.IsNullOrEmpty(prop.Value.GetString()) ? null : new Uri(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("enableSoftDelete"))
+                if (prop.NameEquals("enableSoftDelete"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    enableSoftDelete = property.Value.GetBoolean();
+                    enableSoftDelete = prop.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("softDeleteRetentionInDays"))
+                if (prop.NameEquals("softDeleteRetentionInDays"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    softDeleteRetentionInDays = property.Value.GetInt32();
+                    softDeleteRetentionInDays = prop.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("enablePurgeProtection"))
+                if (prop.NameEquals("enablePurgeProtection"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    enablePurgeProtection = property.Value.GetBoolean();
+                    enablePurgeProtection = prop.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("createMode"))
+                if (prop.NameEquals("createMode"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    createMode = property.Value.GetString().ToManagedHsmCreateMode();
+                    createMode = prop.Value.GetString().ToManagedHsmCreateMode();
                     continue;
                 }
-                if (property.NameEquals("statusMessage"))
+                if (prop.NameEquals("statusMessage"u8))
                 {
-                    statusMessage = property.Value.GetString();
+                    statusMessage = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("provisioningState"))
+                if (prop.NameEquals("provisioningState"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    provisioningState = new ManagedHsmProvisioningState(property.Value.GetString());
+                    provisioningState = new ManagedHsmProvisioningState(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("networkAcls"))
+                if (prop.NameEquals("networkAcls"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    networkAcls = ManagedHsmNetworkRuleSet.DeserializeManagedHsmNetworkRuleSet(property.Value);
+                    networkRuleSet = ManagedHsmNetworkRuleSet.DeserializeManagedHsmNetworkRuleSet(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("privateEndpointConnections"))
+                if (prop.NameEquals("regions"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    List<ManagedHsmGeoReplicatedRegion> array = new List<ManagedHsmGeoReplicatedRegion>();
+                    foreach (var item in prop.Value.EnumerateArray())
+                    {
+                        array.Add(ManagedHsmGeoReplicatedRegion.DeserializeManagedHsmGeoReplicatedRegion(item, options));
+                    }
+                    regions = array;
+                    continue;
+                }
+                if (prop.NameEquals("privateEndpointConnections"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
                     List<ManagedHsmPrivateEndpointConnectionItemData> array = new List<ManagedHsmPrivateEndpointConnectionItemData>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(ManagedHsmPrivateEndpointConnectionItemData.DeserializeManagedHsmPrivateEndpointConnectionItemData(item));
+                        array.Add(ManagedHsmPrivateEndpointConnectionItemData.DeserializeManagedHsmPrivateEndpointConnectionItemData(item, options));
                     }
                     privateEndpointConnections = array;
                     continue;
                 }
-                if (property.NameEquals("publicNetworkAccess"))
+                if (prop.NameEquals("publicNetworkAccess"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    publicNetworkAccess = new ManagedHsmPublicNetworkAccess(property.Value.GetString());
+                    publicNetworkAccess = new ManagedHsmPublicNetworkAccess(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("scheduledPurgeDate"))
+                if (prop.NameEquals("scheduledPurgeDate"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    scheduledPurgeDate = property.Value.GetDateTimeOffset("O");
+                    scheduledPurgeOn = prop.Value.GetDateTimeOffset("O");
                     continue;
+                }
+                if (prop.NameEquals("securityDomainProperties"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    securityDomainProperties = ManagedHSMSecurityDomainProperties.DeserializeManagedHSMSecurityDomainProperties(prop.Value, options);
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new ManagedHsmProperties(Optional.ToNullable(tenantId), Optional.ToList(initialAdminObjectIds), hsmUri.Value, Optional.ToNullable(enableSoftDelete), Optional.ToNullable(softDeleteRetentionInDays), Optional.ToNullable(enablePurgeProtection), Optional.ToNullable(createMode), statusMessage.Value, Optional.ToNullable(provisioningState), networkAcls.Value, Optional.ToList(privateEndpointConnections), Optional.ToNullable(publicNetworkAccess), Optional.ToNullable(scheduledPurgeDate));
+            return new ManagedHsmProperties(
+                tenantId,
+                initialAdminObjectIds ?? new ChangeTrackingList<string>(),
+                hsmUri,
+                enableSoftDelete,
+                softDeleteRetentionInDays,
+                enablePurgeProtection,
+                createMode,
+                statusMessage,
+                provisioningState,
+                networkRuleSet,
+                regions ?? new ChangeTrackingList<ManagedHsmGeoReplicatedRegion>(),
+                privateEndpointConnections ?? new ChangeTrackingList<ManagedHsmPrivateEndpointConnectionItemData>(),
+                publicNetworkAccess,
+                scheduledPurgeOn,
+                securityDomainProperties,
+                additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ManagedHsmProperties>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedHsmProperties>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerKeyVaultContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ManagedHsmProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ManagedHsmProperties IPersistableModel<ManagedHsmProperties>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ManagedHsmProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

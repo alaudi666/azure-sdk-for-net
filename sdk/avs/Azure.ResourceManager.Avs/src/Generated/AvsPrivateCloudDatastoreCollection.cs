@@ -8,8 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
@@ -20,63 +19,90 @@ using Azure.ResourceManager;
 namespace Azure.ResourceManager.Avs
 {
     /// <summary>
-    /// A class representing a collection of <see cref="AvsPrivateCloudDatastoreResource" /> and their operations.
-    /// Each <see cref="AvsPrivateCloudDatastoreResource" /> in the collection will belong to the same instance of <see cref="AvsPrivateCloudClusterResource" />.
-    /// To get an <see cref="AvsPrivateCloudDatastoreCollection" /> instance call the GetAvsPrivateCloudDatastores method from an instance of <see cref="AvsPrivateCloudClusterResource" />.
+    /// A class representing a collection of <see cref="AvsPrivateCloudDatastoreResource"/> and their operations.
+    /// Each <see cref="AvsPrivateCloudDatastoreResource"/> in the collection will belong to the same instance of <see cref="AvsPrivateCloudClusterResource"/>.
+    /// To get a <see cref="AvsPrivateCloudDatastoreCollection"/> instance call the GetAvsPrivateCloudDatastores method from an instance of <see cref="AvsPrivateCloudClusterResource"/>.
     /// </summary>
     public partial class AvsPrivateCloudDatastoreCollection : ArmCollection, IEnumerable<AvsPrivateCloudDatastoreResource>, IAsyncEnumerable<AvsPrivateCloudDatastoreResource>
     {
-        private readonly ClientDiagnostics _avsPrivateCloudDatastoreDatastoresClientDiagnostics;
-        private readonly DatastoresRestOperations _avsPrivateCloudDatastoreDatastoresRestClient;
+        private readonly ClientDiagnostics _datastoresClientDiagnostics;
+        private readonly Datastores _datastoresRestClient;
 
-        /// <summary> Initializes a new instance of the <see cref="AvsPrivateCloudDatastoreCollection"/> class for mocking. </summary>
+        /// <summary> Initializes a new instance of AvsPrivateCloudDatastoreCollection for mocking. </summary>
         protected AvsPrivateCloudDatastoreCollection()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref="AvsPrivateCloudDatastoreCollection"/> class. </summary>
+        /// <summary> Initializes a new instance of <see cref="AvsPrivateCloudDatastoreCollection"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
-        /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
+        /// <param name="id"> The identifier of the resource that is the target of operations. </param>
         internal AvsPrivateCloudDatastoreCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _avsPrivateCloudDatastoreDatastoresClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Avs", AvsPrivateCloudDatastoreResource.ResourceType.Namespace, Diagnostics);
-            TryGetApiVersion(AvsPrivateCloudDatastoreResource.ResourceType, out string avsPrivateCloudDatastoreDatastoresApiVersion);
-            _avsPrivateCloudDatastoreDatastoresRestClient = new DatastoresRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, avsPrivateCloudDatastoreDatastoresApiVersion);
-#if DEBUG
-			ValidateResourceId(Id);
-#endif
+            TryGetApiVersion(AvsPrivateCloudDatastoreResource.ResourceType, out string avsPrivateCloudDatastoreApiVersion);
+            _datastoresClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Avs", AvsPrivateCloudDatastoreResource.ResourceType.Namespace, Diagnostics);
+            _datastoresRestClient = new Datastores(_datastoresClientDiagnostics, Pipeline, Endpoint, avsPrivateCloudDatastoreApiVersion ?? "2025-09-01");
+            ValidateResourceId(id);
         }
 
+        /// <param name="id"></param>
+        [Conditional("DEBUG")]
         internal static void ValidateResourceId(ResourceIdentifier id)
         {
             if (id.ResourceType != AvsPrivateCloudClusterResource.ResourceType)
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, AvsPrivateCloudClusterResource.ResourceType), nameof(id));
+            {
+                throw new ArgumentException(string.Format("Invalid resource type {0} expected {1}", id.ResourceType, AvsPrivateCloudClusterResource.ResourceType), id);
+            }
         }
 
         /// <summary>
-        /// Create or update a datastore in a private cloud cluster
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}
-        /// Operation Id: Datastores_CreateOrUpdate
+        /// Create a Datastore
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> Datastores_CreateOrUpdate. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="datastoreName"> Name of the datastore in the private cloud cluster. </param>
-        /// <param name="data"> A datastore in a private cloud cluster. </param>
+        /// <param name="datastoreName"> Name of the datastore. </param>
+        /// <param name="data"> Resource create parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="datastoreName"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<ArmOperation<AvsPrivateCloudDatastoreResource>> CreateOrUpdateAsync(WaitUntil waitUntil, string datastoreName, AvsPrivateCloudDatastoreData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(datastoreName, nameof(datastoreName));
             Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _avsPrivateCloudDatastoreDatastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.CreateOrUpdate");
+            using DiagnosticScope scope = _datastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = await _avsPrivateCloudDatastoreDatastoresRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new AvsArmOperation<AvsPrivateCloudDatastoreResource>(new AvsPrivateCloudDatastoreOperationSource(Client), _avsPrivateCloudDatastoreDatastoresClientDiagnostics, Pipeline, _avsPrivateCloudDatastoreDatastoresRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, data).Request, response, OperationFinalStateVia.Location);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _datastoresRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, AvsPrivateCloudDatastoreData.ToRequestContent(data), context);
+                Response response = await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                AvsArmOperation<AvsPrivateCloudDatastoreResource> operation = new AvsArmOperation<AvsPrivateCloudDatastoreResource>(
+                    new AvsPrivateCloudDatastoreOperationSource(Client),
+                    _datastoresClientDiagnostics,
+                    Pipeline,
+                    message.Request,
+                    response,
+                    OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
+                {
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
+                }
                 return operation;
             }
             catch (Exception e)
@@ -87,29 +113,54 @@ namespace Azure.ResourceManager.Avs
         }
 
         /// <summary>
-        /// Create or update a datastore in a private cloud cluster
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}
-        /// Operation Id: Datastores_CreateOrUpdate
+        /// Create a Datastore
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> Datastores_CreateOrUpdate. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="datastoreName"> Name of the datastore in the private cloud cluster. </param>
-        /// <param name="data"> A datastore in a private cloud cluster. </param>
+        /// <param name="datastoreName"> Name of the datastore. </param>
+        /// <param name="data"> Resource create parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="datastoreName"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual ArmOperation<AvsPrivateCloudDatastoreResource> CreateOrUpdate(WaitUntil waitUntil, string datastoreName, AvsPrivateCloudDatastoreData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(datastoreName, nameof(datastoreName));
             Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _avsPrivateCloudDatastoreDatastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.CreateOrUpdate");
+            using DiagnosticScope scope = _datastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = _avsPrivateCloudDatastoreDatastoresRestClient.CreateOrUpdate(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, data, cancellationToken);
-                var operation = new AvsArmOperation<AvsPrivateCloudDatastoreResource>(new AvsPrivateCloudDatastoreOperationSource(Client), _avsPrivateCloudDatastoreDatastoresClientDiagnostics, Pipeline, _avsPrivateCloudDatastoreDatastoresRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, data).Request, response, OperationFinalStateVia.Location);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _datastoresRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, AvsPrivateCloudDatastoreData.ToRequestContent(data), context);
+                Response response = Pipeline.ProcessMessage(message, context);
+                AvsArmOperation<AvsPrivateCloudDatastoreResource> operation = new AvsArmOperation<AvsPrivateCloudDatastoreResource>(
+                    new AvsPrivateCloudDatastoreOperationSource(Client),
+                    _datastoresClientDiagnostics,
+                    Pipeline,
+                    message.Request,
+                    response,
+                    OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
+                {
                     operation.WaitForCompletion(cancellationToken);
+                }
                 return operation;
             }
             catch (Exception e)
@@ -120,25 +171,45 @@ namespace Azure.ResourceManager.Avs
         }
 
         /// <summary>
-        /// Get a datastore in a private cloud cluster
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}
-        /// Operation Id: Datastores_Get
+        /// Get a Datastore
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> Datastores_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="datastoreName"> Name of the datastore in the private cloud cluster. </param>
+        /// <param name="datastoreName"> Name of the datastore. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="datastoreName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<AvsPrivateCloudDatastoreResource>> GetAsync(string datastoreName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(datastoreName, nameof(datastoreName));
 
-            using var scope = _avsPrivateCloudDatastoreDatastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.Get");
+            using DiagnosticScope scope = _datastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.Get");
             scope.Start();
             try
             {
-                var response = await _avsPrivateCloudDatastoreDatastoresRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _datastoresRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, context);
+                Response result = await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                Response<AvsPrivateCloudDatastoreData> response = Response.FromValue(AvsPrivateCloudDatastoreData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new AvsPrivateCloudDatastoreResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -149,25 +220,45 @@ namespace Azure.ResourceManager.Avs
         }
 
         /// <summary>
-        /// Get a datastore in a private cloud cluster
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}
-        /// Operation Id: Datastores_Get
+        /// Get a Datastore
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> Datastores_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="datastoreName"> Name of the datastore in the private cloud cluster. </param>
+        /// <param name="datastoreName"> Name of the datastore. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="datastoreName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<AvsPrivateCloudDatastoreResource> Get(string datastoreName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(datastoreName, nameof(datastoreName));
 
-            using var scope = _avsPrivateCloudDatastoreDatastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.Get");
+            using DiagnosticScope scope = _datastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.Get");
             scope.Start();
             try
             {
-                var response = _avsPrivateCloudDatastoreDatastoresRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _datastoresRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, context);
+                Response result = Pipeline.ProcessMessage(message, context);
+                Response<AvsPrivateCloudDatastoreData> response = Response.FromValue(AvsPrivateCloudDatastoreData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new AvsPrivateCloudDatastoreResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -178,107 +269,121 @@ namespace Azure.ResourceManager.Avs
         }
 
         /// <summary>
-        /// List datastores in a private cloud cluster
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores
-        /// Operation Id: Datastores_List
+        /// List Datastore resources by Cluster
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> Datastores_List. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="AvsPrivateCloudDatastoreResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="AvsPrivateCloudDatastoreResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<AvsPrivateCloudDatastoreResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<AvsPrivateCloudDatastoreResource>> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _avsPrivateCloudDatastoreDatastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _avsPrivateCloudDatastoreDatastoresRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new AvsPrivateCloudDatastoreResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<AvsPrivateCloudDatastoreResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _avsPrivateCloudDatastoreDatastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _avsPrivateCloudDatastoreDatastoresRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new AvsPrivateCloudDatastoreResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new AsyncPageableWrapper<AvsPrivateCloudDatastoreData, AvsPrivateCloudDatastoreResource>(new DatastoresGetAllAsyncCollectionResultOfT(
+                _datastoresRestClient,
+                Guid.Parse(Id.SubscriptionId),
+                Id.ResourceGroupName,
+                Id.Parent.Name,
+                Id.Name,
+                context), data => new AvsPrivateCloudDatastoreResource(Client, data));
         }
 
         /// <summary>
-        /// List datastores in a private cloud cluster
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores
-        /// Operation Id: Datastores_List
+        /// List Datastore resources by Cluster
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> Datastores_List. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="AvsPrivateCloudDatastoreResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="AvsPrivateCloudDatastoreResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<AvsPrivateCloudDatastoreResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<AvsPrivateCloudDatastoreResource> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _avsPrivateCloudDatastoreDatastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _avsPrivateCloudDatastoreDatastoresRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new AvsPrivateCloudDatastoreResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<AvsPrivateCloudDatastoreResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _avsPrivateCloudDatastoreDatastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _avsPrivateCloudDatastoreDatastoresRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new AvsPrivateCloudDatastoreResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new PageableWrapper<AvsPrivateCloudDatastoreData, AvsPrivateCloudDatastoreResource>(new DatastoresGetAllCollectionResultOfT(
+                _datastoresRestClient,
+                Guid.Parse(Id.SubscriptionId),
+                Id.ResourceGroupName,
+                Id.Parent.Name,
+                Id.Name,
+                context), data => new AvsPrivateCloudDatastoreResource(Client, data));
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}
-        /// Operation Id: Datastores_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> Datastores_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="datastoreName"> Name of the datastore in the private cloud cluster. </param>
+        /// <param name="datastoreName"> Name of the datastore. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="datastoreName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<bool>> ExistsAsync(string datastoreName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(datastoreName, nameof(datastoreName));
 
-            using var scope = _avsPrivateCloudDatastoreDatastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.Exists");
+            using DiagnosticScope scope = _datastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.Exists");
             scope.Start();
             try
             {
-                var response = await _avsPrivateCloudDatastoreDatastoresRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _datastoresRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<AvsPrivateCloudDatastoreData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(AvsPrivateCloudDatastoreData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((AvsPrivateCloudDatastoreData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -290,23 +395,175 @@ namespace Azure.ResourceManager.Avs
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}
-        /// Operation Id: Datastores_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> Datastores_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="datastoreName"> Name of the datastore in the private cloud cluster. </param>
+        /// <param name="datastoreName"> Name of the datastore. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="datastoreName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<bool> Exists(string datastoreName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(datastoreName, nameof(datastoreName));
 
-            using var scope = _avsPrivateCloudDatastoreDatastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.Exists");
+            using DiagnosticScope scope = _datastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.Exists");
             scope.Start();
             try
             {
-                var response = _avsPrivateCloudDatastoreDatastoresRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, cancellationToken: cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _datastoresRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<AvsPrivateCloudDatastoreData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(AvsPrivateCloudDatastoreData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((AvsPrivateCloudDatastoreData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> Datastores_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="datastoreName"> Name of the datastore. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="datastoreName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual async Task<NullableResponse<AvsPrivateCloudDatastoreResource>> GetIfExistsAsync(string datastoreName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(datastoreName, nameof(datastoreName));
+
+            using DiagnosticScope scope = _datastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _datastoresRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<AvsPrivateCloudDatastoreData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(AvsPrivateCloudDatastoreData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((AvsPrivateCloudDatastoreData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<AvsPrivateCloudDatastoreResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new AvsPrivateCloudDatastoreResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/clusters/{clusterName}/datastores/{datastoreName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> Datastores_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="datastoreName"> Name of the datastore. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="datastoreName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="datastoreName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual NullableResponse<AvsPrivateCloudDatastoreResource> GetIfExists(string datastoreName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(datastoreName, nameof(datastoreName));
+
+            using DiagnosticScope scope = _datastoresClientDiagnostics.CreateScope("AvsPrivateCloudDatastoreCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _datastoresRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, Id.Name, datastoreName, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<AvsPrivateCloudDatastoreData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(AvsPrivateCloudDatastoreData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((AvsPrivateCloudDatastoreData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<AvsPrivateCloudDatastoreResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new AvsPrivateCloudDatastoreResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {
@@ -325,6 +582,7 @@ namespace Azure.ResourceManager.Avs
             return GetAll().GetEnumerator();
         }
 
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
         IAsyncEnumerator<AvsPrivateCloudDatastoreResource> IAsyncEnumerable<AvsPrivateCloudDatastoreResource>.GetAsyncEnumerator(CancellationToken cancellationToken)
         {
             return GetAllAsync(cancellationToken: cancellationToken).GetAsyncEnumerator(cancellationToken);

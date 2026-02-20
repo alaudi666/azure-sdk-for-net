@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
 using Azure.ResourceManager.PowerBIDedicated;
 
 namespace Azure.ResourceManager.PowerBIDedicated.Models
@@ -16,24 +15,31 @@ namespace Azure.ResourceManager.PowerBIDedicated.Models
     /// <summary> An array of Dedicated capacities resources. </summary>
     internal partial class DedicatedCapacities
     {
-        /// <summary> Initializes a new instance of DedicatedCapacities. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DedicatedCapacities"/>. </summary>
         /// <param name="value"> An array of Dedicated capacities resources. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
         internal DedicatedCapacities(IEnumerable<DedicatedCapacityData> value)
         {
-            Argument.AssertNotNull(value, nameof(value));
-
             Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of DedicatedCapacities. </summary>
+        /// <summary> Initializes a new instance of <see cref="DedicatedCapacities"/>. </summary>
         /// <param name="value"> An array of Dedicated capacities resources. </param>
-        internal DedicatedCapacities(IReadOnlyList<DedicatedCapacityData> value)
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DedicatedCapacities(IList<DedicatedCapacityData> value, string nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
+            NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> An array of Dedicated capacities resources. </summary>
-        public IReadOnlyList<DedicatedCapacityData> Value { get; }
+        public IList<DedicatedCapacityData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public string NextLink { get; }
     }
 }

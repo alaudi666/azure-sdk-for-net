@@ -6,149 +6,189 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Kusto.Models
 {
-    public partial class KustoEventGridDataConnection : IUtf8JsonSerializable
+    public partial class KustoEventGridDataConnection : IUtf8JsonSerializable, IJsonModel<KustoEventGridDataConnection>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<KustoEventGridDataConnection>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<KustoEventGridDataConnection>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(Location))
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KustoEventGridDataConnection>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                writer.WritePropertyName("location");
-                writer.WriteStringValue(Location.Value);
+                throw new FormatException($"The model {nameof(KustoEventGridDataConnection)} does not support writing '{format}' format.");
             }
-            writer.WritePropertyName("kind");
-            writer.WriteStringValue(Kind.ToString());
-            writer.WritePropertyName("properties");
+
+            base.JsonModelWriteCore(writer, options);
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsDefined(StorageAccountResourceId))
             {
-                writer.WritePropertyName("storageAccountResourceId");
+                writer.WritePropertyName("storageAccountResourceId"u8);
                 writer.WriteStringValue(StorageAccountResourceId);
             }
             if (Optional.IsDefined(EventGridResourceId))
             {
-                writer.WritePropertyName("eventGridResourceId");
+                writer.WritePropertyName("eventGridResourceId"u8);
                 writer.WriteStringValue(EventGridResourceId);
             }
             if (Optional.IsDefined(EventHubResourceId))
             {
-                writer.WritePropertyName("eventHubResourceId");
+                writer.WritePropertyName("eventHubResourceId"u8);
                 writer.WriteStringValue(EventHubResourceId);
             }
             if (Optional.IsDefined(ConsumerGroup))
             {
-                writer.WritePropertyName("consumerGroup");
+                writer.WritePropertyName("consumerGroup"u8);
                 writer.WriteStringValue(ConsumerGroup);
             }
             if (Optional.IsDefined(TableName))
             {
-                writer.WritePropertyName("tableName");
+                writer.WritePropertyName("tableName"u8);
                 writer.WriteStringValue(TableName);
             }
             if (Optional.IsDefined(MappingRuleName))
             {
-                writer.WritePropertyName("mappingRuleName");
+                writer.WritePropertyName("mappingRuleName"u8);
                 writer.WriteStringValue(MappingRuleName);
             }
             if (Optional.IsDefined(DataFormat))
             {
-                writer.WritePropertyName("dataFormat");
+                writer.WritePropertyName("dataFormat"u8);
                 writer.WriteStringValue(DataFormat.Value.ToString());
             }
             if (Optional.IsDefined(IsFirstRecordIgnored))
             {
-                writer.WritePropertyName("ignoreFirstRecord");
+                writer.WritePropertyName("ignoreFirstRecord"u8);
                 writer.WriteBooleanValue(IsFirstRecordIgnored.Value);
             }
             if (Optional.IsDefined(BlobStorageEventType))
             {
-                writer.WritePropertyName("blobStorageEventType");
+                writer.WritePropertyName("blobStorageEventType"u8);
                 writer.WriteStringValue(BlobStorageEventType.Value.ToString());
             }
             if (Optional.IsDefined(ManagedIdentityResourceId))
             {
-                writer.WritePropertyName("managedIdentityResourceId");
+                writer.WritePropertyName("managedIdentityResourceId"u8);
                 writer.WriteStringValue(ManagedIdentityResourceId);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ManagedIdentityObjectId))
+            {
+                writer.WritePropertyName("managedIdentityObjectId"u8);
+                writer.WriteStringValue(ManagedIdentityObjectId.Value);
             }
             if (Optional.IsDefined(DatabaseRouting))
             {
-                writer.WritePropertyName("databaseRouting");
+                writer.WritePropertyName("databaseRouting"u8);
                 writer.WriteStringValue(DatabaseRouting.Value.ToString());
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && Optional.IsDefined(ProvisioningState))
+            {
+                writer.WritePropertyName("provisioningState"u8);
+                writer.WriteStringValue(ProvisioningState.Value.ToString());
+            }
             writer.WriteEndObject();
         }
 
-        internal static KustoEventGridDataConnection DeserializeKustoEventGridDataConnection(JsonElement element)
+        KustoEventGridDataConnection IJsonModel<KustoEventGridDataConnection>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<AzureLocation> location = default;
+            var format = options.Format == "W" ? ((IPersistableModel<KustoEventGridDataConnection>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(KustoEventGridDataConnection)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeKustoEventGridDataConnection(document.RootElement, options);
+        }
+
+        internal static KustoEventGridDataConnection DeserializeKustoEventGridDataConnection(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            AzureLocation? location = default;
             DataConnectionKind kind = default;
             ResourceIdentifier id = default;
             string name = default;
             ResourceType type = default;
-            Optional<SystemData> systemData = default;
-            Optional<ResourceIdentifier> storageAccountResourceId = default;
-            Optional<ResourceIdentifier> eventGridResourceId = default;
-            Optional<ResourceIdentifier> eventHubResourceId = default;
-            Optional<string> consumerGroup = default;
-            Optional<string> tableName = default;
-            Optional<string> mappingRuleName = default;
-            Optional<KustoEventGridDataFormat> dataFormat = default;
-            Optional<bool> ignoreFirstRecord = default;
-            Optional<BlobStorageEventType> blobStorageEventType = default;
-            Optional<ResourceIdentifier> managedIdentityResourceId = default;
-            Optional<Guid> managedIdentityObjectId = default;
-            Optional<KustoDatabaseRouting> databaseRouting = default;
-            Optional<KustoProvisioningState> provisioningState = default;
+            SystemData systemData = default;
+            ResourceIdentifier storageAccountResourceId = default;
+            ResourceIdentifier eventGridResourceId = default;
+            ResourceIdentifier eventHubResourceId = default;
+            string consumerGroup = default;
+            string tableName = default;
+            string mappingRuleName = default;
+            KustoEventGridDataFormat? dataFormat = default;
+            bool? ignoreFirstRecord = default;
+            BlobStorageEventType? blobStorageEventType = default;
+            ResourceIdentifier managedIdentityResourceId = default;
+            Guid? managedIdentityObjectId = default;
+            KustoDatabaseRouting? databaseRouting = default;
+            KustoProvisioningState? provisioningState = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("location"))
+                if (property.NameEquals("location"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     location = new AzureLocation(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("kind"))
+                if (property.NameEquals("kind"u8))
                 {
                     kind = new DataConnectionKind(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = new ResourceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("systemData"))
+                if (property.NameEquals("systemData"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.GetRawText());
+                    systemData = ModelReaderWriter.Read<SystemData>(new BinaryData(Encoding.UTF8.GetBytes(property.Value.GetRawText())), ModelSerializationExtensions.WireOptions, AzureResourceManagerKustoContext.Default);
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -157,116 +197,106 @@ namespace Azure.ResourceManager.Kusto.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("storageAccountResourceId"))
+                        if (property0.NameEquals("storageAccountResourceId"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             storageAccountResourceId = new ResourceIdentifier(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("eventGridResourceId"))
+                        if (property0.NameEquals("eventGridResourceId"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             eventGridResourceId = new ResourceIdentifier(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("eventHubResourceId"))
+                        if (property0.NameEquals("eventHubResourceId"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             eventHubResourceId = new ResourceIdentifier(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("consumerGroup"))
+                        if (property0.NameEquals("consumerGroup"u8))
                         {
                             consumerGroup = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("tableName"))
+                        if (property0.NameEquals("tableName"u8))
                         {
                             tableName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("mappingRuleName"))
+                        if (property0.NameEquals("mappingRuleName"u8))
                         {
                             mappingRuleName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("dataFormat"))
+                        if (property0.NameEquals("dataFormat"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             dataFormat = new KustoEventGridDataFormat(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("ignoreFirstRecord"))
+                        if (property0.NameEquals("ignoreFirstRecord"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             ignoreFirstRecord = property0.Value.GetBoolean();
                             continue;
                         }
-                        if (property0.NameEquals("blobStorageEventType"))
+                        if (property0.NameEquals("blobStorageEventType"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             blobStorageEventType = new BlobStorageEventType(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("managedIdentityResourceId"))
+                        if (property0.NameEquals("managedIdentityResourceId"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             managedIdentityResourceId = new ResourceIdentifier(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("managedIdentityObjectId"))
+                        if (property0.NameEquals("managedIdentityObjectId"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             managedIdentityObjectId = property0.Value.GetGuid();
                             continue;
                         }
-                        if (property0.NameEquals("databaseRouting"))
+                        if (property0.NameEquals("databaseRouting"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             databaseRouting = new KustoDatabaseRouting(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("provisioningState"))
+                        if (property0.NameEquals("provisioningState"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             provisioningState = new KustoProvisioningState(property0.Value.GetString());
@@ -275,8 +305,384 @@ namespace Azure.ResourceManager.Kusto.Models
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new KustoEventGridDataConnection(id, name, type, systemData.Value, Optional.ToNullable(location), kind, storageAccountResourceId.Value, eventGridResourceId.Value, eventHubResourceId.Value, consumerGroup.Value, tableName.Value, mappingRuleName.Value, Optional.ToNullable(dataFormat), Optional.ToNullable(ignoreFirstRecord), Optional.ToNullable(blobStorageEventType), managedIdentityResourceId.Value, Optional.ToNullable(managedIdentityObjectId), Optional.ToNullable(databaseRouting), Optional.ToNullable(provisioningState));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new KustoEventGridDataConnection(
+                id,
+                name,
+                type,
+                systemData,
+                location,
+                kind,
+                serializedAdditionalRawData,
+                storageAccountResourceId,
+                eventGridResourceId,
+                eventHubResourceId,
+                consumerGroup,
+                tableName,
+                mappingRuleName,
+                dataFormat,
+                ignoreFirstRecord,
+                blobStorageEventType,
+                managedIdentityResourceId,
+                managedIdentityObjectId,
+                databaseRouting,
+                provisioningState);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Name))
+                {
+                    builder.Append("  name: ");
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Location), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  location: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Location))
+                {
+                    builder.Append("  location: ");
+                    builder.AppendLine($"'{Location.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Kind), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  kind: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  kind: ");
+                builder.AppendLine($"'{Kind.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Id), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  id: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Id))
+                {
+                    builder.Append("  id: ");
+                    builder.AppendLine($"'{Id.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SystemData), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  systemData: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(SystemData))
+                {
+                    builder.Append("  systemData: ");
+                    builder.AppendLine($"'{SystemData.ToString()}'");
+                }
+            }
+
+            builder.Append("  properties:");
+            builder.AppendLine(" {");
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(StorageAccountResourceId), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    storageAccountResourceId: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(StorageAccountResourceId))
+                {
+                    builder.Append("    storageAccountResourceId: ");
+                    builder.AppendLine($"'{StorageAccountResourceId.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EventGridResourceId), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    eventGridResourceId: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(EventGridResourceId))
+                {
+                    builder.Append("    eventGridResourceId: ");
+                    builder.AppendLine($"'{EventGridResourceId.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EventHubResourceId), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    eventHubResourceId: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(EventHubResourceId))
+                {
+                    builder.Append("    eventHubResourceId: ");
+                    builder.AppendLine($"'{EventHubResourceId.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ConsumerGroup), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    consumerGroup: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ConsumerGroup))
+                {
+                    builder.Append("    consumerGroup: ");
+                    if (ConsumerGroup.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ConsumerGroup}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ConsumerGroup}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(TableName), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    tableName: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(TableName))
+                {
+                    builder.Append("    tableName: ");
+                    if (TableName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{TableName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{TableName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(MappingRuleName), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    mappingRuleName: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(MappingRuleName))
+                {
+                    builder.Append("    mappingRuleName: ");
+                    if (MappingRuleName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{MappingRuleName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{MappingRuleName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DataFormat), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    dataFormat: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DataFormat))
+                {
+                    builder.Append("    dataFormat: ");
+                    builder.AppendLine($"'{DataFormat.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IsFirstRecordIgnored), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    ignoreFirstRecord: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(IsFirstRecordIgnored))
+                {
+                    builder.Append("    ignoreFirstRecord: ");
+                    var boolValue = IsFirstRecordIgnored.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(BlobStorageEventType), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    blobStorageEventType: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(BlobStorageEventType))
+                {
+                    builder.Append("    blobStorageEventType: ");
+                    builder.AppendLine($"'{BlobStorageEventType.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ManagedIdentityResourceId), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    managedIdentityResourceId: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ManagedIdentityResourceId))
+                {
+                    builder.Append("    managedIdentityResourceId: ");
+                    builder.AppendLine($"'{ManagedIdentityResourceId.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ManagedIdentityObjectId), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    managedIdentityObjectId: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ManagedIdentityObjectId))
+                {
+                    builder.Append("    managedIdentityObjectId: ");
+                    builder.AppendLine($"'{ManagedIdentityObjectId.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DatabaseRouting), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    databaseRouting: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DatabaseRouting))
+                {
+                    builder.Append("    databaseRouting: ");
+                    builder.AppendLine($"'{DatabaseRouting.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ProvisioningState), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    provisioningState: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ProvisioningState))
+                {
+                    builder.Append("    provisioningState: ");
+                    builder.AppendLine($"'{ProvisioningState.Value.ToString()}'");
+                }
+            }
+
+            builder.AppendLine("  }");
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<KustoEventGridDataConnection>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KustoEventGridDataConnection>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerKustoContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(KustoEventGridDataConnection)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        KustoEventGridDataConnection IPersistableModel<KustoEventGridDataConnection>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KustoEventGridDataConnection>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeKustoEventGridDataConnection(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(KustoEventGridDataConnection)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<KustoEventGridDataConnection>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -5,225 +5,389 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    public partial class ServiceFabricManagedNetworkSecurityRule : IUtf8JsonSerializable
+    /// <summary> Describes a network security rule. </summary>
+    public partial class ServiceFabricManagedNetworkSecurityRule : IJsonModel<ServiceFabricManagedNetworkSecurityRule>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedNetworkSecurityRule"/> for deserialization. </summary>
+        internal ServiceFabricManagedNetworkSecurityRule()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServiceFabricManagedNetworkSecurityRule PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServiceFabricManagedNetworkSecurityRule>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeServiceFabricManagedNetworkSecurityRule(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ServiceFabricManagedNetworkSecurityRule)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ServiceFabricManagedNetworkSecurityRule>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("name");
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServiceFabricManagedNetworkSecurityRule>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServiceFabricManagedNetworkSecurityRule)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("name"u8);
             writer.WriteStringValue(Name);
             if (Optional.IsDefined(Description))
             {
-                writer.WritePropertyName("description");
+                writer.WritePropertyName("description"u8);
                 writer.WriteStringValue(Description);
             }
-            writer.WritePropertyName("protocol");
+            writer.WritePropertyName("protocol"u8);
             writer.WriteStringValue(Protocol.ToString());
             if (Optional.IsCollectionDefined(SourceAddressPrefixes))
             {
-                writer.WritePropertyName("sourceAddressPrefixes");
+                writer.WritePropertyName("sourceAddressPrefixes"u8);
                 writer.WriteStartArray();
-                foreach (var item in SourceAddressPrefixes)
+                foreach (string item in SourceAddressPrefixes)
                 {
+                    if (item == null)
+                    {
+                        writer.WriteNullValue();
+                        continue;
+                    }
                     writer.WriteStringValue(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(DestinationAddressPrefixes))
             {
-                writer.WritePropertyName("destinationAddressPrefixes");
+                writer.WritePropertyName("destinationAddressPrefixes"u8);
                 writer.WriteStartArray();
-                foreach (var item in DestinationAddressPrefixes)
+                foreach (string item in DestinationAddressPrefixes)
                 {
+                    if (item == null)
+                    {
+                        writer.WriteNullValue();
+                        continue;
+                    }
                     writer.WriteStringValue(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(SourcePortRanges))
             {
-                writer.WritePropertyName("sourcePortRanges");
+                writer.WritePropertyName("sourcePortRanges"u8);
                 writer.WriteStartArray();
-                foreach (var item in SourcePortRanges)
+                foreach (string item in SourcePortRanges)
                 {
+                    if (item == null)
+                    {
+                        writer.WriteNullValue();
+                        continue;
+                    }
                     writer.WriteStringValue(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(DestinationPortRanges))
             {
-                writer.WritePropertyName("destinationPortRanges");
+                writer.WritePropertyName("destinationPortRanges"u8);
                 writer.WriteStartArray();
-                foreach (var item in DestinationPortRanges)
+                foreach (string item in DestinationPortRanges)
                 {
+                    if (item == null)
+                    {
+                        writer.WriteNullValue();
+                        continue;
+                    }
                     writer.WriteStringValue(item);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(SourceAddressPrefix))
             {
-                writer.WritePropertyName("sourceAddressPrefix");
+                writer.WritePropertyName("sourceAddressPrefix"u8);
                 writer.WriteStringValue(SourceAddressPrefix);
             }
             if (Optional.IsDefined(DestinationAddressPrefix))
             {
-                writer.WritePropertyName("destinationAddressPrefix");
+                writer.WritePropertyName("destinationAddressPrefix"u8);
                 writer.WriteStringValue(DestinationAddressPrefix);
             }
             if (Optional.IsDefined(SourcePortRange))
             {
-                writer.WritePropertyName("sourcePortRange");
+                writer.WritePropertyName("sourcePortRange"u8);
                 writer.WriteStringValue(SourcePortRange);
             }
             if (Optional.IsDefined(DestinationPortRange))
             {
-                writer.WritePropertyName("destinationPortRange");
+                writer.WritePropertyName("destinationPortRange"u8);
                 writer.WriteStringValue(DestinationPortRange);
             }
-            writer.WritePropertyName("access");
+            writer.WritePropertyName("access"u8);
             writer.WriteStringValue(Access.ToString());
-            writer.WritePropertyName("priority");
+            writer.WritePropertyName("priority"u8);
             writer.WriteNumberValue(Priority);
-            writer.WritePropertyName("direction");
+            writer.WritePropertyName("direction"u8);
             writer.WriteStringValue(Direction.ToString());
-            writer.WriteEndObject();
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static ServiceFabricManagedNetworkSecurityRule DeserializeServiceFabricManagedNetworkSecurityRule(JsonElement element)
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServiceFabricManagedNetworkSecurityRule IJsonModel<ServiceFabricManagedNetworkSecurityRule>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServiceFabricManagedNetworkSecurityRule JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            string format = options.Format == "W" ? ((IPersistableModel<ServiceFabricManagedNetworkSecurityRule>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServiceFabricManagedNetworkSecurityRule)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeServiceFabricManagedNetworkSecurityRule(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ServiceFabricManagedNetworkSecurityRule DeserializeServiceFabricManagedNetworkSecurityRule(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string name = default;
-            Optional<string> description = default;
+            string description = default;
             ServiceFabricManagedNsgProtocol protocol = default;
-            Optional<IList<string>> sourceAddressPrefixes = default;
-            Optional<IList<string>> destinationAddressPrefixes = default;
-            Optional<IList<string>> sourcePortRanges = default;
-            Optional<IList<string>> destinationPortRanges = default;
-            Optional<string> sourceAddressPrefix = default;
-            Optional<string> destinationAddressPrefix = default;
-            Optional<string> sourcePortRange = default;
-            Optional<string> destinationPortRange = default;
+            IList<string> sourceAddressPrefixes = default;
+            IList<string> destinationAddressPrefixes = default;
+            IList<string> sourcePortRanges = default;
+            IList<string> destinationPortRanges = default;
+            string sourceAddressPrefix = default;
+            string destinationAddressPrefix = default;
+            string sourcePortRange = default;
+            string destinationPortRange = default;
             ServiceFabricManagedNetworkTrafficAccess access = default;
             int priority = default;
             ServiceFabricManagedNetworkSecurityRuleDirection direction = default;
-            foreach (var property in element.EnumerateObject())
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (prop.NameEquals("name"u8))
                 {
-                    name = property.Value.GetString();
+                    name = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("description"))
+                if (prop.NameEquals("description"u8))
                 {
-                    description = property.Value.GetString();
+                    description = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("protocol"))
+                if (prop.NameEquals("protocol"u8))
                 {
-                    protocol = new ServiceFabricManagedNsgProtocol(property.Value.GetString());
+                    protocol = new ServiceFabricManagedNsgProtocol(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("sourceAddressPrefixes"))
+                if (prop.NameEquals("sourceAddressPrefixes"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(item.GetString());
+                        if (item.ValueKind == JsonValueKind.Null)
+                        {
+                            array.Add(null);
+                        }
+                        else
+                        {
+                            array.Add(item.GetString());
+                        }
                     }
                     sourceAddressPrefixes = array;
                     continue;
                 }
-                if (property.NameEquals("destinationAddressPrefixes"))
+                if (prop.NameEquals("destinationAddressPrefixes"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(item.GetString());
+                        if (item.ValueKind == JsonValueKind.Null)
+                        {
+                            array.Add(null);
+                        }
+                        else
+                        {
+                            array.Add(item.GetString());
+                        }
                     }
                     destinationAddressPrefixes = array;
                     continue;
                 }
-                if (property.NameEquals("sourcePortRanges"))
+                if (prop.NameEquals("sourcePortRanges"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(item.GetString());
+                        if (item.ValueKind == JsonValueKind.Null)
+                        {
+                            array.Add(null);
+                        }
+                        else
+                        {
+                            array.Add(item.GetString());
+                        }
                     }
                     sourcePortRanges = array;
                     continue;
                 }
-                if (property.NameEquals("destinationPortRanges"))
+                if (prop.NameEquals("destinationPortRanges"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(item.GetString());
+                        if (item.ValueKind == JsonValueKind.Null)
+                        {
+                            array.Add(null);
+                        }
+                        else
+                        {
+                            array.Add(item.GetString());
+                        }
                     }
                     destinationPortRanges = array;
                     continue;
                 }
-                if (property.NameEquals("sourceAddressPrefix"))
+                if (prop.NameEquals("sourceAddressPrefix"u8))
                 {
-                    sourceAddressPrefix = property.Value.GetString();
+                    sourceAddressPrefix = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("destinationAddressPrefix"))
+                if (prop.NameEquals("destinationAddressPrefix"u8))
                 {
-                    destinationAddressPrefix = property.Value.GetString();
+                    destinationAddressPrefix = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("sourcePortRange"))
+                if (prop.NameEquals("sourcePortRange"u8))
                 {
-                    sourcePortRange = property.Value.GetString();
+                    sourcePortRange = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("destinationPortRange"))
+                if (prop.NameEquals("destinationPortRange"u8))
                 {
-                    destinationPortRange = property.Value.GetString();
+                    destinationPortRange = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("access"))
+                if (prop.NameEquals("access"u8))
                 {
-                    access = new ServiceFabricManagedNetworkTrafficAccess(property.Value.GetString());
+                    access = new ServiceFabricManagedNetworkTrafficAccess(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("priority"))
+                if (prop.NameEquals("priority"u8))
                 {
-                    priority = property.Value.GetInt32();
+                    priority = prop.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("direction"))
+                if (prop.NameEquals("direction"u8))
                 {
-                    direction = new ServiceFabricManagedNetworkSecurityRuleDirection(property.Value.GetString());
+                    direction = new ServiceFabricManagedNetworkSecurityRuleDirection(prop.Value.GetString());
                     continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new ServiceFabricManagedNetworkSecurityRule(name, description.Value, protocol, Optional.ToList(sourceAddressPrefixes), Optional.ToList(destinationAddressPrefixes), Optional.ToList(sourcePortRanges), Optional.ToList(destinationPortRanges), sourceAddressPrefix.Value, destinationAddressPrefix.Value, sourcePortRange.Value, destinationPortRange.Value, access, priority, direction);
+            return new ServiceFabricManagedNetworkSecurityRule(
+                name,
+                description,
+                protocol,
+                sourceAddressPrefixes ?? new ChangeTrackingList<string>(),
+                destinationAddressPrefixes ?? new ChangeTrackingList<string>(),
+                sourcePortRanges ?? new ChangeTrackingList<string>(),
+                destinationPortRanges ?? new ChangeTrackingList<string>(),
+                sourceAddressPrefix,
+                destinationAddressPrefix,
+                sourcePortRange,
+                destinationPortRange,
+                access,
+                priority,
+                direction,
+                additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ServiceFabricManagedNetworkSecurityRule>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServiceFabricManagedNetworkSecurityRule>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerServiceFabricManagedClustersContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ServiceFabricManagedNetworkSecurityRule)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServiceFabricManagedNetworkSecurityRule IPersistableModel<ServiceFabricManagedNetworkSecurityRule>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ServiceFabricManagedNetworkSecurityRule>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

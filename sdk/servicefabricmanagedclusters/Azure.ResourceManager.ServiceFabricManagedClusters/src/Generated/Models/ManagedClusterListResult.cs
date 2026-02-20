@@ -5,33 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    /// <summary> Managed Cluster list results. </summary>
+    /// <summary> The response of a ManagedCluster list operation. </summary>
     internal partial class ManagedClusterListResult
     {
-        /// <summary> Initializes a new instance of ManagedClusterListResult. </summary>
-        internal ManagedClusterListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedClusterListResult"/>. </summary>
+        /// <param name="value"> The ManagedCluster items on this page. </param>
+        internal ManagedClusterListResult(IEnumerable<ServiceFabricManagedClusterData> value)
         {
-            Value = new ChangeTrackingList<ServiceFabricManagedClusterData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of ManagedClusterListResult. </summary>
-        /// <param name="value"></param>
-        /// <param name="nextLink"> The URL to use for getting the next set of results. </param>
-        internal ManagedClusterListResult(IReadOnlyList<ServiceFabricManagedClusterData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ManagedClusterListResult"/>. </summary>
+        /// <param name="value"> The ManagedCluster items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedClusterListResult(IList<ServiceFabricManagedClusterData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets the value. </summary>
-        public IReadOnlyList<ServiceFabricManagedClusterData> Value { get; }
-        /// <summary> The URL to use for getting the next set of results. </summary>
-        public string NextLink { get; }
+        /// <summary> The ManagedCluster items on this page. </summary>
+        public IList<ServiceFabricManagedClusterData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

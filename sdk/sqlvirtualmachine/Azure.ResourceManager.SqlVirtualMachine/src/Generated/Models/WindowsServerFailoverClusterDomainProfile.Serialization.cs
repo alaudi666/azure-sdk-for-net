@@ -6,134 +6,258 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.SqlVirtualMachine;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
-    public partial class WindowsServerFailoverClusterDomainProfile : IUtf8JsonSerializable
+    /// <summary> Active Directory account details to operate Windows Server Failover Cluster. </summary>
+    public partial class WindowsServerFailoverClusterDomainProfile : IJsonModel<WindowsServerFailoverClusterDomainProfile>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual WindowsServerFailoverClusterDomainProfile PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<WindowsServerFailoverClusterDomainProfile>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeWindowsServerFailoverClusterDomainProfile(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(WindowsServerFailoverClusterDomainProfile)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<WindowsServerFailoverClusterDomainProfile>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<WindowsServerFailoverClusterDomainProfile>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(WindowsServerFailoverClusterDomainProfile)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(DomainFqdn))
             {
-                writer.WritePropertyName("domainFqdn");
+                writer.WritePropertyName("domainFqdn"u8);
                 writer.WriteStringValue(DomainFqdn);
             }
             if (Optional.IsDefined(OrganizationalUnitPath))
             {
-                writer.WritePropertyName("ouPath");
+                writer.WritePropertyName("ouPath"u8);
                 writer.WriteStringValue(OrganizationalUnitPath);
             }
             if (Optional.IsDefined(ClusterBootstrapAccount))
             {
-                writer.WritePropertyName("clusterBootstrapAccount");
+                writer.WritePropertyName("clusterBootstrapAccount"u8);
                 writer.WriteStringValue(ClusterBootstrapAccount);
             }
             if (Optional.IsDefined(ClusterOperatorAccount))
             {
-                writer.WritePropertyName("clusterOperatorAccount");
+                writer.WritePropertyName("clusterOperatorAccount"u8);
                 writer.WriteStringValue(ClusterOperatorAccount);
             }
             if (Optional.IsDefined(SqlServiceAccount))
             {
-                writer.WritePropertyName("sqlServiceAccount");
+                writer.WritePropertyName("sqlServiceAccount"u8);
                 writer.WriteStringValue(SqlServiceAccount);
+            }
+            if (Optional.IsDefined(IsSqlServiceAccountGmsa))
+            {
+                writer.WritePropertyName("isSqlServiceAccountGmsa"u8);
+                writer.WriteBooleanValue(IsSqlServiceAccountGmsa.Value);
             }
             if (Optional.IsDefined(FileShareWitnessPath))
             {
-                writer.WritePropertyName("fileShareWitnessPath");
+                writer.WritePropertyName("fileShareWitnessPath"u8);
                 writer.WriteStringValue(FileShareWitnessPath);
             }
             if (Optional.IsDefined(StorageAccountUri))
             {
-                writer.WritePropertyName("storageAccountUrl");
+                writer.WritePropertyName("storageAccountUrl"u8);
                 writer.WriteStringValue(StorageAccountUri.AbsoluteUri);
             }
             if (Optional.IsDefined(StorageAccountPrimaryKey))
             {
-                writer.WritePropertyName("storageAccountPrimaryKey");
+                writer.WritePropertyName("storageAccountPrimaryKey"u8);
                 writer.WriteStringValue(StorageAccountPrimaryKey);
             }
             if (Optional.IsDefined(ClusterSubnetType))
             {
-                writer.WritePropertyName("clusterSubnetType");
+                writer.WritePropertyName("clusterSubnetType"u8);
                 writer.WriteStringValue(ClusterSubnetType.Value.ToString());
             }
-            writer.WriteEndObject();
-        }
-
-        internal static WindowsServerFailoverClusterDomainProfile DeserializeWindowsServerFailoverClusterDomainProfile(JsonElement element)
-        {
-            Optional<string> domainFqdn = default;
-            Optional<string> ouPath = default;
-            Optional<string> clusterBootstrapAccount = default;
-            Optional<string> clusterOperatorAccount = default;
-            Optional<string> sqlServiceAccount = default;
-            Optional<string> fileShareWitnessPath = default;
-            Optional<Uri> storageAccountUrl = default;
-            Optional<string> storageAccountPrimaryKey = default;
-            Optional<SqlVmClusterSubnetType> clusterSubnetType = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("domainFqdn"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    domainFqdn = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("ouPath"))
-                {
-                    ouPath = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("clusterBootstrapAccount"))
-                {
-                    clusterBootstrapAccount = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("clusterOperatorAccount"))
-                {
-                    clusterOperatorAccount = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("sqlServiceAccount"))
-                {
-                    sqlServiceAccount = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("fileShareWitnessPath"))
-                {
-                    fileShareWitnessPath = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("storageAccountUrl"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        storageAccountUrl = null;
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    storageAccountUrl = new Uri(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("storageAccountPrimaryKey"))
-                {
-                    storageAccountPrimaryKey = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("clusterSubnetType"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    clusterSubnetType = new SqlVmClusterSubnetType(property.Value.GetString());
-                    continue;
+#endif
                 }
             }
-            return new WindowsServerFailoverClusterDomainProfile(domainFqdn.Value, ouPath.Value, clusterBootstrapAccount.Value, clusterOperatorAccount.Value, sqlServiceAccount.Value, fileShareWitnessPath.Value, storageAccountUrl.Value, storageAccountPrimaryKey.Value, Optional.ToNullable(clusterSubnetType));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        WindowsServerFailoverClusterDomainProfile IJsonModel<WindowsServerFailoverClusterDomainProfile>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual WindowsServerFailoverClusterDomainProfile JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<WindowsServerFailoverClusterDomainProfile>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(WindowsServerFailoverClusterDomainProfile)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeWindowsServerFailoverClusterDomainProfile(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static WindowsServerFailoverClusterDomainProfile DeserializeWindowsServerFailoverClusterDomainProfile(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string domainFqdn = default;
+            string organizationalUnitPath = default;
+            string clusterBootstrapAccount = default;
+            string clusterOperatorAccount = default;
+            string sqlServiceAccount = default;
+            bool? isSqlServiceAccountGmsa = default;
+            string fileShareWitnessPath = default;
+            Uri storageAccountUri = default;
+            string storageAccountPrimaryKey = default;
+            SqlVmClusterSubnetType? clusterSubnetType = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("domainFqdn"u8))
+                {
+                    domainFqdn = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("ouPath"u8))
+                {
+                    organizationalUnitPath = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("clusterBootstrapAccount"u8))
+                {
+                    clusterBootstrapAccount = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("clusterOperatorAccount"u8))
+                {
+                    clusterOperatorAccount = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("sqlServiceAccount"u8))
+                {
+                    sqlServiceAccount = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("isSqlServiceAccountGmsa"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    isSqlServiceAccountGmsa = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (prop.NameEquals("fileShareWitnessPath"u8))
+                {
+                    fileShareWitnessPath = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("storageAccountUrl"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    storageAccountUri = string.IsNullOrEmpty(prop.Value.GetString()) ? null : new Uri(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("storageAccountPrimaryKey"u8))
+                {
+                    storageAccountPrimaryKey = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("clusterSubnetType"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    clusterSubnetType = new SqlVmClusterSubnetType(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new WindowsServerFailoverClusterDomainProfile(
+                domainFqdn,
+                organizationalUnitPath,
+                clusterBootstrapAccount,
+                clusterOperatorAccount,
+                sqlServiceAccount,
+                isSqlServiceAccountGmsa,
+                fileShareWitnessPath,
+                storageAccountUri,
+                storageAccountPrimaryKey,
+                clusterSubnetType,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<WindowsServerFailoverClusterDomainProfile>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<WindowsServerFailoverClusterDomainProfile>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerSqlVirtualMachineContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(WindowsServerFailoverClusterDomainProfile)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        WindowsServerFailoverClusterDomainProfile IPersistableModel<WindowsServerFailoverClusterDomainProfile>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<WindowsServerFailoverClusterDomainProfile>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Core;
 using Azure.ResourceManager;
+using Azure.ResourceManager.HealthBot.Mocking;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.HealthBot
@@ -18,107 +19,131 @@ namespace Azure.ResourceManager.HealthBot
     /// <summary> A class to add extension methods to Azure.ResourceManager.HealthBot. </summary>
     public static partial class HealthBotExtensions
     {
-        private static SubscriptionResourceExtensionClient GetExtensionClient(SubscriptionResource subscriptionResource)
+        /// <param name="client"></param>
+        private static MockableHealthBotArmClient GetMockableHealthBotArmClient(ArmClient client)
         {
-            return subscriptionResource.GetCachedClient((client) =>
-            {
-                return new SubscriptionResourceExtensionClient(client, subscriptionResource.Id);
-            }
-            );
+            return client.GetCachedClient(client0 => new MockableHealthBotArmClient(client0, ResourceIdentifier.Root));
+        }
+
+        /// <param name="resourceGroupResource"></param>
+        private static MockableHealthBotResourceGroupResource GetMockableHealthBotResourceGroupResource(ResourceGroupResource resourceGroupResource)
+        {
+            return resourceGroupResource.GetCachedClient(client => new MockableHealthBotResourceGroupResource(client, resourceGroupResource.Id));
+        }
+
+        /// <param name="subscriptionResource"></param>
+        private static MockableHealthBotSubscriptionResource GetMockableHealthBotSubscriptionResource(SubscriptionResource subscriptionResource)
+        {
+            return subscriptionResource.GetCachedClient(client => new MockableHealthBotSubscriptionResource(client, subscriptionResource.Id));
         }
 
         /// <summary>
-        /// Returns all the resources of a particular type belonging to a subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.HealthBot/healthBots
-        /// Operation Id: Bots_List
+        /// Gets an object representing a <see cref="HealthBotResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHealthBotArmClient.GetHealthBotResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="HealthBotResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<HealthBotResource> GetHealthBotsAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="HealthBotResource"/> object. </returns>
+        public static HealthBotResource GetHealthBotResource(this ArmClient client, ResourceIdentifier id)
         {
-            return GetExtensionClient(subscriptionResource).GetHealthBotsAsync(cancellationToken);
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHealthBotArmClient(client).GetHealthBotResource(id);
         }
 
         /// <summary>
-        /// Returns all the resources of a particular type belonging to a subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.HealthBot/healthBots
-        /// Operation Id: Bots_List
+        /// Gets a collection of HealthBots in the <see cref="ResourceGroupResource"/>
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHealthBotResourceGroupResource.GetHealthBots()"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="HealthBotResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<HealthBotResource> GetHealthBots(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
-        {
-            return GetExtensionClient(subscriptionResource).GetHealthBots(cancellationToken);
-        }
-
-        private static ResourceGroupResourceExtensionClient GetExtensionClient(ResourceGroupResource resourceGroupResource)
-        {
-            return resourceGroupResource.GetCachedClient((client) =>
-            {
-                return new ResourceGroupResourceExtensionClient(client, resourceGroupResource.Id);
-            }
-            );
-        }
-
-        /// <summary> Gets a collection of HealthBotResources in the ResourceGroupResource. </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
-        /// <returns> An object representing collection of HealthBotResources and their operations over a HealthBotResource. </returns>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        /// <returns> An object representing collection of HealthBots and their operations over a HealthBotResource. </returns>
         public static HealthBotCollection GetHealthBots(this ResourceGroupResource resourceGroupResource)
         {
-            return GetExtensionClient(resourceGroupResource).GetHealthBots();
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableHealthBotResourceGroupResource(resourceGroupResource).GetHealthBots();
         }
 
         /// <summary>
         /// Get a HealthBot.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HealthBot/healthBots/{botName}
-        /// Operation Id: Bots_Get
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHealthBotResourceGroupResource.GetHealthBotAsync(string, CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
         /// <param name="botName"> The name of the Bot resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="botName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="botName"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
         [ForwardsClientCalls]
         public static async Task<Response<HealthBotResource>> GetHealthBotAsync(this ResourceGroupResource resourceGroupResource, string botName, CancellationToken cancellationToken = default)
         {
-            return await resourceGroupResource.GetHealthBots().GetAsync(botName, cancellationToken).ConfigureAwait(false);
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return await GetMockableHealthBotResourceGroupResource(resourceGroupResource).GetHealthBotAsync(botName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Get a HealthBot.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.HealthBot/healthBots/{botName}
-        /// Operation Id: Bots_Get
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHealthBotResourceGroupResource.GetHealthBot(string, CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
         /// <param name="botName"> The name of the Bot resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="botName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="botName"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
         [ForwardsClientCalls]
         public static Response<HealthBotResource> GetHealthBot(this ResourceGroupResource resourceGroupResource, string botName, CancellationToken cancellationToken = default)
         {
-            return resourceGroupResource.GetHealthBots().Get(botName, cancellationToken);
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableHealthBotResourceGroupResource(resourceGroupResource).GetHealthBot(botName, cancellationToken);
         }
 
-        #region HealthBotResource
         /// <summary>
-        /// Gets an object representing a <see cref="HealthBotResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="HealthBotResource.CreateResourceIdentifier" /> to create a <see cref="HealthBotResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// Returns all the resources of a particular type belonging to a subscription.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHealthBotSubscriptionResource.GetHealthBotsAsync(CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="HealthBotResource" /> object. </returns>
-        public static HealthBotResource GetHealthBotResource(this ArmClient client, ResourceIdentifier id)
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="HealthBotResource"/> that may take multiple service requests to iterate over. </returns>
+        public static AsyncPageable<HealthBotResource> GetHealthBotsAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return client.GetResourceClient(() =>
-            {
-                HealthBotResource.ValidateResourceId(id);
-                return new HealthBotResource(client, id);
-            }
-            );
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableHealthBotSubscriptionResource(subscriptionResource).GetHealthBotsAsync(cancellationToken);
         }
-        #endregion
+
+        /// <summary>
+        /// Returns all the resources of a particular type belonging to a subscription.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHealthBotSubscriptionResource.GetHealthBots(CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="HealthBotResource"/> that may take multiple service requests to iterate over. </returns>
+        public static Pageable<HealthBotResource> GetHealthBots(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableHealthBotSubscriptionResource(subscriptionResource).GetHealthBots(cancellationToken);
+        }
     }
 }

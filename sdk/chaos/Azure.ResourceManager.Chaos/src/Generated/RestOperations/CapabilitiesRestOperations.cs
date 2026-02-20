@@ -6,46 +6,129 @@
 #nullable disable
 
 using System;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager.Chaos.Models;
 
 namespace Azure.ResourceManager.Chaos
 {
-    internal partial class CapabilitiesRestOperations
+    internal partial class Capabilities
     {
-        private readonly TelemetryDetails _userAgent;
-        private readonly HttpPipeline _pipeline;
         private readonly Uri _endpoint;
         private readonly string _apiVersion;
 
-        /// <summary> Initializes a new instance of CapabilitiesRestOperations. </summary>
-        /// <param name="pipeline"> The HTTP pipeline for sending and receiving REST requests and responses. </param>
-        /// <param name="applicationId"> The application id to use for user agent. </param>
-        /// <param name="endpoint"> server parameter. </param>
-        /// <param name="apiVersion"> Api Version. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="pipeline"/> or <paramref name="apiVersion"/> is null. </exception>
-        public CapabilitiesRestOperations(HttpPipeline pipeline, string applicationId, Uri endpoint = null, string apiVersion = default)
+        /// <summary> Initializes a new instance of Capabilities for mocking. </summary>
+        protected Capabilities()
         {
-            _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
-            _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2022-10-01-preview";
-            _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
-        internal HttpMessage CreateListRequest(string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string continuationToken)
+        /// <summary> Initializes a new instance of Capabilities. </summary>
+        /// <param name="clientDiagnostics"> The ClientDiagnostics is used to provide tracing support for the client library. </param>
+        /// <param name="pipeline"> The HTTP pipeline for sending and receiving REST requests and responses. </param>
+        /// <param name="endpoint"> Service endpoint. </param>
+        /// <param name="apiVersion"></param>
+        internal Capabilities(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, Uri endpoint, string apiVersion)
         {
-            var message = _pipeline.CreateMessage();
-            var request = message.Request;
-            request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
+            ClientDiagnostics = clientDiagnostics;
+            _endpoint = endpoint;
+            Pipeline = pipeline;
+            _apiVersion = apiVersion;
+        }
+
+        /// <summary> The HTTP pipeline for sending and receiving REST requests and responses. </summary>
+        public virtual HttpPipeline Pipeline { get; }
+
+        /// <summary> The ClientDiagnostics is used to provide tracing support for the client library. </summary>
+        internal ClientDiagnostics ClientDiagnostics { get; }
+
+        internal HttpMessage CreateGetRequest(Guid subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string capabilityName, RequestContext context)
+        {
+            RawRequestUriBuilder uri = new RawRequestUriBuilder();
             uri.Reset(_endpoint);
             uri.AppendPath("/subscriptions/", false);
-            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath(subscriptionId.ToString(), true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(parentProviderNamespace, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(parentResourceType, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(parentResourceName, true);
+            uri.AppendPath("/providers/Microsoft.Chaos/targets/", false);
+            uri.AppendPath(targetName, true);
+            uri.AppendPath("/capabilities/", false);
+            uri.AppendPath(capabilityName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            HttpMessage message = Pipeline.CreateMessage();
+            Request request = message.Request;
+            request.Uri = uri;
+            request.Method = RequestMethod.Get;
+            request.Headers.SetValue("Accept", "application/json");
+            return message;
+        }
+
+        internal HttpMessage CreateCreateOrUpdateRequest(Guid subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string capabilityName, RequestContent content, RequestContext context)
+        {
+            RawRequestUriBuilder uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId.ToString(), true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(parentProviderNamespace, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(parentResourceType, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(parentResourceName, true);
+            uri.AppendPath("/providers/Microsoft.Chaos/targets/", false);
+            uri.AppendPath(targetName, true);
+            uri.AppendPath("/capabilities/", false);
+            uri.AppendPath(capabilityName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            HttpMessage message = Pipeline.CreateMessage();
+            Request request = message.Request;
+            request.Uri = uri;
+            request.Method = RequestMethod.Put;
+            request.Headers.SetValue("Content-Type", "application/json");
+            request.Headers.SetValue("Accept", "application/json");
+            request.Content = content;
+            return message;
+        }
+
+        internal HttpMessage CreateDeleteRequest(Guid subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string capabilityName, RequestContext context)
+        {
+            RawRequestUriBuilder uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId.ToString(), true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(parentProviderNamespace, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(parentResourceType, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(parentResourceName, true);
+            uri.AppendPath("/providers/Microsoft.Chaos/targets/", false);
+            uri.AppendPath(targetName, true);
+            uri.AppendPath("/capabilities/", false);
+            uri.AppendPath(capabilityName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            HttpMessage message = Pipeline.CreateMessage();
+            Request request = message.Request;
+            request.Uri = uri;
+            request.Method = RequestMethod.Delete;
+            return message;
+        }
+
+        internal HttpMessage CreateGetAllRequest(Guid subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string continuationToken, RequestContext context)
+        {
+            RawRequestUriBuilder uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId.ToString(), true);
             uri.AppendPath("/resourceGroups/", false);
             uri.AppendPath(resourceGroupName, true);
             uri.AppendPath("/providers/", false);
@@ -62,482 +145,25 @@ namespace Azure.ResourceManager.Chaos
             {
                 uri.AppendQuery("continuationToken", continuationToken, true);
             }
+            HttpMessage message = Pipeline.CreateMessage();
+            Request request = message.Request;
             request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            _userAgent.Apply(message);
-            return message;
-        }
-
-        /// <summary> Get a list of Capability resources that extend a Target resource.. </summary>
-        /// <param name="subscriptionId"> GUID that represents an Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> String that represents an Azure resource group. </param>
-        /// <param name="parentProviderNamespace"> String that represents a resource provider namespace. </param>
-        /// <param name="parentResourceType"> String that represents a resource type. </param>
-        /// <param name="parentResourceName"> String that represents a resource name. </param>
-        /// <param name="targetName"> String that represents a Target resource name. </param>
-        /// <param name="continuationToken"> String that sets the continuation token. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/> or <paramref name="targetName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/> or <paramref name="targetName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<CapabilityListResult>> ListAsync(string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string continuationToken = null, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Argument.AssertNotNullOrEmpty(parentProviderNamespace, nameof(parentProviderNamespace));
-            Argument.AssertNotNullOrEmpty(parentResourceType, nameof(parentResourceType));
-            Argument.AssertNotNullOrEmpty(parentResourceName, nameof(parentResourceName));
-            Argument.AssertNotNullOrEmpty(targetName, nameof(targetName));
-
-            using var message = CreateListRequest(subscriptionId, resourceGroupName, parentProviderNamespace, parentResourceType, parentResourceName, targetName, continuationToken);
-            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
-            switch (message.Response.Status)
-            {
-                case 200:
-                    {
-                        CapabilityListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = CapabilityListResult.DeserializeCapabilityListResult(document.RootElement);
-                        return Response.FromValue(value, message.Response);
-                    }
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
-        /// <summary> Get a list of Capability resources that extend a Target resource.. </summary>
-        /// <param name="subscriptionId"> GUID that represents an Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> String that represents an Azure resource group. </param>
-        /// <param name="parentProviderNamespace"> String that represents a resource provider namespace. </param>
-        /// <param name="parentResourceType"> String that represents a resource type. </param>
-        /// <param name="parentResourceName"> String that represents a resource name. </param>
-        /// <param name="targetName"> String that represents a Target resource name. </param>
-        /// <param name="continuationToken"> String that sets the continuation token. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/> or <paramref name="targetName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/> or <paramref name="targetName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<CapabilityListResult> List(string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string continuationToken = null, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Argument.AssertNotNullOrEmpty(parentProviderNamespace, nameof(parentProviderNamespace));
-            Argument.AssertNotNullOrEmpty(parentResourceType, nameof(parentResourceType));
-            Argument.AssertNotNullOrEmpty(parentResourceName, nameof(parentResourceName));
-            Argument.AssertNotNullOrEmpty(targetName, nameof(targetName));
-
-            using var message = CreateListRequest(subscriptionId, resourceGroupName, parentProviderNamespace, parentResourceType, parentResourceName, targetName, continuationToken);
-            _pipeline.Send(message, cancellationToken);
-            switch (message.Response.Status)
-            {
-                case 200:
-                    {
-                        CapabilityListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = CapabilityListResult.DeserializeCapabilityListResult(document.RootElement);
-                        return Response.FromValue(value, message.Response);
-                    }
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
-        internal HttpMessage CreateGetRequest(string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string capabilityName)
-        {
-            var message = _pipeline.CreateMessage();
-            var request = message.Request;
             request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendPath("/subscriptions/", false);
-            uri.AppendPath(subscriptionId, true);
-            uri.AppendPath("/resourceGroups/", false);
-            uri.AppendPath(resourceGroupName, true);
-            uri.AppendPath("/providers/", false);
-            uri.AppendPath(parentProviderNamespace, true);
-            uri.AppendPath("/", false);
-            uri.AppendPath(parentResourceType, true);
-            uri.AppendPath("/", false);
-            uri.AppendPath(parentResourceName, true);
-            uri.AppendPath("/providers/Microsoft.Chaos/targets/", false);
-            uri.AppendPath(targetName, true);
-            uri.AppendPath("/capabilities/", false);
-            uri.AppendPath(capabilityName, true);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            _userAgent.Apply(message);
+            request.Headers.SetValue("Accept", "application/json");
             return message;
         }
 
-        /// <summary> Get a Capability resource that extends a Target resource. </summary>
-        /// <param name="subscriptionId"> GUID that represents an Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> String that represents an Azure resource group. </param>
-        /// <param name="parentProviderNamespace"> String that represents a resource provider namespace. </param>
-        /// <param name="parentResourceType"> String that represents a resource type. </param>
-        /// <param name="parentResourceName"> String that represents a resource name. </param>
-        /// <param name="targetName"> String that represents a Target resource name. </param>
-        /// <param name="capabilityName"> String that represents a Capability resource name. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/>, <paramref name="targetName"/> or <paramref name="capabilityName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/>, <paramref name="targetName"/> or <paramref name="capabilityName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<CapabilityData>> GetAsync(string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string capabilityName, CancellationToken cancellationToken = default)
+        internal HttpMessage CreateNextGetAllRequest(Uri nextPage, Guid subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string continuationToken, RequestContext context)
         {
-            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Argument.AssertNotNullOrEmpty(parentProviderNamespace, nameof(parentProviderNamespace));
-            Argument.AssertNotNullOrEmpty(parentResourceType, nameof(parentResourceType));
-            Argument.AssertNotNullOrEmpty(parentResourceName, nameof(parentResourceName));
-            Argument.AssertNotNullOrEmpty(targetName, nameof(targetName));
-            Argument.AssertNotNullOrEmpty(capabilityName, nameof(capabilityName));
-
-            using var message = CreateGetRequest(subscriptionId, resourceGroupName, parentProviderNamespace, parentResourceType, parentResourceName, targetName, capabilityName);
-            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
-            switch (message.Response.Status)
-            {
-                case 200:
-                    {
-                        CapabilityData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = CapabilityData.DeserializeCapabilityData(document.RootElement);
-                        return Response.FromValue(value, message.Response);
-                    }
-                case 404:
-                    return Response.FromValue((CapabilityData)null, message.Response);
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
-        /// <summary> Get a Capability resource that extends a Target resource. </summary>
-        /// <param name="subscriptionId"> GUID that represents an Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> String that represents an Azure resource group. </param>
-        /// <param name="parentProviderNamespace"> String that represents a resource provider namespace. </param>
-        /// <param name="parentResourceType"> String that represents a resource type. </param>
-        /// <param name="parentResourceName"> String that represents a resource name. </param>
-        /// <param name="targetName"> String that represents a Target resource name. </param>
-        /// <param name="capabilityName"> String that represents a Capability resource name. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/>, <paramref name="targetName"/> or <paramref name="capabilityName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/>, <paramref name="targetName"/> or <paramref name="capabilityName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<CapabilityData> Get(string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string capabilityName, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Argument.AssertNotNullOrEmpty(parentProviderNamespace, nameof(parentProviderNamespace));
-            Argument.AssertNotNullOrEmpty(parentResourceType, nameof(parentResourceType));
-            Argument.AssertNotNullOrEmpty(parentResourceName, nameof(parentResourceName));
-            Argument.AssertNotNullOrEmpty(targetName, nameof(targetName));
-            Argument.AssertNotNullOrEmpty(capabilityName, nameof(capabilityName));
-
-            using var message = CreateGetRequest(subscriptionId, resourceGroupName, parentProviderNamespace, parentResourceType, parentResourceName, targetName, capabilityName);
-            _pipeline.Send(message, cancellationToken);
-            switch (message.Response.Status)
-            {
-                case 200:
-                    {
-                        CapabilityData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = CapabilityData.DeserializeCapabilityData(document.RootElement);
-                        return Response.FromValue(value, message.Response);
-                    }
-                case 404:
-                    return Response.FromValue((CapabilityData)null, message.Response);
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
-        internal HttpMessage CreateDeleteRequest(string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string capabilityName)
-        {
-            var message = _pipeline.CreateMessage();
-            var request = message.Request;
-            request.Method = RequestMethod.Delete;
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendPath("/subscriptions/", false);
-            uri.AppendPath(subscriptionId, true);
-            uri.AppendPath("/resourceGroups/", false);
-            uri.AppendPath(resourceGroupName, true);
-            uri.AppendPath("/providers/", false);
-            uri.AppendPath(parentProviderNamespace, true);
-            uri.AppendPath("/", false);
-            uri.AppendPath(parentResourceType, true);
-            uri.AppendPath("/", false);
-            uri.AppendPath(parentResourceName, true);
-            uri.AppendPath("/providers/Microsoft.Chaos/targets/", false);
-            uri.AppendPath(targetName, true);
-            uri.AppendPath("/capabilities/", false);
-            uri.AppendPath(capabilityName, true);
-            uri.AppendQuery("api-version", _apiVersion, true);
+            RawRequestUriBuilder uri = new RawRequestUriBuilder();
+            uri.Reset(nextPage);
+            uri.UpdateQuery("api-version", _apiVersion);
+            HttpMessage message = Pipeline.CreateMessage();
+            Request request = message.Request;
             request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            _userAgent.Apply(message);
-            return message;
-        }
-
-        /// <summary> Delete a Capability that extends a Target resource. </summary>
-        /// <param name="subscriptionId"> GUID that represents an Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> String that represents an Azure resource group. </param>
-        /// <param name="parentProviderNamespace"> String that represents a resource provider namespace. </param>
-        /// <param name="parentResourceType"> String that represents a resource type. </param>
-        /// <param name="parentResourceName"> String that represents a resource name. </param>
-        /// <param name="targetName"> String that represents a Target resource name. </param>
-        /// <param name="capabilityName"> String that represents a Capability resource name. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/>, <paramref name="targetName"/> or <paramref name="capabilityName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/>, <paramref name="targetName"/> or <paramref name="capabilityName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response> DeleteAsync(string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string capabilityName, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Argument.AssertNotNullOrEmpty(parentProviderNamespace, nameof(parentProviderNamespace));
-            Argument.AssertNotNullOrEmpty(parentResourceType, nameof(parentResourceType));
-            Argument.AssertNotNullOrEmpty(parentResourceName, nameof(parentResourceName));
-            Argument.AssertNotNullOrEmpty(targetName, nameof(targetName));
-            Argument.AssertNotNullOrEmpty(capabilityName, nameof(capabilityName));
-
-            using var message = CreateDeleteRequest(subscriptionId, resourceGroupName, parentProviderNamespace, parentResourceType, parentResourceName, targetName, capabilityName);
-            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
-            switch (message.Response.Status)
-            {
-                case 200:
-                case 204:
-                    return message.Response;
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
-        /// <summary> Delete a Capability that extends a Target resource. </summary>
-        /// <param name="subscriptionId"> GUID that represents an Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> String that represents an Azure resource group. </param>
-        /// <param name="parentProviderNamespace"> String that represents a resource provider namespace. </param>
-        /// <param name="parentResourceType"> String that represents a resource type. </param>
-        /// <param name="parentResourceName"> String that represents a resource name. </param>
-        /// <param name="targetName"> String that represents a Target resource name. </param>
-        /// <param name="capabilityName"> String that represents a Capability resource name. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/>, <paramref name="targetName"/> or <paramref name="capabilityName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/>, <paramref name="targetName"/> or <paramref name="capabilityName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response Delete(string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string capabilityName, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Argument.AssertNotNullOrEmpty(parentProviderNamespace, nameof(parentProviderNamespace));
-            Argument.AssertNotNullOrEmpty(parentResourceType, nameof(parentResourceType));
-            Argument.AssertNotNullOrEmpty(parentResourceName, nameof(parentResourceName));
-            Argument.AssertNotNullOrEmpty(targetName, nameof(targetName));
-            Argument.AssertNotNullOrEmpty(capabilityName, nameof(capabilityName));
-
-            using var message = CreateDeleteRequest(subscriptionId, resourceGroupName, parentProviderNamespace, parentResourceType, parentResourceName, targetName, capabilityName);
-            _pipeline.Send(message, cancellationToken);
-            switch (message.Response.Status)
-            {
-                case 200:
-                case 204:
-                    return message.Response;
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
-        internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string capabilityName, CapabilityData data)
-        {
-            var message = _pipeline.CreateMessage();
-            var request = message.Request;
-            request.Method = RequestMethod.Put;
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendPath("/subscriptions/", false);
-            uri.AppendPath(subscriptionId, true);
-            uri.AppendPath("/resourceGroups/", false);
-            uri.AppendPath(resourceGroupName, true);
-            uri.AppendPath("/providers/", false);
-            uri.AppendPath(parentProviderNamespace, true);
-            uri.AppendPath("/", false);
-            uri.AppendPath(parentResourceType, true);
-            uri.AppendPath("/", false);
-            uri.AppendPath(parentResourceName, true);
-            uri.AppendPath("/providers/Microsoft.Chaos/targets/", false);
-            uri.AppendPath(targetName, true);
-            uri.AppendPath("/capabilities/", false);
-            uri.AppendPath(capabilityName, true);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            request.Headers.Add("Content-Type", "application/json");
-            var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
-            request.Content = content;
-            _userAgent.Apply(message);
-            return message;
-        }
-
-        /// <summary> Create or update a Capability resource that extends a Target resource. </summary>
-        /// <param name="subscriptionId"> GUID that represents an Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> String that represents an Azure resource group. </param>
-        /// <param name="parentProviderNamespace"> String that represents a resource provider namespace. </param>
-        /// <param name="parentResourceType"> String that represents a resource type. </param>
-        /// <param name="parentResourceName"> String that represents a resource name. </param>
-        /// <param name="targetName"> String that represents a Target resource name. </param>
-        /// <param name="capabilityName"> String that represents a Capability resource name. </param>
-        /// <param name="data"> Capability resource to be created or updated. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/>, <paramref name="targetName"/>, <paramref name="capabilityName"/> or <paramref name="data"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/>, <paramref name="targetName"/> or <paramref name="capabilityName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<CapabilityData>> CreateOrUpdateAsync(string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string capabilityName, CapabilityData data, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Argument.AssertNotNullOrEmpty(parentProviderNamespace, nameof(parentProviderNamespace));
-            Argument.AssertNotNullOrEmpty(parentResourceType, nameof(parentResourceType));
-            Argument.AssertNotNullOrEmpty(parentResourceName, nameof(parentResourceName));
-            Argument.AssertNotNullOrEmpty(targetName, nameof(targetName));
-            Argument.AssertNotNullOrEmpty(capabilityName, nameof(capabilityName));
-            Argument.AssertNotNull(data, nameof(data));
-
-            using var message = CreateCreateOrUpdateRequest(subscriptionId, resourceGroupName, parentProviderNamespace, parentResourceType, parentResourceName, targetName, capabilityName, data);
-            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
-            switch (message.Response.Status)
-            {
-                case 200:
-                    {
-                        CapabilityData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = CapabilityData.DeserializeCapabilityData(document.RootElement);
-                        return Response.FromValue(value, message.Response);
-                    }
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
-        /// <summary> Create or update a Capability resource that extends a Target resource. </summary>
-        /// <param name="subscriptionId"> GUID that represents an Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> String that represents an Azure resource group. </param>
-        /// <param name="parentProviderNamespace"> String that represents a resource provider namespace. </param>
-        /// <param name="parentResourceType"> String that represents a resource type. </param>
-        /// <param name="parentResourceName"> String that represents a resource name. </param>
-        /// <param name="targetName"> String that represents a Target resource name. </param>
-        /// <param name="capabilityName"> String that represents a Capability resource name. </param>
-        /// <param name="data"> Capability resource to be created or updated. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/>, <paramref name="targetName"/>, <paramref name="capabilityName"/> or <paramref name="data"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/>, <paramref name="targetName"/> or <paramref name="capabilityName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<CapabilityData> CreateOrUpdate(string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string capabilityName, CapabilityData data, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Argument.AssertNotNullOrEmpty(parentProviderNamespace, nameof(parentProviderNamespace));
-            Argument.AssertNotNullOrEmpty(parentResourceType, nameof(parentResourceType));
-            Argument.AssertNotNullOrEmpty(parentResourceName, nameof(parentResourceName));
-            Argument.AssertNotNullOrEmpty(targetName, nameof(targetName));
-            Argument.AssertNotNullOrEmpty(capabilityName, nameof(capabilityName));
-            Argument.AssertNotNull(data, nameof(data));
-
-            using var message = CreateCreateOrUpdateRequest(subscriptionId, resourceGroupName, parentProviderNamespace, parentResourceType, parentResourceName, targetName, capabilityName, data);
-            _pipeline.Send(message, cancellationToken);
-            switch (message.Response.Status)
-            {
-                case 200:
-                    {
-                        CapabilityData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = CapabilityData.DeserializeCapabilityData(document.RootElement);
-                        return Response.FromValue(value, message.Response);
-                    }
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
-        internal HttpMessage CreateListNextPageRequest(string nextLink, string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string continuationToken)
-        {
-            var message = _pipeline.CreateMessage();
-            var request = message.Request;
             request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
-            uri.Reset(_endpoint);
-            uri.AppendRawNextLink(nextLink, false);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            _userAgent.Apply(message);
+            request.Headers.SetValue("Accept", "application/json");
             return message;
-        }
-
-        /// <summary> Get a list of Capability resources that extend a Target resource.. </summary>
-        /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> GUID that represents an Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> String that represents an Azure resource group. </param>
-        /// <param name="parentProviderNamespace"> String that represents a resource provider namespace. </param>
-        /// <param name="parentResourceType"> String that represents a resource type. </param>
-        /// <param name="parentResourceName"> String that represents a resource name. </param>
-        /// <param name="targetName"> String that represents a Target resource name. </param>
-        /// <param name="continuationToken"> String that sets the continuation token. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/> or <paramref name="targetName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/> or <paramref name="targetName"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<CapabilityListResult>> ListNextPageAsync(string nextLink, string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string continuationToken = null, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNull(nextLink, nameof(nextLink));
-            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Argument.AssertNotNullOrEmpty(parentProviderNamespace, nameof(parentProviderNamespace));
-            Argument.AssertNotNullOrEmpty(parentResourceType, nameof(parentResourceType));
-            Argument.AssertNotNullOrEmpty(parentResourceName, nameof(parentResourceName));
-            Argument.AssertNotNullOrEmpty(targetName, nameof(targetName));
-
-            using var message = CreateListNextPageRequest(nextLink, subscriptionId, resourceGroupName, parentProviderNamespace, parentResourceType, parentResourceName, targetName, continuationToken);
-            await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
-            switch (message.Response.Status)
-            {
-                case 200:
-                    {
-                        CapabilityListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = CapabilityListResult.DeserializeCapabilityListResult(document.RootElement);
-                        return Response.FromValue(value, message.Response);
-                    }
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
-        }
-
-        /// <summary> Get a list of Capability resources that extend a Target resource.. </summary>
-        /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> GUID that represents an Azure subscription ID. </param>
-        /// <param name="resourceGroupName"> String that represents an Azure resource group. </param>
-        /// <param name="parentProviderNamespace"> String that represents a resource provider namespace. </param>
-        /// <param name="parentResourceType"> String that represents a resource type. </param>
-        /// <param name="parentResourceName"> String that represents a resource name. </param>
-        /// <param name="targetName"> String that represents a Target resource name. </param>
-        /// <param name="continuationToken"> String that sets the continuation token. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/> or <paramref name="targetName"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/>, <paramref name="resourceGroupName"/>, <paramref name="parentProviderNamespace"/>, <paramref name="parentResourceType"/>, <paramref name="parentResourceName"/> or <paramref name="targetName"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<CapabilityListResult> ListNextPage(string nextLink, string subscriptionId, string resourceGroupName, string parentProviderNamespace, string parentResourceType, string parentResourceName, string targetName, string continuationToken = null, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNull(nextLink, nameof(nextLink));
-            Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
-            Argument.AssertNotNullOrEmpty(resourceGroupName, nameof(resourceGroupName));
-            Argument.AssertNotNullOrEmpty(parentProviderNamespace, nameof(parentProviderNamespace));
-            Argument.AssertNotNullOrEmpty(parentResourceType, nameof(parentResourceType));
-            Argument.AssertNotNullOrEmpty(parentResourceName, nameof(parentResourceName));
-            Argument.AssertNotNullOrEmpty(targetName, nameof(targetName));
-
-            using var message = CreateListNextPageRequest(nextLink, subscriptionId, resourceGroupName, parentProviderNamespace, parentResourceType, parentResourceName, targetName, continuationToken);
-            _pipeline.Send(message, cancellationToken);
-            switch (message.Response.Status)
-            {
-                case 200:
-                    {
-                        CapabilityListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = CapabilityListResult.DeserializeCapabilityListResult(document.RootElement);
-                        return Response.FromValue(value, message.Response);
-                    }
-                default:
-                    throw new RequestFailedException(message.Response);
-            }
         }
     }
 }

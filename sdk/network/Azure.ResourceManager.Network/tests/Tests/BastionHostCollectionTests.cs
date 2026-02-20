@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Azure.Core;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Network.Models;
 using Azure.ResourceManager.Network.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.Resources.Models;
 using NUnit.Framework;
-using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Tests
 {
@@ -38,7 +38,7 @@ namespace Azure.ResourceManager.Network.Tests
             _resourceGroupIdentifier = rg.Id;
             VirtualNetworkData vnetData = new VirtualNetworkData();
             vnetData.Location = AzureLocation.WestUS2;
-            vnetData.AddressSpace = new AddressSpace();
+            vnetData.AddressSpace = new VirtualNetworkAddressSpace();
             vnetData.AddressSpace.AddressPrefixes.Add("10.0.0.0/16");
             var vnetLro = await rg.GetVirtualNetworks().CreateOrUpdateAsync(WaitUntil.Completed, SessionRecording.GenerateAssetName("vnet-"), vnetData);
             VirtualNetworkResource vnet = vnetLro.Value;

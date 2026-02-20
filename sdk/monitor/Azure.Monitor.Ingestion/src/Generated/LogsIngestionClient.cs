@@ -13,49 +13,101 @@ using Azure.Core.Pipeline;
 
 namespace Azure.Monitor.Ingestion
 {
-    // Data plane generated client.
-    /// <summary> The LogsIngestion service client. </summary>
+    /// <summary> Azure Monitor data collection client. </summary>
     public partial class LogsIngestionClient
     {
-        private static readonly string[] AuthorizationScopes = new string[] { "https://monitor.azure.com//.default" };
-        private readonly TokenCredential _tokenCredential;
-        private readonly HttpPipeline _pipeline;
         private readonly Uri _endpoint;
+        /// <summary> A credential used to authenticate to the service. </summary>
+        private readonly TokenCredential _tokenCredential;
+        private static readonly string[] AuthorizationScopes = new string[] { "https://monitor.azure.com/.default" };
         private readonly string _apiVersion;
 
-        /// <summary> The ClientDiagnostics is used to provide tracing support for the client library. </summary>
-        internal ClientDiagnostics ClientDiagnostics { get; }
-
-        /// <summary> The HTTP pipeline for sending and receiving REST requests and responses. </summary>
-        public virtual HttpPipeline Pipeline => _pipeline;
-
         /// <summary> Initializes a new instance of LogsIngestionClient. </summary>
-        /// <param name="endpoint"> The Data Collection Endpoint for the Data Collection Rule, for example https://dce-name.eastus-2.ingest.monitor.azure.com. </param>
-        /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
+        /// <param name="endpoint"> Service endpoint. </param>
+        /// <param name="credential"> A credential used to authenticate to the service. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> or <paramref name="credential"/> is null. </exception>
         public LogsIngestionClient(Uri endpoint, TokenCredential credential) : this(endpoint, credential, new LogsIngestionClientOptions())
         {
         }
 
-        /// <summary> Initializes a new instance of LogsIngestionClient. </summary>
-        /// <param name="endpoint"> The Data Collection Endpoint for the Data Collection Rule, for example https://dce-name.eastus-2.ingest.monitor.azure.com. </param>
-        /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
-        /// <param name="options"> The options for configuring the client. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> or <paramref name="credential"/> is null. </exception>
-        public LogsIngestionClient(Uri endpoint, TokenCredential credential, LogsIngestionClientOptions options)
-        {
-            Argument.AssertNotNull(endpoint, nameof(endpoint));
-            Argument.AssertNotNull(credential, nameof(credential));
-            options ??= new LogsIngestionClientOptions();
+        /// <summary> The HTTP pipeline for sending and receiving REST requests and responses. </summary>
+        public virtual HttpPipeline Pipeline { get; }
 
-            ClientDiagnostics = new ClientDiagnostics(options, true);
-            _tokenCredential = credential;
-            _pipeline = HttpPipelineBuilder.Build(options, Array.Empty<HttpPipelinePolicy>(), new HttpPipelinePolicy[] { new BearerTokenAuthenticationPolicy(_tokenCredential, AuthorizationScopes) }, new ResponseClassifier());
-            _endpoint = endpoint;
-            _apiVersion = options.Version;
+        /// <summary> The ClientDiagnostics is used to provide tracing support for the client library. </summary>
+        internal ClientDiagnostics ClientDiagnostics { get; }
+
+        /// <summary>
+        /// [Protocol Method] Ingestion API used to directly ingest data using Data Collection Rules.
+        /// <list type="bullet">
+        /// <item>
+        /// <description> This <see href="https://aka.ms/azsdk/net/protocol-methods">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="ruleId"> The immutable ID of the Data Collection Rule resource. </param>
+        /// <param name="streamName"> The streamDeclaration name as defined in the Data Collection Rule. </param>
+        /// <param name="content"> The content to send as the body of the request. </param>
+        /// <param name="contentEncoding"> The content encoding of the request body which is always 'gzip'. </param>
+        /// <param name="context"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="ruleId"/>, <paramref name="streamName"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="ruleId"/> or <paramref name="streamName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        /// <returns> The response returned from the service. </returns>
+        public virtual Response Upload(string ruleId, string streamName, RequestContent content, string contentEncoding = default, RequestContext context = null)
+        {
+            using DiagnosticScope scope = ClientDiagnostics.CreateScope("LogsIngestionClient.Upload");
+            scope.Start();
+            try
+            {
+                Argument.AssertNotNullOrEmpty(ruleId, nameof(ruleId));
+                Argument.AssertNotNullOrEmpty(streamName, nameof(streamName));
+                Argument.AssertNotNull(content, nameof(content));
+
+                using HttpMessage message = CreateUploadRequest(ruleId, streamName, content, contentEncoding, context);
+                return Pipeline.ProcessMessage(message, context);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
         }
 
-        private static ResponseClassifier _responseClassifier204;
-        private static ResponseClassifier ResponseClassifier204 => _responseClassifier204 ??= new StatusCodeClassifier(stackalloc ushort[] { 204 });
+        /// <summary>
+        /// [Protocol Method] Ingestion API used to directly ingest data using Data Collection Rules.
+        /// <list type="bullet">
+        /// <item>
+        /// <description> This <see href="https://aka.ms/azsdk/net/protocol-methods">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="ruleId"> The immutable ID of the Data Collection Rule resource. </param>
+        /// <param name="streamName"> The streamDeclaration name as defined in the Data Collection Rule. </param>
+        /// <param name="content"> The content to send as the body of the request. </param>
+        /// <param name="contentEncoding"> The content encoding of the request body which is always 'gzip'. </param>
+        /// <param name="context"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="ruleId"/>, <paramref name="streamName"/> or <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="ruleId"/> or <paramref name="streamName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        /// <returns> The response returned from the service. </returns>
+        public virtual async Task<Response> UploadAsync(string ruleId, string streamName, RequestContent content, string contentEncoding = default, RequestContext context = null)
+        {
+            using DiagnosticScope scope = ClientDiagnostics.CreateScope("LogsIngestionClient.Upload");
+            scope.Start();
+            try
+            {
+                Argument.AssertNotNullOrEmpty(ruleId, nameof(ruleId));
+                Argument.AssertNotNullOrEmpty(streamName, nameof(streamName));
+                Argument.AssertNotNull(content, nameof(content));
+
+                using HttpMessage message = CreateUploadRequest(ruleId, streamName, content, contentEncoding, context);
+                return await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
     }
 }

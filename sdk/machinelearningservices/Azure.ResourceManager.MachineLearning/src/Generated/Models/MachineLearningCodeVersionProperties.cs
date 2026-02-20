@@ -10,51 +10,34 @@ using System.Collections.Generic;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Code asset version details.
-    /// Serialized Name: CodeVersion
-    /// </summary>
+    /// <summary> Code asset version details. </summary>
     public partial class MachineLearningCodeVersionProperties : MachineLearningAssetBase
     {
-        /// <summary> Initializes a new instance of MachineLearningCodeVersionProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningCodeVersionProperties"/>. </summary>
         public MachineLearningCodeVersionProperties()
         {
         }
 
-        /// <summary> Initializes a new instance of MachineLearningCodeVersionProperties. </summary>
-        /// <param name="description">
-        /// The asset description text.
-        /// Serialized Name: ResourceBase.description
-        /// </param>
-        /// <param name="properties">
-        /// The asset property dictionary.
-        /// Serialized Name: ResourceBase.properties
-        /// </param>
-        /// <param name="tags">
-        /// Tag dictionary. Tags can be added, removed, and updated.
-        /// Serialized Name: ResourceBase.tags
-        /// </param>
-        /// <param name="isAnonymous">
-        /// If the name version are system generated (anonymous registration).
-        /// Serialized Name: AssetBase.isAnonymous
-        /// </param>
-        /// <param name="isArchived">
-        /// Is the asset archived?
-        /// Serialized Name: AssetBase.isArchived
-        /// </param>
-        /// <param name="codeUri">
-        /// Uri where code is located
-        /// Serialized Name: CodeVersion.codeUri
-        /// </param>
-        internal MachineLearningCodeVersionProperties(string description, IDictionary<string, string> properties, IDictionary<string, string> tags, bool? isAnonymous, bool? isArchived, Uri codeUri) : base(description, properties, tags, isAnonymous, isArchived)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningCodeVersionProperties"/>. </summary>
+        /// <param name="description"> The asset description text. </param>
+        /// <param name="tags"> Tag dictionary. Tags can be added, removed, and updated. </param>
+        /// <param name="properties"> The asset property dictionary. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="isArchived"> Is the asset archived?. </param>
+        /// <param name="isAnonymous"> If the name version are system generated (anonymous registration). </param>
+        /// <param name="codeUri"> Uri where code is located. </param>
+        /// <param name="provisioningState"> Provisioning state for the code version. </param>
+        internal MachineLearningCodeVersionProperties(string description, IDictionary<string, string> tags, IDictionary<string, string> properties, IDictionary<string, BinaryData> serializedAdditionalRawData, bool? isArchived, bool? isAnonymous, Uri codeUri, RegistryAssetProvisioningState? provisioningState) : base(description, tags, properties, serializedAdditionalRawData, isArchived, isAnonymous)
         {
             CodeUri = codeUri;
+            ProvisioningState = provisioningState;
         }
 
-        /// <summary>
-        /// Uri where code is located
-        /// Serialized Name: CodeVersion.codeUri
-        /// </summary>
+        /// <summary> Uri where code is located. </summary>
+        [WirePath("codeUri")]
         public Uri CodeUri { get; set; }
+        /// <summary> Provisioning state for the code version. </summary>
+        [WirePath("provisioningState")]
+        public RegistryAssetProvisioningState? ProvisioningState { get; }
     }
 }

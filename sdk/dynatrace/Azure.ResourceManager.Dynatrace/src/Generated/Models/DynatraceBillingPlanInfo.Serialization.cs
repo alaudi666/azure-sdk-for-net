@@ -6,74 +6,173 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Dynatrace;
 
 namespace Azure.ResourceManager.Dynatrace.Models
 {
-    public partial class DynatraceBillingPlanInfo : IUtf8JsonSerializable
+    /// <summary> Billing plan information. </summary>
+    public partial class DynatraceBillingPlanInfo : IJsonModel<DynatraceBillingPlanInfo>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DynatraceBillingPlanInfo PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceBillingPlanInfo>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDynatraceBillingPlanInfo(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DynatraceBillingPlanInfo)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DynatraceBillingPlanInfo>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceBillingPlanInfo>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DynatraceBillingPlanInfo)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(UsageType))
             {
-                writer.WritePropertyName("usageType");
+                writer.WritePropertyName("usageType"u8);
                 writer.WriteStringValue(UsageType);
             }
             if (Optional.IsDefined(BillingCycle))
             {
-                writer.WritePropertyName("billingCycle");
+                writer.WritePropertyName("billingCycle"u8);
                 writer.WriteStringValue(BillingCycle);
             }
             if (Optional.IsDefined(PlanDetails))
             {
-                writer.WritePropertyName("planDetails");
+                writer.WritePropertyName("planDetails"u8);
                 writer.WriteStringValue(PlanDetails);
             }
             if (Optional.IsDefined(EffectiveOn))
             {
-                writer.WritePropertyName("effectiveDate");
+                writer.WritePropertyName("effectiveDate"u8);
                 writer.WriteStringValue(EffectiveOn.Value, "O");
             }
-            writer.WriteEndObject();
-        }
-
-        internal static DynatraceBillingPlanInfo DeserializeDynatraceBillingPlanInfo(JsonElement element)
-        {
-            Optional<string> usageType = default;
-            Optional<string> billingCycle = default;
-            Optional<string> planDetails = default;
-            Optional<DateTimeOffset> effectiveDate = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("usageType"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    usageType = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("billingCycle"))
-                {
-                    billingCycle = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("planDetails"))
-                {
-                    planDetails = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("effectiveDate"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    effectiveDate = property.Value.GetDateTimeOffset("O");
-                    continue;
+#endif
                 }
             }
-            return new DynatraceBillingPlanInfo(usageType.Value, billingCycle.Value, planDetails.Value, Optional.ToNullable(effectiveDate));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DynatraceBillingPlanInfo IJsonModel<DynatraceBillingPlanInfo>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DynatraceBillingPlanInfo JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceBillingPlanInfo>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DynatraceBillingPlanInfo)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDynatraceBillingPlanInfo(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DynatraceBillingPlanInfo DeserializeDynatraceBillingPlanInfo(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string usageType = default;
+            string billingCycle = default;
+            string planDetails = default;
+            DateTimeOffset? effectiveOn = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("usageType"u8))
+                {
+                    usageType = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("billingCycle"u8))
+                {
+                    billingCycle = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("planDetails"u8))
+                {
+                    planDetails = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("effectiveDate"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    effectiveOn = prop.Value.GetDateTimeOffset("O");
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new DynatraceBillingPlanInfo(usageType, billingCycle, planDetails, effectiveOn, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DynatraceBillingPlanInfo>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceBillingPlanInfo>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDynatraceContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DynatraceBillingPlanInfo)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DynatraceBillingPlanInfo IPersistableModel<DynatraceBillingPlanInfo>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DynatraceBillingPlanInfo>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

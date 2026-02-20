@@ -4,6 +4,7 @@
 # Version : Version to add or replace in change log
 # Unreleased: Default is true. If it is set to false, then today's date will be set in verion title. If it is True then title will show "Unreleased"
 # ReplaceLatestEntryTitle: Replaces the latest changelog entry title.
+# GroupId: Optional. The group ID for the package. Used for filtering packages in languages that support group identifiers (e.g., Java).
 
 [CmdletBinding()]
 param (
@@ -14,7 +15,8 @@ param (
   [Boolean]$Unreleased = $true,
   [Boolean]$ReplaceLatestEntryTitle = $false,
   [String]$ChangelogPath,
-  [String]$ReleaseDate
+  [String]$ReleaseDate,
+  [String]$GroupId
 )
 Set-StrictMode -Version 3
 
@@ -59,7 +61,7 @@ if ($null -eq [AzureEngSemanticVersion]::ParseVersionString($Version))
 
 if ([string]::IsNullOrEmpty($ChangelogPath))
 {
-    $pkgProperties = Get-PkgProperties -PackageName $PackageName -ServiceDirectory $ServiceDirectory
+    $pkgProperties = Get-PkgProperties -PackageName $PackageName -ServiceDirectory $ServiceDirectory -GroupId $GroupId
     $ChangelogPath = $pkgProperties.ChangeLogPath
 }
 
@@ -75,7 +77,7 @@ if ($ChangeLogEntries.Contains($Version))
 {
     if ($ChangeLogEntries[$Version].ReleaseStatus -eq $ReleaseStatus)
     {
-        LogDebug "Version [$Version] is already present in change log with specificed ReleaseStatus [$ReleaseStatus]. No Change made."
+        LogDebug "Version [$Version] is already present in change log with specified ReleaseStatus [$ReleaseStatus]. No Change made."
         exit(0)
     }
 
@@ -102,7 +104,7 @@ LogDebug "The latest release note entry in the changelog is for version [$($Late
 
 $LatestsSorted = [AzureEngSemanticVersion]::SortVersionStrings(@($LatestVersion, $Version))
 if ($LatestsSorted[0] -ne $Version) {
-    LogWarning "Version [$Version] is older than the latestversion [$LatestVersion] in the changelog. Consider using a more recent version."
+    LogWarning "Version [$Version] is older than the latest version [$LatestVersion] in the changelog. Consider using a more recent version."
 }
 
 if ($ReplaceLatestEntryTitle)

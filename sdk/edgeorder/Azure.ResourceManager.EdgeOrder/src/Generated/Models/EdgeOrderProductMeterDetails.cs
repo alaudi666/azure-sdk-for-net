@@ -5,35 +5,46 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary>
-    /// Holds details about billing type and its meter guids
-    /// Please note <see cref="EdgeOrderProductMeterDetails"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-    /// The available derived classes include <see cref="Pav2MeterDetails"/> and <see cref="PurchaseMeterDetails"/>.
+    /// Holds details about billing type and its meter guids.
+    /// Please note this is the abstract base class. The derived classes available for instantiation are: <see cref="Pav2MeterDetails"/> and <see cref="PurchaseMeterDetails"/>.
     /// </summary>
     public abstract partial class EdgeOrderProductMeterDetails
     {
-        /// <summary> Initializes a new instance of EdgeOrderProductMeterDetails. </summary>
-        protected EdgeOrderProductMeterDetails()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderProductMeterDetails"/>. </summary>
+        /// <param name="billingType"> Represents billing type. </param>
+        private protected EdgeOrderProductMeterDetails(BillingType billingType)
         {
+            BillingType = billingType;
         }
 
-        /// <summary> Initializes a new instance of EdgeOrderProductMeterDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderProductMeterDetails"/>. </summary>
         /// <param name="billingType"> Represents billing type. </param>
         /// <param name="multiplier"> Billing unit applicable for Pav2 billing. </param>
         /// <param name="chargingType"> Charging type. </param>
-        internal EdgeOrderProductMeterDetails(BillingType billingType, double? multiplier, EdgeOrderProductChargingType? chargingType)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EdgeOrderProductMeterDetails(BillingType billingType, double? multiplier, EdgeOrderProductChargingType? chargingType, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             BillingType = billingType;
             Multiplier = multiplier;
             ChargingType = chargingType;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Represents billing type. </summary>
         internal BillingType BillingType { get; set; }
+
         /// <summary> Billing unit applicable for Pav2 billing. </summary>
         public double? Multiplier { get; }
+
         /// <summary> Charging type. </summary>
         public EdgeOrderProductChargingType? ChargingType { get; }
     }

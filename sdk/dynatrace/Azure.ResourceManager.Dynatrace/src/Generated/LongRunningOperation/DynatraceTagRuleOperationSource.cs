@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Dynatrace
 {
-    internal class DynatraceTagRuleOperationSource : IOperationSource<DynatraceTagRuleResource>
+    /// <summary></summary>
+    internal partial class DynatraceTagRuleOperationSource : IOperationSource<DynatraceTagRuleResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal DynatraceTagRuleOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         DynatraceTagRuleResource IOperationSource<DynatraceTagRuleResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = DynatraceTagRuleData.DeserializeDynatraceTagRuleData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            DynatraceTagRuleData data = DynatraceTagRuleData.DeserializeDynatraceTagRuleData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new DynatraceTagRuleResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<DynatraceTagRuleResource> IOperationSource<DynatraceTagRuleResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = DynatraceTagRuleData.DeserializeDynatraceTagRuleData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            DynatraceTagRuleData data = DynatraceTagRuleData.DeserializeDynatraceTagRuleData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new DynatraceTagRuleResource(_client, data);
         }
     }

@@ -7,43 +7,52 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Dynatrace;
 
 namespace Azure.ResourceManager.Dynatrace.Models
 {
     /// <summary> SSO details from the Dynatrace partner. </summary>
     public partial class DynatraceSsoDetailsResult
     {
-        /// <summary> Initializes a new instance of DynatraceSsoDetailsResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DynatraceSsoDetailsResult"/>. </summary>
         internal DynatraceSsoDetailsResult()
         {
             AadDomains = new ChangeTrackingList<string>();
             AdminUsers = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of DynatraceSsoDetailsResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynatraceSsoDetailsResult"/>. </summary>
         /// <param name="isSsoEnabled"> Whether the SSO is enabled for this resource or not. </param>
         /// <param name="metadataUri"> URL for Azure AD metadata. </param>
         /// <param name="singleSignOnUri"> The login URL specific to this Dynatrace Environment. </param>
         /// <param name="aadDomains"> array of Aad(azure active directory) domains. </param>
         /// <param name="adminUsers"> Array of admin user emails. </param>
-        internal DynatraceSsoDetailsResult(DynatraceSsoStatus? isSsoEnabled, Uri metadataUri, Uri singleSignOnUri, IReadOnlyList<string> aadDomains, IReadOnlyList<string> adminUsers)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DynatraceSsoDetailsResult(DynatraceSsoStatus? isSsoEnabled, Uri metadataUri, Uri singleSignOnUri, IReadOnlyList<string> aadDomains, IReadOnlyList<string> adminUsers, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             IsSsoEnabled = isSsoEnabled;
             MetadataUri = metadataUri;
             SingleSignOnUri = singleSignOnUri;
             AadDomains = aadDomains;
             AdminUsers = adminUsers;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Whether the SSO is enabled for this resource or not. </summary>
         public DynatraceSsoStatus? IsSsoEnabled { get; }
+
         /// <summary> URL for Azure AD metadata. </summary>
         public Uri MetadataUri { get; }
+
         /// <summary> The login URL specific to this Dynatrace Environment. </summary>
         public Uri SingleSignOnUri { get; }
+
         /// <summary> array of Aad(azure active directory) domains. </summary>
         public IReadOnlyList<string> AadDomains { get; }
+
         /// <summary> Array of admin user emails. </summary>
         public IReadOnlyList<string> AdminUsers { get; }
     }

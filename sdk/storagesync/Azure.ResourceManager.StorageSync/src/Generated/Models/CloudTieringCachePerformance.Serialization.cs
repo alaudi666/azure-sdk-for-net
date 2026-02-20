@@ -6,63 +6,185 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
-    public partial class CloudTieringCachePerformance
+    /// <summary> Server endpoint cloud tiering status object. </summary>
+    public partial class CloudTieringCachePerformance : IJsonModel<CloudTieringCachePerformance>
     {
-        internal static CloudTieringCachePerformance DeserializeCloudTieringCachePerformance(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual CloudTieringCachePerformance PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<DateTimeOffset> lastUpdatedTimestamp = default;
-            Optional<long> cacheHitBytes = default;
-            Optional<long> cacheMissBytes = default;
-            Optional<int> cacheHitBytesPercent = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<CloudTieringCachePerformance>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("lastUpdatedTimestamp"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeCloudTieringCachePerformance(document.RootElement, options);
                     }
-                    lastUpdatedTimestamp = property.Value.GetDateTimeOffset("O");
-                    continue;
-                }
-                if (property.NameEquals("cacheHitBytes"))
+                default:
+                    throw new FormatException($"The model {nameof(CloudTieringCachePerformance)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<CloudTieringCachePerformance>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<CloudTieringCachePerformance>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(CloudTieringCachePerformance)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(LastUpdatedOn))
+            {
+                writer.WritePropertyName("lastUpdatedTimestamp"u8);
+                writer.WriteStringValue(LastUpdatedOn.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(CacheHitBytes))
+            {
+                writer.WritePropertyName("cacheHitBytes"u8);
+                writer.WriteNumberValue(CacheHitBytes.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(CacheMissBytes))
+            {
+                writer.WritePropertyName("cacheMissBytes"u8);
+                writer.WriteNumberValue(CacheMissBytes.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(CacheHitBytesPercent))
+            {
+                writer.WritePropertyName("cacheHitBytesPercent"u8);
+                writer.WriteNumberValue(CacheHitBytesPercent.Value);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    cacheHitBytes = property.Value.GetInt64();
-                    continue;
-                }
-                if (property.NameEquals("cacheMissBytes"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    cacheMissBytes = property.Value.GetInt64();
-                    continue;
-                }
-                if (property.NameEquals("cacheHitBytesPercent"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    cacheHitBytesPercent = property.Value.GetInt32();
-                    continue;
+#endif
                 }
             }
-            return new CloudTieringCachePerformance(Optional.ToNullable(lastUpdatedTimestamp), Optional.ToNullable(cacheHitBytes), Optional.ToNullable(cacheMissBytes), Optional.ToNullable(cacheHitBytesPercent));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        CloudTieringCachePerformance IJsonModel<CloudTieringCachePerformance>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual CloudTieringCachePerformance JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<CloudTieringCachePerformance>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(CloudTieringCachePerformance)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeCloudTieringCachePerformance(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static CloudTieringCachePerformance DeserializeCloudTieringCachePerformance(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DateTimeOffset? lastUpdatedOn = default;
+            long? cacheHitBytes = default;
+            long? cacheMissBytes = default;
+            int? cacheHitBytesPercent = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("lastUpdatedTimestamp"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    lastUpdatedOn = prop.Value.GetDateTimeOffset("O");
+                    continue;
+                }
+                if (prop.NameEquals("cacheHitBytes"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    cacheHitBytes = prop.Value.GetInt64();
+                    continue;
+                }
+                if (prop.NameEquals("cacheMissBytes"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    cacheMissBytes = prop.Value.GetInt64();
+                    continue;
+                }
+                if (prop.NameEquals("cacheHitBytesPercent"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    cacheHitBytesPercent = prop.Value.GetInt32();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new CloudTieringCachePerformance(lastUpdatedOn, cacheHitBytes, cacheMissBytes, cacheHitBytesPercent, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<CloudTieringCachePerformance>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<CloudTieringCachePerformance>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerStorageSyncContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(CloudTieringCachePerformance)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        CloudTieringCachePerformance IPersistableModel<CloudTieringCachePerformance>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<CloudTieringCachePerformance>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

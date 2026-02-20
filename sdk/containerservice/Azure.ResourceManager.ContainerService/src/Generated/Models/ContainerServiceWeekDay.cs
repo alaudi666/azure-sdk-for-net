@@ -10,7 +10,10 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.ContainerService.Models
 {
-    /// <summary> The weekday enum. </summary>
+    /// <summary>
+    /// The weekday enum.
+    /// Serialized Name: WeekDay
+    /// </summary>
     public readonly partial struct ContainerServiceWeekDay : IEquatable<ContainerServiceWeekDay>
     {
         private readonly string _value;
@@ -30,25 +33,46 @@ namespace Azure.ResourceManager.ContainerService.Models
         private const string FridayValue = "Friday";
         private const string SaturdayValue = "Saturday";
 
-        /// <summary> Sunday. </summary>
+        /// <summary>
+        /// Sunday
+        /// Serialized Name: WeekDay.Sunday
+        /// </summary>
         public static ContainerServiceWeekDay Sunday { get; } = new ContainerServiceWeekDay(SundayValue);
-        /// <summary> Monday. </summary>
+        /// <summary>
+        /// Monday
+        /// Serialized Name: WeekDay.Monday
+        /// </summary>
         public static ContainerServiceWeekDay Monday { get; } = new ContainerServiceWeekDay(MondayValue);
-        /// <summary> Tuesday. </summary>
+        /// <summary>
+        /// Tuesday
+        /// Serialized Name: WeekDay.Tuesday
+        /// </summary>
         public static ContainerServiceWeekDay Tuesday { get; } = new ContainerServiceWeekDay(TuesdayValue);
-        /// <summary> Wednesday. </summary>
+        /// <summary>
+        /// Wednesday
+        /// Serialized Name: WeekDay.Wednesday
+        /// </summary>
         public static ContainerServiceWeekDay Wednesday { get; } = new ContainerServiceWeekDay(WednesdayValue);
-        /// <summary> Thursday. </summary>
+        /// <summary>
+        /// Thursday
+        /// Serialized Name: WeekDay.Thursday
+        /// </summary>
         public static ContainerServiceWeekDay Thursday { get; } = new ContainerServiceWeekDay(ThursdayValue);
-        /// <summary> Friday. </summary>
+        /// <summary>
+        /// Friday
+        /// Serialized Name: WeekDay.Friday
+        /// </summary>
         public static ContainerServiceWeekDay Friday { get; } = new ContainerServiceWeekDay(FridayValue);
-        /// <summary> Saturday. </summary>
+        /// <summary>
+        /// Saturday
+        /// Serialized Name: WeekDay.Saturday
+        /// </summary>
         public static ContainerServiceWeekDay Saturday { get; } = new ContainerServiceWeekDay(SaturdayValue);
         /// <summary> Determines if two <see cref="ContainerServiceWeekDay"/> values are the same. </summary>
         public static bool operator ==(ContainerServiceWeekDay left, ContainerServiceWeekDay right) => left.Equals(right);
         /// <summary> Determines if two <see cref="ContainerServiceWeekDay"/> values are not the same. </summary>
         public static bool operator !=(ContainerServiceWeekDay left, ContainerServiceWeekDay right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="ContainerServiceWeekDay"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="ContainerServiceWeekDay"/>. </summary>
         public static implicit operator ContainerServiceWeekDay(string value) => new ContainerServiceWeekDay(value);
 
         /// <inheritdoc />
@@ -59,7 +83,7 @@ namespace Azure.ResourceManager.ContainerService.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

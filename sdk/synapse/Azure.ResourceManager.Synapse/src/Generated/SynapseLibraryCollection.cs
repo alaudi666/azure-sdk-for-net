@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Synapse
 {
     /// <summary>
-    /// A class representing a collection of <see cref="SynapseLibraryResource" /> and their operations.
-    /// Each <see cref="SynapseLibraryResource" /> in the collection will belong to the same instance of <see cref="SynapseWorkspaceResource" />.
-    /// To get a <see cref="SynapseLibraryCollection" /> instance call the GetSynapseLibraries method from an instance of <see cref="SynapseWorkspaceResource" />.
+    /// A class representing a collection of <see cref="SynapseLibraryResource"/> and their operations.
+    /// Each <see cref="SynapseLibraryResource"/> in the collection will belong to the same instance of <see cref="SynapseWorkspaceResource"/>.
+    /// To get a <see cref="SynapseLibraryCollection"/> instance call the GetSynapseLibraries method from an instance of <see cref="SynapseWorkspaceResource"/>.
     /// </summary>
     public partial class SynapseLibraryCollection : ArmCollection, IEnumerable<SynapseLibraryResource>, IAsyncEnumerable<SynapseLibraryResource>
     {
@@ -60,8 +58,24 @@ namespace Azure.ResourceManager.Synapse
 
         /// <summary>
         /// Get library by name in a workspace.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries/{libraryName}
-        /// Operation Id: Library_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries/{libraryName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Library_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SynapseLibraryResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="libraryName"> Library name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -89,8 +103,24 @@ namespace Azure.ResourceManager.Synapse
 
         /// <summary>
         /// Get library by name in a workspace.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries/{libraryName}
-        /// Operation Id: Library_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries/{libraryName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Library_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SynapseLibraryResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="libraryName"> Library name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -118,92 +148,84 @@ namespace Azure.ResourceManager.Synapse
 
         /// <summary>
         /// List libraries in a workspace.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries
-        /// Operation Id: Libraries_ListByWorkspace
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Libraries_ListByWorkspace</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SynapseLibraryResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="SynapseLibraryResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SynapseLibraryResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SynapseLibraryResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<SynapseLibraryResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _synapseLibraryLibrariesClientDiagnostics.CreateScope("SynapseLibraryCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _synapseLibraryLibrariesRestClient.ListByWorkspaceAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SynapseLibraryResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<SynapseLibraryResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _synapseLibraryLibrariesClientDiagnostics.CreateScope("SynapseLibraryCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _synapseLibraryLibrariesRestClient.ListByWorkspaceNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SynapseLibraryResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _synapseLibraryLibrariesRestClient.CreateListByWorkspaceRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _synapseLibraryLibrariesRestClient.CreateListByWorkspaceNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new SynapseLibraryResource(Client, SynapseLibraryData.DeserializeSynapseLibraryData(e)), _synapseLibraryLibrariesClientDiagnostics, Pipeline, "SynapseLibraryCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// List libraries in a workspace.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries
-        /// Operation Id: Libraries_ListByWorkspace
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Libraries_ListByWorkspace</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SynapseLibraryResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="SynapseLibraryResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SynapseLibraryResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SynapseLibraryResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<SynapseLibraryResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _synapseLibraryLibrariesClientDiagnostics.CreateScope("SynapseLibraryCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _synapseLibraryLibrariesRestClient.ListByWorkspace(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SynapseLibraryResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<SynapseLibraryResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _synapseLibraryLibrariesClientDiagnostics.CreateScope("SynapseLibraryCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _synapseLibraryLibrariesRestClient.ListByWorkspaceNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SynapseLibraryResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _synapseLibraryLibrariesRestClient.CreateListByWorkspaceRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _synapseLibraryLibrariesRestClient.CreateListByWorkspaceNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new SynapseLibraryResource(Client, SynapseLibraryData.DeserializeSynapseLibraryData(e)), _synapseLibraryLibrariesClientDiagnostics, Pipeline, "SynapseLibraryCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries/{libraryName}
-        /// Operation Id: Library_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries/{libraryName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Library_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SynapseLibraryResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="libraryName"> Library name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -229,8 +251,24 @@ namespace Azure.ResourceManager.Synapse
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries/{libraryName}
-        /// Operation Id: Library_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries/{libraryName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Library_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SynapseLibraryResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="libraryName"> Library name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -246,6 +284,96 @@ namespace Azure.ResourceManager.Synapse
             {
                 var response = _synapseLibraryLibraryRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, libraryName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries/{libraryName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Library_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SynapseLibraryResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="libraryName"> Library name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="libraryName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="libraryName"/> is null. </exception>
+        public virtual async Task<NullableResponse<SynapseLibraryResource>> GetIfExistsAsync(string libraryName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(libraryName, nameof(libraryName));
+
+            using var scope = _synapseLibraryLibraryClientDiagnostics.CreateScope("SynapseLibraryCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _synapseLibraryLibraryRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, libraryName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<SynapseLibraryResource>(response.GetRawResponse());
+                return Response.FromValue(new SynapseLibraryResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/libraries/{libraryName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Library_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SynapseLibraryResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="libraryName"> Library name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="libraryName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="libraryName"/> is null. </exception>
+        public virtual NullableResponse<SynapseLibraryResource> GetIfExists(string libraryName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(libraryName, nameof(libraryName));
+
+            using var scope = _synapseLibraryLibraryClientDiagnostics.CreateScope("SynapseLibraryCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _synapseLibraryLibraryRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, libraryName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<SynapseLibraryResource>(response.GetRawResponse());
+                return Response.FromValue(new SynapseLibraryResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

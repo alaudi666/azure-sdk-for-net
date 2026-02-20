@@ -5,73 +5,223 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class ConnectionMonitorTcpConfiguration : IUtf8JsonSerializable
+    public partial class ConnectionMonitorTcpConfiguration : IUtf8JsonSerializable, IJsonModel<ConnectionMonitorTcpConfiguration>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ConnectionMonitorTcpConfiguration>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ConnectionMonitorTcpConfiguration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ConnectionMonitorTcpConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ConnectionMonitorTcpConfiguration)} does not support writing '{format}' format.");
+            }
+
             if (Optional.IsDefined(Port))
             {
-                writer.WritePropertyName("port");
+                writer.WritePropertyName("port"u8);
                 writer.WriteNumberValue(Port.Value);
             }
             if (Optional.IsDefined(DisableTraceRoute))
             {
-                writer.WritePropertyName("disableTraceRoute");
+                writer.WritePropertyName("disableTraceRoute"u8);
                 writer.WriteBooleanValue(DisableTraceRoute.Value);
             }
             if (Optional.IsDefined(DestinationPortBehavior))
             {
-                writer.WritePropertyName("destinationPortBehavior");
+                writer.WritePropertyName("destinationPortBehavior"u8);
                 writer.WriteStringValue(DestinationPortBehavior.Value.ToString());
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static ConnectionMonitorTcpConfiguration DeserializeConnectionMonitorTcpConfiguration(JsonElement element)
+        ConnectionMonitorTcpConfiguration IJsonModel<ConnectionMonitorTcpConfiguration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<int> port = default;
-            Optional<bool> disableTraceRoute = default;
-            Optional<DestinationPortBehavior> destinationPortBehavior = default;
+            var format = options.Format == "W" ? ((IPersistableModel<ConnectionMonitorTcpConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ConnectionMonitorTcpConfiguration)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeConnectionMonitorTcpConfiguration(document.RootElement, options);
+        }
+
+        internal static ConnectionMonitorTcpConfiguration DeserializeConnectionMonitorTcpConfiguration(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            int? port = default;
+            bool? disableTraceRoute = default;
+            DestinationPortBehavior? destinationPortBehavior = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("port"))
+                if (property.NameEquals("port"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     port = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("disableTraceRoute"))
+                if (property.NameEquals("disableTraceRoute"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     disableTraceRoute = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("destinationPortBehavior"))
+                if (property.NameEquals("destinationPortBehavior"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     destinationPortBehavior = new DestinationPortBehavior(property.Value.GetString());
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ConnectionMonitorTcpConfiguration(Optional.ToNullable(port), Optional.ToNullable(disableTraceRoute), Optional.ToNullable(destinationPortBehavior));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ConnectionMonitorTcpConfiguration(port, disableTraceRoute, destinationPortBehavior, serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Port), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  port: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Port))
+                {
+                    builder.Append("  port: ");
+                    builder.AppendLine($"{Port.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DisableTraceRoute), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  disableTraceRoute: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DisableTraceRoute))
+                {
+                    builder.Append("  disableTraceRoute: ");
+                    var boolValue = DisableTraceRoute.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DestinationPortBehavior), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  destinationPortBehavior: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DestinationPortBehavior))
+                {
+                    builder.Append("  destinationPortBehavior: ");
+                    builder.AppendLine($"'{DestinationPortBehavior.Value.ToString()}'");
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<ConnectionMonitorTcpConfiguration>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ConnectionMonitorTcpConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(ConnectionMonitorTcpConfiguration)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ConnectionMonitorTcpConfiguration IPersistableModel<ConnectionMonitorTcpConfiguration>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ConnectionMonitorTcpConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeConnectionMonitorTcpConfiguration(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ConnectionMonitorTcpConfiguration)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ConnectionMonitorTcpConfiguration>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

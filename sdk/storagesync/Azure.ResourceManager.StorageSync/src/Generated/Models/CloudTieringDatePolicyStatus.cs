@@ -6,28 +6,35 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
     /// <summary> Status of the date policy. </summary>
     public partial class CloudTieringDatePolicyStatus
     {
-        /// <summary> Initializes a new instance of CloudTieringDatePolicyStatus. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CloudTieringDatePolicyStatus"/>. </summary>
         internal CloudTieringDatePolicyStatus()
         {
         }
 
-        /// <summary> Initializes a new instance of CloudTieringDatePolicyStatus. </summary>
+        /// <summary> Initializes a new instance of <see cref="CloudTieringDatePolicyStatus"/>. </summary>
         /// <param name="lastUpdatedOn"> Last updated timestamp. </param>
         /// <param name="tieredFilesMostRecentAccessTimestamp"> Most recent access time of tiered files. </param>
-        internal CloudTieringDatePolicyStatus(DateTimeOffset? lastUpdatedOn, DateTimeOffset? tieredFilesMostRecentAccessTimestamp)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CloudTieringDatePolicyStatus(DateTimeOffset? lastUpdatedOn, DateTimeOffset? tieredFilesMostRecentAccessTimestamp, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             LastUpdatedOn = lastUpdatedOn;
             TieredFilesMostRecentAccessTimestamp = tieredFilesMostRecentAccessTimestamp;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Last updated timestamp. </summary>
         public DateTimeOffset? LastUpdatedOn { get; }
+
         /// <summary> Most recent access time of tiered files. </summary>
         public DateTimeOffset? TieredFilesMostRecentAccessTimestamp { get; }
     }

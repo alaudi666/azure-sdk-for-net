@@ -5,45 +5,60 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The ssl configuration for scoring
-    /// Serialized Name: SslConfiguration
-    /// </summary>
+    /// <summary> The ssl configuration for scoring. </summary>
     public partial class MachineLearningSslConfiguration
     {
-        /// <summary> Initializes a new instance of MachineLearningSslConfiguration. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="MachineLearningSslConfiguration"/>. </summary>
         public MachineLearningSslConfiguration()
         {
         }
 
-        /// <summary> Initializes a new instance of MachineLearningSslConfiguration. </summary>
-        /// <param name="status">
-        /// Enable or disable ssl for scoring
-        /// Serialized Name: SslConfiguration.status
-        /// </param>
-        /// <param name="cert">
-        /// Cert data
-        /// Serialized Name: SslConfiguration.cert
-        /// </param>
-        /// <param name="key">
-        /// Key data
-        /// Serialized Name: SslConfiguration.key
-        /// </param>
-        /// <param name="cname">
-        /// CNAME of the cert
-        /// Serialized Name: SslConfiguration.cname
-        /// </param>
-        /// <param name="leafDomainLabel">
-        /// Leaf domain label of public endpoint
-        /// Serialized Name: SslConfiguration.leafDomainLabel
-        /// </param>
-        /// <param name="overwriteExistingDomain">
-        /// Indicates whether to overwrite existing domain label.
-        /// Serialized Name: SslConfiguration.overwriteExistingDomain
-        /// </param>
-        internal MachineLearningSslConfiguration(MachineLearningSslConfigStatus? status, string cert, string key, string cname, string leafDomainLabel, bool? overwriteExistingDomain)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningSslConfiguration"/>. </summary>
+        /// <param name="status"> Enable or disable ssl for scoring. </param>
+        /// <param name="cert"> Cert data. </param>
+        /// <param name="key"> Key data. </param>
+        /// <param name="cname"> CNAME of the cert. </param>
+        /// <param name="leafDomainLabel"> Leaf domain label of public endpoint. </param>
+        /// <param name="overwriteExistingDomain"> Indicates whether to overwrite existing domain label. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal MachineLearningSslConfiguration(MachineLearningSslConfigStatus? status, string cert, string key, string cname, string leafDomainLabel, bool? overwriteExistingDomain, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Status = status;
             Cert = cert;
@@ -51,37 +66,26 @@ namespace Azure.ResourceManager.MachineLearning.Models
             Cname = cname;
             LeafDomainLabel = leafDomainLabel;
             OverwriteExistingDomain = overwriteExistingDomain;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary>
-        /// Enable or disable ssl for scoring
-        /// Serialized Name: SslConfiguration.status
-        /// </summary>
+        /// <summary> Enable or disable ssl for scoring. </summary>
+        [WirePath("status")]
         public MachineLearningSslConfigStatus? Status { get; set; }
-        /// <summary>
-        /// Cert data
-        /// Serialized Name: SslConfiguration.cert
-        /// </summary>
+        /// <summary> Cert data. </summary>
+        [WirePath("cert")]
         public string Cert { get; set; }
-        /// <summary>
-        /// Key data
-        /// Serialized Name: SslConfiguration.key
-        /// </summary>
+        /// <summary> Key data. </summary>
+        [WirePath("key")]
         public string Key { get; set; }
-        /// <summary>
-        /// CNAME of the cert
-        /// Serialized Name: SslConfiguration.cname
-        /// </summary>
+        /// <summary> CNAME of the cert. </summary>
+        [WirePath("cname")]
         public string Cname { get; set; }
-        /// <summary>
-        /// Leaf domain label of public endpoint
-        /// Serialized Name: SslConfiguration.leafDomainLabel
-        /// </summary>
+        /// <summary> Leaf domain label of public endpoint. </summary>
+        [WirePath("leafDomainLabel")]
         public string LeafDomainLabel { get; set; }
-        /// <summary>
-        /// Indicates whether to overwrite existing domain label.
-        /// Serialized Name: SslConfiguration.overwriteExistingDomain
-        /// </summary>
+        /// <summary> Indicates whether to overwrite existing domain label. </summary>
+        [WirePath("overwriteExistingDomain")]
         public bool? OverwriteExistingDomain { get; set; }
     }
 }

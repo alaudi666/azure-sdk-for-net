@@ -8,8 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
@@ -20,59 +19,81 @@ using Azure.ResourceManager;
 namespace Azure.ResourceManager.StorageMover
 {
     /// <summary>
-    /// A class representing a collection of <see cref="JobRunResource" /> and their operations.
-    /// Each <see cref="JobRunResource" /> in the collection will belong to the same instance of <see cref="JobDefinitionResource" />.
-    /// To get a <see cref="JobRunCollection" /> instance call the GetJobRuns method from an instance of <see cref="JobDefinitionResource" />.
+    /// A class representing a collection of <see cref="JobRunResource"/> and their operations.
+    /// Each <see cref="JobRunResource"/> in the collection will belong to the same instance of <see cref="JobDefinitionResource"/>.
+    /// To get a <see cref="JobRunCollection"/> instance call the GetJobRuns method from an instance of <see cref="JobDefinitionResource"/>.
     /// </summary>
     public partial class JobRunCollection : ArmCollection, IEnumerable<JobRunResource>, IAsyncEnumerable<JobRunResource>
     {
-        private readonly ClientDiagnostics _jobRunClientDiagnostics;
-        private readonly JobRunsRestOperations _jobRunRestClient;
+        private readonly ClientDiagnostics _jobRunsClientDiagnostics;
+        private readonly JobRuns _jobRunsRestClient;
 
-        /// <summary> Initializes a new instance of the <see cref="JobRunCollection"/> class for mocking. </summary>
+        /// <summary> Initializes a new instance of JobRunCollection for mocking. </summary>
         protected JobRunCollection()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref="JobRunCollection"/> class. </summary>
+        /// <summary> Initializes a new instance of <see cref="JobRunCollection"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
-        /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
+        /// <param name="id"> The identifier of the resource that is the target of operations. </param>
         internal JobRunCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _jobRunClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.StorageMover", JobRunResource.ResourceType.Namespace, Diagnostics);
             TryGetApiVersion(JobRunResource.ResourceType, out string jobRunApiVersion);
-            _jobRunRestClient = new JobRunsRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, jobRunApiVersion);
-#if DEBUG
-			ValidateResourceId(Id);
-#endif
+            _jobRunsClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.StorageMover", JobRunResource.ResourceType.Namespace, Diagnostics);
+            _jobRunsRestClient = new JobRuns(_jobRunsClientDiagnostics, Pipeline, Endpoint, jobRunApiVersion ?? "2025-08-01");
+            ValidateResourceId(id);
         }
 
+        /// <param name="id"></param>
+        [Conditional("DEBUG")]
         internal static void ValidateResourceId(ResourceIdentifier id)
         {
             if (id.ResourceType != JobDefinitionResource.ResourceType)
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, JobDefinitionResource.ResourceType), nameof(id));
+            {
+                throw new ArgumentException(string.Format("Invalid resource type {0} expected {1}", id.ResourceType, JobDefinitionResource.ResourceType), id);
+            }
         }
 
         /// <summary>
         /// Gets a Job Run resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns/{jobRunName}
-        /// Operation Id: JobRuns_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns/{jobRunName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> JobRuns_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-08-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="jobRunName"> The name of the Job Run resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="jobRunName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="jobRunName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="jobRunName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<JobRunResource>> GetAsync(string jobRunName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(jobRunName, nameof(jobRunName));
 
-            using var scope = _jobRunClientDiagnostics.CreateScope("JobRunCollection.Get");
+            using DiagnosticScope scope = _jobRunsClientDiagnostics.CreateScope("JobRunCollection.Get");
             scope.Start();
             try
             {
-                var response = await _jobRunRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, jobRunName, cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _jobRunsRestClient.CreateGetRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, jobRunName, context);
+                Response result = await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                Response<JobRunData> response = Response.FromValue(JobRunData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new JobRunResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -84,24 +105,44 @@ namespace Azure.ResourceManager.StorageMover
 
         /// <summary>
         /// Gets a Job Run resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns/{jobRunName}
-        /// Operation Id: JobRuns_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns/{jobRunName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> JobRuns_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-08-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="jobRunName"> The name of the Job Run resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="jobRunName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="jobRunName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="jobRunName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<JobRunResource> Get(string jobRunName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(jobRunName, nameof(jobRunName));
 
-            using var scope = _jobRunClientDiagnostics.CreateScope("JobRunCollection.Get");
+            using DiagnosticScope scope = _jobRunsClientDiagnostics.CreateScope("JobRunCollection.Get");
             scope.Start();
             try
             {
-                var response = _jobRunRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, jobRunName, cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _jobRunsRestClient.CreateGetRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, jobRunName, context);
+                Response result = Pipeline.ProcessMessage(message, context);
+                Response<JobRunData> response = Response.FromValue(JobRunData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new JobRunResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -113,106 +154,122 @@ namespace Azure.ResourceManager.StorageMover
 
         /// <summary>
         /// Lists all Job Runs in a Job Definition.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns
-        /// Operation Id: JobRuns_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> JobRuns_List. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-08-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="JobRunResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="JobRunResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<JobRunResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<JobRunResource>> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _jobRunClientDiagnostics.CreateScope("JobRunCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _jobRunRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new JobRunResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<JobRunResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _jobRunClientDiagnostics.CreateScope("JobRunCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _jobRunRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new JobRunResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new AsyncPageableWrapper<JobRunData, JobRunResource>(new JobRunsGetAllAsyncCollectionResultOfT(
+                _jobRunsRestClient,
+                Id.SubscriptionId,
+                Id.ResourceGroupName,
+                Id.Parent.Parent.Name,
+                Id.Parent.Name,
+                Id.Name,
+                context), data => new JobRunResource(Client, data));
         }
 
         /// <summary>
         /// Lists all Job Runs in a Job Definition.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns
-        /// Operation Id: JobRuns_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> JobRuns_List. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-08-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="JobRunResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="JobRunResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<JobRunResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<JobRunResource> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _jobRunClientDiagnostics.CreateScope("JobRunCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _jobRunRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new JobRunResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<JobRunResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _jobRunClientDiagnostics.CreateScope("JobRunCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _jobRunRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new JobRunResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new PageableWrapper<JobRunData, JobRunResource>(new JobRunsGetAllCollectionResultOfT(
+                _jobRunsRestClient,
+                Id.SubscriptionId,
+                Id.ResourceGroupName,
+                Id.Parent.Parent.Name,
+                Id.Parent.Name,
+                Id.Name,
+                context), data => new JobRunResource(Client, data));
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns/{jobRunName}
-        /// Operation Id: JobRuns_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns/{jobRunName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> JobRuns_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-08-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="jobRunName"> The name of the Job Run resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="jobRunName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="jobRunName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="jobRunName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<bool>> ExistsAsync(string jobRunName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(jobRunName, nameof(jobRunName));
 
-            using var scope = _jobRunClientDiagnostics.CreateScope("JobRunCollection.Exists");
+            using DiagnosticScope scope = _jobRunsClientDiagnostics.CreateScope("JobRunCollection.Exists");
             scope.Start();
             try
             {
-                var response = await _jobRunRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, jobRunName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _jobRunsRestClient.CreateGetRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, jobRunName, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<JobRunData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(JobRunData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((JobRunData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -224,23 +281,175 @@ namespace Azure.ResourceManager.StorageMover
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns/{jobRunName}
-        /// Operation Id: JobRuns_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns/{jobRunName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> JobRuns_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-08-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="jobRunName"> The name of the Job Run resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="jobRunName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="jobRunName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="jobRunName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<bool> Exists(string jobRunName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(jobRunName, nameof(jobRunName));
 
-            using var scope = _jobRunClientDiagnostics.CreateScope("JobRunCollection.Exists");
+            using DiagnosticScope scope = _jobRunsClientDiagnostics.CreateScope("JobRunCollection.Exists");
             scope.Start();
             try
             {
-                var response = _jobRunRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, jobRunName, cancellationToken: cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _jobRunsRestClient.CreateGetRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, jobRunName, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<JobRunData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(JobRunData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((JobRunData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns/{jobRunName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> JobRuns_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-08-01. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="jobRunName"> The name of the Job Run resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="jobRunName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="jobRunName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual async Task<NullableResponse<JobRunResource>> GetIfExistsAsync(string jobRunName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(jobRunName, nameof(jobRunName));
+
+            using DiagnosticScope scope = _jobRunsClientDiagnostics.CreateScope("JobRunCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _jobRunsRestClient.CreateGetRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, jobRunName, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<JobRunData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(JobRunData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((JobRunData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<JobRunResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new JobRunResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StorageMover/storageMovers/{storageMoverName}/projects/{projectName}/jobDefinitions/{jobDefinitionName}/jobRuns/{jobRunName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> JobRuns_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-08-01. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="jobRunName"> The name of the Job Run resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="jobRunName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="jobRunName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual NullableResponse<JobRunResource> GetIfExists(string jobRunName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(jobRunName, nameof(jobRunName));
+
+            using DiagnosticScope scope = _jobRunsClientDiagnostics.CreateScope("JobRunCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _jobRunsRestClient.CreateGetRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, jobRunName, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<JobRunData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(JobRunData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((JobRunData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<JobRunResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new JobRunResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {
@@ -259,6 +468,7 @@ namespace Azure.ResourceManager.StorageMover
             return GetAll().GetEnumerator();
         }
 
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
         IAsyncEnumerator<JobRunResource> IAsyncEnumerable<JobRunResource>.GetAsyncEnumerator(CancellationToken cancellationToken)
         {
             return GetAllAsync(cancellationToken: cancellationToken).GetAsyncEnumerator(cancellationToken);

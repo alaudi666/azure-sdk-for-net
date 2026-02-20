@@ -8,14 +8,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Describes a section in the fabric settings of the cluster. </summary>
     public partial class ClusterFabricSettingsSection
     {
-        /// <summary> Initializes a new instance of ClusterFabricSettingsSection. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ClusterFabricSettingsSection"/>. </summary>
         /// <param name="name"> The section name of the fabric settings. </param>
         /// <param name="parameters"> The collection of parameters in the section. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="name"/> or <paramref name="parameters"/> is null. </exception>
@@ -28,17 +31,20 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
             Parameters = parameters.ToList();
         }
 
-        /// <summary> Initializes a new instance of ClusterFabricSettingsSection. </summary>
+        /// <summary> Initializes a new instance of <see cref="ClusterFabricSettingsSection"/>. </summary>
         /// <param name="name"> The section name of the fabric settings. </param>
         /// <param name="parameters"> The collection of parameters in the section. </param>
-        internal ClusterFabricSettingsSection(string name, IList<ClusterFabricSettingsParameterDescription> parameters)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ClusterFabricSettingsSection(string name, IList<ClusterFabricSettingsParameterDescription> parameters, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Name = name;
             Parameters = parameters;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The section name of the fabric settings. </summary>
         public string Name { get; set; }
+
         /// <summary> The collection of parameters in the section. </summary>
         public IList<ClusterFabricSettingsParameterDescription> Parameters { get; }
     }

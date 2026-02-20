@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Azure.Identity;
 using Azure.Messaging.EventHubs.Producer;
 using NUnit.Framework;
 
@@ -32,14 +33,19 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 
             #region Snippet:Sample09_AccessingEventData
 #if SNIPPET
-            var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
+            var credential = new DefaultAzureCredential();
 #else
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = scope.EventHubName;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
 
-            var producer = new EventHubProducerClient(connectionString, eventHubName);
+            var producer = new EventHubProducerClient(
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             try
             {
@@ -50,11 +56,11 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 
                 for (var index = 0; index < 5; ++index)
                 {
-                    var eventData = new EventData($"Event #{ index }");
+                    var eventData = new EventData($"Event #{index}");
 
                     if (!observableBatch.TryAdd(eventData))
                     {
-                        throw new Exception($"The event at { index } could not be added.");
+                        throw new Exception($"The event at {index} could not be added.");
                     }
                 }
 
@@ -62,7 +68,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 
                 foreach (var singleEvent in observableBatch.Events)
                 {
-                    Debug.WriteLine($"Added event { singleEvent.EventBody } at time { singleEvent.EnqueuedTime }");
+                    Debug.WriteLine($"Added event {singleEvent.EventBody} at time {singleEvent.EnqueuedTime}");
                 }
 
                 await producer.SendAsync(observableBatch);
@@ -71,7 +77,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             {
                 await producer.CloseAsync();
             }
-#endregion
+            #endregion
         }
 
         /// <summary>
@@ -86,14 +92,19 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             #region Snippet:Sample09_CheckingBatch
 
 #if SNIPPET
-            var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
+            var credential = new DefaultAzureCredential();
 #else
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = scope.EventHubName;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
 
-            var producer = new EventHubProducerClient(connectionString, eventHubName);
+            var producer = new EventHubProducerClient(
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             try
             {
@@ -104,14 +115,14 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 
                 for (var index = 0; index < 5; ++index)
                 {
-                    var eventData = new EventData($"Event #{ index }")
+                    var eventData = new EventData($"Event #{index}")
                     {
                         MessageId = index.ToString()
                     };
 
                     if (!observableBatch.TryAdd(eventData))
                     {
-                        throw new Exception($"The event at { index } could not be added.");
+                        throw new Exception($"The event at {index} could not be added.");
                     }
                 }
 
@@ -126,7 +137,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             {
                 await producer.CloseAsync();
             }
-#endregion
+            #endregion
         }
 
         /// <summary>
@@ -147,12 +158,12 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 
             for (var index = 0; index < 5; ++index)
             {
-                var eventData = new EventData($"Event #{ index }");
+                var eventData = new EventData($"Event #{index}");
                 eventData.Properties.Add("ApplicationId", index);
 
                 if (!observableBatch.TryAdd(eventData))
                 {
-                    throw new Exception($"The event at { index } could not be added.");
+                    throw new Exception($"The event at {index} could not be added.");
                 }
             }
 

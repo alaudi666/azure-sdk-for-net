@@ -2,12 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Communication.Pipeline;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.Communication.Pipeline;
 
 namespace Azure.Communication.CallAutomation
 {
@@ -20,10 +21,18 @@ namespace Azure.Communication.CallAutomation
         internal readonly ClientDiagnostics _clientDiagnostics;
         internal readonly HttpPipeline _pipeline;
 
-        internal CallConnectionsRestClient CallConnectionsRestClient { get; }
-        internal ServerCallingRestClient ServerCallingRestClient { get; }
-        internal ContentRestClient ContentRestClient { get; }
-        internal ServerCallsRestClient ServerCallsRestClient { get; }
+        internal CallConnectionRestClient CallConnectionRestClient { get; }
+        internal AzureCommunicationServicesRestClient AzureCommunicationServicesRestClient { get; }
+        internal CallMediaRestClient CallMediaRestClient { get; }
+        internal CallRecordingRestClient CallRecordingRestClient { get; }
+        internal CallAutomationEventProcessor EventProcessor { get; }
+
+        /// <summary>
+        /// CommunicationUserIdentifier that makes the outbound call.
+        /// This can be provided by providing CallAutomationClientOption during construction of CallAutomationClient.
+        /// If left blank, service will create one each request.
+        /// </summary>
+        public CommunicationUserIdentifier Source { get; }
 
         #region public constructors
         /// <summary> Initializes a new instance of <see cref="CallAutomationClient"/>.</summary>
@@ -53,17 +62,6 @@ namespace Azure.Communication.CallAutomation
                 Argument.CheckNotNull(credential, nameof(credential)),
                 options ?? new CallAutomationClientOptions())
         { }
-
-        /// <summary> Initializes a new instance of <see cref="CallAutomationClient"/> with custom PMA endpoint.</summary>
-        /// <param name="pmaEndpoint">Endpoint for PMA</param>
-        /// <param name="connectionString">Connection string acquired from the Azure Communication Services resource.</param>
-        /// <param name="options">Client option exposing <see cref="ClientOptions.Diagnostics"/>, <see cref="ClientOptions.Retry"/>, <see cref="ClientOptions.Transport"/>, etc.</param>
-        public CallAutomationClient(Uri pmaEndpoint, string connectionString, CallAutomationClientOptions options = default)
-        : this(
-        pmaEndpoint,
-        options ?? new CallAutomationClientOptions(),
-        ConnectionString.Parse(connectionString))
-        { }
         #endregion
 
         #region private constructors
@@ -80,18 +78,13 @@ namespace Azure.Communication.CallAutomation
             _pipeline = httpPipeline;
             _resourceEndpoint = endpoint.AbsoluteUri;
             _clientDiagnostics = new ClientDiagnostics(options);
-            ServerCallingRestClient = new ServerCallingRestClient(_clientDiagnostics, httpPipeline, endpoint, options.ApiVersion);
-            CallConnectionsRestClient = new CallConnectionsRestClient(_clientDiagnostics, httpPipeline, endpoint, options.ApiVersion);
-            ContentRestClient = new ContentRestClient(_clientDiagnostics, httpPipeline, endpoint, options.ApiVersion);
-            ServerCallsRestClient = new ServerCallsRestClient(_clientDiagnostics, httpPipeline, endpoint, options.ApiVersion);
+            AzureCommunicationServicesRestClient = new AzureCommunicationServicesRestClient(_clientDiagnostics, httpPipeline, endpoint, options.ApiVersion);
+            CallConnectionRestClient = new CallConnectionRestClient(_clientDiagnostics, httpPipeline, endpoint, options.ApiVersion);
+            CallMediaRestClient = new CallMediaRestClient(_clientDiagnostics, httpPipeline, endpoint, options.ApiVersion);
+            CallRecordingRestClient = new CallRecordingRestClient(_clientDiagnostics, httpPipeline, endpoint, options.ApiVersion);
+            EventProcessor = new CallAutomationEventProcessor();
+            Source = options.Source;
         }
-
-        private CallAutomationClient(Uri endpoint, CallAutomationClientOptions options, ConnectionString connectionString)
-        : this(
-        endpoint: endpoint,
-        httpPipeline: options.CustomBuildHttpPipeline(connectionString),
-        options: options)
-        { }
         #endregion
 
         /// <summary>Initializes a new instance of <see cref="CallAutomationClient"/> for mocking.</summary>
@@ -100,9 +93,9 @@ namespace Azure.Communication.CallAutomation
             _pipeline = null;
             _resourceEndpoint = null;
             _clientDiagnostics = null;
-            CallConnectionsRestClient = null;
-            ServerCallingRestClient = null;
-            ContentRestClient = null;
+            CallConnectionRestClient = null;
+            AzureCommunicationServicesRestClient = null;
+            CallMediaRestClient = null;
         }
 
         /// Answer an incoming call.
@@ -127,7 +120,6 @@ namespace Azure.Communication.CallAutomation
         /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
         /// <exception cref="ArgumentException"><paramref name="options"/> CallbackUri is not formatted correctly. </exception>
-        /// <exception cref="ArgumentException"><paramref name="options"/> Repeatability headers are set incorrectly.</exception>
         /// <returns></returns>
         public virtual async Task<Response<AnswerCallResult>> AnswerCallAsync(AnswerCallOptions options, CancellationToken cancellationToken = default)
         {
@@ -135,18 +127,17 @@ namespace Azure.Communication.CallAutomation
             scope.Start();
             try
             {
-                if (options == null) throw new ArgumentNullException(nameof(options));
+                if (options == null)
+                    throw new ArgumentNullException(nameof(options));
 
                 AnswerCallRequestInternal request = CreateAnswerCallRequest(options);
-                options.RepeatabilityHeaders?.GenerateIfRepeatabilityHeadersNotProvided();
 
-                var answerResponse = await ServerCallingRestClient.AnswerCallAsync(request,
-                        options.RepeatabilityHeaders?.RepeatabilityRequestId,
-                        options.RepeatabilityHeaders?.GetRepeatabilityFirstSentString(),
-                        cancellationToken)
-                    .ConfigureAwait(false);
+                var answerResponse = await AzureCommunicationServicesRestClient.AnswerCallAsync(request, cancellationToken).ConfigureAwait(false);
 
-                return Response.FromValue(new AnswerCallResult(GetCallConnection(answerResponse.Value.CallConnectionId), new CallConnectionProperties(answerResponse.Value)),
+                var result = new AnswerCallResult(GetCallConnection(answerResponse.Value.CallConnectionId), new CallConnectionProperties(answerResponse.Value));
+                result.SetEventProcessor(EventProcessor, answerResponse.Value.CallConnectionId, null);
+
+                return Response.FromValue(result,
                     answerResponse.GetRawResponse());
             }
             catch (Exception ex)
@@ -155,7 +146,6 @@ namespace Azure.Communication.CallAutomation
                 throw;
             }
         }
-
         /// Answer an incoming call.
         /// <param name="incomingCallContext"> The incoming call context </param>
         /// <param name="callbackUri"> The callback Uri to receive status notifications. </param>
@@ -178,7 +168,6 @@ namespace Azure.Communication.CallAutomation
         /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
         /// <exception cref="ArgumentException"><paramref name="options"/> CallbackUri is not formatted correctly. </exception>
-        /// <exception cref="ArgumentException"><paramref name="options"/> Repeatability headers are set incorrectly.</exception>
         /// <returns></returns>
         public virtual Response<AnswerCallResult> AnswerCall(AnswerCallOptions options, CancellationToken cancellationToken = default)
         {
@@ -186,17 +175,17 @@ namespace Azure.Communication.CallAutomation
             scope.Start();
             try
             {
-                if (options == null) throw new ArgumentNullException(nameof(options));
+                if (options == null)
+                    throw new ArgumentNullException(nameof(options));
 
                 AnswerCallRequestInternal request = CreateAnswerCallRequest(options);
-                options.RepeatabilityHeaders?.GenerateIfRepeatabilityHeadersNotProvided();
 
-                var answerResponse = ServerCallingRestClient.AnswerCall(request,
-                    options.RepeatabilityHeaders?.RepeatabilityRequestId,
-                    options.RepeatabilityHeaders?.GetRepeatabilityFirstSentString(),
-                    cancellationToken);
+                var answerResponse = AzureCommunicationServicesRestClient.AnswerCall(request, cancellationToken);
 
-                return Response.FromValue(new AnswerCallResult(GetCallConnection(answerResponse.Value.CallConnectionId), new CallConnectionProperties(answerResponse.Value)),
+                var result = new AnswerCallResult(GetCallConnection(answerResponse.Value.CallConnectionId), new CallConnectionProperties(answerResponse.Value));
+                result.SetEventProcessor(EventProcessor, answerResponse.Value.CallConnectionId, null);
+
+                return Response.FromValue(result,
                     answerResponse.GetRawResponse());
             }
             catch (Exception ex)
@@ -206,39 +195,34 @@ namespace Azure.Communication.CallAutomation
             }
         }
 
-        private static AnswerCallRequestInternal CreateAnswerCallRequest(AnswerCallOptions options)
+        private AnswerCallRequestInternal CreateAnswerCallRequest(AnswerCallOptions options)
         {
-            // validate callbackUri
-            if (!IsValidHttpsUri(options.CallbackUri))
-            {
-                throw new ArgumentException(CallAutomationErrorMessages.InvalidHttpsUriMessage);
-            }
-
             AnswerCallRequestInternal request = new AnswerCallRequestInternal(options.IncomingCallContext, options.CallbackUri.AbsoluteUri);
-            // Add custom cognitive service domain name
-            if (options.AzureCognitiveServicesEndpointUrl != null)
+
+            // Add CallIntelligenceOptions such as custom cognitive service domain name
+            request.CallIntelligenceOptions = new()
             {
-                if (!IsValidHttpsUri(options.AzureCognitiveServicesEndpointUrl))
-                {
-                    throw new ArgumentException(CallAutomationErrorMessages.InvalidCognitiveServiceHttpsUriMessage);
-                }
-                request.AzureCognitiveServicesEndpointUrl = options.AzureCognitiveServicesEndpointUrl.AbsoluteUri;
-            }
-            request.MediaStreamingConfiguration = CreateMediaStreamingOptionsInternal(options.MediaStreamingOptions);
+                CognitiveServicesEndpoint = options.CallIntelligenceOptions?.CognitiveServicesEndpoint?.AbsoluteUri
+            };
+
+            request.MediaStreamingOptions = CreateMediaStreamingOptionsInternal(options.MediaStreamingOptions);
+            request.TranscriptionOptions = CreateTranscriptionOptionsInternal(options.TranscriptionOptions);
+            request.AnsweredBy = Source == null ? null : new CommunicationUserIdentifierModel(Source.Id);
+            request.OperationContext = options.OperationContext;
 
             return request;
         }
 
         /// Redirect an incoming call to the target identity.
-        /// <param name="incomingCallContext"> The incoming call context </param>
-        /// <param name="target"> The target identity. </param>
+        /// <param name="incomingCallContext"> The incoming call context. </param>
+        /// <param name="callInvite"> The target where the call is redirected to. </param>
         /// <param name="cancellationToken"> The cancellation token. </param>
         /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="incomingCallContext"/> is null.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="target"/> is null.</exception>
-        public virtual async Task<Response> RedirectCallAsync(string incomingCallContext, CommunicationIdentifier target, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"><paramref name="callInvite"/> is null.</exception>
+        public virtual async Task<Response> RedirectCallAsync(string incomingCallContext, CallInvite callInvite, CancellationToken cancellationToken = default)
         {
-            RedirectCallOptions options = new RedirectCallOptions(incomingCallContext, target);
+            RedirectCallOptions options = new RedirectCallOptions(incomingCallContext, callInvite);
 
             return await RedirectCallAsync(options, cancellationToken).ConfigureAwait(false);
         }
@@ -248,7 +232,6 @@ namespace Azure.Communication.CallAutomation
         /// <param name="cancellationToken">The cancellation token</param>
         /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
-        /// <exception cref="ArgumentException"><paramref name="options"/> Repeatability headers are set incorrectly.</exception>
         public virtual async Task<Response> RedirectCallAsync(RedirectCallOptions options, CancellationToken cancellationToken = default)
         {
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(CallAutomationClient)}.{nameof(RedirectCall)}");
@@ -258,15 +241,8 @@ namespace Azure.Communication.CallAutomation
                 if (options == null)
                     throw new ArgumentNullException(nameof(options));
 
-                RedirectCallRequestInternal request = new RedirectCallRequestInternal(options.IncomingCallContext, CommunicationIdentifierSerializer.Serialize(options.Target));
-                options.RepeatabilityHeaders?.GenerateIfRepeatabilityHeadersNotProvided();
-
-                return await ServerCallingRestClient.RedirectCallAsync(
-                    request,
-                    options.RepeatabilityHeaders?.RepeatabilityRequestId,
-                    options.RepeatabilityHeaders?.GetRepeatabilityFirstSentString(),
-                    cancellationToken
-                    ).ConfigureAwait(false);
+                RedirectCallRequestInternal request = new RedirectCallRequestInternal(options.IncomingCallContext, CommunicationIdentifierSerializer_2025_06_30.Serialize(options.CallInvite.Target));
+                return await AzureCommunicationServicesRestClient.RedirectCallAsync(request, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -277,14 +253,14 @@ namespace Azure.Communication.CallAutomation
 
         /// Redirect an incoming call to the target identities.
         /// <param name="incomingCallContext"> The incoming call context </param>
-        /// <param name="target"> The target identities. </param>
+        /// <param name="callInvite"> The target where the call is redirected to.</param>
         /// <param name="cancellationToken"> The cancellation token. </param>
         /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="incomingCallContext"/> is null.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="target"/> is null.</exception>
-        public virtual Response RedirectCall(string incomingCallContext, CommunicationIdentifier target, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"><paramref name="callInvite"/> is null.</exception>
+        public virtual Response RedirectCall(string incomingCallContext, CallInvite callInvite, CancellationToken cancellationToken = default)
         {
-            RedirectCallOptions options = new RedirectCallOptions(incomingCallContext, target);
+            RedirectCallOptions options = new RedirectCallOptions(incomingCallContext, callInvite);
 
             return RedirectCall(options, cancellationToken);
         }
@@ -294,7 +270,6 @@ namespace Azure.Communication.CallAutomation
         /// <param name="cancellationToken">The cancellation token</param>
         /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
-        /// <exception cref="ArgumentException"><paramref name="options"/> Repeatability headers are set incorrectly.</exception>
         public virtual Response RedirectCall(RedirectCallOptions options, CancellationToken cancellationToken = default)
         {
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(CallAutomationClient)}.{nameof(RedirectCall)}");
@@ -304,14 +279,9 @@ namespace Azure.Communication.CallAutomation
                 if (options == null)
                     throw new ArgumentNullException(nameof(options));
 
-                RedirectCallRequestInternal request = new RedirectCallRequestInternal(options.IncomingCallContext, CommunicationIdentifierSerializer.Serialize(options.Target));
-                options.RepeatabilityHeaders?.GenerateIfRepeatabilityHeadersNotProvided();
+                RedirectCallRequestInternal request = new RedirectCallRequestInternal(options.IncomingCallContext, CommunicationIdentifierSerializer_2025_06_30.Serialize(options.CallInvite.Target));
 
-                return ServerCallingRestClient.RedirectCall(
-                    request,
-                    options.RepeatabilityHeaders?.RepeatabilityRequestId,
-                    options.RepeatabilityHeaders?.GetRepeatabilityFirstSentString(),
-                    cancellationToken);
+                return AzureCommunicationServicesRestClient.RedirectCall(request, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -337,7 +307,6 @@ namespace Azure.Communication.CallAutomation
         /// <param name="cancellationToken">The cancellation token</param>
         /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
-        /// <exception cref="ArgumentException"><paramref name="options"/> Repeatability headers are set incorrectly.</exception>
         public virtual async Task<Response> RejectCallAsync(RejectCallOptions options, CancellationToken cancellationToken = default)
         {
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(CallAutomationClient)}.{nameof(RejectCall)}");
@@ -349,14 +318,8 @@ namespace Azure.Communication.CallAutomation
 
                 RejectCallRequestInternal request = new RejectCallRequestInternal(options.IncomingCallContext);
                 request.CallRejectReason = options.CallRejectReason.ToString();
-                options.RepeatabilityHeaders?.GenerateIfRepeatabilityHeadersNotProvided();
 
-                return await ServerCallingRestClient.RejectCallAsync(
-                    request,
-                    options.RepeatabilityHeaders?.RepeatabilityRequestId,
-                    options.RepeatabilityHeaders?.GetRepeatabilityFirstSentString(),
-                    cancellationToken
-                    ).ConfigureAwait(false);
+                return await AzureCommunicationServicesRestClient.RejectCallAsync(request, cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
@@ -382,7 +345,6 @@ namespace Azure.Communication.CallAutomation
         /// <param name="cancellationToken">The cancellation token</param>
         /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
-        /// <exception cref="ArgumentException"><paramref name="options"/> Repeatability headers are set incorrectly.</exception>
         public virtual Response RejectCall(RejectCallOptions options, CancellationToken cancellationToken = default)
         {
             using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(CallAutomationClient)}.{nameof(RejectCall)}");
@@ -394,14 +356,8 @@ namespace Azure.Communication.CallAutomation
 
                 RejectCallRequestInternal request = new RejectCallRequestInternal(options.IncomingCallContext);
                 request.CallRejectReason = options.CallRejectReason.ToString();
-                options.RepeatabilityHeaders?.GenerateIfRepeatabilityHeadersNotProvided();
 
-                return ServerCallingRestClient.RejectCall(
-                    request,
-                    options.RepeatabilityHeaders?.RepeatabilityRequestId,
-                    options.RepeatabilityHeaders?.GetRepeatabilityFirstSentString(),
-                    cancellationToken
-                    );
+                return AzureCommunicationServicesRestClient.RejectCall(request, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -411,14 +367,30 @@ namespace Azure.Communication.CallAutomation
         }
 
         /// <summary>
-        /// Create an outgoing call from source to target identities.
+        /// Create an outgoing call to target invitee.
+        /// </summary>
+        /// <param name="callInvite"></param>
+        /// <param name="callbackUri"></param>
+        /// <param name="cancellationToken"></param>
+        /// <exception cref="ArgumentNullException"><paramref name="callInvite"/> is null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="callbackUri"/> CallbackUri is not formatted correctly or empty. </exception>
+        /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
+        /// <returns></returns>
+        public virtual async Task<Response<CreateCallResult>> CreateCallAsync(CallInvite callInvite, Uri callbackUri, CancellationToken cancellationToken = default)
+        {
+            CreateCallOptions options = new CreateCallOptions(callInvite, callbackUri);
+
+            return await CreateCallAsync(options, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Create an outgoing call to target invitee.
         /// </summary>
         /// <param name="options">Options for the CreateCall request.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
-        /// <exception cref="ArgumentNullException"> CallSource.CallerId is null in <paramref name="options"/> when calling PSTN number.</exception>
         /// <exception cref="ArgumentException"><paramref name="options"/> CallbackUri is not formatted correctly. </exception>
-        /// <exception cref="ArgumentException"><paramref name="options"/> Repeatability headers are set incorrectly.</exception>
+        /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
         /// <returns></returns>
         public virtual async Task<Response<CreateCallResult>> CreateCallAsync(CreateCallOptions options, CancellationToken cancellationToken = default)
         {
@@ -430,16 +402,15 @@ namespace Azure.Communication.CallAutomation
                     throw new ArgumentNullException(nameof(options));
 
                 CreateCallRequestInternal request = CreateCallRequest(options);
-                options.RepeatabilityHeaders?.GenerateIfRepeatabilityHeadersNotProvided();
 
-                var createCallResponse = await ServerCallingRestClient.CreateCallAsync(
-                    request,
-                    options.RepeatabilityHeaders?.RepeatabilityRequestId,
-                    options.RepeatabilityHeaders?.GetRepeatabilityFirstSentString(),
-                    cancellationToken
-                    ).ConfigureAwait(false);
+                var createCallResponse = await AzureCommunicationServicesRestClient.CreateCallAsync(request, cancellationToken).ConfigureAwait(false);
 
-                return Response.FromValue(new CreateCallResult(GetCallConnection(createCallResponse.Value.CallConnectionId), new CallConnectionProperties(createCallResponse.Value)),
+                var result = new CreateCallResult(
+                    GetCallConnection(createCallResponse.Value.CallConnectionId),
+                    new CallConnectionProperties(createCallResponse.Value));
+                result.SetEventProcessor(EventProcessor, createCallResponse.Value.CallConnectionId, request.OperationContext);
+
+                return Response.FromValue(result,
                     createCallResponse.GetRawResponse());
             }
             catch (Exception ex)
@@ -450,14 +421,30 @@ namespace Azure.Communication.CallAutomation
         }
 
         /// <summary>
-        /// Create an outgoing call from source to target identities.
+        /// Create an outgoing call to target invitee.
+        /// </summary>
+        /// <param name="callInvite"></param>
+        /// <param name="callbackUri"></param>
+        /// <param name="cancellationToken"></param>
+        /// <exception cref="ArgumentNullException"><paramref name="callInvite"/> is null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="callbackUri"/> CallbackUri is not formatted correctly or empty. </exception>
+        /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
+        /// <returns></returns>
+        public virtual Response<CreateCallResult> CreateCall(CallInvite callInvite, Uri callbackUri, CancellationToken cancellationToken = default)
+        {
+            CreateCallOptions options = new CreateCallOptions(callInvite, callbackUri);
+
+            return CreateCall(options, cancellationToken);
+        }
+
+        /// <summary>
+        /// Create an outgoing call to target invitee.
         /// </summary>
         /// <param name="options">Options for the CreateCall request.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
-        /// <exception cref="ArgumentNullException"> CallSource.CallerId is null in <paramref name="options"/> when calling PSTN number.</exception>
         /// <exception cref="ArgumentException"><paramref name="options"/> CallbackUri is not formatted correctly. </exception>
-        /// <exception cref="ArgumentException"><paramref name="options"/> Repeatability headers are set incorrectly.</exception>
+        /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
         /// <returns></returns>
 
         public virtual Response<CreateCallResult> CreateCall(CreateCallOptions options, CancellationToken cancellationToken = default)
@@ -466,19 +453,19 @@ namespace Azure.Communication.CallAutomation
             scope.Start();
             try
             {
-                if (options == null) throw new ArgumentNullException(nameof(options));
+                if (options == null)
+                    throw new ArgumentNullException(nameof(options));
 
                 CreateCallRequestInternal request = CreateCallRequest(options);
-                options.RepeatabilityHeaders?.GenerateIfRepeatabilityHeadersNotProvided();
 
-                var createCallResponse = ServerCallingRestClient.CreateCall(
-                    request,
-                    options.RepeatabilityHeaders?.RepeatabilityRequestId,
-                    options.RepeatabilityHeaders?.GetRepeatabilityFirstSentString(),
-                    cancellationToken
-                    );
+                var createCallResponse = AzureCommunicationServicesRestClient.CreateCall(request, cancellationToken);
 
-                return Response.FromValue(new CreateCallResult(GetCallConnection(createCallResponse.Value.CallConnectionId), new CallConnectionProperties(createCallResponse.Value)),
+                var result = new CreateCallResult(
+                    GetCallConnection(createCallResponse.Value.CallConnectionId),
+                    new CallConnectionProperties(createCallResponse.Value));
+                result.SetEventProcessor(EventProcessor, createCallResponse.Value.CallConnectionId, request.OperationContext);
+
+                return Response.FromValue(result,
                     createCallResponse.GetRawResponse());
             }
             catch (Exception ex)
@@ -488,64 +475,281 @@ namespace Azure.Communication.CallAutomation
             }
         }
 
-        private static CreateCallRequestInternal CreateCallRequest(CreateCallOptions options)
+        /// <summary>
+        /// Create an outgoing group call to target identities.
+        /// </summary>
+        /// <param name="options">Options for the CreateCall request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="options"/> CallbackUri is not formatted correctly. </exception>
+        /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
+        /// <returns></returns>
+        public virtual async Task<Response<CreateCallResult>> CreateGroupCallAsync(CreateGroupCallOptions options, CancellationToken cancellationToken = default)
         {
-            // when create call to PSTN, the CallSource.CallerId must be provided.
-            if (options.Targets.Any(target => target is PhoneNumberIdentifier))
+            using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(CallAutomationClient)}.{nameof(CreateCall)}");
+            scope.Start();
+            try
             {
-                Argument.AssertNotNull(options.CallSource.CallerId, nameof(options.CallSource.CallerId));
-            }
-
-            // validate targets is not null or empty
-            Argument.AssertNotNullOrEmpty(options.Targets, nameof(options.Targets));
-
-            // validate callbackUri
-            if (!IsValidHttpsUri(options.CallbackUri))
-            {
-                throw new ArgumentException(CallAutomationErrorMessages.InvalidHttpsUriMessage, nameof(options));
-            }
-
-            CallSourceInternal sourceDto = new CallSourceInternal(CommunicationIdentifierSerializer.Serialize(options.CallSource.Identifier));
-            sourceDto.CallerId = options.CallSource.CallerId == null ? null : new PhoneNumberIdentifierModel(options.CallSource.CallerId.PhoneNumber);
-            sourceDto.DisplayName = options.CallSource.DisplayName;
-
-            CreateCallRequestInternal request = new CreateCallRequestInternal(
-                options.Targets.Select(t => CommunicationIdentifierSerializer.Serialize(t)),
-                sourceDto,
-                options.CallbackUri.AbsoluteUri);
-            // Add custom cognitive service domain name
-            if (options.AzureCognitiveServicesEndpointUrl != null)
-            {
-                if (!IsValidHttpsUri(options.AzureCognitiveServicesEndpointUrl))
+                if (options == null)
                 {
-                    throw new ArgumentException(CallAutomationErrorMessages.InvalidCognitiveServiceHttpsUriMessage);
+                    throw new ArgumentNullException(nameof(options));
                 }
-                request.AzureCognitiveServicesEndpointUrl = options.AzureCognitiveServicesEndpointUrl.AbsoluteUri;
+
+                CreateCallRequestInternal request = CreateCallRequest(options);
+
+                var createCallResponse = await AzureCommunicationServicesRestClient.CreateCallAsync(request, cancellationToken).ConfigureAwait(false);
+
+                var result = new CreateCallResult(
+                    GetCallConnection(createCallResponse.Value.CallConnectionId),
+                    new CallConnectionProperties(createCallResponse.Value));
+                result.SetEventProcessor(EventProcessor, createCallResponse.Value.CallConnectionId, request.OperationContext);
+
+                return Response.FromValue(result,
+                    createCallResponse.GetRawResponse());
             }
+            catch (Exception ex)
+            {
+                scope.Failed(ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Create an outgoing group call to target identities.
+        /// </summary>
+        /// <param name="options">Options for the CreateCall request.</param>
+        /// <param name="cancellationToken"></param>
+        /// <exception cref="ArgumentNullException"><paramref name="options"/> is null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="options"/> CallbackUri is not formatted correctly. </exception>
+        /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
+        /// <returns></returns>
+        public virtual Response<CreateCallResult> CreateGroupCall(CreateGroupCallOptions options, CancellationToken cancellationToken = default)
+        {
+            using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(CallAutomationClient)}.{nameof(CreateCall)}");
+            scope.Start();
+            try
+            {
+                if (options == null)
+                {
+                    throw new ArgumentNullException(nameof(options));
+                }
+
+                CreateCallRequestInternal request = CreateCallRequest(options);
+
+                var createCallResponse = AzureCommunicationServicesRestClient.CreateCall(request, cancellationToken);
+
+                var result = new CreateCallResult(
+                    GetCallConnection(createCallResponse.Value.CallConnectionId),
+                    new CallConnectionProperties(createCallResponse.Value));
+                result.SetEventProcessor(EventProcessor, createCallResponse.Value.CallConnectionId, request.OperationContext);
+
+                return Response.FromValue(result,
+                    createCallResponse.GetRawResponse());
+            }
+            catch (Exception ex)
+            {
+                scope.Failed(ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Create a connect request.
+        /// </summary>
+        /// <param name="callLocator"></param>
+        /// <param name="callbackUri"></param>
+        /// <param name="cancellationToken"></param>
+        /// <exception cref="ArgumentNullException"><paramref name="callLocator"/> is null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="callbackUri"/> callbackUrl is not formatted correctly or empty. </exception>
+        /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
+        /// <returns></returns>
+        public virtual async Task<Response<ConnectCallResult>> ConnectCallAsync(CallLocator callLocator, Uri callbackUri, CancellationToken cancellationToken = default)
+        {
+            ConnectCallOptions options = new ConnectCallOptions(callLocator, callbackUri);
+
+            return await ConnectCallAsync(options, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Create a connect request.
+        /// </summary>
+        /// <param name="connectCallOptions">ConnectOptions for connect request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="connectCallOptions"/> is null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="connectCallOptions"/> CallbackUrl is not formatted correctly. </exception>
+        /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
+        /// <returns></returns>
+        public virtual async Task<Response<ConnectCallResult>> ConnectCallAsync(ConnectCallOptions connectCallOptions, CancellationToken cancellationToken = default)
+        {
+            using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(CallAutomationClient)}.{nameof(ConnectCall)}");
+            scope.Start();
+            try
+            {
+                if (connectCallOptions == null)
+                    throw new ArgumentNullException(nameof(connectCallOptions));
+
+                ConnectRequestInternal connectRequest = ConnectRequest(connectCallOptions);
+                Response<CallConnectionPropertiesInternal> response = await AzureCommunicationServicesRestClient.ConnectAsync(connectRequest).ConfigureAwait(false);
+
+                var callConnection = GetCallConnection(response.Value.CallConnectionId);
+                ConnectCallResult connectResult = new ConnectCallResult(new CallConnectionProperties(response.Value), callConnection);
+                connectResult.SetEventProcessor(EventProcessor, response.Value.CallConnectionId);
+
+                return Response.FromValue(connectResult, response.GetRawResponse());
+            }
+            catch (Exception ex)
+            {
+                scope.Failed(ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Create a connect request.
+        /// </summary>
+        /// <param name="callLocator"></param>
+        /// <param name="callbackUri"></param>
+        /// <param name="cancellationToken"></param>
+        /// <exception cref="ArgumentNullException"><paramref name="callLocator"/> is null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="callbackUri"/> callbackUrl is not formatted correctly or empty. </exception>
+        /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
+        /// <returns></returns>
+        public virtual Response<ConnectCallResult> ConnectCall(CallLocator callLocator, Uri callbackUri, CancellationToken cancellationToken = default)
+        {
+            ConnectCallOptions options = new ConnectCallOptions(callLocator, callbackUri);
+
+            return ConnectCall(options, cancellationToken);
+        }
+
+        /// <summary>
+        /// Create a connect request.
+        /// </summary>
+        /// <param name="connectCallOptions">ConnectOptions for connect request.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="connectCallOptions"/> is null.</exception>
+        /// <exception cref="ArgumentException"><paramref name="connectCallOptions"/> CallbackUrl is not formatted correctly. </exception>
+        /// <exception cref="RequestFailedException">The server returned an error. See <see cref="Exception.Message"/> for details returned from the server.</exception>
+        /// <returns></returns>
+        public virtual Response<ConnectCallResult> ConnectCall(ConnectCallOptions connectCallOptions, CancellationToken cancellationToken = default)
+        {
+            using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(CallAutomationClient)}.{nameof(ConnectCall)}");
+            scope.Start();
+            try
+            {
+                if (connectCallOptions == null)
+                    throw new ArgumentNullException(nameof(connectCallOptions));
+
+                ConnectRequestInternal connectRequest = ConnectRequest(connectCallOptions);
+                Response<CallConnectionPropertiesInternal> response = AzureCommunicationServicesRestClient.Connect(connectRequest);
+
+                var callConnection = GetCallConnection(response.Value.CallConnectionId);
+                ConnectCallResult connectResult = new ConnectCallResult(new CallConnectionProperties(response.Value), callConnection);
+                connectResult.SetEventProcessor(EventProcessor, response.Value.CallConnectionId);
+
+                return Response.FromValue(connectResult, response.GetRawResponse());
+            }
+            catch (Exception ex)
+            {
+                scope.Failed(ex);
+                throw;
+            }
+        }
+        private CreateCallRequestInternal CreateCallRequest(CreateCallOptions options)
+        {
+            CreateCallRequestInternal request = new(
+                targets: new List<CommunicationIdentifierModel>() { { CommunicationIdentifierSerializer_2025_06_30.Serialize(options.CallInvite.Target) } },
+                callbackUri: options.CallbackUri.AbsoluteUri)
+            {
+                SourceCallerIdNumber = options?.CallInvite?.SourceCallerIdNumber == null
+                    ? null
+                    : new PhoneNumberIdentifierModel(options?.CallInvite?.SourceCallerIdNumber?.PhoneNumber),
+                SourceDisplayName = options?.CallInvite?.SourceDisplayName,
+                Source = Source == null ? null : new CommunicationUserIdentifierModel(Source.Id),
+                TeamsAppSource = options.TeamsAppSource == null ? null : new MicrosoftTeamsAppIdentifierModel(options.TeamsAppSource.AppId),
+            };
+
+            request.CallIntelligenceOptions = new()
+            {
+                CognitiveServicesEndpoint = options.CallIntelligenceOptions?.CognitiveServicesEndpoint?.AbsoluteUri
+            };
             request.OperationContext = options.OperationContext;
-            request.MediaStreamingConfiguration = CreateMediaStreamingOptionsInternal(options.MediaStreamingOptions);
+            request.MediaStreamingOptions = CreateMediaStreamingOptionsInternal(options.MediaStreamingOptions);
+            request.TranscriptionOptions = CreateTranscriptionOptionsInternal(options.TranscriptionOptions);
 
             return request;
         }
 
-        /// <summary>
-        /// Validates an Https Uri.
-        /// </summary>
-        /// <param name="uri"></param>
-        /// <returns></returns>
-        private static bool IsValidHttpsUri(Uri uri) {
-            if (uri == null)
-                return false;
-            var uriString = uri.AbsoluteUri;
-            return Uri.IsWellFormedUriString(uriString, UriKind.Absolute) && new Uri(uriString).Scheme == Uri.UriSchemeHttps;
+        private CreateCallRequestInternal CreateCallRequest(CreateGroupCallOptions options)
+        {
+            CreateCallRequestInternal request = new(
+                targets: options.Targets.Select(t => CommunicationIdentifierSerializer_2025_06_30.Serialize(t)),
+                callbackUri: options.CallbackUri.AbsoluteUri)
+            {
+                SourceCallerIdNumber = options?.SourceCallerIdNumber == null
+                    ? null
+                    : new PhoneNumberIdentifierModel(options?.SourceCallerIdNumber?.PhoneNumber),
+                SourceDisplayName = options?.SourceDisplayName,
+                Source = Source == null ? null : new CommunicationUserIdentifierModel(Source.Id),
+                TeamsAppSource = options.TeamsAppSource == null ? null : new MicrosoftTeamsAppIdentifierModel(options.TeamsAppSource.AppId),
+            };
+
+            request.CallIntelligenceOptions = new()
+            {
+                CognitiveServicesEndpoint = options.CallIntelligenceOptions?.CognitiveServicesEndpoint?.AbsoluteUri
+            };
+
+            request.OperationContext = options.OperationContext;
+            request.MediaStreamingOptions = CreateMediaStreamingOptionsInternal(options.MediaStreamingOptions);
+            request.TranscriptionOptions = CreateTranscriptionOptionsInternal(options.TranscriptionOptions);
+
+            return request;
         }
 
-        private static MediaStreamingOptionsInternal CreateMediaStreamingOptionsInternal(MediaStreamingOptions configuration)
+        private ConnectRequestInternal ConnectRequest(ConnectCallOptions options)
+        {
+            CallLocatorInternal callLocatorInternal = CallLocatorSerializer.Serialize(options.CallLocator);
+            ConnectRequestInternal connectRequest = new ConnectRequestInternal(callLocatorInternal, options.CallbackUri?.AbsoluteUri);
+            connectRequest.OperationContext = options.OperationContext;
+            connectRequest.MediaStreamingOptions = CreateMediaStreamingOptionsInternal(options.MediaStreamingOptions);
+            connectRequest.TranscriptionOptions = CreateTranscriptionOptionsInternal(options.TranscriptionOptions);
+            connectRequest.CallIntelligenceOptions = new()
+            {
+                CognitiveServicesEndpoint = options.CallIntelligenceOptions?.CognitiveServicesEndpoint?.AbsoluteUri
+            };
+
+            return connectRequest;
+        }
+
+        private static WebSocketMediaStreamingOptionsInternal CreateMediaStreamingOptionsInternal(MediaStreamingOptions configuration)
         {
             return configuration == default
                 ? default
-                : new MediaStreamingOptionsInternal(configuration.TransportUri.AbsoluteUri, configuration.MediaStreamingTransport, configuration.MediaStreamingContent,
-                configuration.MediaStreamingAudioChannel);
+                : new WebSocketMediaStreamingOptionsInternal(configuration.MediaStreamingAudioChannel)
+                {
+                    AudioFormat = configuration.AudioFormat,
+                    TransportUrl = configuration.TransportUri?.AbsoluteUri,
+                    TransportType = configuration.MediaStreamingTransport,
+                    ContentType = configuration.MediaStreamingContent,
+                    EnableBidirectional = configuration.EnableBidirectional,
+                    EnableDtmfTones = configuration.EnableDtmfTones,
+                    StartMediaStreaming = configuration.StartMediaStreaming,
+                };
+        }
+
+        private static WebSocketTranscriptionOptionsInternal CreateTranscriptionOptionsInternal(TranscriptionOptions configuration)
+        {
+            return configuration == default
+                ? default
+                : new WebSocketTranscriptionOptionsInternal(
+                configuration.Locale)
+                {
+                    SpeechModelEndpointId = configuration.SpeechRecognitionModelEndpointId,
+                    StartTranscription = configuration.StartTranscription,
+                    TransportUrl = configuration.TransportUri?.AbsoluteUri,
+                    TransportType = configuration.TranscriptionTransport,
+                    EnableIntermediateResults = configuration.EnableIntermediateResults,
+                    SpeechRecognitionModelEndpointId = configuration.SpeechRecognitionModelEndpointId
+                };
         }
 
         /// <summary> Initializes a new instance of CallConnection. <see cref="CallConnection"/>.</summary>
@@ -556,7 +760,7 @@ namespace Azure.Communication.CallAutomation
             scope.Start();
             try
             {
-                return new CallConnection(callConnectionId, CallConnectionsRestClient, ContentRestClient,_clientDiagnostics);
+                return new CallConnection(callConnectionId, CallConnectionRestClient, CallMediaRestClient, _clientDiagnostics, EventProcessor);
             }
             catch (Exception ex)
             {
@@ -572,7 +776,23 @@ namespace Azure.Communication.CallAutomation
             scope.Start();
             try
             {
-                return new CallRecording(_resourceEndpoint, ServerCallsRestClient, ContentRestClient, _clientDiagnostics, _pipeline);
+                return new CallRecording(_resourceEndpoint, CallRecordingRestClient, _clientDiagnostics, _pipeline);
+            }
+            catch (Exception ex)
+            {
+                scope.Failed(ex);
+                throw;
+            }
+        }
+
+        /// <summary>Get Call Automation's EventProcessor for handling Call Automation's event more easily.</summary>
+        public virtual CallAutomationEventProcessor GetEventProcessor()
+        {
+            using DiagnosticScope scope = _clientDiagnostics.CreateScope($"{nameof(CallAutomationClient)}.{nameof(GetEventProcessor)}");
+            scope.Start();
+            try
+            {
+                return EventProcessor;
             }
             catch (Exception ex)
             {

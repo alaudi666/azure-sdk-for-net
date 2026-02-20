@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
@@ -12,29 +13,36 @@ using Azure.ResourceManager.Nginx.Models;
 
 namespace Azure.ResourceManager.Nginx
 {
-    /// <summary> A class representing the NginxCertificate data model. </summary>
-    public partial class NginxCertificateData : TrackedResourceData
+    /// <summary> Nginx Certificate. </summary>
+    public partial class NginxCertificateData : ResourceData
     {
-        /// <summary> Initializes a new instance of NginxCertificateData. </summary>
-        /// <param name="location"> The location. </param>
-        public NginxCertificateData(AzureLocation location) : base(location)
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NginxCertificateData"/>. </summary>
+        public NginxCertificateData()
         {
         }
 
-        /// <summary> Initializes a new instance of NginxCertificateData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="tags"> The tags. </param>
-        /// <param name="location"> The location. </param>
-        /// <param name="properties"></param>
-        internal NginxCertificateData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, NginxCertificateProperties properties) : base(id, name, resourceType, systemData, tags, location)
+        /// <summary> Initializes a new instance of <see cref="NginxCertificateData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> Nginx Certificate Properties. </param>
+        /// <param name="location"> The geo-location where the resource lives. </param>
+        internal NginxCertificateData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, NginxCertificateProperties properties, AzureLocation? location) : base(id, name, resourceType, systemData)
         {
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
             Properties = properties;
+            Location = location;
         }
 
-        /// <summary> Gets or sets the properties. </summary>
+        /// <summary> Nginx Certificate Properties. </summary>
         public NginxCertificateProperties Properties { get; set; }
+
+        /// <summary> The geo-location where the resource lives. </summary>
+        public AzureLocation? Location { get; set; }
     }
 }

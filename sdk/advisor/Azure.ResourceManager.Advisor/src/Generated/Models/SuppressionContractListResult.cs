@@ -5,33 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Advisor;
 
 namespace Azure.ResourceManager.Advisor.Models
 {
-    /// <summary> The list of Advisor suppressions. </summary>
+    /// <summary> The response of a SuppressionContract list operation. </summary>
     internal partial class SuppressionContractListResult
     {
-        /// <summary> Initializes a new instance of SuppressionContractListResult. </summary>
-        internal SuppressionContractListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SuppressionContractListResult"/>. </summary>
+        /// <param name="value"> The SuppressionContract items on this page. </param>
+        internal SuppressionContractListResult(IEnumerable<AdvisorSuppressionContractData> value)
         {
-            Value = new ChangeTrackingList<SuppressionContractData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of SuppressionContractListResult. </summary>
-        /// <param name="nextLink"> The link used to get the next page of suppressions. </param>
-        /// <param name="value"> The list of suppressions. </param>
-        internal SuppressionContractListResult(string nextLink, IReadOnlyList<SuppressionContractData> value)
+        /// <summary> Initializes a new instance of <see cref="SuppressionContractListResult"/>. </summary>
+        /// <param name="value"> The SuppressionContract items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SuppressionContractListResult(IList<AdvisorSuppressionContractData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            NextLink = nextLink;
             Value = value;
+            NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The link used to get the next page of suppressions. </summary>
-        public string NextLink { get; }
-        /// <summary> The list of suppressions. </summary>
-        public IReadOnlyList<SuppressionContractData> Value { get; }
+        /// <summary> The SuppressionContract items on this page. </summary>
+        public IList<AdvisorSuppressionContractData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

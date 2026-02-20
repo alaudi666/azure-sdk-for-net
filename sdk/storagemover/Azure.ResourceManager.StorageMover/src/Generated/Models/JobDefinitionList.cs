@@ -5,8 +5,8 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 using Azure.ResourceManager.StorageMover;
 
 namespace Azure.ResourceManager.StorageMover.Models
@@ -14,24 +14,30 @@ namespace Azure.ResourceManager.StorageMover.Models
     /// <summary> List of Job Definitions. </summary>
     internal partial class JobDefinitionList
     {
-        /// <summary> Initializes a new instance of JobDefinitionList. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="JobDefinitionList"/>. </summary>
         internal JobDefinitionList()
         {
             Value = new ChangeTrackingList<JobDefinitionData>();
         }
 
-        /// <summary> Initializes a new instance of JobDefinitionList. </summary>
-        /// <param name="value"></param>
-        /// <param name="nextLink"> Request URL that can be used to query next page of containers. Returned when total number of requested containers exceed maximum page size. </param>
-        internal JobDefinitionList(IReadOnlyList<JobDefinitionData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="JobDefinitionList"/>. </summary>
+        /// <param name="value"> The JobDefinition items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal JobDefinitionList(IReadOnlyList<JobDefinitionData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets the value. </summary>
+        /// <summary> The JobDefinition items on this page. </summary>
         public IReadOnlyList<JobDefinitionData> Value { get; }
-        /// <summary> Request URL that can be used to query next page of containers. Returned when total number of requested containers exceed maximum page size. </summary>
-        public string NextLink { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

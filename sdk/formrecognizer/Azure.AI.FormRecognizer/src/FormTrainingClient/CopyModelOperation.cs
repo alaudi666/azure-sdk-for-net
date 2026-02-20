@@ -72,7 +72,7 @@ namespace Azure.AI.FormRecognizer.Training
             _serviceClient = client.ServiceClient;
             _diagnostics = client.Diagnostics;
             _targetModelId = targetModelId;
-            _operationInternal = new(_diagnostics, this, rawResponse: null);
+            _operationInternal = new(this, _diagnostics, rawResponse: null);
 
             string[] substrs = operationId.Split('/');
 
@@ -99,7 +99,7 @@ namespace Azure.AI.FormRecognizer.Training
             _serviceClient = serviceClient;
             _diagnostics = diagnostics;
             _targetModelId = targetModelId;
-            _operationInternal = new(_diagnostics, this, rawResponse: null);
+            _operationInternal = new(this, _diagnostics, rawResponse: null);
 
             string[] substrs = operationLocation.Split('/');
 
@@ -197,15 +197,17 @@ namespace Azure.AI.FormRecognizer.Training
             }
             else if (status == OperationStatus.Failed)
             {
-                RequestFailedException requestFailedException = await ClientCommon
-                    .CreateExceptionForFailedOperationAsync(async, _diagnostics, rawResponse, response.Value.CopyResult.Errors)
-                    .ConfigureAwait(false);
+                RequestFailedException requestFailedException = ClientCommon.CreateExceptionForFailedOperation(rawResponse, response.Value.CopyResult.Errors);
 
                 return OperationState<CustomFormModelInfo>.Failure(rawResponse, requestFailedException);
             }
 
             return OperationState<CustomFormModelInfo>.Pending(rawResponse);
         }
+
+        // This method is never invoked since we don't override Operation<T>.GetRehydrationToken.
+        RehydrationToken IOperation<CustomFormModelInfo>.GetRehydrationToken() =>
+            throw new NotSupportedException($"{nameof(GetRehydrationToken)} is not supported.");
 
         private static CustomFormModelInfo ConvertValue(CopyOperationResult result, string modelId, CustomFormModelStatus status)
         {

@@ -6,41 +6,157 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.ProviderHub.Models
 {
-    public partial class ResourceProviderEndpoint
+    public partial class ResourceProviderEndpoint : IUtf8JsonSerializable, IJsonModel<ResourceProviderEndpoint>
     {
-        internal static ResourceProviderEndpoint DeserializeResourceProviderEndpoint(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ResourceProviderEndpoint>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ResourceProviderEndpoint>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<bool> enabled = default;
-            Optional<IReadOnlyList<string>> apiVersions = default;
-            Optional<Uri> endpointUri = default;
-            Optional<IReadOnlyList<string>> locations = default;
-            Optional<IReadOnlyList<string>> requiredFeatures = default;
-            Optional<ResourceProviderEndpointFeaturesRule> featuresRule = default;
-            Optional<TimeSpan> timeout = default;
-            Optional<EndpointType> endpointType = default;
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ResourceProviderEndpoint>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ResourceProviderEndpoint)} does not support writing '{format}' format.");
+            }
+
+            if (Optional.IsDefined(IsEnabled))
+            {
+                writer.WritePropertyName("enabled"u8);
+                writer.WriteBooleanValue(IsEnabled.Value);
+            }
+            if (Optional.IsCollectionDefined(ApiVersions))
+            {
+                writer.WritePropertyName("apiVersions"u8);
+                writer.WriteStartArray();
+                foreach (var item in ApiVersions)
+                {
+                    writer.WriteStringValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsDefined(EndpointUri))
+            {
+                writer.WritePropertyName("endpointUri"u8);
+                writer.WriteStringValue(EndpointUri.AbsoluteUri);
+            }
+            if (Optional.IsCollectionDefined(Locations))
+            {
+                writer.WritePropertyName("locations"u8);
+                writer.WriteStartArray();
+                foreach (var item in Locations)
+                {
+                    writer.WriteStringValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(RequiredFeatures))
+            {
+                writer.WritePropertyName("requiredFeatures"u8);
+                writer.WriteStartArray();
+                foreach (var item in RequiredFeatures)
+                {
+                    writer.WriteStringValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsDefined(FeaturesRule))
+            {
+                writer.WritePropertyName("featuresRule"u8);
+                writer.WriteObjectValue(FeaturesRule, options);
+            }
+            if (Optional.IsDefined(Timeout))
+            {
+                writer.WritePropertyName("timeout"u8);
+                writer.WriteStringValue(Timeout.Value, "P");
+            }
+            if (Optional.IsDefined(EndpointType))
+            {
+                writer.WritePropertyName("endpointType"u8);
+                writer.WriteStringValue(EndpointType.Value.ToString());
+            }
+            if (Optional.IsDefined(SkuLink))
+            {
+                writer.WritePropertyName("skuLink"u8);
+                writer.WriteStringValue(SkuLink);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        ResourceProviderEndpoint IJsonModel<ResourceProviderEndpoint>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ResourceProviderEndpoint>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ResourceProviderEndpoint)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeResourceProviderEndpoint(document.RootElement, options);
+        }
+
+        internal static ResourceProviderEndpoint DeserializeResourceProviderEndpoint(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            bool? enabled = default;
+            IReadOnlyList<string> apiVersions = default;
+            Uri endpointUri = default;
+            IReadOnlyList<AzureLocation> locations = default;
+            IReadOnlyList<string> requiredFeatures = default;
+            ProviderFeaturesRule featuresRule = default;
+            TimeSpan? timeout = default;
+            ProviderEndpointType? endpointType = default;
+            string skuLink = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("enabled"))
+                if (property.NameEquals("enabled"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enabled = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("apiVersions"))
+                if (property.NameEquals("apiVersions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -51,36 +167,33 @@ namespace Azure.ResourceManager.ProviderHub.Models
                     apiVersions = array;
                     continue;
                 }
-                if (property.NameEquals("endpointUri"))
+                if (property.NameEquals("endpointUri"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        endpointUri = null;
                         continue;
                     }
                     endpointUri = new Uri(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("locations"))
+                if (property.NameEquals("locations"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    List<string> array = new List<string>();
+                    List<AzureLocation> array = new List<AzureLocation>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(item.GetString());
+                        array.Add(new AzureLocation(item.GetString()));
                     }
                     locations = array;
                     continue;
                 }
-                if (property.NameEquals("requiredFeatures"))
+                if (property.NameEquals("requiredFeatures"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -91,38 +204,86 @@ namespace Azure.ResourceManager.ProviderHub.Models
                     requiredFeatures = array;
                     continue;
                 }
-                if (property.NameEquals("featuresRule"))
+                if (property.NameEquals("featuresRule"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    featuresRule = ResourceProviderEndpointFeaturesRule.DeserializeResourceProviderEndpointFeaturesRule(property.Value);
+                    featuresRule = ProviderFeaturesRule.DeserializeProviderFeaturesRule(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("timeout"))
+                if (property.NameEquals("timeout"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     timeout = property.Value.GetTimeSpan("P");
                     continue;
                 }
-                if (property.NameEquals("endpointType"))
+                if (property.NameEquals("endpointType"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    endpointType = new EndpointType(property.Value.GetString());
+                    endpointType = new ProviderEndpointType(property.Value.GetString());
                     continue;
                 }
+                if (property.NameEquals("skuLink"u8))
+                {
+                    skuLink = property.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ResourceProviderEndpoint(Optional.ToNullable(enabled), Optional.ToList(apiVersions), endpointUri.Value, Optional.ToList(locations), Optional.ToList(requiredFeatures), featuresRule.Value, Optional.ToNullable(timeout), Optional.ToNullable(endpointType));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ResourceProviderEndpoint(
+                enabled,
+                apiVersions ?? new ChangeTrackingList<string>(),
+                endpointUri,
+                locations ?? new ChangeTrackingList<AzureLocation>(),
+                requiredFeatures ?? new ChangeTrackingList<string>(),
+                featuresRule,
+                timeout,
+                endpointType,
+                skuLink,
+                serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<ResourceProviderEndpoint>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ResourceProviderEndpoint>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerProviderHubContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ResourceProviderEndpoint)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ResourceProviderEndpoint IPersistableModel<ResourceProviderEndpoint>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ResourceProviderEndpoint>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeResourceProviderEndpoint(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ResourceProviderEndpoint)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ResourceProviderEndpoint>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -5,6 +5,8 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
@@ -12,26 +14,33 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
     /// <summary> Defines the type of sku available for a node type. </summary>
     public partial class NodeTypeAvailableSku
     {
-        /// <summary> Initializes a new instance of NodeTypeAvailableSku. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NodeTypeAvailableSku"/>. </summary>
         internal NodeTypeAvailableSku()
         {
         }
 
-        /// <summary> Initializes a new instance of NodeTypeAvailableSku. </summary>
-        /// <param name="resourceType"> The type of resource the sku applies to.  &lt;br /&gt;&lt;br /&gt;Value: Microsoft.ServiceFabric/managedClusters/nodeTypes. </param>
+        /// <summary> Initializes a new instance of <see cref="NodeTypeAvailableSku"/>. </summary>
+        /// <param name="resourceType"> The type of resource the sku applies to. Value: Microsoft.ServiceFabric/managedClusters/nodeTypes. </param>
         /// <param name="sku"> The supported SKU for a for node type. </param>
         /// <param name="capacity"> Provides information about how the node count can be scaled. </param>
-        internal NodeTypeAvailableSku(ResourceType? resourceType, NodeTypeSupportedSku sku, NodeTypeSkuCapacity capacity)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NodeTypeAvailableSku(ResourceType? resourceType, NodeTypeSupportedSku sku, NodeTypeSkuCapacity capacity, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ResourceType = resourceType;
             Sku = sku;
             Capacity = capacity;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The type of resource the sku applies to.  &lt;br /&gt;&lt;br /&gt;Value: Microsoft.ServiceFabric/managedClusters/nodeTypes. </summary>
+        /// <summary> The type of resource the sku applies to. Value: Microsoft.ServiceFabric/managedClusters/nodeTypes. </summary>
         public ResourceType? ResourceType { get; }
+
         /// <summary> The supported SKU for a for node type. </summary>
         public NodeTypeSupportedSku Sku { get; }
+
         /// <summary> Provides information about how the node count can be scaled. </summary>
         public NodeTypeSkuCapacity Capacity { get; }
     }

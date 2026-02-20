@@ -5,21 +5,29 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Management RP details. </summary>
     public partial class ResourceProviderDetails
     {
-        /// <summary> Initializes a new instance of ResourceProviderDetails. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ResourceProviderDetails"/>. </summary>
         internal ResourceProviderDetails()
         {
         }
 
-        /// <summary> Initializes a new instance of ResourceProviderDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="ResourceProviderDetails"/>. </summary>
         /// <param name="resourceProviderNamespace"> Resource provider namespace. </param>
-        internal ResourceProviderDetails(string resourceProviderNamespace)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ResourceProviderDetails(string resourceProviderNamespace, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ResourceProviderNamespace = resourceProviderNamespace;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Resource provider namespace. </summary>

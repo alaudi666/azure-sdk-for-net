@@ -5,12 +5,18 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Kubernetes.Models
 {
     /// <summary> The ListClusterUserCredentialProperties. </summary>
     public partial class ListClusterUserCredentialProperties
     {
-        /// <summary> Initializes a new instance of ListClusterUserCredentialProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ListClusterUserCredentialProperties"/>. </summary>
         /// <param name="authenticationMethod"> The mode of client authentication. </param>
         /// <param name="clientProxy"> Boolean value to indicate whether the request is for client side proxy or not. </param>
         public ListClusterUserCredentialProperties(AuthenticationMethod authenticationMethod, bool clientProxy)
@@ -19,8 +25,20 @@ namespace Azure.ResourceManager.Kubernetes.Models
             ClientProxy = clientProxy;
         }
 
+        /// <summary> Initializes a new instance of <see cref="ListClusterUserCredentialProperties"/>. </summary>
+        /// <param name="authenticationMethod"> The mode of client authentication. </param>
+        /// <param name="clientProxy"> Boolean value to indicate whether the request is for client side proxy or not. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ListClusterUserCredentialProperties(AuthenticationMethod authenticationMethod, bool clientProxy, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            AuthenticationMethod = authenticationMethod;
+            ClientProxy = clientProxy;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> The mode of client authentication. </summary>
         public AuthenticationMethod AuthenticationMethod { get; }
+
         /// <summary> Boolean value to indicate whether the request is for client side proxy or not. </summary>
         public bool ClientProxy { get; }
     }

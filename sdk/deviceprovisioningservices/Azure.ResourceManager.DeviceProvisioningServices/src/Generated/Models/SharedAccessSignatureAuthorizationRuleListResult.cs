@@ -5,32 +5,40 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 
 namespace Azure.ResourceManager.DeviceProvisioningServices.Models
 {
     /// <summary> List of shared access keys. </summary>
     internal partial class SharedAccessSignatureAuthorizationRuleListResult
     {
-        /// <summary> Initializes a new instance of SharedAccessSignatureAuthorizationRuleListResult. </summary>
-        internal SharedAccessSignatureAuthorizationRuleListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SharedAccessSignatureAuthorizationRuleListResult"/>. </summary>
+        /// <param name="value"> The SharedAccessSignatureAuthorizationRuleAccessRightsDescription items on this page. </param>
+        internal SharedAccessSignatureAuthorizationRuleListResult(IEnumerable<DeviceProvisioningServicesSharedAccessKey> value)
         {
-            Value = new ChangeTrackingList<DeviceProvisioningServicesSharedAccessKey>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of SharedAccessSignatureAuthorizationRuleListResult. </summary>
-        /// <param name="value"> The list of shared access policies. </param>
-        /// <param name="nextLink"> The next link. </param>
-        internal SharedAccessSignatureAuthorizationRuleListResult(IReadOnlyList<DeviceProvisioningServicesSharedAccessKey> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="SharedAccessSignatureAuthorizationRuleListResult"/>. </summary>
+        /// <param name="value"> The SharedAccessSignatureAuthorizationRuleAccessRightsDescription items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SharedAccessSignatureAuthorizationRuleListResult(IList<DeviceProvisioningServicesSharedAccessKey> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The list of shared access policies. </summary>
-        public IReadOnlyList<DeviceProvisioningServicesSharedAccessKey> Value { get; }
-        /// <summary> The next link. </summary>
-        public string NextLink { get; }
+        /// <summary> The SharedAccessSignatureAuthorizationRuleAccessRightsDescription items on this page. </summary>
+        public IList<DeviceProvisioningServicesSharedAccessKey> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Enum to determine endpoint compute type.
-    /// Serialized Name: EndpointComputeType
-    /// </summary>
+    /// <summary> Enum to determine endpoint compute type. </summary>
     public readonly partial struct MachineLearningEndpointComputeType : IEquatable<MachineLearningEndpointComputeType>
     {
         private readonly string _value;
@@ -27,28 +24,19 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         private const string ManagedValue = "Managed";
         private const string KubernetesValue = "Kubernetes";
-        private const string AzureMLComputeValue = "AzureMLCompute";
+        private const string AmlComputeValue = "AzureMLCompute";
 
-        /// <summary>
-        /// Managed
-        /// Serialized Name: EndpointComputeType.Managed
-        /// </summary>
+        /// <summary> Managed. </summary>
         public static MachineLearningEndpointComputeType Managed { get; } = new MachineLearningEndpointComputeType(ManagedValue);
-        /// <summary>
-        /// Kubernetes
-        /// Serialized Name: EndpointComputeType.Kubernetes
-        /// </summary>
+        /// <summary> Kubernetes. </summary>
         public static MachineLearningEndpointComputeType Kubernetes { get; } = new MachineLearningEndpointComputeType(KubernetesValue);
-        /// <summary>
-        /// AzureMLCompute
-        /// Serialized Name: EndpointComputeType.AzureMLCompute
-        /// </summary>
-        public static MachineLearningEndpointComputeType AzureMLCompute { get; } = new MachineLearningEndpointComputeType(AzureMLComputeValue);
+        /// <summary> AzureMLCompute. </summary>
+        public static MachineLearningEndpointComputeType AmlCompute { get; } = new MachineLearningEndpointComputeType(AmlComputeValue);
         /// <summary> Determines if two <see cref="MachineLearningEndpointComputeType"/> values are the same. </summary>
         public static bool operator ==(MachineLearningEndpointComputeType left, MachineLearningEndpointComputeType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningEndpointComputeType"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningEndpointComputeType left, MachineLearningEndpointComputeType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningEndpointComputeType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningEndpointComputeType"/>. </summary>
         public static implicit operator MachineLearningEndpointComputeType(string value) => new MachineLearningEndpointComputeType(value);
 
         /// <inheritdoc />
@@ -59,7 +47,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

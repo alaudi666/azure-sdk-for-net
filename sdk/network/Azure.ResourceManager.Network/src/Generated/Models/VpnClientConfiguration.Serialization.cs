@@ -5,45 +5,65 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class VpnClientConfiguration : IUtf8JsonSerializable
+    public partial class VpnClientConfiguration : IUtf8JsonSerializable, IJsonModel<VpnClientConfiguration>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<VpnClientConfiguration>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<VpnClientConfiguration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<VpnClientConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(VpnClientConfiguration)} does not support writing '{format}' format.");
+            }
+
             if (Optional.IsDefined(VpnClientAddressPool))
             {
-                writer.WritePropertyName("vpnClientAddressPool");
-                writer.WriteObjectValue(VpnClientAddressPool);
+                writer.WritePropertyName("vpnClientAddressPool"u8);
+                writer.WriteObjectValue(VpnClientAddressPool, options);
             }
             if (Optional.IsCollectionDefined(VpnClientRootCertificates))
             {
-                writer.WritePropertyName("vpnClientRootCertificates");
+                writer.WritePropertyName("vpnClientRootCertificates"u8);
                 writer.WriteStartArray();
                 foreach (var item in VpnClientRootCertificates)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(VpnClientRevokedCertificates))
             {
-                writer.WritePropertyName("vpnClientRevokedCertificates");
+                writer.WritePropertyName("vpnClientRevokedCertificates"u8);
                 writer.WriteStartArray();
                 foreach (var item in VpnClientRevokedCertificates)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(VpnClientProtocols))
             {
-                writer.WritePropertyName("vpnClientProtocols");
+                writer.WritePropertyName("vpnClientProtocols"u8);
                 writer.WriteStartArray();
                 foreach (var item in VpnClientProtocols)
                 {
@@ -53,7 +73,7 @@ namespace Azure.ResourceManager.Network.Models
             }
             if (Optional.IsCollectionDefined(VpnAuthenticationTypes))
             {
-                writer.WritePropertyName("vpnAuthenticationTypes");
+                writer.WritePropertyName("vpnAuthenticationTypes"u8);
                 writer.WriteStartArray();
                 foreach (var item in VpnAuthenticationTypes)
                 {
@@ -63,113 +83,154 @@ namespace Azure.ResourceManager.Network.Models
             }
             if (Optional.IsCollectionDefined(VpnClientIPsecPolicies))
             {
-                writer.WritePropertyName("vpnClientIpsecPolicies");
+                writer.WritePropertyName("vpnClientIpsecPolicies"u8);
                 writer.WriteStartArray();
                 foreach (var item in VpnClientIPsecPolicies)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(RadiusServerAddress))
             {
-                writer.WritePropertyName("radiusServerAddress");
+                writer.WritePropertyName("radiusServerAddress"u8);
                 writer.WriteStringValue(RadiusServerAddress);
             }
             if (Optional.IsDefined(RadiusServerSecret))
             {
-                writer.WritePropertyName("radiusServerSecret");
+                writer.WritePropertyName("radiusServerSecret"u8);
                 writer.WriteStringValue(RadiusServerSecret);
             }
             if (Optional.IsCollectionDefined(RadiusServers))
             {
-                writer.WritePropertyName("radiusServers");
+                writer.WritePropertyName("radiusServers"u8);
                 writer.WriteStartArray();
                 foreach (var item in RadiusServers)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(AadTenant))
             {
-                writer.WritePropertyName("aadTenant");
+                writer.WritePropertyName("aadTenant"u8);
                 writer.WriteStringValue(AadTenant);
             }
             if (Optional.IsDefined(AadAudience))
             {
-                writer.WritePropertyName("aadAudience");
+                writer.WritePropertyName("aadAudience"u8);
                 writer.WriteStringValue(AadAudience);
             }
             if (Optional.IsDefined(AadIssuer))
             {
-                writer.WritePropertyName("aadIssuer");
+                writer.WritePropertyName("aadIssuer"u8);
                 writer.WriteStringValue(AadIssuer);
             }
-            writer.WriteEndObject();
+            if (Optional.IsCollectionDefined(VngClientConnectionConfigurations))
+            {
+                writer.WritePropertyName("vngClientConnectionConfigurations"u8);
+                writer.WriteStartArray();
+                foreach (var item in VngClientConnectionConfigurations)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static VpnClientConfiguration DeserializeVpnClientConfiguration(JsonElement element)
+        VpnClientConfiguration IJsonModel<VpnClientConfiguration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<AddressSpace> vpnClientAddressPool = default;
-            Optional<IList<VpnClientRootCertificate>> vpnClientRootCertificates = default;
-            Optional<IList<VpnClientRevokedCertificate>> vpnClientRevokedCertificates = default;
-            Optional<IList<VpnClientProtocol>> vpnClientProtocols = default;
-            Optional<IList<VpnAuthenticationType>> vpnAuthenticationTypes = default;
-            Optional<IList<IPsecPolicy>> vpnClientIPsecPolicies = default;
-            Optional<string> radiusServerAddress = default;
-            Optional<string> radiusServerSecret = default;
-            Optional<IList<RadiusServer>> radiusServers = default;
-            Optional<string> aadTenant = default;
-            Optional<string> aadAudience = default;
-            Optional<string> aadIssuer = default;
+            var format = options.Format == "W" ? ((IPersistableModel<VpnClientConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(VpnClientConfiguration)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeVpnClientConfiguration(document.RootElement, options);
+        }
+
+        internal static VpnClientConfiguration DeserializeVpnClientConfiguration(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            VirtualNetworkAddressSpace vpnClientAddressPool = default;
+            IList<VpnClientRootCertificate> vpnClientRootCertificates = default;
+            IList<VpnClientRevokedCertificate> vpnClientRevokedCertificates = default;
+            IList<VpnClientProtocol> vpnClientProtocols = default;
+            IList<VpnAuthenticationType> vpnAuthenticationTypes = default;
+            IList<IPsecPolicy> vpnClientIPsecPolicies = default;
+            string radiusServerAddress = default;
+            string radiusServerSecret = default;
+            IList<RadiusServer> radiusServers = default;
+            string aadTenant = default;
+            string aadAudience = default;
+            string aadIssuer = default;
+            IList<VngClientConnectionConfiguration> vngClientConnectionConfigurations = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("vpnClientAddressPool"))
+                if (property.NameEquals("vpnClientAddressPool"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    vpnClientAddressPool = AddressSpace.DeserializeAddressSpace(property.Value);
+                    vpnClientAddressPool = VirtualNetworkAddressSpace.DeserializeVirtualNetworkAddressSpace(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("vpnClientRootCertificates"))
+                if (property.NameEquals("vpnClientRootCertificates"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<VpnClientRootCertificate> array = new List<VpnClientRootCertificate>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(VpnClientRootCertificate.DeserializeVpnClientRootCertificate(item));
+                        array.Add(VpnClientRootCertificate.DeserializeVpnClientRootCertificate(item, options));
                     }
                     vpnClientRootCertificates = array;
                     continue;
                 }
-                if (property.NameEquals("vpnClientRevokedCertificates"))
+                if (property.NameEquals("vpnClientRevokedCertificates"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<VpnClientRevokedCertificate> array = new List<VpnClientRevokedCertificate>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(VpnClientRevokedCertificate.DeserializeVpnClientRevokedCertificate(item));
+                        array.Add(VpnClientRevokedCertificate.DeserializeVpnClientRevokedCertificate(item, options));
                     }
                     vpnClientRevokedCertificates = array;
                     continue;
                 }
-                if (property.NameEquals("vpnClientProtocols"))
+                if (property.NameEquals("vpnClientProtocols"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<VpnClientProtocol> array = new List<VpnClientProtocol>();
@@ -180,11 +241,10 @@ namespace Azure.ResourceManager.Network.Models
                     vpnClientProtocols = array;
                     continue;
                 }
-                if (property.NameEquals("vpnAuthenticationTypes"))
+                if (property.NameEquals("vpnAuthenticationTypes"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<VpnAuthenticationType> array = new List<VpnAuthenticationType>();
@@ -195,63 +255,433 @@ namespace Azure.ResourceManager.Network.Models
                     vpnAuthenticationTypes = array;
                     continue;
                 }
-                if (property.NameEquals("vpnClientIpsecPolicies"))
+                if (property.NameEquals("vpnClientIpsecPolicies"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<IPsecPolicy> array = new List<IPsecPolicy>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(IPsecPolicy.DeserializeIPsecPolicy(item));
+                        array.Add(IPsecPolicy.DeserializeIPsecPolicy(item, options));
                     }
                     vpnClientIPsecPolicies = array;
                     continue;
                 }
-                if (property.NameEquals("radiusServerAddress"))
+                if (property.NameEquals("radiusServerAddress"u8))
                 {
                     radiusServerAddress = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("radiusServerSecret"))
+                if (property.NameEquals("radiusServerSecret"u8))
                 {
                     radiusServerSecret = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("radiusServers"))
+                if (property.NameEquals("radiusServers"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<RadiusServer> array = new List<RadiusServer>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(RadiusServer.DeserializeRadiusServer(item));
+                        array.Add(RadiusServer.DeserializeRadiusServer(item, options));
                     }
                     radiusServers = array;
                     continue;
                 }
-                if (property.NameEquals("aadTenant"))
+                if (property.NameEquals("aadTenant"u8))
                 {
                     aadTenant = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("aadAudience"))
+                if (property.NameEquals("aadAudience"u8))
                 {
                     aadAudience = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("aadIssuer"))
+                if (property.NameEquals("aadIssuer"u8))
                 {
                     aadIssuer = property.Value.GetString();
                     continue;
                 }
+                if (property.NameEquals("vngClientConnectionConfigurations"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<VngClientConnectionConfiguration> array = new List<VngClientConnectionConfiguration>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(VngClientConnectionConfiguration.DeserializeVngClientConnectionConfiguration(item, options));
+                    }
+                    vngClientConnectionConfigurations = array;
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new VpnClientConfiguration(vpnClientAddressPool.Value, Optional.ToList(vpnClientRootCertificates), Optional.ToList(vpnClientRevokedCertificates), Optional.ToList(vpnClientProtocols), Optional.ToList(vpnAuthenticationTypes), Optional.ToList(vpnClientIPsecPolicies), radiusServerAddress.Value, radiusServerSecret.Value, Optional.ToList(radiusServers), aadTenant.Value, aadAudience.Value, aadIssuer.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new VpnClientConfiguration(
+                vpnClientAddressPool,
+                vpnClientRootCertificates ?? new ChangeTrackingList<VpnClientRootCertificate>(),
+                vpnClientRevokedCertificates ?? new ChangeTrackingList<VpnClientRevokedCertificate>(),
+                vpnClientProtocols ?? new ChangeTrackingList<VpnClientProtocol>(),
+                vpnAuthenticationTypes ?? new ChangeTrackingList<VpnAuthenticationType>(),
+                vpnClientIPsecPolicies ?? new ChangeTrackingList<IPsecPolicy>(),
+                radiusServerAddress,
+                radiusServerSecret,
+                radiusServers ?? new ChangeTrackingList<RadiusServer>(),
+                aadTenant,
+                aadAudience,
+                aadIssuer,
+                vngClientConnectionConfigurations ?? new ChangeTrackingList<VngClientConnectionConfiguration>(),
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(VpnClientAddressPool), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  vpnClientAddressPool: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(VpnClientAddressPool))
+                {
+                    builder.Append("  vpnClientAddressPool: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, VpnClientAddressPool, options, 2, false, "  vpnClientAddressPool: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(VpnClientRootCertificates), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  vpnClientRootCertificates: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(VpnClientRootCertificates))
+                {
+                    if (VpnClientRootCertificates.Any())
+                    {
+                        builder.Append("  vpnClientRootCertificates: ");
+                        builder.AppendLine("[");
+                        foreach (var item in VpnClientRootCertificates)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  vpnClientRootCertificates: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(VpnClientRevokedCertificates), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  vpnClientRevokedCertificates: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(VpnClientRevokedCertificates))
+                {
+                    if (VpnClientRevokedCertificates.Any())
+                    {
+                        builder.Append("  vpnClientRevokedCertificates: ");
+                        builder.AppendLine("[");
+                        foreach (var item in VpnClientRevokedCertificates)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  vpnClientRevokedCertificates: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(VpnClientProtocols), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  vpnClientProtocols: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(VpnClientProtocols))
+                {
+                    if (VpnClientProtocols.Any())
+                    {
+                        builder.Append("  vpnClientProtocols: ");
+                        builder.AppendLine("[");
+                        foreach (var item in VpnClientProtocols)
+                        {
+                            builder.AppendLine($"    '{item.ToString()}'");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(VpnAuthenticationTypes), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  vpnAuthenticationTypes: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(VpnAuthenticationTypes))
+                {
+                    if (VpnAuthenticationTypes.Any())
+                    {
+                        builder.Append("  vpnAuthenticationTypes: ");
+                        builder.AppendLine("[");
+                        foreach (var item in VpnAuthenticationTypes)
+                        {
+                            builder.AppendLine($"    '{item.ToString()}'");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(VpnClientIPsecPolicies), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  vpnClientIpsecPolicies: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(VpnClientIPsecPolicies))
+                {
+                    if (VpnClientIPsecPolicies.Any())
+                    {
+                        builder.Append("  vpnClientIpsecPolicies: ");
+                        builder.AppendLine("[");
+                        foreach (var item in VpnClientIPsecPolicies)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  vpnClientIpsecPolicies: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RadiusServerAddress), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  radiusServerAddress: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(RadiusServerAddress))
+                {
+                    builder.Append("  radiusServerAddress: ");
+                    if (RadiusServerAddress.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{RadiusServerAddress}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{RadiusServerAddress}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RadiusServerSecret), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  radiusServerSecret: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(RadiusServerSecret))
+                {
+                    builder.Append("  radiusServerSecret: ");
+                    if (RadiusServerSecret.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{RadiusServerSecret}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{RadiusServerSecret}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RadiusServers), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  radiusServers: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(RadiusServers))
+                {
+                    if (RadiusServers.Any())
+                    {
+                        builder.Append("  radiusServers: ");
+                        builder.AppendLine("[");
+                        foreach (var item in RadiusServers)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  radiusServers: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(AadTenant), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  aadTenant: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(AadTenant))
+                {
+                    builder.Append("  aadTenant: ");
+                    if (AadTenant.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{AadTenant}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{AadTenant}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(AadAudience), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  aadAudience: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(AadAudience))
+                {
+                    builder.Append("  aadAudience: ");
+                    if (AadAudience.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{AadAudience}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{AadAudience}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(AadIssuer), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  aadIssuer: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(AadIssuer))
+                {
+                    builder.Append("  aadIssuer: ");
+                    if (AadIssuer.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{AadIssuer}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{AadIssuer}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(VngClientConnectionConfigurations), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  vngClientConnectionConfigurations: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(VngClientConnectionConfigurations))
+                {
+                    if (VngClientConnectionConfigurations.Any())
+                    {
+                        builder.Append("  vngClientConnectionConfigurations: ");
+                        builder.AppendLine("[");
+                        foreach (var item in VngClientConnectionConfigurations)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  vngClientConnectionConfigurations: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<VpnClientConfiguration>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<VpnClientConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(VpnClientConfiguration)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        VpnClientConfiguration IPersistableModel<VpnClientConfiguration>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<VpnClientConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeVpnClientConfiguration(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(VpnClientConfiguration)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<VpnClientConfiguration>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

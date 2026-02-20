@@ -6,21 +6,47 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The resource model definition representing SKU
-    /// Serialized Name: Sku
-    /// </summary>
+    /// <summary> The resource model definition representing SKU. </summary>
     public partial class MachineLearningSku
     {
-        /// <summary> Initializes a new instance of MachineLearningSku. </summary>
-        /// <param name="name">
-        /// The name of the SKU. Ex - P3. It is typically a letter+number code
-        /// Serialized Name: Sku.name
-        /// </param>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="MachineLearningSku"/>. </summary>
+        /// <param name="name"> The name of the SKU. Ex - P3. It is typically a letter+number code. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="name"/> is null. </exception>
         public MachineLearningSku(string name)
         {
@@ -29,60 +55,42 @@ namespace Azure.ResourceManager.MachineLearning.Models
             Name = name;
         }
 
-        /// <summary> Initializes a new instance of MachineLearningSku. </summary>
-        /// <param name="name">
-        /// The name of the SKU. Ex - P3. It is typically a letter+number code
-        /// Serialized Name: Sku.name
-        /// </param>
-        /// <param name="tier">
-        /// This field is required to be implemented by the Resource Provider if the service has more than one tier, but is not required on a PUT.
-        /// Serialized Name: Sku.tier
-        /// </param>
-        /// <param name="size">
-        /// The SKU size. When the name field is the combination of tier and some other value, this would be the standalone code. 
-        /// Serialized Name: Sku.size
-        /// </param>
-        /// <param name="family">
-        /// If the service has different generations of hardware, for the same SKU, then that can be captured here.
-        /// Serialized Name: Sku.family
-        /// </param>
-        /// <param name="capacity">
-        /// If the SKU supports scale out/in then the capacity integer should be included. If scale out/in is not possible for the resource this may be omitted.
-        /// Serialized Name: Sku.capacity
-        /// </param>
-        internal MachineLearningSku(string name, MachineLearningSkuTier? tier, string size, string family, int? capacity)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningSku"/>. </summary>
+        /// <param name="name"> The name of the SKU. Ex - P3. It is typically a letter+number code. </param>
+        /// <param name="tier"> This field is required to be implemented by the Resource Provider if the service has more than one tier, but is not required on a PUT. </param>
+        /// <param name="size"> The SKU size. When the name field is the combination of tier and some other value, this would be the standalone code. </param>
+        /// <param name="family"> If the service has different generations of hardware, for the same SKU, then that can be captured here. </param>
+        /// <param name="capacity"> If the SKU supports scale out/in then the capacity integer should be included. If scale out/in is not possible for the resource this may be omitted. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal MachineLearningSku(string name, MachineLearningSkuTier? tier, string size, string family, int? capacity, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Name = name;
             Tier = tier;
             Size = size;
             Family = family;
             Capacity = capacity;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary>
-        /// The name of the SKU. Ex - P3. It is typically a letter+number code
-        /// Serialized Name: Sku.name
-        /// </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningSku"/> for deserialization. </summary>
+        internal MachineLearningSku()
+        {
+        }
+
+        /// <summary> The name of the SKU. Ex - P3. It is typically a letter+number code. </summary>
+        [WirePath("name")]
         public string Name { get; set; }
-        /// <summary>
-        /// This field is required to be implemented by the Resource Provider if the service has more than one tier, but is not required on a PUT.
-        /// Serialized Name: Sku.tier
-        /// </summary>
+        /// <summary> This field is required to be implemented by the Resource Provider if the service has more than one tier, but is not required on a PUT. </summary>
+        [WirePath("tier")]
         public MachineLearningSkuTier? Tier { get; set; }
-        /// <summary>
-        /// The SKU size. When the name field is the combination of tier and some other value, this would be the standalone code. 
-        /// Serialized Name: Sku.size
-        /// </summary>
+        /// <summary> The SKU size. When the name field is the combination of tier and some other value, this would be the standalone code. </summary>
+        [WirePath("size")]
         public string Size { get; set; }
-        /// <summary>
-        /// If the service has different generations of hardware, for the same SKU, then that can be captured here.
-        /// Serialized Name: Sku.family
-        /// </summary>
+        /// <summary> If the service has different generations of hardware, for the same SKU, then that can be captured here. </summary>
+        [WirePath("family")]
         public string Family { get; set; }
-        /// <summary>
-        /// If the SKU supports scale out/in then the capacity integer should be included. If scale out/in is not possible for the resource this may be omitted.
-        /// Serialized Name: Sku.capacity
-        /// </summary>
+        /// <summary> If the SKU supports scale out/in then the capacity integer should be included. If scale out/in is not possible for the resource this may be omitted. </summary>
+        [WirePath("capacity")]
         public int? Capacity { get; set; }
     }
 }

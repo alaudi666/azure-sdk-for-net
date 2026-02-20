@@ -5,18 +5,21 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the FrontendIPConfiguration data model. </summary>
+    /// <summary>
+    /// A class representing the FrontendIPConfiguration data model.
+    /// Frontend IP address of the load balancer.
+    /// </summary>
     public partial class FrontendIPConfigurationData : NetworkResourceData
     {
-        /// <summary> Initializes a new instance of FrontendIPConfigurationData. </summary>
+        /// <summary> Initializes a new instance of <see cref="FrontendIPConfigurationData"/>. </summary>
         public FrontendIPConfigurationData()
         {
             Zones = new ChangeTrackingList<string>();
@@ -26,10 +29,11 @@ namespace Azure.ResourceManager.Network
             LoadBalancingRules = new ChangeTrackingList<WritableSubResource>();
         }
 
-        /// <summary> Initializes a new instance of FrontendIPConfigurationData. </summary>
+        /// <summary> Initializes a new instance of <see cref="FrontendIPConfigurationData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="zones"> A list of availability zones denoting the IP allocated for the resource needs to come from. </param>
         /// <param name="inboundNatRules"> An array of references to inbound rules that use this frontend IP. </param>
@@ -44,7 +48,7 @@ namespace Azure.ResourceManager.Network
         /// <param name="publicIPPrefix"> The reference to the Public IP Prefix resource. </param>
         /// <param name="gatewayLoadBalancer"> The reference to gateway load balancer frontend IP. </param>
         /// <param name="provisioningState"> The provisioning state of the frontend IP configuration resource. </param>
-        internal FrontendIPConfigurationData(ResourceIdentifier id, string name, ResourceType? resourceType, ETag? etag, IList<string> zones, IReadOnlyList<WritableSubResource> inboundNatRules, IReadOnlyList<WritableSubResource> inboundNatPools, IReadOnlyList<WritableSubResource> outboundRules, IReadOnlyList<WritableSubResource> loadBalancingRules, string privateIPAddress, NetworkIPAllocationMethod? privateIPAllocationMethod, NetworkIPVersion? privateIPAddressVersion, SubnetData subnet, PublicIPAddressData publicIPAddress, WritableSubResource publicIPPrefix, WritableSubResource gatewayLoadBalancer, NetworkProvisioningState? provisioningState) : base(id, name, resourceType)
+        internal FrontendIPConfigurationData(ResourceIdentifier id, string name, ResourceType? resourceType, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, IList<string> zones, IReadOnlyList<WritableSubResource> inboundNatRules, IReadOnlyList<WritableSubResource> inboundNatPools, IReadOnlyList<WritableSubResource> outboundRules, IReadOnlyList<WritableSubResource> loadBalancingRules, string privateIPAddress, NetworkIPAllocationMethod? privateIPAllocationMethod, NetworkIPVersion? privateIPAddressVersion, SubnetData subnet, PublicIPAddressData publicIPAddress, WritableSubResource publicIPPrefix, WritableSubResource gatewayLoadBalancer, NetworkProvisioningState? provisioningState) : base(id, name, resourceType, serializedAdditionalRawData)
         {
             ETag = etag;
             Zones = zones;
@@ -63,30 +67,42 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> A list of availability zones denoting the IP allocated for the resource needs to come from. </summary>
+        [WirePath("zones")]
         public IList<string> Zones { get; }
         /// <summary> An array of references to inbound rules that use this frontend IP. </summary>
+        [WirePath("properties.inboundNatRules")]
         public IReadOnlyList<WritableSubResource> InboundNatRules { get; }
         /// <summary> An array of references to inbound pools that use this frontend IP. </summary>
+        [WirePath("properties.inboundNatPools")]
         public IReadOnlyList<WritableSubResource> InboundNatPools { get; }
         /// <summary> An array of references to outbound rules that use this frontend IP. </summary>
+        [WirePath("properties.outboundRules")]
         public IReadOnlyList<WritableSubResource> OutboundRules { get; }
         /// <summary> An array of references to load balancing rules that use this frontend IP. </summary>
+        [WirePath("properties.loadBalancingRules")]
         public IReadOnlyList<WritableSubResource> LoadBalancingRules { get; }
         /// <summary> The private IP address of the IP configuration. </summary>
+        [WirePath("properties.privateIPAddress")]
         public string PrivateIPAddress { get; set; }
         /// <summary> The Private IP allocation method. </summary>
+        [WirePath("properties.privateIPAllocationMethod")]
         public NetworkIPAllocationMethod? PrivateIPAllocationMethod { get; set; }
         /// <summary> Whether the specific ipconfiguration is IPv4 or IPv6. Default is taken as IPv4. </summary>
+        [WirePath("properties.privateIPAddressVersion")]
         public NetworkIPVersion? PrivateIPAddressVersion { get; set; }
         /// <summary> The reference to the subnet resource. </summary>
+        [WirePath("properties.subnet")]
         public SubnetData Subnet { get; set; }
         /// <summary> The reference to the Public IP resource. </summary>
+        [WirePath("properties.publicIPAddress")]
         public PublicIPAddressData PublicIPAddress { get; set; }
         /// <summary> The reference to the Public IP Prefix resource. </summary>
         internal WritableSubResource PublicIPPrefix { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.publicIPPrefix.id")]
         public ResourceIdentifier PublicIPPrefixId
         {
             get => PublicIPPrefix is null ? default : PublicIPPrefix.Id;
@@ -101,6 +117,7 @@ namespace Azure.ResourceManager.Network
         /// <summary> The reference to gateway load balancer frontend IP. </summary>
         internal WritableSubResource GatewayLoadBalancer { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.gatewayLoadBalancer.id")]
         public ResourceIdentifier GatewayLoadBalancerId
         {
             get => GatewayLoadBalancer is null ? default : GatewayLoadBalancer.Id;
@@ -113,6 +130,7 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> The provisioning state of the frontend IP configuration resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
     }
 }

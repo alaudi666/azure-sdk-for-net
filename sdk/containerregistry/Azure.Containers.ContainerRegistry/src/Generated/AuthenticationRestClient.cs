@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
@@ -91,12 +90,12 @@ namespace Azure.Containers.ContainerRegistry
                 case 200:
                     {
                         AcrRefreshToken value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AcrRefreshToken.DeserializeAcrRefreshToken(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -122,12 +121,12 @@ namespace Azure.Containers.ContainerRegistry
                 case 200:
                     {
                         AcrRefreshToken value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AcrRefreshToken.DeserializeAcrRefreshToken(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -156,10 +155,10 @@ namespace Azure.Containers.ContainerRegistry
         /// <param name="service"> Indicates the name of your Azure container registry. </param>
         /// <param name="scope"> Which is expected to be a valid scope, and can be specified more than once for multiple scope requests. You obtained this from the Www-Authenticate response header from the challenge. </param>
         /// <param name="refreshToken"> Must be a valid ACR refresh token. </param>
-        /// <param name="grantType"> Grant type is expected to be refresh_token. </param>
+        /// <param name="grantType"> Grant type is expected to be refresh_token. The default value is AutoRest.CSharp.Output.Models.Types.EnumTypeValue. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="service"/>, <paramref name="scope"/> or <paramref name="refreshToken"/> is null. </exception>
-        public async Task<Response<AcrAccessToken>> ExchangeAcrRefreshTokenForAcrAccessTokenAsync(string service, string scope, string refreshToken, TokenGrantType grantType = TokenGrantType.RefreshToken, CancellationToken cancellationToken = default)
+        public async Task<Response<AcrAccessToken>> ExchangeAcrRefreshTokenForAcrAccessTokenAsync(string service, string scope, string refreshToken, TokenGrantType grantType, CancellationToken cancellationToken = default)
         {
             if (service == null)
             {
@@ -181,12 +180,12 @@ namespace Azure.Containers.ContainerRegistry
                 case 200:
                     {
                         AcrAccessToken value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AcrAccessToken.DeserializeAcrAccessToken(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -194,10 +193,10 @@ namespace Azure.Containers.ContainerRegistry
         /// <param name="service"> Indicates the name of your Azure container registry. </param>
         /// <param name="scope"> Which is expected to be a valid scope, and can be specified more than once for multiple scope requests. You obtained this from the Www-Authenticate response header from the challenge. </param>
         /// <param name="refreshToken"> Must be a valid ACR refresh token. </param>
-        /// <param name="grantType"> Grant type is expected to be refresh_token. </param>
+        /// <param name="grantType"> Grant type is expected to be refresh_token. The default value is AutoRest.CSharp.Output.Models.Types.EnumTypeValue. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="service"/>, <paramref name="scope"/> or <paramref name="refreshToken"/> is null. </exception>
-        public Response<AcrAccessToken> ExchangeAcrRefreshTokenForAcrAccessToken(string service, string scope, string refreshToken, TokenGrantType grantType = TokenGrantType.RefreshToken, CancellationToken cancellationToken = default)
+        public Response<AcrAccessToken> ExchangeAcrRefreshTokenForAcrAccessToken(string service, string scope, string refreshToken, TokenGrantType grantType, CancellationToken cancellationToken = default)
         {
             if (service == null)
             {
@@ -219,12 +218,12 @@ namespace Azure.Containers.ContainerRegistry
                 case 200:
                     {
                         AcrAccessToken value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AcrAccessToken.DeserializeAcrAccessToken(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
     }

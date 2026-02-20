@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.SecurityCenter
 {
     /// <summary>
-    /// A class representing a collection of <see cref="SecurityContactResource" /> and their operations.
-    /// Each <see cref="SecurityContactResource" /> in the collection will belong to the same instance of <see cref="SubscriptionResource" />.
-    /// To get a <see cref="SecurityContactCollection" /> instance call the GetSecurityContacts method from an instance of <see cref="SubscriptionResource" />.
+    /// A class representing a collection of <see cref="SecurityContactResource"/> and their operations.
+    /// Each <see cref="SecurityContactResource"/> in the collection will belong to the same instance of <see cref="SubscriptionResource"/>.
+    /// To get a <see cref="SecurityContactCollection"/> instance call the GetSecurityContacts method from an instance of <see cref="SubscriptionResource"/>.
     /// </summary>
     public partial class SecurityContactCollection : ArmCollection, IEnumerable<SecurityContactResource>, IAsyncEnumerable<SecurityContactResource>
     {
@@ -56,8 +54,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Create security contact configurations for the subscription
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}
-        /// Operation Id: SecurityContacts_Create
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecurityContacts_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="securityContactName"> Name of the security contact object. </param>
@@ -75,7 +89,9 @@ namespace Azure.ResourceManager.SecurityCenter
             try
             {
                 var response = await _securityContactRestClient.CreateAsync(Id.SubscriptionId, securityContactName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new SecurityCenterArmOperation<SecurityContactResource>(Response.FromValue(new SecurityContactResource(Client, response), response.GetRawResponse()));
+                var uri = _securityContactRestClient.CreateCreateRequestUri(Id.SubscriptionId, securityContactName, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new SecurityCenterArmOperation<SecurityContactResource>(Response.FromValue(new SecurityContactResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -89,8 +105,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Create security contact configurations for the subscription
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}
-        /// Operation Id: SecurityContacts_Create
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecurityContacts_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="securityContactName"> Name of the security contact object. </param>
@@ -108,7 +140,9 @@ namespace Azure.ResourceManager.SecurityCenter
             try
             {
                 var response = _securityContactRestClient.Create(Id.SubscriptionId, securityContactName, data, cancellationToken);
-                var operation = new SecurityCenterArmOperation<SecurityContactResource>(Response.FromValue(new SecurityContactResource(Client, response), response.GetRawResponse()));
+                var uri = _securityContactRestClient.CreateCreateRequestUri(Id.SubscriptionId, securityContactName, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new SecurityCenterArmOperation<SecurityContactResource>(Response.FromValue(new SecurityContactResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -122,8 +156,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get Default Security contact configurations for the subscription
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}
-        /// Operation Id: SecurityContacts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecurityContacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="securityContactName"> Name of the security contact object. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -151,8 +201,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get Default Security contact configurations for the subscription
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}
-        /// Operation Id: SecurityContacts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecurityContacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="securityContactName"> Name of the security contact object. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -180,92 +246,84 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// List all security contact configurations for the subscription
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts
-        /// Operation Id: SecurityContacts_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecurityContacts_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="SecurityContactResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SecurityContactResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SecurityContactResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<SecurityContactResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _securityContactClientDiagnostics.CreateScope("SecurityContactCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _securityContactRestClient.ListAsync(Id.SubscriptionId, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SecurityContactResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<SecurityContactResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _securityContactClientDiagnostics.CreateScope("SecurityContactCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _securityContactRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SecurityContactResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _securityContactRestClient.CreateListRequest(Id.SubscriptionId);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _securityContactRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new SecurityContactResource(Client, SecurityContactData.DeserializeSecurityContactData(e)), _securityContactClientDiagnostics, Pipeline, "SecurityContactCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// List all security contact configurations for the subscription
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts
-        /// Operation Id: SecurityContacts_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecurityContacts_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="SecurityContactResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SecurityContactResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SecurityContactResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<SecurityContactResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _securityContactClientDiagnostics.CreateScope("SecurityContactCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _securityContactRestClient.List(Id.SubscriptionId, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SecurityContactResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<SecurityContactResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _securityContactClientDiagnostics.CreateScope("SecurityContactCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _securityContactRestClient.ListNextPage(nextLink, Id.SubscriptionId, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SecurityContactResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _securityContactRestClient.CreateListRequest(Id.SubscriptionId);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _securityContactRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new SecurityContactResource(Client, SecurityContactData.DeserializeSecurityContactData(e)), _securityContactClientDiagnostics, Pipeline, "SecurityContactCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}
-        /// Operation Id: SecurityContacts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecurityContacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="securityContactName"> Name of the security contact object. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -291,8 +349,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}
-        /// Operation Id: SecurityContacts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecurityContacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="securityContactName"> Name of the security contact object. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -308,6 +382,96 @@ namespace Azure.ResourceManager.SecurityCenter
             {
                 var response = _securityContactRestClient.Get(Id.SubscriptionId, securityContactName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecurityContacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityContactResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="securityContactName"> Name of the security contact object. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="securityContactName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="securityContactName"/> is null. </exception>
+        public virtual async Task<NullableResponse<SecurityContactResource>> GetIfExistsAsync(string securityContactName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(securityContactName, nameof(securityContactName));
+
+            using var scope = _securityContactClientDiagnostics.CreateScope("SecurityContactCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _securityContactRestClient.GetAsync(Id.SubscriptionId, securityContactName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<SecurityContactResource>(response.GetRawResponse());
+                return Response.FromValue(new SecurityContactResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/securityContacts/{securityContactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecurityContacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityContactResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="securityContactName"> Name of the security contact object. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="securityContactName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="securityContactName"/> is null. </exception>
+        public virtual NullableResponse<SecurityContactResource> GetIfExists(string securityContactName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(securityContactName, nameof(securityContactName));
+
+            using var scope = _securityContactClientDiagnostics.CreateScope("SecurityContactCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _securityContactRestClient.Get(Id.SubscriptionId, securityContactName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<SecurityContactResource>(response.GetRawResponse());
+                return Response.FromValue(new SecurityContactResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

@@ -9,23 +9,25 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.EventGrid.Models;
 
 namespace Azure.ResourceManager.EventGrid
 {
     /// <summary>
     /// A Class representing a PartnerNamespacePrivateLinkResource along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="PartnerNamespacePrivateLinkResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetPartnerNamespacePrivateLinkResource method.
-    /// Otherwise you can get one from its parent resource <see cref="PartnerNamespaceResource" /> using the GetPartnerNamespacePrivateLinkResource method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="PartnerNamespacePrivateLinkResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetPartnerNamespacePrivateLinkResource method.
+    /// Otherwise you can get one from its parent resource <see cref="PartnerNamespaceResource"/> using the GetPartnerNamespacePrivateLinkResource method.
     /// </summary>
     public partial class PartnerNamespacePrivateLinkResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="PartnerNamespacePrivateLinkResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="resourceGroupName"> The resourceGroupName. </param>
+        /// <param name="parentName"> The parentName. </param>
+        /// <param name="privateLinkResourceName"> The privateLinkResourceName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string resourceGroupName, string parentName, string privateLinkResourceName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/partnerNamespaces/{parentName}/privateLinkResources/{privateLinkResourceName}";
@@ -36,12 +38,15 @@ namespace Azure.ResourceManager.EventGrid
         private readonly PrivateLinkResourcesRestOperations _partnerNamespacePrivateLinkResourcePrivateLinkResourcesRestClient;
         private readonly EventGridPrivateLinkResourceData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.EventGrid/partnerNamespaces/privateLinkResources";
+
         /// <summary> Initializes a new instance of the <see cref="PartnerNamespacePrivateLinkResource"/> class for mocking. </summary>
         protected PartnerNamespacePrivateLinkResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "PartnerNamespacePrivateLinkResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="PartnerNamespacePrivateLinkResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal PartnerNamespacePrivateLinkResource(ArmClient client, EventGridPrivateLinkResourceData data) : this(client, data.Id)
@@ -62,9 +67,6 @@ namespace Azure.ResourceManager.EventGrid
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.EventGrid/partnerNamespaces/privateLinkResources";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -89,8 +91,24 @@ namespace Azure.ResourceManager.EventGrid
 
         /// <summary>
         /// Get properties of a private link resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/{parentType}/{parentName}/privateLinkResources/{privateLinkResourceName}
-        /// Operation Id: PrivateLinkResources_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/{parentType}/{parentName}/privateLinkResources/{privateLinkResourceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PrivateLinkResources_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PartnerNamespacePrivateLinkResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<PartnerNamespacePrivateLinkResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -113,8 +131,24 @@ namespace Azure.ResourceManager.EventGrid
 
         /// <summary>
         /// Get properties of a private link resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/{parentType}/{parentName}/privateLinkResources/{privateLinkResourceName}
-        /// Operation Id: PrivateLinkResources_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.EventGrid/{parentType}/{parentName}/privateLinkResources/{privateLinkResourceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PrivateLinkResources_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PartnerNamespacePrivateLinkResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<PartnerNamespacePrivateLinkResource> Get(CancellationToken cancellationToken = default)

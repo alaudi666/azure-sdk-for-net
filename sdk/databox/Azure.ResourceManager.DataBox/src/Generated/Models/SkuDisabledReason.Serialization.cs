@@ -11,6 +11,7 @@ namespace Azure.ResourceManager.DataBox.Models
 {
     internal static partial class SkuDisabledReasonExtensions
     {
+        /// <param name="value"> The value to serialize. </param>
         public static string ToSerialString(this SkuDisabledReason value) => value switch
         {
             SkuDisabledReason.None => "None",
@@ -22,14 +23,33 @@ namespace Azure.ResourceManager.DataBox.Models
             _ => throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown SkuDisabledReason value.")
         };
 
+        /// <param name="value"> The value to deserialize. </param>
         public static SkuDisabledReason ToSkuDisabledReason(this string value)
         {
-            if (string.Equals(value, "None", StringComparison.InvariantCultureIgnoreCase)) return SkuDisabledReason.None;
-            if (string.Equals(value, "Country", StringComparison.InvariantCultureIgnoreCase)) return SkuDisabledReason.Country;
-            if (string.Equals(value, "Region", StringComparison.InvariantCultureIgnoreCase)) return SkuDisabledReason.Region;
-            if (string.Equals(value, "Feature", StringComparison.InvariantCultureIgnoreCase)) return SkuDisabledReason.Feature;
-            if (string.Equals(value, "OfferType", StringComparison.InvariantCultureIgnoreCase)) return SkuDisabledReason.OfferType;
-            if (string.Equals(value, "NoSubscriptionInfo", StringComparison.InvariantCultureIgnoreCase)) return SkuDisabledReason.NoSubscriptionInfo;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "None"))
+            {
+                return SkuDisabledReason.None;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Country"))
+            {
+                return SkuDisabledReason.Country;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Region"))
+            {
+                return SkuDisabledReason.Region;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Feature"))
+            {
+                return SkuDisabledReason.Feature;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "OfferType"))
+            {
+                return SkuDisabledReason.OfferType;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "NoSubscriptionInfo"))
+            {
+                return SkuDisabledReason.NoSubscriptionInfo;
+            }
             throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown SkuDisabledReason value.");
         }
     }

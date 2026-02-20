@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
@@ -14,24 +15,31 @@ namespace Azure.ResourceManager.DataBox.Models
     /// <summary> Job Resource Collection. </summary>
     internal partial class DataBoxJobListResult
     {
-        /// <summary> Initializes a new instance of DataBoxJobListResult. </summary>
-        internal DataBoxJobListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DataBoxJobListResult"/>. </summary>
+        /// <param name="value"> The JobResource items on this page. </param>
+        internal DataBoxJobListResult(IEnumerable<DataBoxJobData> value)
         {
-            Value = new ChangeTrackingList<DataBoxJobData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of DataBoxJobListResult. </summary>
-        /// <param name="value"> List of job resources. </param>
-        /// <param name="nextLink"> Link for the next set of job resources. </param>
-        internal DataBoxJobListResult(IReadOnlyList<DataBoxJobData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="DataBoxJobListResult"/>. </summary>
+        /// <param name="value"> The JobResource items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DataBoxJobListResult(IList<DataBoxJobData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of job resources. </summary>
-        public IReadOnlyList<DataBoxJobData> Value { get; }
-        /// <summary> Link for the next set of job resources. </summary>
-        public string NextLink { get; }
+        /// <summary> The JobResource items on this page. </summary>
+        public IList<DataBoxJobData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

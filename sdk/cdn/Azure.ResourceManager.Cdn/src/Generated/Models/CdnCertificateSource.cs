@@ -5,23 +5,39 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Cdn.Models
 {
     /// <summary> Defines the parameters for using CDN managed certificate for securing custom domain. </summary>
-    public partial class CdnCertificateSource
+    public partial class CdnCertificateSource : CertificateSourceProperties
     {
-        /// <summary> Initializes a new instance of CdnCertificateSource. </summary>
-        /// <param name="sourceType"></param>
+        /// <summary> Initializes a new instance of <see cref="CdnCertificateSource"/>. </summary>
         /// <param name="certificateType"> Type of certificate used. </param>
-        public CdnCertificateSource(CdnCertificateSourceType sourceType, CdnManagedCertificateType certificateType)
+        public CdnCertificateSource(CdnManagedCertificateType certificateType)
         {
-            SourceType = sourceType;
             CertificateType = certificateType;
+            TypeName = CertificateSourceParametersType.CdnCertificateSourceParameters;
         }
 
-        /// <summary> Gets or sets the source type. </summary>
-        public CdnCertificateSourceType SourceType { get; set; }
+        /// <summary> Initializes a new instance of <see cref="CdnCertificateSource"/>. </summary>
+        /// <param name="typeName"></param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="certificateType"> Type of certificate used. </param>
+        internal CdnCertificateSource(CertificateSourceParametersType typeName, IDictionary<string, BinaryData> serializedAdditionalRawData, CdnManagedCertificateType certificateType) : base(typeName, serializedAdditionalRawData)
+        {
+            CertificateType = certificateType;
+            TypeName = typeName;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="CdnCertificateSource"/> for deserialization. </summary>
+        internal CdnCertificateSource()
+        {
+        }
+
         /// <summary> Type of certificate used. </summary>
+        [WirePath("certificateType")]
         public CdnManagedCertificateType CertificateType { get; set; }
     }
 }

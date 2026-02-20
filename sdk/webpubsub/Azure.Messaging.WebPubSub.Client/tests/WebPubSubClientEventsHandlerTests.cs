@@ -59,7 +59,7 @@ namespace Azure.Messaging.WebPubSub.Client.Tests
             var disconnectedTcs = NewTcs<WebPubSubDisconnectedEventArgs>();
             var stoppedTcs = NewTcs<WebPubSubStoppedEventArgs>();
 
-            var client = new WebPubSubClient(new Uri("wss://test.com"), new WebPubSubClientOptions { AutoReconnect = false});
+            var client = new WebPubSubClient(new Uri("wss://test.com"), new WebPubSubClientOptions { AutoReconnect = false });
             client.WebSocketClientFactory = _factoryMoc.Object;
             client.Connected += arg =>
             {
@@ -91,6 +91,7 @@ namespace Azure.Messaging.WebPubSub.Client.Tests
             var connArg = await connectedTcs.Task.OrTimeout();
             Assert.AreEqual("conn", connArg.ConnectionId);
             Assert.AreEqual("user", connArg.UserId);
+            Assert.AreEqual("conn", client.ConnectionId);
 
             var serArg = await serverMessageTcs.Task.OrTimeout();
             Assert.NotNull(serArg.Message);

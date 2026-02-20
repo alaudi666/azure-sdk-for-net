@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 using Azure.Identity;
 using Azure.Messaging.ServiceBus;
@@ -27,18 +27,40 @@ namespace TopicSubscriptionWithRuleOperationsSample
 
         public static async Task Main(string[] args)
         {
+            var fullyQualifiedNamespaceOption = new Option<string>(
+                name: "--namespace")
+            {
+                Description = "Fully qualified Service Bus Queue namespace to use"
+            };
+
+            var connectionOption = new Option<string>(
+                name: "--connection-variable")
+            {
+                Description = "The name of an environment variable containing the connection string to use."
+            };
+
             var command = new RootCommand("Demonstrates the Topic Filters feature of Azure Service Bus.")
             {
-                new Option<string>(
-                    alias: "--namespace",
-                    description: "Fully qualified Service Bus Queue namespace to use") {Name = "FullyQualifiedNamespace"},
-                new Option<string>(
-                    alias: "--connection-variable",
-                    description: "The name of an environment variable containing the connection string to use.") {Name = "Connection"},
+                fullyQualifiedNamespaceOption,
+                connectionOption
             };
-            command.Handler = CommandHandler.Create<string, string>(RunAsync);
-            await command.InvokeAsync(args);
+
+            ParseResult parseResult = command.Parse(args);
+
+            if (parseResult.Errors.Count > 0)
+            {
+                foreach (var error in parseResult.Errors)
+                {
+                    Console.Error.WriteLine(error.Message);
+                }
+                return;
+            }
+
+            await RunAsync(
+                parseResult.GetValue<string>(fullyQualifiedNamespaceOption),
+                parseResult.GetValue<string>(connectionOption));
         }
+
 
         private static async Task RunAsync(string fullyQualifiedNamespace, string connection)
         {
@@ -58,7 +80,7 @@ namespace TopicSubscriptionWithRuleOperationsSample
                 throw new ArgumentException(
                     "Either a fully qualified namespace or a connection string environment variable must be specified.");
             }
-            
+
             Console.WriteLine($"Creating topic {TopicName}");
             await s_adminClient.CreateTopicAsync(TopicName);
 
@@ -76,14 +98,14 @@ namespace TopicSubscriptionWithRuleOperationsSample
             // 2nd Subscription: Add SqlFilter on Subscription 2
             // In this scenario, rather than deleting the default rule after creating the subscription,
             // we will create the subscription along with our desired rule in a single operation.
-            // See https://docs.microsoft.com/en-us/azure/service-bus-messaging/topic-filters to learn more about topic filters.
+            // See https://learn.microsoft.com/azure/service-bus-messaging/topic-filters to learn more about topic filters.
             Console.WriteLine($"Creating subscription {SqlFilterOnlySubscriptionName}");
             await s_adminClient.CreateSubscriptionAsync(
                 new CreateSubscriptionOptions(TopicName, SqlFilterOnlySubscriptionName),
                 new CreateRuleOptions { Name = "RedSqlRule", Filter = new SqlRuleFilter("Color = 'Red'") });
 
             // 3rd Subscription: Add the SqlFilter Rule and Action
-            // See https://docs.microsoft.com/en-us/azure/service-bus-messaging/topic-filters#actions to learn more about actions.
+            // See https://learn.microsoft.com/azure/service-bus-messaging/topic-filters#actions to learn more about actions.
             Console.WriteLine($"Creating subscription {SqlFilterWithActionSubscriptionName}");
             await s_adminClient.CreateSubscriptionAsync(
                 new CreateSubscriptionOptions(TopicName, SqlFilterWithActionSubscriptionName),
@@ -115,7 +137,7 @@ namespace TopicSubscriptionWithRuleOperationsSample
             // Send messages to Topic
             await SendMessagesAsync();
 
-            // Receive messages from 'NoFilterSubscription'. Should receive all 9 messages 
+            // Receive messages from 'NoFilterSubscription'. Should receive all 9 messages
             await ReceiveMessagesAsync(NoFilterSubscriptionName);
 
             // Receive messages from 'SqlFilterOnlySubscription'. Should receive all messages with Color = 'Red' i.e 3 messages
@@ -129,7 +151,7 @@ namespace TopicSubscriptionWithRuleOperationsSample
             // i.e 1 message
             await ReceiveMessagesAsync(CorrelationFilterSubscriptionName);
             Console.ResetColor();
-            
+
             Console.WriteLine("=======================================================================");
             Console.WriteLine("Completed Receiving all messages. Disposing clients and deleting topic.");
             Console.WriteLine("=======================================================================");
@@ -140,7 +162,7 @@ namespace TopicSubscriptionWithRuleOperationsSample
             await s_client.DisposeAsync();
 
             Console.WriteLine("Deleting topic");
-            
+
             // Deleting the topic will handle deleting all the subscriptions as well.
             await s_adminClient.DeleteTopicAsync(TopicName);
         }
@@ -186,7 +208,7 @@ namespace TopicSubscriptionWithRuleOperationsSample
             Console.WriteLine($"Created message with color: {message.ApplicationProperties["Color"]}, CorrelationId: {message.CorrelationId}");
             Console.ResetColor();
         }
-        
+
         private static void PrintReceivedMessage(ServiceBusReceivedMessage message)
         {
             Console.ForegroundColor = (ConsoleColor) Enum.Parse(typeof(ConsoleColor), message.Subject);

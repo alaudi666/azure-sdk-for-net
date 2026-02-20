@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Core;
 using Azure.ResourceManager;
+using Azure.ResourceManager.Dynatrace.Mocking;
+using Azure.ResourceManager.Dynatrace.Models;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.Dynatrace
@@ -18,145 +20,221 @@ namespace Azure.ResourceManager.Dynatrace
     /// <summary> A class to add extension methods to Azure.ResourceManager.Dynatrace. </summary>
     public static partial class DynatraceExtensions
     {
-        private static SubscriptionResourceExtensionClient GetExtensionClient(SubscriptionResource subscriptionResource)
+        /// <param name="client"></param>
+        private static MockableDynatraceArmClient GetMockableDynatraceArmClient(ArmClient client)
         {
-            return subscriptionResource.GetCachedClient((client) =>
-            {
-                return new SubscriptionResourceExtensionClient(client, subscriptionResource.Id);
-            }
-            );
+            return client.GetCachedClient(client0 => new MockableDynatraceArmClient(client0, ResourceIdentifier.Root));
+        }
+
+        /// <param name="resourceGroupResource"></param>
+        private static MockableDynatraceResourceGroupResource GetMockableDynatraceResourceGroupResource(ResourceGroupResource resourceGroupResource)
+        {
+            return resourceGroupResource.GetCachedClient(client => new MockableDynatraceResourceGroupResource(client, resourceGroupResource.Id));
+        }
+
+        /// <param name="subscriptionResource"></param>
+        private static MockableDynatraceSubscriptionResource GetMockableDynatraceSubscriptionResource(SubscriptionResource subscriptionResource)
+        {
+            return subscriptionResource.GetCachedClient(client => new MockableDynatraceSubscriptionResource(client, subscriptionResource.Id));
         }
 
         /// <summary>
-        /// List all MonitorResource by subscriptionId
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Dynatrace.Observability/monitors
-        /// Operation Id: Monitors_ListBySubscriptionId
+        /// Gets an object representing a <see cref="DynatraceMonitoredSubscriptionResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableDynatraceArmClient.GetDynatraceMonitoredSubscriptionResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="DynatraceMonitorResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<DynatraceMonitorResource> GetDynatraceMonitorsAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="DynatraceMonitoredSubscriptionResource"/> object. </returns>
+        public static DynatraceMonitoredSubscriptionResource GetDynatraceMonitoredSubscriptionResource(this ArmClient client, ResourceIdentifier id)
         {
-            return GetExtensionClient(subscriptionResource).GetDynatraceMonitorsAsync(cancellationToken);
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableDynatraceArmClient(client).GetDynatraceMonitoredSubscriptionResource(id);
         }
 
         /// <summary>
-        /// List all MonitorResource by subscriptionId
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Dynatrace.Observability/monitors
-        /// Operation Id: Monitors_ListBySubscriptionId
+        /// Gets an object representing a <see cref="DynatraceTagRuleResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableDynatraceArmClient.GetDynatraceTagRuleResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="DynatraceMonitorResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<DynatraceMonitorResource> GetDynatraceMonitors(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="DynatraceTagRuleResource"/> object. </returns>
+        public static DynatraceTagRuleResource GetDynatraceTagRuleResource(this ArmClient client, ResourceIdentifier id)
         {
-            return GetExtensionClient(subscriptionResource).GetDynatraceMonitors(cancellationToken);
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableDynatraceArmClient(client).GetDynatraceTagRuleResource(id);
         }
 
-        private static ResourceGroupResourceExtensionClient GetExtensionClient(ResourceGroupResource resourceGroupResource)
+        /// <summary>
+        /// Gets an object representing a <see cref="DynatraceMonitorResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableDynatraceArmClient.GetDynatraceMonitorResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="DynatraceMonitorResource"/> object. </returns>
+        public static DynatraceMonitorResource GetDynatraceMonitorResource(this ArmClient client, ResourceIdentifier id)
         {
-            return resourceGroupResource.GetCachedClient((client) =>
-            {
-                return new ResourceGroupResourceExtensionClient(client, resourceGroupResource.Id);
-            }
-            );
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableDynatraceArmClient(client).GetDynatraceMonitorResource(id);
         }
 
-        /// <summary> Gets a collection of DynatraceMonitorResources in the ResourceGroupResource. </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
-        /// <returns> An object representing collection of DynatraceMonitorResources and their operations over a DynatraceMonitorResource. </returns>
+        /// <summary>
+        /// Gets an object representing a <see cref="DynatraceSingleSignOnResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableDynatraceArmClient.GetDynatraceSingleSignOnResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="DynatraceSingleSignOnResource"/> object. </returns>
+        public static DynatraceSingleSignOnResource GetDynatraceSingleSignOnResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableDynatraceArmClient(client).GetDynatraceSingleSignOnResource(id);
+        }
+
+        /// <summary>
+        /// Gets a collection of DynatraceMonitors in the <see cref="ResourceGroupResource"/>
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableDynatraceResourceGroupResource.GetDynatraceMonitors()"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        /// <returns> An object representing collection of DynatraceMonitors and their operations over a DynatraceMonitorResource. </returns>
         public static DynatraceMonitorCollection GetDynatraceMonitors(this ResourceGroupResource resourceGroupResource)
         {
-            return GetExtensionClient(resourceGroupResource).GetDynatraceMonitors();
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableDynatraceResourceGroupResource(resourceGroupResource).GetDynatraceMonitors();
         }
 
         /// <summary>
         /// Get a MonitorResource
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}
-        /// Operation Id: Monitors_Get
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableDynatraceResourceGroupResource.GetDynatraceMonitorAsync(string, CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
         /// <param name="monitorName"> Monitor resource name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="monitorName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="monitorName"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
         [ForwardsClientCalls]
         public static async Task<Response<DynatraceMonitorResource>> GetDynatraceMonitorAsync(this ResourceGroupResource resourceGroupResource, string monitorName, CancellationToken cancellationToken = default)
         {
-            return await resourceGroupResource.GetDynatraceMonitors().GetAsync(monitorName, cancellationToken).ConfigureAwait(false);
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return await GetMockableDynatraceResourceGroupResource(resourceGroupResource).GetDynatraceMonitorAsync(monitorName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Get a MonitorResource
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Dynatrace.Observability/monitors/{monitorName}
-        /// Operation Id: Monitors_Get
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableDynatraceResourceGroupResource.GetDynatraceMonitor(string, CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
         /// <param name="monitorName"> Monitor resource name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="monitorName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="monitorName"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
         [ForwardsClientCalls]
         public static Response<DynatraceMonitorResource> GetDynatraceMonitor(this ResourceGroupResource resourceGroupResource, string monitorName, CancellationToken cancellationToken = default)
         {
-            return resourceGroupResource.GetDynatraceMonitors().Get(monitorName, cancellationToken);
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableDynatraceResourceGroupResource(resourceGroupResource).GetDynatraceMonitor(monitorName, cancellationToken);
         }
 
-        #region DynatraceMonitorResource
         /// <summary>
-        /// Gets an object representing a <see cref="DynatraceMonitorResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="DynatraceMonitorResource.CreateResourceIdentifier" /> to create a <see cref="DynatraceMonitorResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// List all MonitorResource by subscriptionId
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableDynatraceSubscriptionResource.GetDynatraceMonitorsAsync(CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="DynatraceMonitorResource" /> object. </returns>
-        public static DynatraceMonitorResource GetDynatraceMonitorResource(this ArmClient client, ResourceIdentifier id)
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="DynatraceMonitorResource"/> that may take multiple service requests to iterate over. </returns>
+        public static AsyncPageable<DynatraceMonitorResource> GetDynatraceMonitorsAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return client.GetResourceClient(() =>
-            {
-                DynatraceMonitorResource.ValidateResourceId(id);
-                return new DynatraceMonitorResource(client, id);
-            }
-            );
-        }
-        #endregion
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
 
-        #region DynatraceTagRuleResource
-        /// <summary>
-        /// Gets an object representing a <see cref="DynatraceTagRuleResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="DynatraceTagRuleResource.CreateResourceIdentifier" /> to create a <see cref="DynatraceTagRuleResource" /> <see cref="ResourceIdentifier" /> from its components.
-        /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="DynatraceTagRuleResource" /> object. </returns>
-        public static DynatraceTagRuleResource GetDynatraceTagRuleResource(this ArmClient client, ResourceIdentifier id)
-        {
-            return client.GetResourceClient(() =>
-            {
-                DynatraceTagRuleResource.ValidateResourceId(id);
-                return new DynatraceTagRuleResource(client, id);
-            }
-            );
+            return GetMockableDynatraceSubscriptionResource(subscriptionResource).GetDynatraceMonitorsAsync(cancellationToken);
         }
-        #endregion
 
-        #region DynatraceSingleSignOnResource
         /// <summary>
-        /// Gets an object representing a <see cref="DynatraceSingleSignOnResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="DynatraceSingleSignOnResource.CreateResourceIdentifier" /> to create a <see cref="DynatraceSingleSignOnResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// List all MonitorResource by subscriptionId
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableDynatraceSubscriptionResource.GetDynatraceMonitors(CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="DynatraceSingleSignOnResource" /> object. </returns>
-        public static DynatraceSingleSignOnResource GetDynatraceSingleSignOnResource(this ArmClient client, ResourceIdentifier id)
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="DynatraceMonitorResource"/> that may take multiple service requests to iterate over. </returns>
+        public static Pageable<DynatraceMonitorResource> GetDynatraceMonitors(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return client.GetResourceClient(() =>
-            {
-                DynatraceSingleSignOnResource.ValidateResourceId(id);
-                return new DynatraceSingleSignOnResource(client, id);
-            }
-            );
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableDynatraceSubscriptionResource(subscriptionResource).GetDynatraceMonitors(cancellationToken);
         }
-        #endregion
+
+        /// <summary>
+        /// Get Marketplace SaaS resource details
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableDynatraceSubscriptionResource.GetMarketplaceSaaSResourceDetailsResultAsync(MarketplaceSaaSResourceDetailsContent, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="content"> The request body. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        public static async Task<Response<MarketplaceSaaSResourceDetailsResult>> GetMarketplaceSaaSResourceDetailsResultAsync(this SubscriptionResource subscriptionResource, MarketplaceSaaSResourceDetailsContent content, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return await GetMockableDynatraceSubscriptionResource(subscriptionResource).GetMarketplaceSaaSResourceDetailsResultAsync(content, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get Marketplace SaaS resource details
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableDynatraceSubscriptionResource.GetMarketplaceSaaSResourceDetailsResult(MarketplaceSaaSResourceDetailsContent, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="content"> The request body. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        public static Response<MarketplaceSaaSResourceDetailsResult> GetMarketplaceSaaSResourceDetailsResult(this SubscriptionResource subscriptionResource, MarketplaceSaaSResourceDetailsContent content, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableDynatraceSubscriptionResource(subscriptionResource).GetMarketplaceSaaSResourceDetailsResult(content, cancellationToken);
+        }
     }
 }

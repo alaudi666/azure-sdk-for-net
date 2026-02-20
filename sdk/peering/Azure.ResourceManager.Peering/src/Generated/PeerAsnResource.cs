@@ -9,23 +9,23 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.Peering
 {
     /// <summary>
     /// A Class representing a PeerAsn along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="PeerAsnResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetPeerAsnResource method.
-    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource" /> using the GetPeerAsn method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="PeerAsnResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetPeerAsnResource method.
+    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource"/> using the GetPeerAsn method.
     /// </summary>
     public partial class PeerAsnResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="PeerAsnResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="peerAsnName"> The peerAsnName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string peerAsnName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}";
@@ -36,12 +36,15 @@ namespace Azure.ResourceManager.Peering
         private readonly PeerAsnsRestOperations _peerAsnRestClient;
         private readonly PeerAsnData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.Peering/peerAsns";
+
         /// <summary> Initializes a new instance of the <see cref="PeerAsnResource"/> class for mocking. </summary>
         protected PeerAsnResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "PeerAsnResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="PeerAsnResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal PeerAsnResource(ArmClient client, PeerAsnData data) : this(client, data.Id)
@@ -62,9 +65,6 @@ namespace Azure.ResourceManager.Peering
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.Peering/peerAsns";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -89,8 +89,24 @@ namespace Azure.ResourceManager.Peering
 
         /// <summary>
         /// Gets the peer ASN with the specified name under the given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}
-        /// Operation Id: PeerAsns_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<PeerAsnResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -113,8 +129,24 @@ namespace Azure.ResourceManager.Peering
 
         /// <summary>
         /// Gets the peer ASN with the specified name under the given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}
-        /// Operation Id: PeerAsns_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<PeerAsnResource> Get(CancellationToken cancellationToken = default)
@@ -137,8 +169,24 @@ namespace Azure.ResourceManager.Peering
 
         /// <summary>
         /// Deletes an existing peer ASN with the specified name under the given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}
-        /// Operation Id: PeerAsns_Delete
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -149,7 +197,9 @@ namespace Azure.ResourceManager.Peering
             try
             {
                 var response = await _peerAsnRestClient.DeleteAsync(Id.SubscriptionId, Id.Name, cancellationToken).ConfigureAwait(false);
-                var operation = new PeeringArmOperation(response);
+                var uri = _peerAsnRestClient.CreateDeleteRequestUri(Id.SubscriptionId, Id.Name);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Delete, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new PeeringArmOperation(response, rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionResponseAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -163,8 +213,24 @@ namespace Azure.ResourceManager.Peering
 
         /// <summary>
         /// Deletes an existing peer ASN with the specified name under the given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}
-        /// Operation Id: PeerAsns_Delete
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -175,7 +241,9 @@ namespace Azure.ResourceManager.Peering
             try
             {
                 var response = _peerAsnRestClient.Delete(Id.SubscriptionId, Id.Name, cancellationToken);
-                var operation = new PeeringArmOperation(response);
+                var uri = _peerAsnRestClient.CreateDeleteRequestUri(Id.SubscriptionId, Id.Name);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Delete, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new PeeringArmOperation(response, rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletionResponse(cancellationToken);
                 return operation;
@@ -189,8 +257,24 @@ namespace Azure.ResourceManager.Peering
 
         /// <summary>
         /// Creates a new peer ASN or updates an existing peer ASN with the specified name under the given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}
-        /// Operation Id: PeerAsns_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="data"> The peer ASN. </param>
@@ -205,7 +289,9 @@ namespace Azure.ResourceManager.Peering
             try
             {
                 var response = await _peerAsnRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.Name, data, cancellationToken).ConfigureAwait(false);
-                var operation = new PeeringArmOperation<PeerAsnResource>(Response.FromValue(new PeerAsnResource(Client, response), response.GetRawResponse()));
+                var uri = _peerAsnRestClient.CreateCreateOrUpdateRequestUri(Id.SubscriptionId, Id.Name, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new PeeringArmOperation<PeerAsnResource>(Response.FromValue(new PeerAsnResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -219,8 +305,24 @@ namespace Azure.ResourceManager.Peering
 
         /// <summary>
         /// Creates a new peer ASN or updates an existing peer ASN with the specified name under the given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}
-        /// Operation Id: PeerAsns_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="data"> The peer ASN. </param>
@@ -235,7 +337,9 @@ namespace Azure.ResourceManager.Peering
             try
             {
                 var response = _peerAsnRestClient.CreateOrUpdate(Id.SubscriptionId, Id.Name, data, cancellationToken);
-                var operation = new PeeringArmOperation<PeerAsnResource>(Response.FromValue(new PeerAsnResource(Client, response), response.GetRawResponse()));
+                var uri = _peerAsnRestClient.CreateCreateOrUpdateRequestUri(Id.SubscriptionId, Id.Name, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new PeeringArmOperation<PeerAsnResource>(Response.FromValue(new PeerAsnResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;

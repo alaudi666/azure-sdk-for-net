@@ -5,28 +5,76 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.LoadTesting;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.LoadTesting.Models
 {
-    /// <summary> LoadTest resource patch request body. </summary>
+    /// <summary> The type used for update operations of the LoadTestResource. </summary>
     public partial class LoadTestingResourcePatch
     {
-        /// <summary> Initializes a new instance of LoadTestingResourcePatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="LoadTestingResourcePatch"/>. </summary>
         public LoadTestingResourcePatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
-        /// <summary> Resource tags. </summary>
-        public IDictionary<string, string> Tags { get; set; }
-        /// <summary> The type of identity used for the resource. </summary>
+        /// <summary> Initializes a new instance of <see cref="LoadTestingResourcePatch"/>. </summary>
+        /// <param name="identity"> The managed service identities assigned to this resource. </param>
+        /// <param name="tags"> Resource tags. </param>
+        /// <param name="properties"> The resource-specific properties for this resource. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal LoadTestingResourcePatch(ManagedServiceIdentity identity, IDictionary<string, string> tags, LoadTestResourceUpdateProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Identity = identity;
+            Tags = tags;
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> The managed service identities assigned to this resource. </summary>
         public ManagedServiceIdentity Identity { get; set; }
+
+        /// <summary> The resource-specific properties for this resource. </summary>
+        internal LoadTestResourceUpdateProperties Properties { get; set; }
+
         /// <summary> Description of the resource. </summary>
-        public string Description { get; set; }
+        public string Description
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Description;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new LoadTestResourceUpdateProperties();
+                }
+                Properties.Description = value;
+            }
+        }
+
         /// <summary> CMK Encryption property. </summary>
-        public CustomerManagedKeyEncryptionProperties Encryption { get; set; }
+        public LoadTestingCmkEncryptionProperties Encryption
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Encryption;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new LoadTestResourceUpdateProperties();
+                }
+                Properties.Encryption = value;
+            }
+        }
     }
 }

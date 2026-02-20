@@ -5,21 +5,40 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.Search.Documents.Indexes.Models
 {
-    public partial class IndexingParameters : IUtf8JsonSerializable
+    public partial class IndexingParameters : IUtf8JsonSerializable, IJsonModel<IndexingParameters>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<IndexingParameters>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<IndexingParameters>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IndexingParameters>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(IndexingParameters)} does not support writing '{format}' format.");
+            }
+
             if (Optional.IsDefined(BatchSize))
             {
                 if (BatchSize != null)
                 {
-                    writer.WritePropertyName("batchSize");
+                    writer.WritePropertyName("batchSize"u8);
                     writer.WriteNumberValue(BatchSize.Value);
                 }
                 else
@@ -31,7 +50,7 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 if (MaxFailedItems != null)
                 {
-                    writer.WritePropertyName("maxFailedItems");
+                    writer.WritePropertyName("maxFailedItems"u8);
                     writer.WriteNumberValue(MaxFailedItems.Value);
                 }
                 else
@@ -43,7 +62,7 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 if (MaxFailedItemsPerBatch != null)
                 {
-                    writer.WritePropertyName("maxFailedItemsPerBatch");
+                    writer.WritePropertyName("maxFailedItemsPerBatch"u8);
                     writer.WriteNumberValue(MaxFailedItemsPerBatch.Value);
                 }
                 else
@@ -53,21 +72,55 @@ namespace Azure.Search.Documents.Indexes.Models
             }
             if (Optional.IsDefined(IndexingParametersConfiguration))
             {
-                writer.WritePropertyName("configuration");
-                writer.WriteObjectValue(IndexingParametersConfiguration);
+                writer.WritePropertyName("configuration"u8);
+                writer.WriteObjectValue<IndexingParametersConfiguration>(IndexingParametersConfiguration, options);
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static IndexingParameters DeserializeIndexingParameters(JsonElement element)
+        IndexingParameters IJsonModel<IndexingParameters>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<int?> batchSize = default;
-            Optional<int?> maxFailedItems = default;
-            Optional<int?> maxFailedItemsPerBatch = default;
-            Optional<IndexingParametersConfiguration> configuration = default;
+            var format = options.Format == "W" ? ((IPersistableModel<IndexingParameters>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(IndexingParameters)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeIndexingParameters(document.RootElement, options);
+        }
+
+        internal static IndexingParameters DeserializeIndexingParameters(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            int? batchSize = default;
+            int? maxFailedItems = default;
+            int? maxFailedItemsPerBatch = default;
+            IndexingParametersConfiguration configuration = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("batchSize"))
+                if (property.NameEquals("batchSize"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -77,7 +130,7 @@ namespace Azure.Search.Documents.Indexes.Models
                     batchSize = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("maxFailedItems"))
+                if (property.NameEquals("maxFailedItems"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -87,7 +140,7 @@ namespace Azure.Search.Documents.Indexes.Models
                     maxFailedItems = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("maxFailedItemsPerBatch"))
+                if (property.NameEquals("maxFailedItemsPerBatch"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -97,18 +150,69 @@ namespace Azure.Search.Documents.Indexes.Models
                     maxFailedItemsPerBatch = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("configuration"))
+                if (property.NameEquals("configuration"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    configuration = Models.IndexingParametersConfiguration.DeserializeIndexingParametersConfiguration(property.Value);
+                    configuration = Models.IndexingParametersConfiguration.DeserializeIndexingParametersConfiguration(property.Value, options);
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new IndexingParameters(Optional.ToNullable(batchSize), Optional.ToNullable(maxFailedItems), Optional.ToNullable(maxFailedItemsPerBatch), configuration.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new IndexingParameters(batchSize, maxFailedItems, maxFailedItemsPerBatch, configuration, serializedAdditionalRawData);
+        }
+
+        BinaryData IPersistableModel<IndexingParameters>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IndexingParameters>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureSearchDocumentsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(IndexingParameters)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        IndexingParameters IPersistableModel<IndexingParameters>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IndexingParameters>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeIndexingParameters(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(IndexingParameters)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<IndexingParameters>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static IndexingParameters FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeIndexingParameters(document.RootElement);
+        }
+
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
+        internal virtual RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue(this, ModelSerializationExtensions.WireOptions);
+            return content;
         }
     }
 }

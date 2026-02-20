@@ -7,10 +7,8 @@ namespace Azure.Core.Amqp
         private readonly int _dummyPrimitive;
         public AmqpAddress(string address) { throw null; }
         public bool Equals(Azure.Core.Amqp.AmqpAddress other) { throw null; }
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) { throw null; }
+        public override bool Equals(object? obj) { throw null; }
         public bool Equals(string other) { throw null; }
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         public override int GetHashCode() { throw null; }
         public static bool operator ==(Azure.Core.Amqp.AmqpAddress left, Azure.Core.Amqp.AmqpAddress right) { throw null; }
         public static bool operator !=(Azure.Core.Amqp.AmqpAddress left, Azure.Core.Amqp.AmqpAddress right) { throw null; }
@@ -19,18 +17,19 @@ namespace Azure.Core.Amqp
     public partial class AmqpAnnotatedMessage
     {
         public AmqpAnnotatedMessage(Azure.Core.Amqp.AmqpMessageBody body) { }
-        public System.Collections.Generic.IDictionary<string, object> ApplicationProperties { get { throw null; } }
+        public System.Collections.Generic.IDictionary<string, object?> ApplicationProperties { get { throw null; } }
         public Azure.Core.Amqp.AmqpMessageBody Body { get { throw null; } set { } }
-        public System.Collections.Generic.IDictionary<string, object> DeliveryAnnotations { get { throw null; } }
-        public System.Collections.Generic.IDictionary<string, object> Footer { get { throw null; } }
+        public System.Collections.Generic.IDictionary<string, object?> DeliveryAnnotations { get { throw null; } }
+        public System.Collections.Generic.IDictionary<string, object?> Footer { get { throw null; } }
         public Azure.Core.Amqp.AmqpMessageHeader Header { get { throw null; } }
-        public System.Collections.Generic.IDictionary<string, object> MessageAnnotations { get { throw null; } }
+        public System.Collections.Generic.IDictionary<string, object?> MessageAnnotations { get { throw null; } }
         public Azure.Core.Amqp.AmqpMessageProperties Properties { get { throw null; } }
+        public static Azure.Core.Amqp.AmqpAnnotatedMessage FromBytes(System.BinaryData messageBytes) { throw null; }
         public bool HasSection(Azure.Core.Amqp.AmqpMessageSection section) { throw null; }
+        public System.BinaryData ToBytes() { throw null; }
     }
     public partial class AmqpMessageBody
     {
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         public AmqpMessageBody(System.Collections.Generic.IEnumerable<System.ReadOnlyMemory<byte>> data) { }
         public Azure.Core.Amqp.AmqpMessageBodyType BodyType { get { throw null; } }
         public static Azure.Core.Amqp.AmqpMessageBody FromData(System.Collections.Generic.IEnumerable<System.ReadOnlyMemory<byte>> data) { throw null; }
@@ -62,10 +61,8 @@ namespace Azure.Core.Amqp
         private readonly int _dummyPrimitive;
         public AmqpMessageId(string messageId) { throw null; }
         public bool Equals(Azure.Core.Amqp.AmqpMessageId other) { throw null; }
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
-        public override bool Equals(object obj) { throw null; }
+        public override bool Equals(object? obj) { throw null; }
         public bool Equals(string other) { throw null; }
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Never)]
         public override int GetHashCode() { throw null; }
         public static bool operator ==(Azure.Core.Amqp.AmqpMessageId left, Azure.Core.Amqp.AmqpMessageId right) { throw null; }
         public static bool operator !=(Azure.Core.Amqp.AmqpMessageId left, Azure.Core.Amqp.AmqpMessageId right) { throw null; }

@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Avs
 {
-    internal class AvsPrivateCloudDatastoreOperationSource : IOperationSource<AvsPrivateCloudDatastoreResource>
+    /// <summary></summary>
+    internal partial class AvsPrivateCloudDatastoreOperationSource : IOperationSource<AvsPrivateCloudDatastoreResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal AvsPrivateCloudDatastoreOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         AvsPrivateCloudDatastoreResource IOperationSource<AvsPrivateCloudDatastoreResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = AvsPrivateCloudDatastoreData.DeserializeAvsPrivateCloudDatastoreData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            AvsPrivateCloudDatastoreData data = AvsPrivateCloudDatastoreData.DeserializeAvsPrivateCloudDatastoreData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new AvsPrivateCloudDatastoreResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<AvsPrivateCloudDatastoreResource> IOperationSource<AvsPrivateCloudDatastoreResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = AvsPrivateCloudDatastoreData.DeserializeAvsPrivateCloudDatastoreData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            AvsPrivateCloudDatastoreData data = AvsPrivateCloudDatastoreData.DeserializeAvsPrivateCloudDatastoreData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new AvsPrivateCloudDatastoreResource(_client, data);
         }
     }

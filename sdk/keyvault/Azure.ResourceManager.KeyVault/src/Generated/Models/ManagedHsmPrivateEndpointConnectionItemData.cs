@@ -5,41 +5,78 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure;
 using Azure.Core;
-using Azure.ResourceManager.Resources.Models;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> Private endpoint connection item. </summary>
     public partial class ManagedHsmPrivateEndpointConnectionItemData
     {
-        /// <summary> Initializes a new instance of ManagedHsmPrivateEndpointConnectionItemData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmPrivateEndpointConnectionItemData"/>. </summary>
         internal ManagedHsmPrivateEndpointConnectionItemData()
         {
         }
 
-        /// <summary> Initializes a new instance of ManagedHsmPrivateEndpointConnectionItemData. </summary>
-        /// <param name="privateEndpoint"> Properties of the private endpoint object. </param>
-        /// <param name="privateLinkServiceConnectionState"> Approval state of the private link connection. </param>
-        /// <param name="provisioningState"> Provisioning state of the private endpoint connection. </param>
-        internal ManagedHsmPrivateEndpointConnectionItemData(SubResource privateEndpoint, ManagedHsmPrivateLinkServiceConnectionState privateLinkServiceConnectionState, ManagedHsmPrivateEndpointConnectionProvisioningState? provisioningState)
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmPrivateEndpointConnectionItemData"/>. </summary>
+        /// <param name="id"> Id of private endpoint connection. </param>
+        /// <param name="eTag"> Modified whenever there is a change in the state of private endpoint connection. </param>
+        /// <param name="properties"> Private endpoint connection properties. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedHsmPrivateEndpointConnectionItemData(ResourceIdentifier id, ETag? eTag, ManagedHsmPrivateEndpointConnectionProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            PrivateEndpoint = privateEndpoint;
-            PrivateLinkServiceConnectionState = privateLinkServiceConnectionState;
-            ProvisioningState = provisioningState;
+            Id = id;
+            ETag = eTag;
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Properties of the private endpoint object. </summary>
-        internal SubResource PrivateEndpoint { get; }
-        /// <summary> Gets Id. </summary>
-        public ResourceIdentifier PrivateEndpointId
-        {
-            get => PrivateEndpoint?.Id;
-        }
+        /// <summary> Id of private endpoint connection. </summary>
+        [WirePath("id")]
+        public ResourceIdentifier Id { get; }
+
+        /// <summary> Modified whenever there is a change in the state of private endpoint connection. </summary>
+        [WirePath("etag")]
+        public ETag? ETag { get; }
+
+        /// <summary> Private endpoint connection properties. </summary>
+        [WirePath("properties")]
+        internal ManagedHsmPrivateEndpointConnectionProperties Properties { get; }
 
         /// <summary> Approval state of the private link connection. </summary>
-        public ManagedHsmPrivateLinkServiceConnectionState PrivateLinkServiceConnectionState { get; }
+        [WirePath("properties.privateLinkServiceConnectionState")]
+        public ManagedHsmPrivateLinkServiceConnectionState PrivateLinkServiceConnectionState
+        {
+            get
+            {
+                return Properties.PrivateLinkServiceConnectionState;
+            }
+        }
+
         /// <summary> Provisioning state of the private endpoint connection. </summary>
-        public ManagedHsmPrivateEndpointConnectionProvisioningState? ProvisioningState { get; }
+        [WirePath("properties.provisioningState")]
+        public ManagedHsmPrivateEndpointConnectionProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties.ProvisioningState;
+            }
+        }
+
+        /// <summary> Full identifier of the private endpoint resource. </summary>
+        [WirePath("properties.privateEndpoint.id")]
+        public ResourceIdentifier PrivateEndpointId
+        {
+            get
+            {
+                return Properties.PrivateEndpointId;
+            }
+        }
     }
 }

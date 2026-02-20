@@ -5,43 +5,178 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    public partial class AdminCredentials
+    /// <summary> Administrative credentials for accessing vCenter and NSX-T. </summary>
+    public partial class AdminCredentials : IJsonModel<AdminCredentials>
     {
-        internal static AdminCredentials DeserializeAdminCredentials(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual AdminCredentials PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<string> nsxtUsername = default;
-            Optional<string> nsxtPassword = default;
-            Optional<string> vcenterUsername = default;
-            Optional<string> vcenterPassword = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<AdminCredentials>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("nsxtUsername"))
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeAdminCredentials(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AdminCredentials)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="response"> The <see cref="Response"/> to deserialize the <see cref="AdminCredentials"/> from. </param>
+        internal static AdminCredentials FromResponse(Response response)
+        {
+            using JsonDocument document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeAdminCredentials(document.RootElement, ModelSerializationExtensions.WireOptions);
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<AdminCredentials>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AdminCredentials>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AdminCredentials)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(NsxtUsername))
+            {
+                writer.WritePropertyName("nsxtUsername"u8);
+                writer.WriteStringValue(NsxtUsername);
+            }
+            if (options.Format != "W" && Optional.IsDefined(NsxtPassword))
+            {
+                writer.WritePropertyName("nsxtPassword"u8);
+                writer.WriteStringValue(NsxtPassword);
+            }
+            if (options.Format != "W" && Optional.IsDefined(VCenterUsername))
+            {
+                writer.WritePropertyName("vcenterUsername"u8);
+                writer.WriteStringValue(VCenterUsername);
+            }
+            if (options.Format != "W" && Optional.IsDefined(VCenterPassword))
+            {
+                writer.WritePropertyName("vcenterPassword"u8);
+                writer.WriteStringValue(VCenterPassword);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    nsxtUsername = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("nsxtPassword"))
-                {
-                    nsxtPassword = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("vcenterUsername"))
-                {
-                    vcenterUsername = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("vcenterPassword"))
-                {
-                    vcenterPassword = property.Value.GetString();
-                    continue;
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
                 }
             }
-            return new AdminCredentials(nsxtUsername.Value, nsxtPassword.Value, vcenterUsername.Value, vcenterPassword.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AdminCredentials IJsonModel<AdminCredentials>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual AdminCredentials JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AdminCredentials>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AdminCredentials)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAdminCredentials(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static AdminCredentials DeserializeAdminCredentials(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string nsxtUsername = default;
+            string nsxtPassword = default;
+            string vCenterUsername = default;
+            string vCenterPassword = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("nsxtUsername"u8))
+                {
+                    nsxtUsername = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("nsxtPassword"u8))
+                {
+                    nsxtPassword = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("vcenterUsername"u8))
+                {
+                    vCenterUsername = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("vcenterPassword"u8))
+                {
+                    vCenterPassword = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new AdminCredentials(nsxtUsername, nsxtPassword, vCenterUsername, vCenterPassword, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<AdminCredentials>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AdminCredentials>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerAvsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(AdminCredentials)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AdminCredentials IPersistableModel<AdminCredentials>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<AdminCredentials>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

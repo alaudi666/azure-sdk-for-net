@@ -5,36 +5,67 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Nginx.Models
 {
-    /// <summary> The NginxCertificateProperties. </summary>
+    /// <summary> Nginx Certificate Properties. </summary>
     public partial class NginxCertificateProperties
     {
-        /// <summary> Initializes a new instance of NginxCertificateProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NginxCertificateProperties"/>. </summary>
         public NginxCertificateProperties()
         {
         }
 
-        /// <summary> Initializes a new instance of NginxCertificateProperties. </summary>
-        /// <param name="provisioningState"></param>
+        /// <summary> Initializes a new instance of <see cref="NginxCertificateProperties"/>. </summary>
+        /// <param name="provisioningState"> Provisioning State. </param>
         /// <param name="keyVirtualPath"></param>
         /// <param name="certificateVirtualPath"></param>
         /// <param name="keyVaultSecretId"></param>
-        internal NginxCertificateProperties(ProvisioningState? provisioningState, string keyVirtualPath, string certificateVirtualPath, string keyVaultSecretId)
+        /// <param name="sha1Thumbprint"></param>
+        /// <param name="keyVaultSecretVersion"></param>
+        /// <param name="keyVaultSecretCreated"></param>
+        /// <param name="certificateError"> Nginx Certificate Error Response Body. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NginxCertificateProperties(NginxProvisioningState? provisioningState, string keyVirtualPath, string certificateVirtualPath, string keyVaultSecretId, string sha1Thumbprint, string keyVaultSecretVersion, DateTimeOffset? keyVaultSecretCreated, NginxCertificateError certificateError, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ProvisioningState = provisioningState;
             KeyVirtualPath = keyVirtualPath;
             CertificateVirtualPath = certificateVirtualPath;
             KeyVaultSecretId = keyVaultSecretId;
+            Sha1Thumbprint = sha1Thumbprint;
+            KeyVaultSecretVersion = keyVaultSecretVersion;
+            KeyVaultSecretCreated = keyVaultSecretCreated;
+            CertificateError = certificateError;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets the provisioning state. </summary>
-        public ProvisioningState? ProvisioningState { get; }
-        /// <summary> Gets or sets the key virtual path. </summary>
+        /// <summary> Provisioning State. </summary>
+        public NginxProvisioningState? ProvisioningState { get; }
+
+        /// <summary> Gets or sets the KeyVirtualPath. </summary>
         public string KeyVirtualPath { get; set; }
-        /// <summary> Gets or sets the certificate virtual path. </summary>
+
+        /// <summary> Gets or sets the CertificateVirtualPath. </summary>
         public string CertificateVirtualPath { get; set; }
-        /// <summary> Gets or sets the key vault secret id. </summary>
+
+        /// <summary> Gets or sets the KeyVaultSecretId. </summary>
         public string KeyVaultSecretId { get; set; }
+
+        /// <summary> Gets the Sha1Thumbprint. </summary>
+        public string Sha1Thumbprint { get; }
+
+        /// <summary> Gets the KeyVaultSecretVersion. </summary>
+        public string KeyVaultSecretVersion { get; }
+
+        /// <summary> Gets the KeyVaultSecretCreated. </summary>
+        public DateTimeOffset? KeyVaultSecretCreated { get; }
+
+        /// <summary> Nginx Certificate Error Response Body. </summary>
+        public NginxCertificateError CertificateError { get; set; }
     }
 }

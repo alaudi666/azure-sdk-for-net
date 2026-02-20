@@ -5,36 +5,52 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
     /// <summary> Set a patching window during which Windows and SQL patches will be applied. </summary>
     public partial class SqlVmAutoPatchingSettings
     {
-        /// <summary> Initializes a new instance of SqlVmAutoPatchingSettings. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SqlVmAutoPatchingSettings"/>. </summary>
         public SqlVmAutoPatchingSettings()
         {
         }
 
-        /// <summary> Initializes a new instance of SqlVmAutoPatchingSettings. </summary>
+        /// <summary> Initializes a new instance of <see cref="SqlVmAutoPatchingSettings"/>. </summary>
         /// <param name="isEnabled"> Enable or disable autopatching on SQL virtual machine. </param>
         /// <param name="dayOfWeek"> Day of week to apply the patch on. </param>
         /// <param name="maintenanceWindowStartingHour"> Hour of the day when patching is initiated. Local VM time. </param>
         /// <param name="maintenanceWindowDurationInMinutes"> Duration of patching. </param>
-        internal SqlVmAutoPatchingSettings(bool? isEnabled, SqlVmAutoPatchingDayOfWeek? dayOfWeek, int? maintenanceWindowStartingHour, int? maintenanceWindowDurationInMinutes)
+        /// <param name="additionalVmPatch"> Additional Patch to be enable or enabled on the SQL Virtual Machine. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SqlVmAutoPatchingSettings(bool? isEnabled, SqlVmAutoPatchingDayOfWeek? dayOfWeek, int? maintenanceWindowStartingHour, int? maintenanceWindowDurationInMinutes, SqlVmAdditionalVmPatch? additionalVmPatch, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             IsEnabled = isEnabled;
             DayOfWeek = dayOfWeek;
             MaintenanceWindowStartingHour = maintenanceWindowStartingHour;
             MaintenanceWindowDurationInMinutes = maintenanceWindowDurationInMinutes;
+            AdditionalVmPatch = additionalVmPatch;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Enable or disable autopatching on SQL virtual machine. </summary>
         public bool? IsEnabled { get; set; }
+
         /// <summary> Day of week to apply the patch on. </summary>
         public SqlVmAutoPatchingDayOfWeek? DayOfWeek { get; set; }
+
         /// <summary> Hour of the day when patching is initiated. Local VM time. </summary>
         public int? MaintenanceWindowStartingHour { get; set; }
+
         /// <summary> Duration of patching. </summary>
         public int? MaintenanceWindowDurationInMinutes { get; set; }
+
+        /// <summary> Additional Patch to be enable or enabled on the SQL Virtual Machine. </summary>
+        public SqlVmAdditionalVmPatch? AdditionalVmPatch { get; set; }
     }
 }

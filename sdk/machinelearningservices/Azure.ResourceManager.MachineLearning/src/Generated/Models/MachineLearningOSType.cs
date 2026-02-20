@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Compute OS Type
-    /// Serialized Name: OsType
-    /// </summary>
+    /// <summary> Compute OS Type. </summary>
     public readonly partial struct MachineLearningOSType : IEquatable<MachineLearningOSType>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string LinuxValue = "Linux";
         private const string WindowsValue = "Windows";
 
-        /// <summary>
-        /// Linux
-        /// Serialized Name: OsType.Linux
-        /// </summary>
+        /// <summary> Linux. </summary>
         public static MachineLearningOSType Linux { get; } = new MachineLearningOSType(LinuxValue);
-        /// <summary>
-        /// Windows
-        /// Serialized Name: OsType.Windows
-        /// </summary>
+        /// <summary> Windows. </summary>
         public static MachineLearningOSType Windows { get; } = new MachineLearningOSType(WindowsValue);
         /// <summary> Determines if two <see cref="MachineLearningOSType"/> values are the same. </summary>
         public static bool operator ==(MachineLearningOSType left, MachineLearningOSType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningOSType"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningOSType left, MachineLearningOSType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningOSType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningOSType"/>. </summary>
         public static implicit operator MachineLearningOSType(string value) => new MachineLearningOSType(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

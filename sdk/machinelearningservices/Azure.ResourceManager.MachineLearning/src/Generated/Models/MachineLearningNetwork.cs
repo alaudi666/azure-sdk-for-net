@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// network of this container.
-    /// Serialized Name: Network
-    /// </summary>
+    /// <summary> network of this container. </summary>
     public readonly partial struct MachineLearningNetwork : IEquatable<MachineLearningNetwork>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string BridgeValue = "Bridge";
         private const string HostValue = "Host";
 
-        /// <summary>
-        /// Bridge
-        /// Serialized Name: Network.Bridge
-        /// </summary>
+        /// <summary> Bridge. </summary>
         public static MachineLearningNetwork Bridge { get; } = new MachineLearningNetwork(BridgeValue);
-        /// <summary>
-        /// Host
-        /// Serialized Name: Network.Host
-        /// </summary>
+        /// <summary> Host. </summary>
         public static MachineLearningNetwork Host { get; } = new MachineLearningNetwork(HostValue);
         /// <summary> Determines if two <see cref="MachineLearningNetwork"/> values are the same. </summary>
         public static bool operator ==(MachineLearningNetwork left, MachineLearningNetwork right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningNetwork"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningNetwork left, MachineLearningNetwork right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningNetwork"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningNetwork"/>. </summary>
         public static implicit operator MachineLearningNetwork(string value) => new MachineLearningNetwork(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

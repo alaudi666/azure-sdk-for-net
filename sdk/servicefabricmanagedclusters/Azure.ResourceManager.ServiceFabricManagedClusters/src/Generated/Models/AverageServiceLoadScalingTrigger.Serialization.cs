@@ -5,73 +5,170 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    public partial class AverageServiceLoadScalingTrigger : IUtf8JsonSerializable
+    /// <summary> Represents a scaling policy related to an average load of a metric/resource of a service. </summary>
+    public partial class AverageServiceLoadScalingTrigger : ManagedServiceScalingTrigger, IJsonModel<AverageServiceLoadScalingTrigger>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="AverageServiceLoadScalingTrigger"/> for deserialization. </summary>
+        internal AverageServiceLoadScalingTrigger()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override ManagedServiceScalingTrigger PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AverageServiceLoadScalingTrigger>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeAverageServiceLoadScalingTrigger(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AverageServiceLoadScalingTrigger)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<AverageServiceLoadScalingTrigger>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("metricName");
-            writer.WriteStringValue(MetricName);
-            writer.WritePropertyName("lowerLoadThreshold");
-            writer.WriteNumberValue(LowerLoadThreshold);
-            writer.WritePropertyName("upperLoadThreshold");
-            writer.WriteNumberValue(UpperLoadThreshold);
-            writer.WritePropertyName("scaleInterval");
-            writer.WriteStringValue(ScaleInterval);
-            writer.WritePropertyName("useOnlyPrimaryLoad");
-            writer.WriteBooleanValue(UseOnlyPrimaryLoad);
-            writer.WritePropertyName("kind");
-            writer.WriteStringValue(Kind.ToString());
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static AverageServiceLoadScalingTrigger DeserializeAverageServiceLoadScalingTrigger(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            string format = options.Format == "W" ? ((IPersistableModel<AverageServiceLoadScalingTrigger>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AverageServiceLoadScalingTrigger)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
+            writer.WritePropertyName("metricName"u8);
+            writer.WriteStringValue(MetricName);
+            writer.WritePropertyName("lowerLoadThreshold"u8);
+            writer.WriteNumberValue(LowerLoadThreshold);
+            writer.WritePropertyName("upperLoadThreshold"u8);
+            writer.WriteNumberValue(UpperLoadThreshold);
+            writer.WritePropertyName("scaleInterval"u8);
+            writer.WriteStringValue(ScaleInterval);
+            writer.WritePropertyName("useOnlyPrimaryLoad"u8);
+            writer.WriteBooleanValue(UseOnlyPrimaryLoad);
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AverageServiceLoadScalingTrigger IJsonModel<AverageServiceLoadScalingTrigger>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (AverageServiceLoadScalingTrigger)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override ManagedServiceScalingTrigger JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AverageServiceLoadScalingTrigger>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AverageServiceLoadScalingTrigger)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAverageServiceLoadScalingTrigger(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static AverageServiceLoadScalingTrigger DeserializeAverageServiceLoadScalingTrigger(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ServiceScalingTriggerKind kind = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
             string metricName = default;
             double lowerLoadThreshold = default;
             double upperLoadThreshold = default;
             string scaleInterval = default;
             bool useOnlyPrimaryLoad = default;
-            ServiceScalingTriggerKind kind = default;
-            foreach (var property in element.EnumerateObject())
+            foreach (var prop in element.EnumerateObject())
             {
-                if (property.NameEquals("metricName"))
+                if (prop.NameEquals("kind"u8))
                 {
-                    metricName = property.Value.GetString();
+                    kind = new ServiceScalingTriggerKind(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("lowerLoadThreshold"))
+                if (prop.NameEquals("metricName"u8))
                 {
-                    lowerLoadThreshold = property.Value.GetDouble();
+                    metricName = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("upperLoadThreshold"))
+                if (prop.NameEquals("lowerLoadThreshold"u8))
                 {
-                    upperLoadThreshold = property.Value.GetDouble();
+                    lowerLoadThreshold = prop.Value.GetDouble();
                     continue;
                 }
-                if (property.NameEquals("scaleInterval"))
+                if (prop.NameEquals("upperLoadThreshold"u8))
                 {
-                    scaleInterval = property.Value.GetString();
+                    upperLoadThreshold = prop.Value.GetDouble();
                     continue;
                 }
-                if (property.NameEquals("useOnlyPrimaryLoad"))
+                if (prop.NameEquals("scaleInterval"u8))
                 {
-                    useOnlyPrimaryLoad = property.Value.GetBoolean();
+                    scaleInterval = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("kind"))
+                if (prop.NameEquals("useOnlyPrimaryLoad"u8))
                 {
-                    kind = new ServiceScalingTriggerKind(property.Value.GetString());
+                    useOnlyPrimaryLoad = prop.Value.GetBoolean();
                     continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new AverageServiceLoadScalingTrigger(kind, metricName, lowerLoadThreshold, upperLoadThreshold, scaleInterval, useOnlyPrimaryLoad);
+            return new AverageServiceLoadScalingTrigger(
+                kind,
+                additionalBinaryDataProperties,
+                metricName,
+                lowerLoadThreshold,
+                upperLoadThreshold,
+                scaleInterval,
+                useOnlyPrimaryLoad);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<AverageServiceLoadScalingTrigger>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AverageServiceLoadScalingTrigger>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerServiceFabricManagedClustersContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(AverageServiceLoadScalingTrigger)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AverageServiceLoadScalingTrigger IPersistableModel<AverageServiceLoadScalingTrigger>.Create(BinaryData data, ModelReaderWriterOptions options) => (AverageServiceLoadScalingTrigger)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<AverageServiceLoadScalingTrigger>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

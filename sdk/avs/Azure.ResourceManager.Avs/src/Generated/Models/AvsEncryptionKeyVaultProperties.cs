@@ -6,25 +6,30 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.Avs.Models
 {
     /// <summary> An Encryption Key. </summary>
     public partial class AvsEncryptionKeyVaultProperties
     {
-        /// <summary> Initializes a new instance of AvsEncryptionKeyVaultProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AvsEncryptionKeyVaultProperties"/>. </summary>
         public AvsEncryptionKeyVaultProperties()
         {
         }
 
-        /// <summary> Initializes a new instance of AvsEncryptionKeyVaultProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="AvsEncryptionKeyVaultProperties"/>. </summary>
         /// <param name="keyName"> The name of the key. </param>
         /// <param name="keyVersion"> The version of the key. </param>
         /// <param name="autoDetectedKeyVersion"> The auto-detected version of the key if versionType is auto-detected. </param>
         /// <param name="keyVaultUri"> The URL of the vault. </param>
         /// <param name="keyState"> The state of key provided. </param>
         /// <param name="versionType"> Property of the key if user provided or auto detected. </param>
-        internal AvsEncryptionKeyVaultProperties(string keyName, string keyVersion, string autoDetectedKeyVersion, Uri keyVaultUri, AvsEncryptionKeyStatus? keyState, AvsEncryptionVersionType? versionType)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal AvsEncryptionKeyVaultProperties(string keyName, string keyVersion, string autoDetectedKeyVersion, Uri keyVaultUri, AvsEncryptionKeyStatus? keyState, AvsEncryptionVersionType? versionType, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             KeyName = keyName;
             KeyVersion = keyVersion;
@@ -32,18 +37,24 @@ namespace Azure.ResourceManager.Avs.Models
             KeyVaultUri = keyVaultUri;
             KeyState = keyState;
             VersionType = versionType;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The name of the key. </summary>
         public string KeyName { get; set; }
+
         /// <summary> The version of the key. </summary>
         public string KeyVersion { get; set; }
+
         /// <summary> The auto-detected version of the key if versionType is auto-detected. </summary>
         public string AutoDetectedKeyVersion { get; }
+
         /// <summary> The URL of the vault. </summary>
         public Uri KeyVaultUri { get; set; }
+
         /// <summary> The state of key provided. </summary>
         public AvsEncryptionKeyStatus? KeyState { get; }
+
         /// <summary> Property of the key if user provided or auto detected. </summary>
         public AvsEncryptionVersionType? VersionType { get; }
     }

@@ -5,84 +5,104 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class ApplicationGatewayHttpListener : IUtf8JsonSerializable
+    public partial class ApplicationGatewayHttpListener : IUtf8JsonSerializable, IJsonModel<ApplicationGatewayHttpListener>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ApplicationGatewayHttpListener>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ApplicationGatewayHttpListener>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(Id))
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayHttpListener>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                writer.WritePropertyName("id");
-                writer.WriteStringValue(Id);
+                throw new FormatException($"The model {nameof(ApplicationGatewayHttpListener)} does not support writing '{format}' format.");
             }
-            if (Optional.IsDefined(Name))
+
+            base.JsonModelWriteCore(writer, options);
+            if (options.Format != "W" && Optional.IsDefined(ETag))
             {
-                writer.WritePropertyName("name");
-                writer.WriteStringValue(Name);
+                writer.WritePropertyName("etag"u8);
+                writer.WriteStringValue(ETag.Value.ToString());
             }
-            writer.WritePropertyName("properties");
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsDefined(FrontendIPConfiguration))
             {
-                writer.WritePropertyName("frontendIPConfiguration");
-                JsonSerializer.Serialize(writer, FrontendIPConfiguration);
+                writer.WritePropertyName("frontendIPConfiguration"u8);
+                ((IJsonModel<WritableSubResource>)FrontendIPConfiguration).Write(writer, options);
             }
             if (Optional.IsDefined(FrontendPort))
             {
-                writer.WritePropertyName("frontendPort");
-                JsonSerializer.Serialize(writer, FrontendPort);
+                writer.WritePropertyName("frontendPort"u8);
+                ((IJsonModel<WritableSubResource>)FrontendPort).Write(writer, options);
             }
             if (Optional.IsDefined(Protocol))
             {
-                writer.WritePropertyName("protocol");
+                writer.WritePropertyName("protocol"u8);
                 writer.WriteStringValue(Protocol.Value.ToString());
             }
             if (Optional.IsDefined(HostName))
             {
-                writer.WritePropertyName("hostName");
+                writer.WritePropertyName("hostName"u8);
                 writer.WriteStringValue(HostName);
             }
             if (Optional.IsDefined(SslCertificate))
             {
-                writer.WritePropertyName("sslCertificate");
-                JsonSerializer.Serialize(writer, SslCertificate);
+                writer.WritePropertyName("sslCertificate"u8);
+                ((IJsonModel<WritableSubResource>)SslCertificate).Write(writer, options);
             }
             if (Optional.IsDefined(SslProfile))
             {
-                writer.WritePropertyName("sslProfile");
-                JsonSerializer.Serialize(writer, SslProfile);
+                writer.WritePropertyName("sslProfile"u8);
+                ((IJsonModel<WritableSubResource>)SslProfile).Write(writer, options);
             }
             if (Optional.IsDefined(RequireServerNameIndication))
             {
-                writer.WritePropertyName("requireServerNameIndication");
+                writer.WritePropertyName("requireServerNameIndication"u8);
                 writer.WriteBooleanValue(RequireServerNameIndication.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ProvisioningState))
+            {
+                writer.WritePropertyName("provisioningState"u8);
+                writer.WriteStringValue(ProvisioningState.Value.ToString());
             }
             if (Optional.IsCollectionDefined(CustomErrorConfigurations))
             {
-                writer.WritePropertyName("customErrorConfigurations");
+                writer.WritePropertyName("customErrorConfigurations"u8);
                 writer.WriteStartArray();
                 foreach (var item in CustomErrorConfigurations)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(FirewallPolicy))
             {
-                writer.WritePropertyName("firewallPolicy");
-                JsonSerializer.Serialize(writer, FirewallPolicy);
+                writer.WritePropertyName("firewallPolicy"u8);
+                ((IJsonModel<WritableSubResource>)FirewallPolicy).Write(writer, options);
             }
             if (Optional.IsCollectionDefined(HostNames))
             {
-                writer.WritePropertyName("hostNames");
+                writer.WritePropertyName("hostNames"u8);
                 writer.WriteStartArray();
                 foreach (var item in HostNames)
                 {
@@ -91,64 +111,80 @@ namespace Azure.ResourceManager.Network.Models
                 writer.WriteEndArray();
             }
             writer.WriteEndObject();
-            writer.WriteEndObject();
         }
 
-        internal static ApplicationGatewayHttpListener DeserializeApplicationGatewayHttpListener(JsonElement element)
+        ApplicationGatewayHttpListener IJsonModel<ApplicationGatewayHttpListener>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<ETag> etag = default;
-            Optional<ResourceIdentifier> id = default;
-            Optional<string> name = default;
-            Optional<ResourceType> type = default;
-            Optional<WritableSubResource> frontendIPConfiguration = default;
-            Optional<WritableSubResource> frontendPort = default;
-            Optional<ApplicationGatewayProtocol> protocol = default;
-            Optional<string> hostName = default;
-            Optional<WritableSubResource> sslCertificate = default;
-            Optional<WritableSubResource> sslProfile = default;
-            Optional<bool> requireServerNameIndication = default;
-            Optional<NetworkProvisioningState> provisioningState = default;
-            Optional<IList<ApplicationGatewayCustomError>> customErrorConfigurations = default;
-            Optional<WritableSubResource> firewallPolicy = default;
-            Optional<IList<string>> hostNames = default;
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayHttpListener>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ApplicationGatewayHttpListener)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeApplicationGatewayHttpListener(document.RootElement, options);
+        }
+
+        internal static ApplicationGatewayHttpListener DeserializeApplicationGatewayHttpListener(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ETag? etag = default;
+            ResourceIdentifier id = default;
+            string name = default;
+            ResourceType? type = default;
+            WritableSubResource frontendIPConfiguration = default;
+            WritableSubResource frontendPort = default;
+            ApplicationGatewayProtocol? protocol = default;
+            string hostName = default;
+            WritableSubResource sslCertificate = default;
+            WritableSubResource sslProfile = default;
+            bool? requireServerNameIndication = default;
+            NetworkProvisioningState? provisioningState = default;
+            IList<ApplicationGatewayCustomError> customErrorConfigurations = default;
+            WritableSubResource firewallPolicy = default;
+            IList<string> hostNames = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("etag"))
+                if (property.NameEquals("etag"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     etag = new ETag(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     id = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     type = new ResourceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -157,111 +193,101 @@ namespace Azure.ResourceManager.Network.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("frontendIPConfiguration"))
+                        if (property0.NameEquals("frontendIPConfiguration"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            frontendIPConfiguration = JsonSerializer.Deserialize<WritableSubResource>(property0.Value.GetRawText());
+                            frontendIPConfiguration = ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(property0.Value.GetRawText())), options, AzureResourceManagerNetworkContext.Default);
                             continue;
                         }
-                        if (property0.NameEquals("frontendPort"))
+                        if (property0.NameEquals("frontendPort"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            frontendPort = JsonSerializer.Deserialize<WritableSubResource>(property0.Value.GetRawText());
+                            frontendPort = ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(property0.Value.GetRawText())), options, AzureResourceManagerNetworkContext.Default);
                             continue;
                         }
-                        if (property0.NameEquals("protocol"))
+                        if (property0.NameEquals("protocol"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             protocol = new ApplicationGatewayProtocol(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("hostName"))
+                        if (property0.NameEquals("hostName"u8))
                         {
                             hostName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("sslCertificate"))
+                        if (property0.NameEquals("sslCertificate"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            sslCertificate = JsonSerializer.Deserialize<WritableSubResource>(property0.Value.GetRawText());
+                            sslCertificate = ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(property0.Value.GetRawText())), options, AzureResourceManagerNetworkContext.Default);
                             continue;
                         }
-                        if (property0.NameEquals("sslProfile"))
+                        if (property0.NameEquals("sslProfile"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            sslProfile = JsonSerializer.Deserialize<WritableSubResource>(property0.Value.GetRawText());
+                            sslProfile = ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(property0.Value.GetRawText())), options, AzureResourceManagerNetworkContext.Default);
                             continue;
                         }
-                        if (property0.NameEquals("requireServerNameIndication"))
+                        if (property0.NameEquals("requireServerNameIndication"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             requireServerNameIndication = property0.Value.GetBoolean();
                             continue;
                         }
-                        if (property0.NameEquals("provisioningState"))
+                        if (property0.NameEquals("provisioningState"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             provisioningState = new NetworkProvisioningState(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("customErrorConfigurations"))
+                        if (property0.NameEquals("customErrorConfigurations"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<ApplicationGatewayCustomError> array = new List<ApplicationGatewayCustomError>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(ApplicationGatewayCustomError.DeserializeApplicationGatewayCustomError(item));
+                                array.Add(ApplicationGatewayCustomError.DeserializeApplicationGatewayCustomError(item, options));
                             }
                             customErrorConfigurations = array;
                             continue;
                         }
-                        if (property0.NameEquals("firewallPolicy"))
+                        if (property0.NameEquals("firewallPolicy"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            firewallPolicy = JsonSerializer.Deserialize<WritableSubResource>(property0.Value.GetRawText());
+                            firewallPolicy = ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(property0.Value.GetRawText())), options, AzureResourceManagerNetworkContext.Default);
                             continue;
                         }
-                        if (property0.NameEquals("hostNames"))
+                        if (property0.NameEquals("hostNames"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<string> array = new List<string>();
@@ -275,8 +301,361 @@ namespace Azure.ResourceManager.Network.Models
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ApplicationGatewayHttpListener(id.Value, name.Value, Optional.ToNullable(type), Optional.ToNullable(etag), frontendIPConfiguration, frontendPort, Optional.ToNullable(protocol), hostName.Value, sslCertificate, sslProfile, Optional.ToNullable(requireServerNameIndication), Optional.ToNullable(provisioningState), Optional.ToList(customErrorConfigurations), firewallPolicy, Optional.ToList(hostNames));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ApplicationGatewayHttpListener(
+                id,
+                name,
+                type,
+                serializedAdditionalRawData,
+                etag,
+                frontendIPConfiguration,
+                frontendPort,
+                protocol,
+                hostName,
+                sslCertificate,
+                sslProfile,
+                requireServerNameIndication,
+                provisioningState,
+                customErrorConfigurations ?? new ChangeTrackingList<ApplicationGatewayCustomError>(),
+                firewallPolicy,
+                hostNames ?? new ChangeTrackingList<string>());
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Name))
+                {
+                    builder.Append("  name: ");
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ETag), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  etag: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ETag))
+                {
+                    builder.Append("  etag: ");
+                    builder.AppendLine($"'{ETag.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Id), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  id: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Id))
+                {
+                    builder.Append("  id: ");
+                    builder.AppendLine($"'{Id.ToString()}'");
+                }
+            }
+
+            builder.Append("  properties:");
+            builder.AppendLine(" {");
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("FrontendIPConfigurationId", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    frontendIPConfiguration: ");
+                builder.AppendLine("{");
+                builder.AppendLine("      frontendIPConfiguration: {");
+                builder.Append("        id: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("      }");
+                builder.AppendLine("    }");
+            }
+            else
+            {
+                if (Optional.IsDefined(FrontendIPConfiguration))
+                {
+                    builder.Append("    frontendIPConfiguration: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, FrontendIPConfiguration, options, 4, false, "    frontendIPConfiguration: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("FrontendPortId", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    frontendPort: ");
+                builder.AppendLine("{");
+                builder.AppendLine("      frontendPort: {");
+                builder.Append("        id: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("      }");
+                builder.AppendLine("    }");
+            }
+            else
+            {
+                if (Optional.IsDefined(FrontendPort))
+                {
+                    builder.Append("    frontendPort: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, FrontendPort, options, 4, false, "    frontendPort: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Protocol), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    protocol: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Protocol))
+                {
+                    builder.Append("    protocol: ");
+                    builder.AppendLine($"'{Protocol.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(HostName), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    hostName: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(HostName))
+                {
+                    builder.Append("    hostName: ");
+                    if (HostName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{HostName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{HostName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("SslCertificateId", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    sslCertificate: ");
+                builder.AppendLine("{");
+                builder.AppendLine("      sslCertificate: {");
+                builder.Append("        id: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("      }");
+                builder.AppendLine("    }");
+            }
+            else
+            {
+                if (Optional.IsDefined(SslCertificate))
+                {
+                    builder.Append("    sslCertificate: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, SslCertificate, options, 4, false, "    sslCertificate: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("SslProfileId", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    sslProfile: ");
+                builder.AppendLine("{");
+                builder.AppendLine("      sslProfile: {");
+                builder.Append("        id: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("      }");
+                builder.AppendLine("    }");
+            }
+            else
+            {
+                if (Optional.IsDefined(SslProfile))
+                {
+                    builder.Append("    sslProfile: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, SslProfile, options, 4, false, "    sslProfile: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RequireServerNameIndication), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    requireServerNameIndication: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(RequireServerNameIndication))
+                {
+                    builder.Append("    requireServerNameIndication: ");
+                    var boolValue = RequireServerNameIndication.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ProvisioningState), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    provisioningState: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ProvisioningState))
+                {
+                    builder.Append("    provisioningState: ");
+                    builder.AppendLine($"'{ProvisioningState.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(CustomErrorConfigurations), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    customErrorConfigurations: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(CustomErrorConfigurations))
+                {
+                    if (CustomErrorConfigurations.Any())
+                    {
+                        builder.Append("    customErrorConfigurations: ");
+                        builder.AppendLine("[");
+                        foreach (var item in CustomErrorConfigurations)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 6, true, "    customErrorConfigurations: ");
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("FirewallPolicyId", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    firewallPolicy: ");
+                builder.AppendLine("{");
+                builder.AppendLine("      firewallPolicy: {");
+                builder.Append("        id: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("      }");
+                builder.AppendLine("    }");
+            }
+            else
+            {
+                if (Optional.IsDefined(FirewallPolicy))
+                {
+                    builder.Append("    firewallPolicy: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, FirewallPolicy, options, 4, false, "    firewallPolicy: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(HostNames), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    hostNames: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(HostNames))
+                {
+                    if (HostNames.Any())
+                    {
+                        builder.Append("    hostNames: ");
+                        builder.AppendLine("[");
+                        foreach (var item in HostNames)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("      '''");
+                                builder.AppendLine($"{item}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"      '{item}'");
+                            }
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            builder.AppendLine("  }");
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<ApplicationGatewayHttpListener>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayHttpListener>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(ApplicationGatewayHttpListener)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ApplicationGatewayHttpListener IPersistableModel<ApplicationGatewayHttpListener>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayHttpListener>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeApplicationGatewayHttpListener(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ApplicationGatewayHttpListener)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ApplicationGatewayHttpListener>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

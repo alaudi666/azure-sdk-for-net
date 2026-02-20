@@ -5,62 +5,98 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure;
 using Azure.Core;
 using Azure.ResourceManager.KeyVault.Models;
 using Azure.ResourceManager.Models;
-using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.KeyVault
 {
-    /// <summary> A class representing the KeyVaultPrivateEndpointConnection data model. </summary>
+    /// <summary> Private endpoint connection resource. </summary>
     public partial class KeyVaultPrivateEndpointConnectionData : ResourceData
     {
-        /// <summary> Initializes a new instance of KeyVaultPrivateEndpointConnectionData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="KeyVaultPrivateEndpointConnectionData"/>. </summary>
         public KeyVaultPrivateEndpointConnectionData()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
-        /// <summary> Initializes a new instance of KeyVaultPrivateEndpointConnectionData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="etag"> Modified whenever there is a change in the state of private endpoint connection. </param>
-        /// <param name="privateEndpoint"> Properties of the private endpoint object. </param>
-        /// <param name="connectionState"> Approval state of the private link connection. </param>
-        /// <param name="provisioningState"> Provisioning state of the private endpoint connection. </param>
+        /// <summary> Initializes a new instance of <see cref="KeyVaultPrivateEndpointConnectionData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> Resource properties. </param>
         /// <param name="location"> Azure location of the key vault resource. </param>
         /// <param name="tags"> Tags assigned to the key vault resource. </param>
-        internal KeyVaultPrivateEndpointConnectionData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, ETag? etag, SubResource privateEndpoint, KeyVaultPrivateLinkServiceConnectionState connectionState, KeyVaultPrivateEndpointConnectionProvisioningState? provisioningState, AzureLocation? location, IReadOnlyDictionary<string, string> tags) : base(id, name, resourceType, systemData)
+        /// <param name="eTag"> Modified whenever there is a change in the state of private endpoint connection. </param>
+        internal KeyVaultPrivateEndpointConnectionData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, PrivateEndpointConnectionProperties properties, AzureLocation? location, IReadOnlyDictionary<string, string> tags, ETag? eTag) : base(id, name, resourceType, systemData)
         {
-            ETag = etag;
-            PrivateEndpoint = privateEndpoint;
-            ConnectionState = connectionState;
-            ProvisioningState = provisioningState;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
             Location = location;
             Tags = tags;
+            ETag = eTag;
         }
+
+        /// <summary> Resource properties. </summary>
+        [WirePath("properties")]
+        internal PrivateEndpointConnectionProperties Properties { get; set; }
+
+        /// <summary> Azure location of the key vault resource. </summary>
+        [WirePath("location")]
+        public AzureLocation? Location { get; }
+
+        /// <summary> Tags assigned to the key vault resource. </summary>
+        [WirePath("tags")]
+        public IReadOnlyDictionary<string, string> Tags { get; }
 
         /// <summary> Modified whenever there is a change in the state of private endpoint connection. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; set; }
-        /// <summary> Properties of the private endpoint object. </summary>
-        internal SubResource PrivateEndpoint { get; set; }
-        /// <summary> Gets Id. </summary>
-        public ResourceIdentifier PrivateEndpointId
-        {
-            get => PrivateEndpoint is null ? default : PrivateEndpoint.Id;
-        }
 
         /// <summary> Approval state of the private link connection. </summary>
-        public KeyVaultPrivateLinkServiceConnectionState ConnectionState { get; set; }
+        [WirePath("properties.privateLinkServiceConnectionState")]
+        public KeyVaultPrivateLinkServiceConnectionState ConnectionState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ConnectionState;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new PrivateEndpointConnectionProperties();
+                }
+                Properties.ConnectionState = value;
+            }
+        }
+
         /// <summary> Provisioning state of the private endpoint connection. </summary>
-        public KeyVaultPrivateEndpointConnectionProvisioningState? ProvisioningState { get; }
-        /// <summary> Azure location of the key vault resource. </summary>
-        public AzureLocation? Location { get; }
-        /// <summary> Tags assigned to the key vault resource. </summary>
-        public IReadOnlyDictionary<string, string> Tags { get; }
+        [WirePath("properties.provisioningState")]
+        public KeyVaultPrivateEndpointConnectionProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+        }
+
+        /// <summary> Full identifier of the private endpoint resource. </summary>
+        [WirePath("properties.privateEndpoint.id")]
+        public ResourceIdentifier PrivateEndpointId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.PrivateEndpointId;
+            }
+        }
     }
 }

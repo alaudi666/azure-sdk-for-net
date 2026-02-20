@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Azure.Analytics.Synapse.ManagedPrivateEndpoints;
 using Azure.Analytics.Synapse.ManagedPrivateEndpoints.Models;
 using Azure.Analytics.Synapse.Tests;
@@ -47,7 +47,7 @@ namespace Azure.Analytics.Synapse.ManagedPrivateEndpoints.Tests
             string fakedStorageAccountName = Recording.GenerateId("myStorageAccount", 21);
             string privateLinkResourceId = $"/subscriptions/00000000-1111-2222-3333-444444444444/resourceGroups/myResourceGroup/providers/Microsoft.Storage/accounts/{fakedStorageAccountName}";
             string groupId = "blob";
-            ManagedPrivateEndpoint managedPrivateEndpoint = await client.CreateAsync(managedVnetName, new ManagedPrivateEndpoint
+            ManagedPrivateEndpoint managedPrivateEndpoint = await client.CreateAsync("default", managedVnetName, new ManagedPrivateEndpoint
             {
                 Properties = new ManagedPrivateEndpointProperties
                 {

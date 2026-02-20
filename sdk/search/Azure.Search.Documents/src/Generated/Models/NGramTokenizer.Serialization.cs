@@ -5,30 +5,49 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.Search.Documents.Indexes.Models
 {
-    public partial class NGramTokenizer : IUtf8JsonSerializable
+    public partial class NGramTokenizer : IUtf8JsonSerializable, IJsonModel<NGramTokenizer>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<NGramTokenizer>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<NGramTokenizer>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NGramTokenizer>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NGramTokenizer)} does not support writing '{format}' format.");
+            }
+
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(MinGram))
             {
-                writer.WritePropertyName("minGram");
+                writer.WritePropertyName("minGram"u8);
                 writer.WriteNumberValue(MinGram.Value);
             }
             if (Optional.IsDefined(MaxGram))
             {
-                writer.WritePropertyName("maxGram");
+                writer.WritePropertyName("maxGram"u8);
                 writer.WriteNumberValue(MaxGram.Value);
             }
             if (Optional.IsCollectionDefined(TokenChars))
             {
-                writer.WritePropertyName("tokenChars");
+                writer.WritePropertyName("tokenChars"u8);
                 writer.WriteStartArray();
                 foreach (var item in TokenChars)
                 {
@@ -36,47 +55,59 @@ namespace Azure.Search.Documents.Indexes.Models
                 }
                 writer.WriteEndArray();
             }
-            writer.WritePropertyName("@odata.type");
-            writer.WriteStringValue(ODataType);
-            writer.WritePropertyName("name");
-            writer.WriteStringValue(Name);
-            writer.WriteEndObject();
         }
 
-        internal static NGramTokenizer DeserializeNGramTokenizer(JsonElement element)
+        NGramTokenizer IJsonModel<NGramTokenizer>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<int> minGram = default;
-            Optional<int> maxGram = default;
-            Optional<IList<TokenCharacterKind>> tokenChars = default;
+            var format = options.Format == "W" ? ((IPersistableModel<NGramTokenizer>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NGramTokenizer)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeNGramTokenizer(document.RootElement, options);
+        }
+
+        internal static NGramTokenizer DeserializeNGramTokenizer(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            int? minGram = default;
+            int? maxGram = default;
+            IList<TokenCharacterKind> tokenChars = default;
             string odataType = default;
             string name = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("minGram"))
+                if (property.NameEquals("minGram"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     minGram = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("maxGram"))
+                if (property.NameEquals("maxGram"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     maxGram = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("tokenChars"))
+                if (property.NameEquals("tokenChars"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<TokenCharacterKind> array = new List<TokenCharacterKind>();
@@ -87,18 +118,76 @@ namespace Azure.Search.Documents.Indexes.Models
                     tokenChars = array;
                     continue;
                 }
-                if (property.NameEquals("@odata.type"))
+                if (property.NameEquals("@odata.type"u8))
                 {
                     odataType = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new NGramTokenizer(odataType, name, Optional.ToNullable(minGram), Optional.ToNullable(maxGram), Optional.ToList(tokenChars));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new NGramTokenizer(
+                odataType,
+                name,
+                serializedAdditionalRawData,
+                minGram,
+                maxGram,
+                tokenChars ?? new ChangeTrackingList<TokenCharacterKind>());
+        }
+
+        BinaryData IPersistableModel<NGramTokenizer>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NGramTokenizer>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureSearchDocumentsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(NGramTokenizer)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        NGramTokenizer IPersistableModel<NGramTokenizer>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NGramTokenizer>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeNGramTokenizer(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(NGramTokenizer)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<NGramTokenizer>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static new NGramTokenizer FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeNGramTokenizer(document.RootElement);
+        }
+
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
+        internal override RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue(this, ModelSerializationExtensions.WireOptions);
+            return content;
         }
     }
 }

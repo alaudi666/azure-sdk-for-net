@@ -5,57 +5,161 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.Search.Documents.Indexes.Models
 {
-    public partial class MagnitudeScoringParameters : IUtf8JsonSerializable
+    public partial class MagnitudeScoringParameters : IUtf8JsonSerializable, IJsonModel<MagnitudeScoringParameters>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<MagnitudeScoringParameters>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<MagnitudeScoringParameters>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("boostingRangeStart");
-            writer.WriteNumberValue(BoostingRangeStart);
-            writer.WritePropertyName("boostingRangeEnd");
-            writer.WriteNumberValue(BoostingRangeEnd);
-            if (Optional.IsDefined(ShouldBoostBeyondRangeByConstant))
-            {
-                writer.WritePropertyName("constantBoostBeyondRange");
-                writer.WriteBooleanValue(ShouldBoostBeyondRangeByConstant.Value);
-            }
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static MagnitudeScoringParameters DeserializeMagnitudeScoringParameters(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<MagnitudeScoringParameters>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(MagnitudeScoringParameters)} does not support writing '{format}' format.");
+            }
+
+            writer.WritePropertyName("boostingRangeStart"u8);
+            writer.WriteNumberValue(BoostingRangeStart);
+            writer.WritePropertyName("boostingRangeEnd"u8);
+            writer.WriteNumberValue(BoostingRangeEnd);
+            if (Optional.IsDefined(ShouldBoostBeyondRangeByConstant))
+            {
+                writer.WritePropertyName("constantBoostBeyondRange"u8);
+                writer.WriteBooleanValue(ShouldBoostBeyondRangeByConstant.Value);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        MagnitudeScoringParameters IJsonModel<MagnitudeScoringParameters>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<MagnitudeScoringParameters>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(MagnitudeScoringParameters)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeMagnitudeScoringParameters(document.RootElement, options);
+        }
+
+        internal static MagnitudeScoringParameters DeserializeMagnitudeScoringParameters(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             double boostingRangeStart = default;
             double boostingRangeEnd = default;
-            Optional<bool> constantBoostBeyondRange = default;
+            bool? constantBoostBeyondRange = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("boostingRangeStart"))
+                if (property.NameEquals("boostingRangeStart"u8))
                 {
                     boostingRangeStart = property.Value.GetDouble();
                     continue;
                 }
-                if (property.NameEquals("boostingRangeEnd"))
+                if (property.NameEquals("boostingRangeEnd"u8))
                 {
                     boostingRangeEnd = property.Value.GetDouble();
                     continue;
                 }
-                if (property.NameEquals("constantBoostBeyondRange"))
+                if (property.NameEquals("constantBoostBeyondRange"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     constantBoostBeyondRange = property.Value.GetBoolean();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new MagnitudeScoringParameters(boostingRangeStart, boostingRangeEnd, Optional.ToNullable(constantBoostBeyondRange));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new MagnitudeScoringParameters(boostingRangeStart, boostingRangeEnd, constantBoostBeyondRange, serializedAdditionalRawData);
+        }
+
+        BinaryData IPersistableModel<MagnitudeScoringParameters>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<MagnitudeScoringParameters>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureSearchDocumentsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(MagnitudeScoringParameters)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        MagnitudeScoringParameters IPersistableModel<MagnitudeScoringParameters>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<MagnitudeScoringParameters>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeMagnitudeScoringParameters(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(MagnitudeScoringParameters)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<MagnitudeScoringParameters>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static MagnitudeScoringParameters FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeMagnitudeScoringParameters(document.RootElement);
+        }
+
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
+        internal virtual RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue(this, ModelSerializationExtensions.WireOptions);
+            return content;
         }
     }
 }

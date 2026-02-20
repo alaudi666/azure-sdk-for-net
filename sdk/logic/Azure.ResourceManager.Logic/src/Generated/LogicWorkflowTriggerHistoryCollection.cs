@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Logic
 {
     /// <summary>
-    /// A class representing a collection of <see cref="LogicWorkflowTriggerHistoryResource" /> and their operations.
-    /// Each <see cref="LogicWorkflowTriggerHistoryResource" /> in the collection will belong to the same instance of <see cref="LogicWorkflowTriggerResource" />.
-    /// To get a <see cref="LogicWorkflowTriggerHistoryCollection" /> instance call the GetLogicWorkflowTriggerHistories method from an instance of <see cref="LogicWorkflowTriggerResource" />.
+    /// A class representing a collection of <see cref="LogicWorkflowTriggerHistoryResource"/> and their operations.
+    /// Each <see cref="LogicWorkflowTriggerHistoryResource"/> in the collection will belong to the same instance of <see cref="LogicWorkflowTriggerResource"/>.
+    /// To get a <see cref="LogicWorkflowTriggerHistoryCollection"/> instance call the GetLogicWorkflowTriggerHistories method from an instance of <see cref="LogicWorkflowTriggerResource"/>.
     /// </summary>
     public partial class LogicWorkflowTriggerHistoryCollection : ArmCollection, IEnumerable<LogicWorkflowTriggerHistoryResource>, IAsyncEnumerable<LogicWorkflowTriggerHistoryResource>
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets a workflow trigger history.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories/{historyName}
-        /// Operation Id: WorkflowTriggerHistories_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories/{historyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowTriggerHistories_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowTriggerHistoryResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="historyName"> The workflow trigger history name. Corresponds to the run name for triggers that resulted in a run. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -84,8 +98,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets a workflow trigger history.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories/{historyName}
-        /// Operation Id: WorkflowTriggerHistories_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories/{historyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowTriggerHistories_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowTriggerHistoryResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="historyName"> The workflow trigger history name. Corresponds to the run name for triggers that resulted in a run. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -113,96 +143,88 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets a list of workflow trigger histories.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories
-        /// Operation Id: WorkflowTriggerHistories_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowTriggerHistories_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowTriggerHistoryResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="top"> The number of items to be included in the result. </param>
         /// <param name="filter"> The filter to apply on the operation. Options for filters include: Status, StartTime, and ClientTrackingId. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="LogicWorkflowTriggerHistoryResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="LogicWorkflowTriggerHistoryResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<LogicWorkflowTriggerHistoryResource> GetAllAsync(int? top = null, string filter = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<LogicWorkflowTriggerHistoryResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesClientDiagnostics.CreateScope("LogicWorkflowTriggerHistoryCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new LogicWorkflowTriggerHistoryResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<LogicWorkflowTriggerHistoryResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesClientDiagnostics.CreateScope("LogicWorkflowTriggerHistoryCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new LogicWorkflowTriggerHistoryResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new LogicWorkflowTriggerHistoryResource(Client, LogicWorkflowTriggerHistoryData.DeserializeLogicWorkflowTriggerHistoryData(e)), _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesClientDiagnostics, Pipeline, "LogicWorkflowTriggerHistoryCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Gets a list of workflow trigger histories.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories
-        /// Operation Id: WorkflowTriggerHistories_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowTriggerHistories_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowTriggerHistoryResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="top"> The number of items to be included in the result. </param>
         /// <param name="filter"> The filter to apply on the operation. Options for filters include: Status, StartTime, and ClientTrackingId. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="LogicWorkflowTriggerHistoryResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="LogicWorkflowTriggerHistoryResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<LogicWorkflowTriggerHistoryResource> GetAll(int? top = null, string filter = null, CancellationToken cancellationToken = default)
         {
-            Page<LogicWorkflowTriggerHistoryResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesClientDiagnostics.CreateScope("LogicWorkflowTriggerHistoryCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new LogicWorkflowTriggerHistoryResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<LogicWorkflowTriggerHistoryResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesClientDiagnostics.CreateScope("LogicWorkflowTriggerHistoryCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new LogicWorkflowTriggerHistoryResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new LogicWorkflowTriggerHistoryResource(Client, LogicWorkflowTriggerHistoryData.DeserializeLogicWorkflowTriggerHistoryData(e)), _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesClientDiagnostics, Pipeline, "LogicWorkflowTriggerHistoryCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories/{historyName}
-        /// Operation Id: WorkflowTriggerHistories_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories/{historyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowTriggerHistories_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowTriggerHistoryResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="historyName"> The workflow trigger history name. Corresponds to the run name for triggers that resulted in a run. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -228,8 +250,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories/{historyName}
-        /// Operation Id: WorkflowTriggerHistories_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories/{historyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowTriggerHistories_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowTriggerHistoryResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="historyName"> The workflow trigger history name. Corresponds to the run name for triggers that resulted in a run. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -245,6 +283,96 @@ namespace Azure.ResourceManager.Logic
             {
                 var response = _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, historyName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories/{historyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowTriggerHistories_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowTriggerHistoryResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="historyName"> The workflow trigger history name. Corresponds to the run name for triggers that resulted in a run. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="historyName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="historyName"/> is null. </exception>
+        public virtual async Task<NullableResponse<LogicWorkflowTriggerHistoryResource>> GetIfExistsAsync(string historyName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(historyName, nameof(historyName));
+
+            using var scope = _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesClientDiagnostics.CreateScope("LogicWorkflowTriggerHistoryCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, historyName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<LogicWorkflowTriggerHistoryResource>(response.GetRawResponse());
+                return Response.FromValue(new LogicWorkflowTriggerHistoryResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/triggers/{triggerName}/histories/{historyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowTriggerHistories_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowTriggerHistoryResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="historyName"> The workflow trigger history name. Corresponds to the run name for triggers that resulted in a run. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="historyName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="historyName"/> is null. </exception>
+        public virtual NullableResponse<LogicWorkflowTriggerHistoryResource> GetIfExists(string historyName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(historyName, nameof(historyName));
+
+            using var scope = _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesClientDiagnostics.CreateScope("LogicWorkflowTriggerHistoryCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _logicWorkflowTriggerHistoryWorkflowTriggerHistoriesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, historyName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<LogicWorkflowTriggerHistoryResource>(response.GetRawResponse());
+                return Response.FromValue(new LogicWorkflowTriggerHistoryResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

@@ -5,31 +5,41 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.RecoveryServices.Models
 {
     /// <summary> Gets or sets private link service connection state. </summary>
     public partial class RecoveryServicesPrivateLinkServiceConnectionState
     {
-        /// <summary> Initializes a new instance of RecoveryServicesPrivateLinkServiceConnectionState. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="RecoveryServicesPrivateLinkServiceConnectionState"/>. </summary>
         internal RecoveryServicesPrivateLinkServiceConnectionState()
         {
         }
 
-        /// <summary> Initializes a new instance of RecoveryServicesPrivateLinkServiceConnectionState. </summary>
+        /// <summary> Initializes a new instance of <see cref="RecoveryServicesPrivateLinkServiceConnectionState"/>. </summary>
         /// <param name="status"> Gets or sets the status. </param>
         /// <param name="description"> Gets or sets description. </param>
         /// <param name="actionsRequired"> Gets or sets actions required. </param>
-        internal RecoveryServicesPrivateLinkServiceConnectionState(PrivateEndpointConnectionStatus? status, string description, string actionsRequired)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal RecoveryServicesPrivateLinkServiceConnectionState(RecoveryServicesPrivateEndpointConnectionStatus? status, string description, string actionsRequired, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Status = status;
             Description = description;
             ActionsRequired = actionsRequired;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Gets or sets the status. </summary>
-        public PrivateEndpointConnectionStatus? Status { get; }
+        public RecoveryServicesPrivateEndpointConnectionStatus? Status { get; }
+
         /// <summary> Gets or sets description. </summary>
         public string Description { get; }
+
         /// <summary> Gets or sets actions required. </summary>
         public string ActionsRequired { get; }
     }

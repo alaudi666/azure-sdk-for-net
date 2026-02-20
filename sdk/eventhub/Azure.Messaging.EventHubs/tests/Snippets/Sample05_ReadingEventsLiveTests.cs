@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Identity;
 using Azure.Messaging.EventHubs.Consumer;
 using Azure.Messaging.EventHubs.Primitives;
 using Azure.Messaging.EventHubs.Producer;
@@ -38,18 +39,21 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             #region Snippet:EventHubs_Sample05_ReadAllPartitions
 
 #if SNIPPET
-            var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
+            var credential = new DefaultAzureCredential();
 #else
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = scope.EventHubName;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
             var consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
 
             var consumer = new EventHubConsumerClient(
                 consumerGroup,
-                connectionString,
-                eventHubName);
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             try
             {
@@ -64,7 +68,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     string readFromPartition = partitionEvent.Partition.PartitionId;
                     byte[] eventBodyBytes = partitionEvent.Data.EventBody.ToArray();
 
-                    Debug.WriteLine($"Read event of length { eventBodyBytes.Length } from { readFromPartition }");
+                    Debug.WriteLine($"Read event of length {eventBodyBytes.Length} from {readFromPartition}");
                     eventsRead++;
 
                     if (eventsRead >= maximumEvents)
@@ -98,18 +102,21 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             #region Snippet:EventHubs_Sample05_ReadAllPartitionsWaitTime
 
 #if SNIPPET
-            var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
+            var credential = new DefaultAzureCredential();
 #else
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = scope.EventHubName;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
             var consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
 
             var consumer = new EventHubConsumerClient(
                 consumerGroup,
-                connectionString,
-                eventHubName);
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             try
             {
@@ -118,7 +125,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 
                 var options = new ReadEventOptions
                 {
-                   MaximumWaitTime = TimeSpan.FromSeconds(1)
+                    MaximumWaitTime = TimeSpan.FromSeconds(1)
                 };
 
                 await foreach (PartitionEvent partitionEvent in consumer.ReadEventsAsync(options))
@@ -128,7 +135,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                         string readFromPartition = partitionEvent.Partition.PartitionId;
                         byte[] eventBodyBytes = partitionEvent.Data.EventBody.ToArray();
 
-                        Debug.WriteLine($"Read event of length { eventBodyBytes.Length } from { readFromPartition }");
+                        Debug.WriteLine($"Read event of length {eventBodyBytes.Length} from {readFromPartition}");
                     }
                     else
                     {
@@ -163,18 +170,21 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             #region Snippet:EventHubs_Sample05_ReadAllPartitionsFromLatest
 
 #if SNIPPET
-            var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
+            var credential = new DefaultAzureCredential();
 #else
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = scope.EventHubName;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
             var consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
 
             var consumer = new EventHubConsumerClient(
                 consumerGroup,
-                connectionString,
-                eventHubName);
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             try
             {
@@ -188,7 +198,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     string readFromPartition = partitionEvent.Partition.PartitionId;
                     byte[] eventBodyBytes = partitionEvent.Data.EventBody.ToArray();
 
-                    Debug.WriteLine($"Read event of length { eventBodyBytes.Length } from { readFromPartition }");
+                    Debug.WriteLine($"Read event of length {eventBodyBytes.Length} from {readFromPartition}");
                 }
             }
             catch (TaskCanceledException)
@@ -216,18 +226,21 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             #region Snippet:EventHubs_Sample05_ReadPartition
 
 #if SNIPPET
-            var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
+            var credential = new DefaultAzureCredential();
 #else
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = scope.EventHubName;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
             var consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
 
             var consumer = new EventHubConsumerClient(
                 consumerGroup,
-                connectionString,
-                eventHubName);
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             try
             {
@@ -245,7 +258,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     string readFromPartition = partitionEvent.Partition.PartitionId;
                     ReadOnlyMemory<byte> eventBodyBytes = partitionEvent.Data.EventBody.ToMemory();
 
-                    Debug.WriteLine($"Read event of length { eventBodyBytes.Length } from { readFromPartition }");
+                    Debug.WriteLine($"Read event of length {eventBodyBytes.Length} from {readFromPartition}");
                 }
             }
             catch (TaskCanceledException)
@@ -273,18 +286,21 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             #region Snippet:EventHubs_Sample05_ReadPartitionWaitTime
 
 #if SNIPPET
-            var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
+            var credential = new DefaultAzureCredential();
 #else
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = scope.EventHubName;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
             var consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
 
             var consumer = new EventHubConsumerClient(
                 consumerGroup,
-                connectionString,
-                eventHubName);
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             try
             {
@@ -299,7 +315,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 
                 var options = new ReadEventOptions
                 {
-                   MaximumWaitTime = TimeSpan.FromSeconds(1)
+                    MaximumWaitTime = TimeSpan.FromSeconds(1)
                 };
 
                 await foreach (PartitionEvent partitionEvent in consumer.ReadEventsFromPartitionAsync(
@@ -312,7 +328,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                         string readFromPartition = partitionEvent.Partition.PartitionId;
                         byte[] eventBodyBytes = partitionEvent.Data.EventBody.ToArray();
 
-                        Debug.WriteLine($"Read event of length { eventBodyBytes.Length } from { readFromPartition }");
+                        Debug.WriteLine($"Read event of length {eventBodyBytes.Length} from {readFromPartition}");
                     }
                     else
                     {
@@ -352,18 +368,21 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             #region Snippet:EventHubs_Sample05_ReadPartitionFromDate
 
 #if SNIPPET
-            var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
+            var credential = new DefaultAzureCredential();
 #else
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = scope.EventHubName;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
             var consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
 
             var consumer = new EventHubConsumerClient(
                 consumerGroup,
-                connectionString,
-                eventHubName);
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             try
             {
@@ -383,7 +402,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     string readFromPartition = partitionEvent.Partition.PartitionId;
                     byte[] eventBodyBytes = partitionEvent.Data.EventBody.ToArray();
 
-                    Debug.WriteLine($"Read event of length { eventBodyBytes.Length } from { readFromPartition }");
+                    Debug.WriteLine($"Read event of length {eventBodyBytes.Length} from {readFromPartition}");
                 }
             }
             catch (TaskCanceledException)
@@ -411,18 +430,21 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             #region Snippet:EventHubs_Sample05_ReadPartitionFromOffset
 
 #if SNIPPET
-            var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
+            var credential = new DefaultAzureCredential();
 #else
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = scope.EventHubName;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
             var consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
 
             var consumer = new EventHubConsumerClient(
                 consumerGroup,
-                connectionString,
-                eventHubName);
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             try
             {
@@ -431,7 +453,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 
                 string firstPartition = (await consumer.GetPartitionIdsAsync(cancellationSource.Token)).First();
                 PartitionProperties properties = await consumer.GetPartitionPropertiesAsync(firstPartition, cancellationSource.Token);
-                EventPosition startingPosition = EventPosition.FromOffset(properties.LastEnqueuedOffset);
+                EventPosition startingPosition = EventPosition.FromOffset(properties.LastEnqueuedOffsetString);
 
                 await foreach (PartitionEvent partitionEvent in consumer.ReadEventsFromPartitionAsync(
                     firstPartition,
@@ -441,7 +463,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     string readFromPartition = partitionEvent.Partition.PartitionId;
                     byte[] eventBodyBytes = partitionEvent.Data.EventBody.ToArray();
 
-                    Debug.WriteLine($"Read event of length { eventBodyBytes.Length } from { readFromPartition }");
+                    Debug.WriteLine($"Read event of length {eventBodyBytes.Length} from {readFromPartition}");
                 }
             }
             catch (TaskCanceledException)
@@ -469,18 +491,21 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             #region Snippet:EventHubs_Sample05_ReadPartitionFromSequence
 
 #if SNIPPET
-            var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
+            var credential = new DefaultAzureCredential();
 #else
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = scope.EventHubName;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
             var consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
 
             var consumer = new EventHubConsumerClient(
                 consumerGroup,
-                connectionString,
-                eventHubName);
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             try
             {
@@ -499,7 +524,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     string readFromPartition = partitionEvent.Partition.PartitionId;
                     byte[] eventBodyBytes = partitionEvent.Data.EventBody.ToArray();
 
-                    Debug.WriteLine($"Read event of length { eventBodyBytes.Length } from { readFromPartition }");
+                    Debug.WriteLine($"Read event of length {eventBodyBytes.Length} from {readFromPartition}");
                 }
             }
             catch (TaskCanceledException)
@@ -527,18 +552,21 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             #region Snippet:EventHubs_Sample05_ReadPartitionTrackLastEnqueued
 
 #if SNIPPET
-            var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
+            var credential = new DefaultAzureCredential();
 #else
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = scope.EventHubName;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
             var consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
 
             var consumer = new EventHubConsumerClient(
                 consumerGroup,
-                connectionString,
-                eventHubName);
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             try
             {
@@ -562,11 +590,11 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     LastEnqueuedEventProperties properties =
                         partitionEvent.Partition.ReadLastEnqueuedEventProperties();
 
-                    Debug.WriteLine($"Partition: { partitionEvent.Partition.PartitionId }");
-                    Debug.WriteLine($"\tThe last sequence number is: { properties.SequenceNumber }");
-                    Debug.WriteLine($"\tThe last offset is: { properties.Offset }");
-                    Debug.WriteLine($"\tThe last enqueued time is: { properties.EnqueuedTime }, in UTC.");
-                    Debug.WriteLine($"\tThe information was updated at: { properties.LastReceivedTime }, in UTC.");
+                    Debug.WriteLine($"Partition: {partitionEvent.Partition.PartitionId}");
+                    Debug.WriteLine($"\tThe last sequence number is: {properties.SequenceNumber}");
+                    Debug.WriteLine($"\tThe last offset is: {properties.OffsetString}");
+                    Debug.WriteLine($"\tThe last enqueued time is: {properties.EnqueuedTime}, in UTC.");
+                    Debug.WriteLine($"\tThe information was updated at: {properties.LastReceivedTime}, in UTC.");
                 }
             }
             catch (TaskCanceledException)
@@ -594,11 +622,13 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             #region Snippet:EventHubs_Sample05_ReadPartitionWithReceiver
 
 #if SNIPPET
-            var connectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
+            var credential = new DefaultAzureCredential();
 #else
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = scope.EventHubName;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
             var consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
 
@@ -607,7 +637,10 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 
             string firstPartition;
 
-            await using (var producer = new EventHubProducerClient(connectionString, eventHubName))
+            await using (var producer = new EventHubProducerClient(
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential))
             {
                 firstPartition = (await producer.GetPartitionIdsAsync()).First();
             }
@@ -616,8 +649,9 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                 consumerGroup,
                 firstPartition,
                 EventPosition.Earliest,
-                connectionString,
-                eventHubName);
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             try
             {
@@ -634,7 +668,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     foreach (EventData eventData in eventBatch)
                     {
                         byte[] eventBodyBytes = eventData.EventBody.ToArray();
-                        Debug.WriteLine($"Read event of length { eventBodyBytes.Length } from { firstPartition }");
+                        Debug.WriteLine($"Read event of length {eventBodyBytes.Length} from {firstPartition}");
                     }
                 }
             }

@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.FrontDoor
 {
     /// <summary>
-    /// A class representing a collection of <see cref="FrontendEndpointResource" /> and their operations.
-    /// Each <see cref="FrontendEndpointResource" /> in the collection will belong to the same instance of <see cref="FrontDoorResource" />.
-    /// To get a <see cref="FrontendEndpointCollection" /> instance call the GetFrontendEndpoints method from an instance of <see cref="FrontDoorResource" />.
+    /// A class representing a collection of <see cref="FrontendEndpointResource"/> and their operations.
+    /// Each <see cref="FrontendEndpointResource"/> in the collection will belong to the same instance of <see cref="FrontDoorResource"/>.
+    /// To get a <see cref="FrontendEndpointCollection"/> instance call the GetFrontendEndpoints method from an instance of <see cref="FrontDoorResource"/>.
     /// </summary>
     public partial class FrontendEndpointCollection : ArmCollection, IEnumerable<FrontendEndpointResource>, IAsyncEnumerable<FrontendEndpointResource>
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.FrontDoor
 
         /// <summary>
         /// Gets a Frontend endpoint with the specified name within the specified Front Door.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints/{frontendEndpointName}
-        /// Operation Id: FrontendEndpoints_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints/{frontendEndpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FrontendEndpoints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="frontendEndpointName"> Name of the Frontend endpoint which is unique within the Front Door. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -84,8 +98,24 @@ namespace Azure.ResourceManager.FrontDoor
 
         /// <summary>
         /// Gets a Frontend endpoint with the specified name within the specified Front Door.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints/{frontendEndpointName}
-        /// Operation Id: FrontendEndpoints_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints/{frontendEndpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FrontendEndpoints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="frontendEndpointName"> Name of the Frontend endpoint which is unique within the Front Door. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -113,92 +143,84 @@ namespace Azure.ResourceManager.FrontDoor
 
         /// <summary>
         /// Lists all of the frontend endpoints within a Front Door.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints
-        /// Operation Id: FrontendEndpoints_ListByFrontDoor
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FrontendEndpoints_ListByFrontDoor</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="FrontendEndpointResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="FrontendEndpointResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<FrontendEndpointResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<FrontendEndpointResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _frontendEndpointClientDiagnostics.CreateScope("FrontendEndpointCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _frontendEndpointRestClient.ListByFrontDoorAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new FrontendEndpointResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<FrontendEndpointResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _frontendEndpointClientDiagnostics.CreateScope("FrontendEndpointCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _frontendEndpointRestClient.ListByFrontDoorNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new FrontendEndpointResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _frontendEndpointRestClient.CreateListByFrontDoorRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _frontendEndpointRestClient.CreateListByFrontDoorNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new FrontendEndpointResource(Client, FrontendEndpointData.DeserializeFrontendEndpointData(e)), _frontendEndpointClientDiagnostics, Pipeline, "FrontendEndpointCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Lists all of the frontend endpoints within a Front Door.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints
-        /// Operation Id: FrontendEndpoints_ListByFrontDoor
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FrontendEndpoints_ListByFrontDoor</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="FrontendEndpointResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="FrontendEndpointResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<FrontendEndpointResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<FrontendEndpointResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _frontendEndpointClientDiagnostics.CreateScope("FrontendEndpointCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _frontendEndpointRestClient.ListByFrontDoor(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new FrontendEndpointResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<FrontendEndpointResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _frontendEndpointClientDiagnostics.CreateScope("FrontendEndpointCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _frontendEndpointRestClient.ListByFrontDoorNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new FrontendEndpointResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _frontendEndpointRestClient.CreateListByFrontDoorRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _frontendEndpointRestClient.CreateListByFrontDoorNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new FrontendEndpointResource(Client, FrontendEndpointData.DeserializeFrontendEndpointData(e)), _frontendEndpointClientDiagnostics, Pipeline, "FrontendEndpointCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints/{frontendEndpointName}
-        /// Operation Id: FrontendEndpoints_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints/{frontendEndpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FrontendEndpoints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="frontendEndpointName"> Name of the Frontend endpoint which is unique within the Front Door. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -224,8 +246,24 @@ namespace Azure.ResourceManager.FrontDoor
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints/{frontendEndpointName}
-        /// Operation Id: FrontendEndpoints_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints/{frontendEndpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FrontendEndpoints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="frontendEndpointName"> Name of the Frontend endpoint which is unique within the Front Door. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -241,6 +279,96 @@ namespace Azure.ResourceManager.FrontDoor
             {
                 var response = _frontendEndpointRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, frontendEndpointName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints/{frontendEndpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FrontendEndpoints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendEndpointResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="frontendEndpointName"> Name of the Frontend endpoint which is unique within the Front Door. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="frontendEndpointName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="frontendEndpointName"/> is null. </exception>
+        public virtual async Task<NullableResponse<FrontendEndpointResource>> GetIfExistsAsync(string frontendEndpointName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(frontendEndpointName, nameof(frontendEndpointName));
+
+            using var scope = _frontendEndpointClientDiagnostics.CreateScope("FrontendEndpointCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _frontendEndpointRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, frontendEndpointName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<FrontendEndpointResource>(response.GetRawResponse());
+                return Response.FromValue(new FrontendEndpointResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/frontDoors/{frontDoorName}/frontendEndpoints/{frontendEndpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>FrontendEndpoints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="FrontendEndpointResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="frontendEndpointName"> Name of the Frontend endpoint which is unique within the Front Door. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="frontendEndpointName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="frontendEndpointName"/> is null. </exception>
+        public virtual NullableResponse<FrontendEndpointResource> GetIfExists(string frontendEndpointName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(frontendEndpointName, nameof(frontendEndpointName));
+
+            using var scope = _frontendEndpointClientDiagnostics.CreateScope("FrontendEndpointCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _frontendEndpointRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, frontendEndpointName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<FrontendEndpointResource>(response.GetRawResponse());
+                return Response.FromValue(new FrontendEndpointResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

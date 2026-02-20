@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.ProviderHub.Models
 {
-    /// <summary> The ResourceProviderType. </summary>
+    /// <summary> The provider type. </summary>
     public readonly partial struct ResourceProviderType : IEquatable<ResourceProviderType>
     {
         private readonly string _value;
@@ -51,7 +51,7 @@ namespace Azure.ResourceManager.ProviderHub.Models
         public static bool operator ==(ResourceProviderType left, ResourceProviderType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="ResourceProviderType"/> values are not the same. </summary>
         public static bool operator !=(ResourceProviderType left, ResourceProviderType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="ResourceProviderType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="ResourceProviderType"/>. </summary>
         public static implicit operator ResourceProviderType(string value) => new ResourceProviderType(value);
 
         /// <inheritdoc />
@@ -62,7 +62,7 @@ namespace Azure.ResourceManager.ProviderHub.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

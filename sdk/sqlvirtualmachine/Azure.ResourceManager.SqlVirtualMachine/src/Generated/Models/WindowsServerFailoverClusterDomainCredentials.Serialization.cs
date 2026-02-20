@@ -5,58 +5,159 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.SqlVirtualMachine;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
-    public partial class WindowsServerFailoverClusterDomainCredentials : IUtf8JsonSerializable
+    /// <summary> Domain credentials for setting up Windows Server Failover Cluster for SQL availability group. </summary>
+    public partial class WindowsServerFailoverClusterDomainCredentials : IJsonModel<WindowsServerFailoverClusterDomainCredentials>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual WindowsServerFailoverClusterDomainCredentials PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<WindowsServerFailoverClusterDomainCredentials>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeWindowsServerFailoverClusterDomainCredentials(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(WindowsServerFailoverClusterDomainCredentials)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<WindowsServerFailoverClusterDomainCredentials>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<WindowsServerFailoverClusterDomainCredentials>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(WindowsServerFailoverClusterDomainCredentials)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(ClusterBootstrapAccountPassword))
             {
-                writer.WritePropertyName("clusterBootstrapAccountPassword");
+                writer.WritePropertyName("clusterBootstrapAccountPassword"u8);
                 writer.WriteStringValue(ClusterBootstrapAccountPassword);
             }
             if (Optional.IsDefined(ClusterOperatorAccountPassword))
             {
-                writer.WritePropertyName("clusterOperatorAccountPassword");
+                writer.WritePropertyName("clusterOperatorAccountPassword"u8);
                 writer.WriteStringValue(ClusterOperatorAccountPassword);
             }
             if (Optional.IsDefined(SqlServiceAccountPassword))
             {
-                writer.WritePropertyName("sqlServiceAccountPassword");
+                writer.WritePropertyName("sqlServiceAccountPassword"u8);
                 writer.WriteStringValue(SqlServiceAccountPassword);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static WindowsServerFailoverClusterDomainCredentials DeserializeWindowsServerFailoverClusterDomainCredentials(JsonElement element)
-        {
-            Optional<string> clusterBootstrapAccountPassword = default;
-            Optional<string> clusterOperatorAccountPassword = default;
-            Optional<string> sqlServiceAccountPassword = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("clusterBootstrapAccountPassword"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    clusterBootstrapAccountPassword = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("clusterOperatorAccountPassword"))
-                {
-                    clusterOperatorAccountPassword = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("sqlServiceAccountPassword"))
-                {
-                    sqlServiceAccountPassword = property.Value.GetString();
-                    continue;
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
                 }
             }
-            return new WindowsServerFailoverClusterDomainCredentials(clusterBootstrapAccountPassword.Value, clusterOperatorAccountPassword.Value, sqlServiceAccountPassword.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        WindowsServerFailoverClusterDomainCredentials IJsonModel<WindowsServerFailoverClusterDomainCredentials>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual WindowsServerFailoverClusterDomainCredentials JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<WindowsServerFailoverClusterDomainCredentials>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(WindowsServerFailoverClusterDomainCredentials)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeWindowsServerFailoverClusterDomainCredentials(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static WindowsServerFailoverClusterDomainCredentials DeserializeWindowsServerFailoverClusterDomainCredentials(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string clusterBootstrapAccountPassword = default;
+            string clusterOperatorAccountPassword = default;
+            string sqlServiceAccountPassword = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("clusterBootstrapAccountPassword"u8))
+                {
+                    clusterBootstrapAccountPassword = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("clusterOperatorAccountPassword"u8))
+                {
+                    clusterOperatorAccountPassword = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("sqlServiceAccountPassword"u8))
+                {
+                    sqlServiceAccountPassword = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new WindowsServerFailoverClusterDomainCredentials(clusterBootstrapAccountPassword, clusterOperatorAccountPassword, sqlServiceAccountPassword, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<WindowsServerFailoverClusterDomainCredentials>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<WindowsServerFailoverClusterDomainCredentials>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerSqlVirtualMachineContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(WindowsServerFailoverClusterDomainCredentials)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        WindowsServerFailoverClusterDomainCredentials IPersistableModel<WindowsServerFailoverClusterDomainCredentials>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<WindowsServerFailoverClusterDomainCredentials>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

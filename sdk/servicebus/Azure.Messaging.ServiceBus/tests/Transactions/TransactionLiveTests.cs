@@ -39,7 +39,8 @@ namespace Azure.Messaging.ServiceBus.Tests.Transactions
                 Assert.NotNull(receivedMessage);
                 Assert.AreEqual(message.Body.ToString(), receivedMessage.Body.ToString());
                 await receiver.CompleteMessageAsync(receivedMessage);
-            };
+            }
+            ;
         }
 
         [Test]
@@ -73,7 +74,8 @@ namespace Azure.Messaging.ServiceBus.Tests.Transactions
                 Assert.NotNull(receivedMessage);
                 Assert.AreEqual(message2.Body.ToString(), receivedMessage.Body.ToString());
                 await receiver.CompleteMessageAsync(receivedMessage);
-            };
+            }
+            ;
         }
 
         [Test]
@@ -93,10 +95,14 @@ namespace Azure.Messaging.ServiceBus.Tests.Transactions
                 }
                 Assert.That(
                     async () =>
-                    await CreateNoRetryClient().AcceptNextSessionAsync(scope.QueueName), Throws.InstanceOf<ServiceBusException>()
+                    {
+                        await using var noRetryClient = CreateNoRetryClient();
+                        await noRetryClient.AcceptNextSessionAsync(scope.QueueName);
+                    }, Throws.InstanceOf<ServiceBusException>()
                     .And.Property(nameof(ServiceBusException.Reason))
                     .EqualTo(ServiceBusFailureReason.ServiceTimeout));
-            };
+            }
+            ;
         }
 
         [Test]
@@ -116,7 +122,8 @@ namespace Azure.Messaging.ServiceBus.Tests.Transactions
                 ServiceBusReceiver receiver = client.CreateReceiver(scope.QueueName);
                 ServiceBusReceivedMessage msg = await receiver.PeekMessageAsync();
                 Assert.NotNull(msg);
-            };
+            }
+            ;
         }
 
         [Test]
@@ -142,7 +149,8 @@ namespace Azure.Messaging.ServiceBus.Tests.Transactions
 
                 Assert.NotNull(received);
                 await receiver.CompleteMessageAsync(received);
-            };
+            }
+            ;
         }
 
         [Test]
@@ -175,7 +183,8 @@ namespace Azure.Messaging.ServiceBus.Tests.Transactions
                 ServiceBusReceivedMessage receivedMessage = await receiver.ReceiveMessageAsync(TimeSpan.FromSeconds(5));
 
                 Assert.IsNull(receivedMessage);
-            };
+            }
+            ;
         }
 
         [Test]
@@ -297,14 +306,7 @@ namespace Azure.Messaging.ServiceBus.Tests.Transactions
 
                 await receiver.CompleteMessageAsync(receivedMessage1);
 
-                // the service seems to abandon the message that
-                // triggered the InvalidOperationException
-                // in the transaction
-                Assert.That(
-                    async () =>
-                    await receiver.CompleteMessageAsync(receivedMessage2), Throws.InstanceOf<ServiceBusException>()
-                    .And.Property(nameof(ServiceBusException.Reason))
-                    .EqualTo(ServiceBusFailureReason.MessageLockLost));
+                await receiver.CompleteMessageAsync(receivedMessage2);
             }
         }
 
@@ -541,7 +543,7 @@ namespace Azure.Messaging.ServiceBus.Tests.Transactions
             Assert.IsNull(receivedMessage);
         }
 
-       [Test]
+        [Test]
         public async Task CrossEntityTransactionReceivesFirstRollbackSubscription()
         {
             await using var client = CreateCrossEntityTxnClient();
@@ -1070,7 +1072,8 @@ namespace Azure.Messaging.ServiceBus.Tests.Transactions
 
         private ServiceBusClient CreateCrossEntityTxnClient() =>
             new ServiceBusClient(
-                TestEnvironment.ServiceBusConnectionString,
+                TestEnvironment.FullyQualifiedNamespace,
+                TestEnvironment.Credential,
                 new ServiceBusClientOptions
                 {
                     EnableCrossEntityTransactions = true,

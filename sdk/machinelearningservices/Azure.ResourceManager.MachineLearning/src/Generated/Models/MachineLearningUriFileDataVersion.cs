@@ -7,21 +7,14 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// uri-file data version entity
-    /// Serialized Name: UriFileDataVersion
-    /// </summary>
+    /// <summary> uri-file data version entity. </summary>
     public partial class MachineLearningUriFileDataVersion : MachineLearningDataVersionProperties
     {
-        /// <summary> Initializes a new instance of MachineLearningUriFileDataVersion. </summary>
-        /// <param name="dataUri">
-        /// [Required] Uri of the data. Usage/meaning depends on Microsoft.MachineLearning.ManagementFrontEnd.Contracts.V20221001.Assets.DataVersionBase.DataType
-        /// Serialized Name: DataVersionBase.dataUri
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningUriFileDataVersion"/>. </summary>
+        /// <param name="dataUri"> [Required] Uri of the data. Example: https://go.microsoft.com/fwlink/?linkid=2202330. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="dataUri"/> is null. </exception>
         public MachineLearningUriFileDataVersion(Uri dataUri) : base(dataUri)
         {
@@ -30,38 +23,23 @@ namespace Azure.ResourceManager.MachineLearning.Models
             DataType = MachineLearningDataType.UriFile;
         }
 
-        /// <summary> Initializes a new instance of MachineLearningUriFileDataVersion. </summary>
-        /// <param name="description">
-        /// The asset description text.
-        /// Serialized Name: ResourceBase.description
-        /// </param>
-        /// <param name="properties">
-        /// The asset property dictionary.
-        /// Serialized Name: ResourceBase.properties
-        /// </param>
-        /// <param name="tags">
-        /// Tag dictionary. Tags can be added, removed, and updated.
-        /// Serialized Name: ResourceBase.tags
-        /// </param>
-        /// <param name="isAnonymous">
-        /// If the name version are system generated (anonymous registration).
-        /// Serialized Name: AssetBase.isAnonymous
-        /// </param>
-        /// <param name="isArchived">
-        /// Is the asset archived?
-        /// Serialized Name: AssetBase.isArchived
-        /// </param>
-        /// <param name="dataType">
-        /// [Required] Specifies the type of data.
-        /// Serialized Name: DataVersionBase.dataType
-        /// </param>
-        /// <param name="dataUri">
-        /// [Required] Uri of the data. Usage/meaning depends on Microsoft.MachineLearning.ManagementFrontEnd.Contracts.V20221001.Assets.DataVersionBase.DataType
-        /// Serialized Name: DataVersionBase.dataUri
-        /// </param>
-        internal MachineLearningUriFileDataVersion(string description, IDictionary<string, string> properties, IDictionary<string, string> tags, bool? isAnonymous, bool? isArchived, MachineLearningDataType dataType, Uri dataUri) : base(description, properties, tags, isAnonymous, isArchived, dataType, dataUri)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningUriFileDataVersion"/>. </summary>
+        /// <param name="description"> The asset description text. </param>
+        /// <param name="tags"> Tag dictionary. Tags can be added, removed, and updated. </param>
+        /// <param name="properties"> The asset property dictionary. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="isArchived"> Is the asset archived?. </param>
+        /// <param name="isAnonymous"> If the name version are system generated (anonymous registration). </param>
+        /// <param name="dataType"> [Required] Specifies the type of data. </param>
+        /// <param name="dataUri"> [Required] Uri of the data. Example: https://go.microsoft.com/fwlink/?linkid=2202330. </param>
+        internal MachineLearningUriFileDataVersion(string description, IDictionary<string, string> tags, IDictionary<string, string> properties, IDictionary<string, BinaryData> serializedAdditionalRawData, bool? isArchived, bool? isAnonymous, MachineLearningDataType dataType, Uri dataUri) : base(description, tags, properties, serializedAdditionalRawData, isArchived, isAnonymous, dataType, dataUri)
         {
             DataType = dataType;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="MachineLearningUriFileDataVersion"/> for deserialization. </summary>
+        internal MachineLearningUriFileDataVersion()
+        {
         }
     }
 }

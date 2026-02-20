@@ -14,6 +14,8 @@ namespace Azure.Messaging.ServiceBus.Administration
 {
     internal static class RuleDescriptionExtensions
     {
+        private static readonly string[] s_uriSchemeKeys = ["@", "?", "#"];
+
         public static void ValidateDescriptionName(this RuleProperties description)
         {
             Argument.AssertNotNullOrWhiteSpace(description.Name, nameof(description.Name));
@@ -22,15 +24,14 @@ namespace Azure.Messaging.ServiceBus.Administration
             if (description.Name.Contains(Constants.PathDelimiter) || description.Name.Contains(@"\"))
             {
 #pragma warning disable CA2208 // Instantiate argument exceptions correctly. Specifying the Name property
-                               // is more intuitive, than just description.
+                // is more intuitive, than just description.
                 throw new ArgumentException(
                     Resources.InvalidCharacterInEntityName.FormatForUser(Constants.PathDelimiter, description.Name),
                     nameof(description.Name));
 #pragma warning restore CA2208 // Instantiate argument exceptions correctly
             }
 
-            string[] uriSchemeKeys = { "@", "?", "#" };
-            foreach (var uriSchemeKey in uriSchemeKeys)
+            foreach (var uriSchemeKey in s_uriSchemeKeys)
             {
                 if (description.Name.Contains(uriSchemeKey))
                 {
@@ -57,14 +58,14 @@ namespace Azure.Messaging.ServiceBus.Administration
                     }
                 }
             }
-            catch (Exception ex) when (!(ex is ServiceBusException))
+            catch (Exception ex) when (ex is not ServiceBusException)
             {
                 throw new ServiceBusException(isTransient: false, message: "An error occurred while attempting to parse the rule property.", innerException: ex);
             }
             throw new ServiceBusException(
                 "Rule was not found",
                 ServiceBusFailureReason.MessagingEntityNotFound,
-                innerException: await diagnostics.CreateRequestFailedExceptionAsync(response).ConfigureAwait(false));
+                innerException: new RequestFailedException(response));
         }
 
         public static async Task<List<RuleProperties>> ParsePagedResponseAsync(Response response, ClientDiagnostics diagnostics)
@@ -96,7 +97,7 @@ namespace Azure.Messaging.ServiceBus.Administration
             throw new ServiceBusException(
                 "Rule was not found",
                 ServiceBusFailureReason.MessagingEntityNotFound,
-                innerException: await diagnostics.CreateRequestFailedExceptionAsync(response).ConfigureAwait(false));
+                innerException: new RequestFailedException(response));
         }
 
         private static RuleProperties ParseFromEntryElement(XElement xEntry)

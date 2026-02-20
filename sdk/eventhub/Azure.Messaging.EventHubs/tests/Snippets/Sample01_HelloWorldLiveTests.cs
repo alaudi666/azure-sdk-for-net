@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Identity;
 using Azure.Messaging.EventHubs.Consumer;
 using Azure.Messaging.EventHubs.Producer;
 using NUnit.Framework;
@@ -57,9 +58,10 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
         {
             await using var scope = await EventHubScope.CreateAsync(1);
 
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
-            var eventHubName = scope.EventHubName;
-            var producer = new EventHubProducerClient(connectionString, eventHubName);
+            var producer = new EventHubProducerClient(
+                EventHubsTestEnvironment.Instance.FullyQualifiedNamespace,
+                scope.EventHubName,
+                EventHubsTestEnvironment.Instance.Credential);
 
             #region Snippet:EventHubs_Sample01_PublishEvents
 
@@ -69,7 +71,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 
                 for (var counter = 0; counter < int.MaxValue; ++counter)
                 {
-                    var eventBody = new BinaryData($"Event Number: { counter }");
+                    var eventBody = new BinaryData($"Event Number: {counter}");
                     var eventData = new EventData(eventBody);
 
                     if (!eventBatch.TryAdd(eventData))
@@ -101,7 +103,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             }
             finally
             {
-               await producer.CloseAsync();
+                await producer.CloseAsync();
             }
 
             #endregion
@@ -116,9 +118,11 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
         {
             await using var scope = await EventHubScope.CreateAsync(1);
 
-            var connectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
-            var eventHubName = scope.EventHubName;
-            var consumer = new EventHubConsumerClient(EventHubConsumerClient.DefaultConsumerGroupName, connectionString, eventHubName);
+            var consumer = new EventHubConsumerClient(
+                EventHubConsumerClient.DefaultConsumerGroupName,
+                EventHubsTestEnvironment.Instance.FullyQualifiedNamespace,
+                scope.EventHubName,
+                EventHubsTestEnvironment.Instance.Credential);
 
             #region Snippet:EventHubs_Sample01_ReadEvents
 
@@ -156,7 +160,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             }
             finally
             {
-               await consumer.CloseAsync();
+                await consumer.CloseAsync();
             }
 
             #endregion

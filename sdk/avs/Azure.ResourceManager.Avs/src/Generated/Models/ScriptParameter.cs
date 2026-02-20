@@ -5,39 +5,63 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Avs.Models
 {
     /// <summary> An parameter that the script will accept. </summary>
     public partial class ScriptParameter
     {
-        /// <summary> Initializes a new instance of ScriptParameter. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ScriptParameter"/>. </summary>
         internal ScriptParameter()
         {
         }
 
-        /// <summary> Initializes a new instance of ScriptParameter. </summary>
-        /// <param name="parameterType"> The type of parameter the script is expecting. psCredential is a PSCredentialObject. </param>
+        /// <summary> Initializes a new instance of <see cref="ScriptParameter"/>. </summary>
+        /// <param name="parameterType">
+        /// The type of parameter the script is expecting. psCredential is a
+        /// PSCredentialObject
+        /// </param>
         /// <param name="name"> The parameter name that the script will expect a parameter value for. </param>
         /// <param name="description"> User friendly description of the parameter. </param>
-        /// <param name="visibility"> Should this parameter be visible to arm and passed in the parameters argument when executing. </param>
+        /// <param name="visibility">
+        /// Should this parameter be visible to arm and passed in the parameters argument
+        /// when executing
+        /// </param>
         /// <param name="optional"> Is this parameter required or optional. </param>
-        internal ScriptParameter(ScriptParameterType? parameterType, string name, string description, ParameterVisibilityStatus? visibility, ParameterOptionalityStatus? optional)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ScriptParameter(ScriptParameterType? parameterType, string name, string description, ParameterVisibilityStatus? visibility, ParameterOptionalityStatus? optional, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ParameterType = parameterType;
             Name = name;
             Description = description;
             Visibility = visibility;
             Optional = optional;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The type of parameter the script is expecting. psCredential is a PSCredentialObject. </summary>
+        /// <summary>
+        /// The type of parameter the script is expecting. psCredential is a
+        /// PSCredentialObject
+        /// </summary>
         public ScriptParameterType? ParameterType { get; }
+
         /// <summary> The parameter name that the script will expect a parameter value for. </summary>
         public string Name { get; }
+
         /// <summary> User friendly description of the parameter. </summary>
         public string Description { get; }
-        /// <summary> Should this parameter be visible to arm and passed in the parameters argument when executing. </summary>
+
+        /// <summary>
+        /// Should this parameter be visible to arm and passed in the parameters argument
+        /// when executing
+        /// </summary>
         public ParameterVisibilityStatus? Visibility { get; }
+
         /// <summary> Is this parameter required or optional. </summary>
         public ParameterOptionalityStatus? Optional { get; }
     }

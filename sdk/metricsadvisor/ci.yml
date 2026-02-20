@@ -10,22 +10,10 @@ trigger:
     include:
     - sdk/metricsadvisor/
 
-pr:
-  branches:
-    include:
-    - main
-    - feature/*
-    - hotfix/*
-    - release/*
-  paths:
-    include:
-    - sdk/metricsadvisor/
-
 extends:
   template: /eng/pipelines/templates/stages/archetype-sdk-client.yml
   parameters:
     ServiceDirectory: metricsadvisor
-    BuildSnippets: true
     ArtifactName: packages
     Artifacts:
     - name: Azure.AI.MetricsAdvisor

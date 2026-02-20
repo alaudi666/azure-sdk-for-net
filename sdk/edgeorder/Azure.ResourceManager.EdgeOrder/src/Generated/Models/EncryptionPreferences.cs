@@ -5,24 +5,32 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Preferences related to the double encryption. </summary>
     internal partial class EncryptionPreferences
     {
-        /// <summary> Initializes a new instance of EncryptionPreferences. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EncryptionPreferences"/>. </summary>
         public EncryptionPreferences()
         {
         }
 
-        /// <summary> Initializes a new instance of EncryptionPreferences. </summary>
-        /// <param name="doubleEncryptionStatus"> Double encryption status as entered by the customer. It is compulsory to give this parameter if the &apos;Deny&apos; or &apos;Disabled&apos; policy is configured. </param>
-        internal EncryptionPreferences(DoubleEncryptionStatus? doubleEncryptionStatus)
+        /// <summary> Initializes a new instance of <see cref="EncryptionPreferences"/>. </summary>
+        /// <param name="doubleEncryptionStatus"> Double encryption status as entered by the customer. It is compulsory to give this parameter if the 'Deny' or 'Disabled' policy is configured. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EncryptionPreferences(DoubleEncryptionStatus? doubleEncryptionStatus, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             DoubleEncryptionStatus = doubleEncryptionStatus;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Double encryption status as entered by the customer. It is compulsory to give this parameter if the &apos;Deny&apos; or &apos;Disabled&apos; policy is configured. </summary>
+        /// <summary> Double encryption status as entered by the customer. It is compulsory to give this parameter if the 'Deny' or 'Disabled' policy is configured. </summary>
         public DoubleEncryptionStatus? DoubleEncryptionStatus { get; set; }
     }
 }

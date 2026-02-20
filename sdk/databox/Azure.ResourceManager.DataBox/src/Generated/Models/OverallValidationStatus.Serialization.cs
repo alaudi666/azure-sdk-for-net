@@ -11,6 +11,7 @@ namespace Azure.ResourceManager.DataBox.Models
 {
     internal static partial class OverallValidationStatusExtensions
     {
+        /// <param name="value"> The value to serialize. </param>
         public static string ToSerialString(this OverallValidationStatus value) => value switch
         {
             OverallValidationStatus.AllValidToProceed => "AllValidToProceed",
@@ -19,11 +20,21 @@ namespace Azure.ResourceManager.DataBox.Models
             _ => throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown OverallValidationStatus value.")
         };
 
+        /// <param name="value"> The value to deserialize. </param>
         public static OverallValidationStatus ToOverallValidationStatus(this string value)
         {
-            if (string.Equals(value, "AllValidToProceed", StringComparison.InvariantCultureIgnoreCase)) return OverallValidationStatus.AllValidToProceed;
-            if (string.Equals(value, "InputsRevisitRequired", StringComparison.InvariantCultureIgnoreCase)) return OverallValidationStatus.InputsRevisitRequired;
-            if (string.Equals(value, "CertainInputValidationsSkipped", StringComparison.InvariantCultureIgnoreCase)) return OverallValidationStatus.CertainInputValidationsSkipped;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "AllValidToProceed"))
+            {
+                return OverallValidationStatus.AllValidToProceed;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "InputsRevisitRequired"))
+            {
+                return OverallValidationStatus.InputsRevisitRequired;
+            }
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "CertainInputValidationsSkipped"))
+            {
+                return OverallValidationStatus.CertainInputValidationsSkipped;
+            }
             throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown OverallValidationStatus value.");
         }
     }

@@ -1,18 +1,17 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-using System.Threading.Tasks;
-using NUnit.Framework;
-using Azure.ResourceManager.Resources;
-using Azure.Core.TestFramework;
-using Azure.ResourceManager.Storage.Models;
-using Azure.ResourceManager.Storage.Tests.Helpers;
 using System;
-using System.Threading;
 using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
+using Azure.Core.TestFramework;
+using Azure.ResourceManager.Resources;
+using Azure.ResourceManager.Storage.Models;
+using NUnit.Framework;
 
 namespace Azure.ResourceManager.Storage.Tests
 {
-    public class TableTests : StorageTestBase
+    public class TableTests : StorageManagementTestBase
     {
         private ResourceGroupResource _resourceGroup;
         private StorageAccountResource _storageAccount;
@@ -132,7 +131,8 @@ namespace Azure.ResourceManager.Storage.Tests
             //update cors
             TableServiceData parameter = new TableServiceData()
             {
-                Cors = new StorageCorsRules() {
+                Cors = new StorageCorsRules()
+                {
                     CorsRules =
                     {
                         new StorageCorsRule(

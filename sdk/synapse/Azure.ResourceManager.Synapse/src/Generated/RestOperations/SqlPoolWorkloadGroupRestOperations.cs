@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Synapse.Models;
@@ -37,6 +36,24 @@ namespace Azure.ResourceManager.Synapse
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
+        internal RequestUriBuilder CreateGetRequestUri(string subscriptionId, string resourceGroupName, string workspaceName, string sqlPoolName, string workloadGroupName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.Synapse/workspaces/", false);
+            uri.AppendPath(workspaceName, true);
+            uri.AppendPath("/sqlPools/", false);
+            uri.AppendPath(sqlPoolName, true);
+            uri.AppendPath("/workloadGroups/", false);
+            uri.AppendPath(workloadGroupName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
         internal HttpMessage CreateGetRequest(string subscriptionId, string resourceGroupName, string workspaceName, string sqlPoolName, string workloadGroupName)
         {
             var message = _pipeline.CreateMessage();
@@ -61,7 +78,7 @@ namespace Azure.ResourceManager.Synapse
             return message;
         }
 
-        /// <summary> Get a Sql pool&apos;s workload group. </summary>
+        /// <summary> Get a Sql pool's workload group. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -85,7 +102,7 @@ namespace Azure.ResourceManager.Synapse
                 case 200:
                     {
                         SynapseWorkloadGroupData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = SynapseWorkloadGroupData.DeserializeSynapseWorkloadGroupData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -96,7 +113,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Get a Sql pool&apos;s workload group. </summary>
+        /// <summary> Get a Sql pool's workload group. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -120,7 +137,7 @@ namespace Azure.ResourceManager.Synapse
                 case 200:
                     {
                         SynapseWorkloadGroupData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = SynapseWorkloadGroupData.DeserializeSynapseWorkloadGroupData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -129,6 +146,24 @@ namespace Azure.ResourceManager.Synapse
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateCreateOrUpdateRequestUri(string subscriptionId, string resourceGroupName, string workspaceName, string sqlPoolName, string workloadGroupName, SynapseWorkloadGroupData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.Synapse/workspaces/", false);
+            uri.AppendPath(workspaceName, true);
+            uri.AppendPath("/sqlPools/", false);
+            uri.AppendPath(sqlPoolName, true);
+            uri.AppendPath("/workloadGroups/", false);
+            uri.AppendPath(workloadGroupName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string workspaceName, string sqlPoolName, string workloadGroupName, SynapseWorkloadGroupData data)
@@ -153,13 +188,13 @@ namespace Azure.ResourceManager.Synapse
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> Create Or Update a Sql pool&apos;s workload group. </summary>
+        /// <summary> Create Or Update a Sql pool's workload group. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -191,7 +226,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Create Or Update a Sql pool&apos;s workload group. </summary>
+        /// <summary> Create Or Update a Sql pool's workload group. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -223,6 +258,24 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
+        internal RequestUriBuilder CreateDeleteRequestUri(string subscriptionId, string resourceGroupName, string workspaceName, string sqlPoolName, string workloadGroupName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.Synapse/workspaces/", false);
+            uri.AppendPath(workspaceName, true);
+            uri.AppendPath("/sqlPools/", false);
+            uri.AppendPath(sqlPoolName, true);
+            uri.AppendPath("/workloadGroups/", false);
+            uri.AppendPath(workloadGroupName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
         internal HttpMessage CreateDeleteRequest(string subscriptionId, string resourceGroupName, string workspaceName, string sqlPoolName, string workloadGroupName)
         {
             var message = _pipeline.CreateMessage();
@@ -246,7 +299,7 @@ namespace Azure.ResourceManager.Synapse
             return message;
         }
 
-        /// <summary> Remove Sql pool&apos;s workload group. </summary>
+        /// <summary> Remove Sql pool's workload group. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -276,7 +329,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Remove Sql pool&apos;s workload group. </summary>
+        /// <summary> Remove Sql pool's workload group. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -306,6 +359,23 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
+        internal RequestUriBuilder CreateListRequestUri(string subscriptionId, string resourceGroupName, string workspaceName, string sqlPoolName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.Synapse/workspaces/", false);
+            uri.AppendPath(workspaceName, true);
+            uri.AppendPath("/sqlPools/", false);
+            uri.AppendPath(sqlPoolName, true);
+            uri.AppendPath("/workloadGroups", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
         internal HttpMessage CreateListRequest(string subscriptionId, string resourceGroupName, string workspaceName, string sqlPoolName)
         {
             var message = _pipeline.CreateMessage();
@@ -329,7 +399,7 @@ namespace Azure.ResourceManager.Synapse
             return message;
         }
 
-        /// <summary> Get list of  Sql pool&apos;s workload groups. </summary>
+        /// <summary> Get list of  Sql pool's workload groups. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -351,7 +421,7 @@ namespace Azure.ResourceManager.Synapse
                 case 200:
                     {
                         SynapseWorkloadGroupListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = SynapseWorkloadGroupListResult.DeserializeSynapseWorkloadGroupListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -360,7 +430,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Get list of  Sql pool&apos;s workload groups. </summary>
+        /// <summary> Get list of  Sql pool's workload groups. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="workspaceName"> The name of the workspace. </param>
@@ -382,13 +452,21 @@ namespace Azure.ResourceManager.Synapse
                 case 200:
                     {
                         SynapseWorkloadGroupListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = SynapseWorkloadGroupListResult.DeserializeSynapseWorkloadGroupListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListNextPageRequestUri(string nextLink, string subscriptionId, string resourceGroupName, string workspaceName, string sqlPoolName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListNextPageRequest(string nextLink, string subscriptionId, string resourceGroupName, string workspaceName, string sqlPoolName)
@@ -405,7 +483,7 @@ namespace Azure.ResourceManager.Synapse
             return message;
         }
 
-        /// <summary> Get list of  Sql pool&apos;s workload groups. </summary>
+        /// <summary> Get list of  Sql pool's workload groups. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
@@ -429,7 +507,7 @@ namespace Azure.ResourceManager.Synapse
                 case 200:
                     {
                         SynapseWorkloadGroupListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = SynapseWorkloadGroupListResult.DeserializeSynapseWorkloadGroupListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -438,7 +516,7 @@ namespace Azure.ResourceManager.Synapse
             }
         }
 
-        /// <summary> Get list of  Sql pool&apos;s workload groups. </summary>
+        /// <summary> Get list of  Sql pool's workload groups. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
@@ -462,7 +540,7 @@ namespace Azure.ResourceManager.Synapse
                 case 200:
                     {
                         SynapseWorkloadGroupListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = SynapseWorkloadGroupListResult.DeserializeSynapseWorkloadGroupListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

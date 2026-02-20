@@ -6,18 +6,22 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
     /// <summary> Server Endpoint sync status. </summary>
     public partial class ServerEndpointSyncStatus
     {
-        /// <summary> Initializes a new instance of ServerEndpointSyncStatus. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ServerEndpointSyncStatus"/>. </summary>
         internal ServerEndpointSyncStatus()
         {
         }
 
-        /// <summary> Initializes a new instance of ServerEndpointSyncStatus. </summary>
+        /// <summary> Initializes a new instance of <see cref="ServerEndpointSyncStatus"/>. </summary>
         /// <param name="downloadHealth"> Download Health Status. </param>
         /// <param name="uploadHealth"> Upload Health Status. </param>
         /// <param name="combinedHealth"> Combined Health Status. </param>
@@ -30,7 +34,8 @@ namespace Azure.ResourceManager.StorageSync.Models
         /// <param name="downloadActivity"> Download sync activity. </param>
         /// <param name="offlineDataTransferStatus"> Offline Data Transfer State. </param>
         /// <param name="backgroundDataDownloadActivity"> Background data download activity. </param>
-        internal ServerEndpointSyncStatus(ServerEndpointHealthState? downloadHealth, ServerEndpointHealthState? uploadHealth, ServerEndpointHealthState? combinedHealth, ServerEndpointSyncActivityState? syncActivity, long? totalPersistentFilesNotSyncingCount, DateTimeOffset? lastUpdatedOn, ServerEndpointSyncSessionStatus uploadStatus, ServerEndpointSyncSessionStatus downloadStatus, ServerEndpointSyncActivityStatus uploadActivity, ServerEndpointSyncActivityStatus downloadActivity, ServerEndpointOfflineDataTransferState? offlineDataTransferStatus, ServerEndpointBackgroundDataDownloadActivity backgroundDataDownloadActivity)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ServerEndpointSyncStatus(ServerEndpointHealthState? downloadHealth, ServerEndpointHealthState? uploadHealth, ServerEndpointHealthState? combinedHealth, ServerEndpointSyncActivityState? syncActivity, long? totalPersistentFilesNotSyncingCount, DateTimeOffset? lastUpdatedOn, ServerEndpointSyncSessionStatus uploadStatus, ServerEndpointSyncSessionStatus downloadStatus, ServerEndpointSyncActivityStatus uploadActivity, ServerEndpointSyncActivityStatus downloadActivity, ServerEndpointOfflineDataTransferState? offlineDataTransferStatus, ServerEndpointBackgroundDataDownloadActivity backgroundDataDownloadActivity, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             DownloadHealth = downloadHealth;
             UploadHealth = uploadHealth;
@@ -44,30 +49,42 @@ namespace Azure.ResourceManager.StorageSync.Models
             DownloadActivity = downloadActivity;
             OfflineDataTransferStatus = offlineDataTransferStatus;
             BackgroundDataDownloadActivity = backgroundDataDownloadActivity;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Download Health Status. </summary>
         public ServerEndpointHealthState? DownloadHealth { get; }
+
         /// <summary> Upload Health Status. </summary>
         public ServerEndpointHealthState? UploadHealth { get; }
+
         /// <summary> Combined Health Status. </summary>
         public ServerEndpointHealthState? CombinedHealth { get; }
+
         /// <summary> Sync activity. </summary>
         public ServerEndpointSyncActivityState? SyncActivity { get; }
+
         /// <summary> Total count of persistent files not syncing (combined upload + download). </summary>
         public long? TotalPersistentFilesNotSyncingCount { get; }
+
         /// <summary> Last Updated Timestamp. </summary>
         public DateTimeOffset? LastUpdatedOn { get; }
+
         /// <summary> Upload Status. </summary>
         public ServerEndpointSyncSessionStatus UploadStatus { get; }
+
         /// <summary> Download Status. </summary>
         public ServerEndpointSyncSessionStatus DownloadStatus { get; }
+
         /// <summary> Upload sync activity. </summary>
         public ServerEndpointSyncActivityStatus UploadActivity { get; }
+
         /// <summary> Download sync activity. </summary>
         public ServerEndpointSyncActivityStatus DownloadActivity { get; }
+
         /// <summary> Offline Data Transfer State. </summary>
         public ServerEndpointOfflineDataTransferState? OfflineDataTransferStatus { get; }
+
         /// <summary> Background data download activity. </summary>
         public ServerEndpointBackgroundDataDownloadActivity BackgroundDataDownloadActivity { get; }
     }

@@ -6,16 +6,20 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 using Azure.ResourceManager.SignalR.Models;
 
 namespace Azure.ResourceManager.SignalR
 {
-    /// <summary> A class representing the SignalRCustomCertificate data model. </summary>
+    /// <summary> A custom certificate. </summary>
     public partial class SignalRCustomCertificateData : ResourceData
     {
-        /// <summary> Initializes a new instance of SignalRCustomCertificateData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRCustomCertificateData"/>. </summary>
         /// <param name="keyVaultBaseUri"> Base uri of the KeyVault that stores certificate. </param>
         /// <param name="keyVaultSecretName"> Certificate secret name. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="keyVaultBaseUri"/> or <paramref name="keyVaultSecretName"/> is null. </exception>
@@ -24,34 +28,88 @@ namespace Azure.ResourceManager.SignalR
             Argument.AssertNotNull(keyVaultBaseUri, nameof(keyVaultBaseUri));
             Argument.AssertNotNull(keyVaultSecretName, nameof(keyVaultSecretName));
 
-            KeyVaultBaseUri = keyVaultBaseUri;
-            KeyVaultSecretName = keyVaultSecretName;
+            Properties = new CustomCertificateProperties(keyVaultBaseUri, keyVaultSecretName);
         }
 
-        /// <summary> Initializes a new instance of SignalRCustomCertificateData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="provisioningState"> Provisioning state of the resource. </param>
-        /// <param name="keyVaultBaseUri"> Base uri of the KeyVault that stores certificate. </param>
-        /// <param name="keyVaultSecretName"> Certificate secret name. </param>
-        /// <param name="keyVaultSecretVersion"> Certificate secret version. </param>
-        internal SignalRCustomCertificateData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, SignalRProvisioningState? provisioningState, Uri keyVaultBaseUri, string keyVaultSecretName, string keyVaultSecretVersion) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="SignalRCustomCertificateData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> Custom certificate properties. </param>
+        internal SignalRCustomCertificateData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, CustomCertificateProperties properties) : base(id, name, resourceType, systemData)
         {
-            ProvisioningState = provisioningState;
-            KeyVaultBaseUri = keyVaultBaseUri;
-            KeyVaultSecretName = keyVaultSecretName;
-            KeyVaultSecretVersion = keyVaultSecretVersion;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
+
+        /// <summary> Custom certificate properties. </summary>
+        [WirePath("properties")]
+        internal CustomCertificateProperties Properties { get; set; }
 
         /// <summary> Provisioning state of the resource. </summary>
-        public SignalRProvisioningState? ProvisioningState { get; }
+        [WirePath("properties.provisioningState")]
+        public SignalRProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+        }
+
         /// <summary> Base uri of the KeyVault that stores certificate. </summary>
-        public Uri KeyVaultBaseUri { get; set; }
+        [WirePath("properties.keyVaultBaseUri")]
+        public Uri KeyVaultBaseUri
+        {
+            get
+            {
+                return Properties is null ? default : Properties.KeyVaultBaseUri;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new CustomCertificateProperties();
+                }
+                Properties.KeyVaultBaseUri = value;
+            }
+        }
+
         /// <summary> Certificate secret name. </summary>
-        public string KeyVaultSecretName { get; set; }
+        [WirePath("properties.keyVaultSecretName")]
+        public string KeyVaultSecretName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.KeyVaultSecretName;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new CustomCertificateProperties();
+                }
+                Properties.KeyVaultSecretName = value;
+            }
+        }
+
         /// <summary> Certificate secret version. </summary>
-        public string KeyVaultSecretVersion { get; set; }
+        [WirePath("properties.keyVaultSecretVersion")]
+        public string KeyVaultSecretVersion
+        {
+            get
+            {
+                return Properties is null ? default : Properties.KeyVaultSecretVersion;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new CustomCertificateProperties();
+                }
+                Properties.KeyVaultSecretVersion = value;
+            }
+        }
     }
 }

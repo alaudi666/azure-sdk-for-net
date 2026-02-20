@@ -5,103 +5,260 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
+using Azure.ResourceManager.Dynatrace;
 
 namespace Azure.ResourceManager.Dynatrace.Models
 {
-    public partial class DynatraceOneAgentEnabledAppServiceInfo
+    /// <summary> Details of App Services having Dynatrace OneAgent installed. </summary>
+    public partial class DynatraceOneAgentEnabledAppServiceInfo : IJsonModel<DynatraceOneAgentEnabledAppServiceInfo>
     {
-        internal static DynatraceOneAgentEnabledAppServiceInfo DeserializeDynatraceOneAgentEnabledAppServiceInfo(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DynatraceOneAgentEnabledAppServiceInfo PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<ResourceIdentifier> resourceId = default;
-            Optional<string> version = default;
-            Optional<DynatraceOneAgentMonitoringType> monitoringType = default;
-            Optional<DynatraceOneAgentAutoUpdateSetting> autoUpdateSetting = default;
-            Optional<DynatraceOneAgentUpdateStatus> updateStatus = default;
-            Optional<DynatraceOneAgentAvailabilityState> availabilityState = default;
-            Optional<DynatraceLogModuleState> logModule = default;
-            Optional<string> hostGroup = default;
-            Optional<string> hostName = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceOneAgentEnabledAppServiceInfo>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("resourceId"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeDynatraceOneAgentEnabledAppServiceInfo(document.RootElement, options);
                     }
-                    resourceId = new ResourceIdentifier(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("version"))
+                default:
+                    throw new FormatException($"The model {nameof(DynatraceOneAgentEnabledAppServiceInfo)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DynatraceOneAgentEnabledAppServiceInfo>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceOneAgentEnabledAppServiceInfo>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DynatraceOneAgentEnabledAppServiceInfo)} does not support writing '{format}' format.");
+            }
+            if (Optional.IsDefined(ResourceId))
+            {
+                writer.WritePropertyName("resourceId"u8);
+                writer.WriteStringValue(ResourceId);
+            }
+            if (Optional.IsDefined(Version))
+            {
+                writer.WritePropertyName("version"u8);
+                writer.WriteStringValue(Version);
+            }
+            if (Optional.IsDefined(MonitoringType))
+            {
+                writer.WritePropertyName("monitoringType"u8);
+                writer.WriteStringValue(MonitoringType.Value.ToString());
+            }
+            if (Optional.IsDefined(AutoUpdateSetting))
+            {
+                writer.WritePropertyName("autoUpdateSetting"u8);
+                writer.WriteStringValue(AutoUpdateSetting.Value.ToString());
+            }
+            if (Optional.IsDefined(UpdateStatus))
+            {
+                writer.WritePropertyName("updateStatus"u8);
+                writer.WriteStringValue(UpdateStatus.Value.ToString());
+            }
+            if (Optional.IsDefined(AvailabilityState))
+            {
+                writer.WritePropertyName("availabilityState"u8);
+                writer.WriteStringValue(AvailabilityState.Value.ToString());
+            }
+            if (Optional.IsDefined(LogModule))
+            {
+                writer.WritePropertyName("logModule"u8);
+                writer.WriteStringValue(LogModule.Value.ToString());
+            }
+            if (Optional.IsDefined(HostGroup))
+            {
+                writer.WritePropertyName("hostGroup"u8);
+                writer.WriteStringValue(HostGroup);
+            }
+            if (Optional.IsDefined(HostName))
+            {
+                writer.WritePropertyName("hostName"u8);
+                writer.WriteStringValue(HostName);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    version = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("monitoringType"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    monitoringType = new DynatraceOneAgentMonitoringType(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("autoUpdateSetting"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    autoUpdateSetting = new DynatraceOneAgentAutoUpdateSetting(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("updateStatus"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    updateStatus = new DynatraceOneAgentUpdateStatus(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("availabilityState"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    availabilityState = new DynatraceOneAgentAvailabilityState(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("logModule"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    logModule = new DynatraceLogModuleState(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("hostGroup"))
-                {
-                    hostGroup = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("hostName"))
-                {
-                    hostName = property.Value.GetString();
-                    continue;
+#endif
                 }
             }
-            return new DynatraceOneAgentEnabledAppServiceInfo(resourceId.Value, version.Value, Optional.ToNullable(monitoringType), Optional.ToNullable(autoUpdateSetting), Optional.ToNullable(updateStatus), Optional.ToNullable(availabilityState), Optional.ToNullable(logModule), hostGroup.Value, hostName.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DynatraceOneAgentEnabledAppServiceInfo IJsonModel<DynatraceOneAgentEnabledAppServiceInfo>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DynatraceOneAgentEnabledAppServiceInfo JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceOneAgentEnabledAppServiceInfo>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DynatraceOneAgentEnabledAppServiceInfo)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDynatraceOneAgentEnabledAppServiceInfo(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DynatraceOneAgentEnabledAppServiceInfo DeserializeDynatraceOneAgentEnabledAppServiceInfo(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ResourceIdentifier resourceId = default;
+            string version = default;
+            DynatraceOneAgentMonitoringType? monitoringType = default;
+            DynatraceOneAgentAutoUpdateSetting? autoUpdateSetting = default;
+            DynatraceOneAgentUpdateStatus? updateStatus = default;
+            DynatraceOneAgentAvailabilityState? availabilityState = default;
+            DynatraceLogModuleState? logModule = default;
+            string hostGroup = default;
+            string hostName = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("resourceId"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    resourceId = new ResourceIdentifier(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("version"u8))
+                {
+                    version = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("monitoringType"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    monitoringType = new DynatraceOneAgentMonitoringType(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("autoUpdateSetting"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    autoUpdateSetting = new DynatraceOneAgentAutoUpdateSetting(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("updateStatus"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    updateStatus = new DynatraceOneAgentUpdateStatus(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("availabilityState"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    availabilityState = new DynatraceOneAgentAvailabilityState(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("logModule"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    logModule = new DynatraceLogModuleState(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("hostGroup"u8))
+                {
+                    hostGroup = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("hostName"u8))
+                {
+                    hostName = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new DynatraceOneAgentEnabledAppServiceInfo(
+                resourceId,
+                version,
+                monitoringType,
+                autoUpdateSetting,
+                updateStatus,
+                availabilityState,
+                logModule,
+                hostGroup,
+                hostName,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DynatraceOneAgentEnabledAppServiceInfo>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceOneAgentEnabledAppServiceInfo>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDynatraceContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DynatraceOneAgentEnabledAppServiceInfo)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DynatraceOneAgentEnabledAppServiceInfo IPersistableModel<DynatraceOneAgentEnabledAppServiceInfo>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DynatraceOneAgentEnabledAppServiceInfo>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

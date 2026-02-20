@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.CosmosDB.Models;
 
 namespace Azure.ResourceManager.CosmosDB
 {
     /// <summary>
-    /// A class representing a collection of <see cref="CosmosDBSqlUserDefinedFunctionResource" /> and their operations.
-    /// Each <see cref="CosmosDBSqlUserDefinedFunctionResource" /> in the collection will belong to the same instance of <see cref="CosmosDBSqlContainerResource" />.
-    /// To get a <see cref="CosmosDBSqlUserDefinedFunctionCollection" /> instance call the GetCosmosDBSqlUserDefinedFunctions method from an instance of <see cref="CosmosDBSqlContainerResource" />.
+    /// A class representing a collection of <see cref="CosmosDBSqlUserDefinedFunctionResource"/> and their operations.
+    /// Each <see cref="CosmosDBSqlUserDefinedFunctionResource"/> in the collection will belong to the same instance of <see cref="CosmosDBSqlContainerResource"/>.
+    /// To get a <see cref="CosmosDBSqlUserDefinedFunctionCollection"/> instance call the GetCosmosDBSqlUserDefinedFunctions method from an instance of <see cref="CosmosDBSqlContainerResource"/>.
     /// </summary>
     public partial class CosmosDBSqlUserDefinedFunctionCollection : ArmCollection, IEnumerable<CosmosDBSqlUserDefinedFunctionResource>, IAsyncEnumerable<CosmosDBSqlUserDefinedFunctionResource>
     {
@@ -56,8 +54,24 @@ namespace Azure.ResourceManager.CosmosDB
 
         /// <summary>
         /// Create or update an Azure Cosmos DB SQL userDefinedFunction
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}
-        /// Operation Id: SqlResources_CreateUpdateSqlUserDefinedFunction
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SqlResources_CreateUpdateSqlUserDefinedFunction</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-10-15</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CosmosDBSqlUserDefinedFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="userDefinedFunctionName"> Cosmos DB userDefinedFunction name. </param>
@@ -89,8 +103,24 @@ namespace Azure.ResourceManager.CosmosDB
 
         /// <summary>
         /// Create or update an Azure Cosmos DB SQL userDefinedFunction
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}
-        /// Operation Id: SqlResources_CreateUpdateSqlUserDefinedFunction
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SqlResources_CreateUpdateSqlUserDefinedFunction</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-10-15</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CosmosDBSqlUserDefinedFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="userDefinedFunctionName"> Cosmos DB userDefinedFunction name. </param>
@@ -122,8 +152,24 @@ namespace Azure.ResourceManager.CosmosDB
 
         /// <summary>
         /// Gets the SQL userDefinedFunction under an existing Azure Cosmos DB database account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}
-        /// Operation Id: SqlResources_GetSqlUserDefinedFunction
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SqlResources_GetSqlUserDefinedFunction</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-10-15</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CosmosDBSqlUserDefinedFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="userDefinedFunctionName"> Cosmos DB userDefinedFunction name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -151,8 +197,24 @@ namespace Azure.ResourceManager.CosmosDB
 
         /// <summary>
         /// Gets the SQL userDefinedFunction under an existing Azure Cosmos DB database account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}
-        /// Operation Id: SqlResources_GetSqlUserDefinedFunction
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SqlResources_GetSqlUserDefinedFunction</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-10-15</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CosmosDBSqlUserDefinedFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="userDefinedFunctionName"> Cosmos DB userDefinedFunction name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -180,62 +242,82 @@ namespace Azure.ResourceManager.CosmosDB
 
         /// <summary>
         /// Lists the SQL userDefinedFunction under an existing Azure Cosmos DB database account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions
-        /// Operation Id: SqlResources_ListSqlUserDefinedFunctions
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SqlResources_ListSqlUserDefinedFunctions</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-10-15</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CosmosDBSqlUserDefinedFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="CosmosDBSqlUserDefinedFunctionResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="CosmosDBSqlUserDefinedFunctionResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<CosmosDBSqlUserDefinedFunctionResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<CosmosDBSqlUserDefinedFunctionResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _cosmosDBSqlUserDefinedFunctionSqlResourcesClientDiagnostics.CreateScope("CosmosDBSqlUserDefinedFunctionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _cosmosDBSqlUserDefinedFunctionSqlResourcesRestClient.ListSqlUserDefinedFunctionsAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new CosmosDBSqlUserDefinedFunctionResource(Client, value)), null, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, null);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _cosmosDBSqlUserDefinedFunctionSqlResourcesRestClient.CreateListSqlUserDefinedFunctionsRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, null, e => new CosmosDBSqlUserDefinedFunctionResource(Client, CosmosDBSqlUserDefinedFunctionData.DeserializeCosmosDBSqlUserDefinedFunctionData(e)), _cosmosDBSqlUserDefinedFunctionSqlResourcesClientDiagnostics, Pipeline, "CosmosDBSqlUserDefinedFunctionCollection.GetAll", "value", null, cancellationToken);
         }
 
         /// <summary>
         /// Lists the SQL userDefinedFunction under an existing Azure Cosmos DB database account.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions
-        /// Operation Id: SqlResources_ListSqlUserDefinedFunctions
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SqlResources_ListSqlUserDefinedFunctions</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-10-15</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CosmosDBSqlUserDefinedFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="CosmosDBSqlUserDefinedFunctionResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="CosmosDBSqlUserDefinedFunctionResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<CosmosDBSqlUserDefinedFunctionResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<CosmosDBSqlUserDefinedFunctionResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _cosmosDBSqlUserDefinedFunctionSqlResourcesClientDiagnostics.CreateScope("CosmosDBSqlUserDefinedFunctionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _cosmosDBSqlUserDefinedFunctionSqlResourcesRestClient.ListSqlUserDefinedFunctions(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new CosmosDBSqlUserDefinedFunctionResource(Client, value)), null, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, null);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _cosmosDBSqlUserDefinedFunctionSqlResourcesRestClient.CreateListSqlUserDefinedFunctionsRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, null, e => new CosmosDBSqlUserDefinedFunctionResource(Client, CosmosDBSqlUserDefinedFunctionData.DeserializeCosmosDBSqlUserDefinedFunctionData(e)), _cosmosDBSqlUserDefinedFunctionSqlResourcesClientDiagnostics, Pipeline, "CosmosDBSqlUserDefinedFunctionCollection.GetAll", "value", null, cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}
-        /// Operation Id: SqlResources_GetSqlUserDefinedFunction
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SqlResources_GetSqlUserDefinedFunction</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-10-15</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CosmosDBSqlUserDefinedFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="userDefinedFunctionName"> Cosmos DB userDefinedFunction name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -261,8 +343,24 @@ namespace Azure.ResourceManager.CosmosDB
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}
-        /// Operation Id: SqlResources_GetSqlUserDefinedFunction
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SqlResources_GetSqlUserDefinedFunction</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-10-15</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CosmosDBSqlUserDefinedFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="userDefinedFunctionName"> Cosmos DB userDefinedFunction name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -278,6 +376,96 @@ namespace Azure.ResourceManager.CosmosDB
             {
                 var response = _cosmosDBSqlUserDefinedFunctionSqlResourcesRestClient.GetSqlUserDefinedFunction(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, userDefinedFunctionName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SqlResources_GetSqlUserDefinedFunction</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-10-15</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CosmosDBSqlUserDefinedFunctionResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="userDefinedFunctionName"> Cosmos DB userDefinedFunction name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="userDefinedFunctionName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="userDefinedFunctionName"/> is null. </exception>
+        public virtual async Task<NullableResponse<CosmosDBSqlUserDefinedFunctionResource>> GetIfExistsAsync(string userDefinedFunctionName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(userDefinedFunctionName, nameof(userDefinedFunctionName));
+
+            using var scope = _cosmosDBSqlUserDefinedFunctionSqlResourcesClientDiagnostics.CreateScope("CosmosDBSqlUserDefinedFunctionCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _cosmosDBSqlUserDefinedFunctionSqlResourcesRestClient.GetSqlUserDefinedFunctionAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, userDefinedFunctionName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<CosmosDBSqlUserDefinedFunctionResource>(response.GetRawResponse());
+                return Response.FromValue(new CosmosDBSqlUserDefinedFunctionResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DocumentDB/databaseAccounts/{accountName}/sqlDatabases/{databaseName}/containers/{containerName}/userDefinedFunctions/{userDefinedFunctionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SqlResources_GetSqlUserDefinedFunction</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-10-15</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CosmosDBSqlUserDefinedFunctionResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="userDefinedFunctionName"> Cosmos DB userDefinedFunction name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="userDefinedFunctionName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="userDefinedFunctionName"/> is null. </exception>
+        public virtual NullableResponse<CosmosDBSqlUserDefinedFunctionResource> GetIfExists(string userDefinedFunctionName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(userDefinedFunctionName, nameof(userDefinedFunctionName));
+
+            using var scope = _cosmosDBSqlUserDefinedFunctionSqlResourcesClientDiagnostics.CreateScope("CosmosDBSqlUserDefinedFunctionCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _cosmosDBSqlUserDefinedFunctionSqlResourcesRestClient.GetSqlUserDefinedFunction(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Parent.Name, Id.Parent.Name, Id.Name, userDefinedFunctionName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<CosmosDBSqlUserDefinedFunctionResource>(response.GetRawResponse());
+                return Response.FromValue(new CosmosDBSqlUserDefinedFunctionResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

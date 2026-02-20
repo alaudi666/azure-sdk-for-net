@@ -2,16 +2,15 @@
 // Licensed under the MIT License.
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using Azure.ResourceManager.Resources;
-using Azure.Core.TestFramework;
-using Azure.ResourceManager.Storage.Models;
-using Azure.ResourceManager.Storage.Tests.Helpers;
 using Azure.Core;
+using Azure.Core.TestFramework;
+using Azure.ResourceManager.Resources;
+using Azure.ResourceManager.Storage.Models;
+using NUnit.Framework;
 
 namespace Azure.ResourceManager.Storage.Tests
 {
-    public class BlobContainerTests : StorageTestBase
+    public class BlobContainerTests : StorageManagementTestBase
     {
         private ResourceGroupResource _resourceGroup;
         private StorageAccountResource _storageAccount;
@@ -469,7 +468,7 @@ namespace Azure.ResourceManager.Storage.Tests
             //create 2 storage accounts
             string accountName1 = await CreateValidAccountNameAsync("teststoragemgmt");
             string accountName2 = await CreateValidAccountNameAsync("teststoragemgmt");
-            StorageAccountCreateOrUpdateContent createContent = GetDefaultStorageAccountParameters(kind: StorageKind.StorageV2);
+            StorageAccountCreateOrUpdateContent createContent = new StorageAccountCreateOrUpdateContent(new StorageSku(StorageSkuName.StandardLrs), StorageKind.StorageV2, "centralusEUAP");
             StorageAccountResource sourceAccount = (await _resourceGroup.GetStorageAccounts().CreateOrUpdateAsync(WaitUntil.Completed, accountName1, createContent)).Value;
             StorageAccountResource destAccount = (await _resourceGroup.GetStorageAccounts().CreateOrUpdateAsync(WaitUntil.Completed, accountName2, createContent)).Value;
 
@@ -511,11 +510,16 @@ namespace Azure.ResourceManager.Storage.Tests
             {
                 SourceAccount = sourceAccount.Id.Name,
                 DestinationAccount = destAccount.Id.Name,
+                IsMetricsEnabled = true,
+                PriorityReplication = new ObjectReplicationPolicyPropertiesPriorityReplication()
+                {
+                    IsPriorityReplicationEnabled = true,
+                },
                 Rules =
                 {
                     new ObjectReplicationPolicyRule(containerName1, containerName2)
                     {
-                        Filters = new ObjectReplicationPolicyFilter(prefix, minCreationTime),
+                        Filters = new ObjectReplicationPolicyFilter(prefix, minCreationTime, null),
                     },
                     new ObjectReplicationPolicyRule(containerName3, containerName4),
                 }
@@ -527,6 +531,8 @@ namespace Azure.ResourceManager.Storage.Tests
             Assert.NotNull(objectReplicationPolicy);
             Assert.AreEqual(objectReplicationPolicy.Data.DestinationAccount, destAccount.Id.Name);
             Assert.AreEqual(objectReplicationPolicy.Data.SourceAccount, sourceAccount.Id.Name);
+            Assert.AreEqual(objectReplicationPolicy.Data.IsMetricsEnabled, true);
+            Assert.AreEqual(objectReplicationPolicy.Data.PriorityReplication.IsPriorityReplicationEnabled, true);
 
             //get policy
             List<ObjectReplicationPolicyResource> policies = await objectReplicationPolicyCollection.GetAllAsync().ToEnumerableAsync();
@@ -534,6 +540,8 @@ namespace Azure.ResourceManager.Storage.Tests
             Assert.NotNull(objectReplicationPolicy);
             Assert.AreEqual(objectReplicationPolicy.Data.DestinationAccount, destAccount.Id.Name);
             Assert.AreEqual(objectReplicationPolicy.Data.SourceAccount, sourceAccount.Id.Name);
+            Assert.AreEqual(objectReplicationPolicy.Data.IsMetricsEnabled, true);
+            Assert.AreEqual(objectReplicationPolicy.Data.PriorityReplication.IsPriorityReplicationEnabled, true);
 
             //delete policy
             await objectReplicationPolicy.DeleteAsync(WaitUntil.Completed);

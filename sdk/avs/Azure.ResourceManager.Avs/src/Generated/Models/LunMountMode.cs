@@ -7,45 +7,65 @@
 
 using System;
 using System.ComponentModel;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> Mode that describes whether the LUN has to be mounted as a datastore or attached as a LUN. </summary>
+    /// <summary> mount option. </summary>
     public readonly partial struct LunMountMode : IEquatable<LunMountMode>
     {
         private readonly string _value;
+        /// <summary> is mount. </summary>
+        private const string MountValue = "MOUNT";
+        /// <summary> is attach. </summary>
+        private const string AttachValue = "ATTACH";
 
         /// <summary> Initializes a new instance of <see cref="LunMountMode"/>. </summary>
+        /// <param name="value"> The value. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
         public LunMountMode(string value)
         {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
+            Argument.AssertNotNull(value, nameof(value));
+
+            _value = value;
         }
 
-        private const string MountValue = "MOUNT";
-        private const string AttachValue = "ATTACH";
-
-        /// <summary> MOUNT. </summary>
+        /// <summary> is mount. </summary>
         public static LunMountMode Mount { get; } = new LunMountMode(MountValue);
-        /// <summary> ATTACH. </summary>
+
+        /// <summary> is attach. </summary>
         public static LunMountMode Attach { get; } = new LunMountMode(AttachValue);
+
         /// <summary> Determines if two <see cref="LunMountMode"/> values are the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator ==(LunMountMode left, LunMountMode right) => left.Equals(right);
+
         /// <summary> Determines if two <see cref="LunMountMode"/> values are not the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator !=(LunMountMode left, LunMountMode right) => !left.Equals(right);
+
         /// <summary> Converts a string to a <see cref="LunMountMode"/>. </summary>
+        /// <param name="value"> The value. </param>
         public static implicit operator LunMountMode(string value) => new LunMountMode(value);
 
-        /// <inheritdoc />
+        /// <summary> Converts a string to a <see cref="LunMountMode"/>. </summary>
+        /// <param name="value"> The value. </param>
+        public static implicit operator LunMountMode?(string value) => value == null ? null : new LunMountMode(value);
+
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj) => obj is LunMountMode other && Equals(other);
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public bool Equals(LunMountMode other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-        /// <inheritdoc />
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
+
+        /// <inheritdoc/>
         public override string ToString() => _value;
     }
 }

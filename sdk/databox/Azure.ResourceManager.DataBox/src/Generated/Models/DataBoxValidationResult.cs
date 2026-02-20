@@ -5,40 +5,50 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Response of pre job creation validations. </summary>
     public partial class DataBoxValidationResult
     {
-        /// <summary> Initializes a new instance of DataBoxValidationResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DataBoxValidationResult"/>. </summary>
         internal DataBoxValidationResult()
         {
-            IndividualResponseDetails = new ChangeTrackingList<DataBoxValidationInputResult>();
         }
 
-        /// <summary> Initializes a new instance of DataBoxValidationResult. </summary>
-        /// <param name="status"> Overall validation status. </param>
-        /// <param name="individualResponseDetails">
-        /// List of response details contain validationType and its response as key and value respectively.
-        /// Please note <see cref="DataBoxValidationInputResult"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="CreateOrderLimitForSubscriptionValidationResult"/>, <see cref="DataTransferDetailsValidationResult"/>, <see cref="PreferencesValidationResult"/>, <see cref="SkuAvailabilityValidationResult"/>, <see cref="SubscriptionIsAllowedToCreateJobValidationResult"/> and <see cref="AddressValidationResult"/>.
-        /// </param>
-        internal DataBoxValidationResult(OverallValidationStatus? status, IReadOnlyList<DataBoxValidationInputResult> individualResponseDetails)
+        /// <summary> Initializes a new instance of <see cref="DataBoxValidationResult"/>. </summary>
+        /// <param name="properties"> Properties of pre job creation validation response. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DataBoxValidationResult(ValidationResponseProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            Status = status;
-            IndividualResponseDetails = individualResponseDetails;
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
+
+        /// <summary> Properties of pre job creation validation response. </summary>
+        internal ValidationResponseProperties Properties { get; }
 
         /// <summary> Overall validation status. </summary>
-        public OverallValidationStatus? Status { get; }
-        /// <summary>
-        /// List of response details contain validationType and its response as key and value respectively.
-        /// Please note <see cref="DataBoxValidationInputResult"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="CreateOrderLimitForSubscriptionValidationResult"/>, <see cref="DataTransferDetailsValidationResult"/>, <see cref="PreferencesValidationResult"/>, <see cref="SkuAvailabilityValidationResult"/>, <see cref="SubscriptionIsAllowedToCreateJobValidationResult"/> and <see cref="AddressValidationResult"/>.
-        /// </summary>
-        public IReadOnlyList<DataBoxValidationInputResult> IndividualResponseDetails { get; }
+        public OverallValidationStatus? Status
+        {
+            get
+            {
+                return Properties.Status;
+            }
+        }
+
+        /// <summary> List of response details contain validationType and its response as key and value respectively. </summary>
+        public IReadOnlyList<DataBoxValidationInputResult> IndividualResponseDetails
+        {
+            get
+            {
+                return Properties.IndividualResponseDetails;
+            }
+        }
     }
 }

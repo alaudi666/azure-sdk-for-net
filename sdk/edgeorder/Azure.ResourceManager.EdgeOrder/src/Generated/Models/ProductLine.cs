@@ -5,58 +5,113 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Product line. </summary>
     public partial class ProductLine
     {
-        /// <summary> Initializes a new instance of ProductLine. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ProductLine"/>. </summary>
         internal ProductLine()
         {
-            ImageInformation = new ChangeTrackingList<EdgeOrderProductImageInformation>();
-            FilterableProperties = new ChangeTrackingList<FilterableProperty>();
-            Products = new ChangeTrackingList<EdgeOrderProduct>();
         }
 
-        /// <summary> Initializes a new instance of ProductLine. </summary>
-        /// <param name="displayName"> Display Name for the product system. </param>
-        /// <param name="description"> Description related to the product system. </param>
-        /// <param name="imageInformation"> Image information for the product system. </param>
-        /// <param name="costInformation"> Cost information for the product system. </param>
-        /// <param name="availabilityInformation"> Availability information of the product system. </param>
-        /// <param name="hierarchyInformation"> Hierarchy information of a product. </param>
-        /// <param name="filterableProperties"> list of filters supported for a product. </param>
-        /// <param name="products"> List of products in the product line. </param>
-        internal ProductLine(string displayName, ProductDescription description, IReadOnlyList<EdgeOrderProductImageInformation> imageInformation, EdgeOrderProductCostInformation costInformation, ProductAvailabilityInformation availabilityInformation, HierarchyInformation hierarchyInformation, IReadOnlyList<FilterableProperty> filterableProperties, IReadOnlyList<EdgeOrderProduct> products)
+        /// <summary> Initializes a new instance of <see cref="ProductLine"/>. </summary>
+        /// <param name="properties"> Properties of product line. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ProductLine(ProductLineProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            DisplayName = displayName;
-            Description = description;
-            ImageInformation = imageInformation;
-            CostInformation = costInformation;
-            AvailabilityInformation = availabilityInformation;
-            HierarchyInformation = hierarchyInformation;
-            FilterableProperties = filterableProperties;
-            Products = products;
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
+
+        /// <summary> Properties of product line. </summary>
+        internal ProductLineProperties Properties { get; }
 
         /// <summary> Display Name for the product system. </summary>
-        public string DisplayName { get; }
+        public string DisplayName
+        {
+            get
+            {
+                return Properties.DisplayName;
+            }
+        }
+
         /// <summary> Description related to the product system. </summary>
-        public ProductDescription Description { get; }
+        public ProductDescription Description
+        {
+            get
+            {
+                return Properties.Description;
+            }
+        }
+
         /// <summary> Image information for the product system. </summary>
-        public IReadOnlyList<EdgeOrderProductImageInformation> ImageInformation { get; }
+        public IReadOnlyList<EdgeOrderProductImageInformation> ImageInformation
+        {
+            get
+            {
+                return Properties.ImageInformation;
+            }
+        }
+
         /// <summary> Cost information for the product system. </summary>
-        public EdgeOrderProductCostInformation CostInformation { get; }
+        public EdgeOrderProductCostInformation CostInformation
+        {
+            get
+            {
+                return Properties.CostInformation;
+            }
+        }
+
         /// <summary> Availability information of the product system. </summary>
-        public ProductAvailabilityInformation AvailabilityInformation { get; }
+        public ProductAvailabilityInformation AvailabilityInformation
+        {
+            get
+            {
+                return Properties.AvailabilityInformation;
+            }
+        }
+
         /// <summary> Hierarchy information of a product. </summary>
-        public HierarchyInformation HierarchyInformation { get; }
-        /// <summary> list of filters supported for a product. </summary>
-        public IReadOnlyList<FilterableProperty> FilterableProperties { get; }
+        public HierarchyInformation HierarchyInformation
+        {
+            get
+            {
+                return Properties.HierarchyInformation;
+            }
+        }
+
+        /// <summary> The entity responsible for fulfillment of the item at the given hierarchy level. </summary>
+        public EdgeOrderFulfillmentType? FulfilledBy
+        {
+            get
+            {
+                return Properties.FulfilledBy;
+            }
+        }
+
+        /// <summary> List of filters supported for a product. </summary>
+        public IReadOnlyList<FilterableProperty> FilterableProperties
+        {
+            get
+            {
+                return Properties.FilterableProperties;
+            }
+        }
+
         /// <summary> List of products in the product line. </summary>
-        public IReadOnlyList<EdgeOrderProduct> Products { get; }
+        public IReadOnlyList<EdgeOrderProduct> Products
+        {
+            get
+            {
+                return Properties.Products;
+            }
+        }
     }
 }

@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Data source type.
-    /// Serialized Name: SourceType
-    /// </summary>
+    /// <summary> Data source type. </summary>
     public readonly partial struct MachineLearningSourceType : IEquatable<MachineLearningSourceType>
     {
         private readonly string _value;
@@ -29,26 +26,17 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string DatastoreValue = "Datastore";
         private const string UriValue = "URI";
 
-        /// <summary>
-        /// Dataset
-        /// Serialized Name: SourceType.Dataset
-        /// </summary>
+        /// <summary> Dataset. </summary>
         public static MachineLearningSourceType Dataset { get; } = new MachineLearningSourceType(DatasetValue);
-        /// <summary>
-        /// Datastore
-        /// Serialized Name: SourceType.Datastore
-        /// </summary>
+        /// <summary> Datastore. </summary>
         public static MachineLearningSourceType Datastore { get; } = new MachineLearningSourceType(DatastoreValue);
-        /// <summary>
-        /// URI
-        /// Serialized Name: SourceType.URI
-        /// </summary>
+        /// <summary> URI. </summary>
         public static MachineLearningSourceType Uri { get; } = new MachineLearningSourceType(UriValue);
         /// <summary> Determines if two <see cref="MachineLearningSourceType"/> values are the same. </summary>
         public static bool operator ==(MachineLearningSourceType left, MachineLearningSourceType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningSourceType"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningSourceType left, MachineLearningSourceType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningSourceType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningSourceType"/>. </summary>
         public static implicit operator MachineLearningSourceType(string value) => new MachineLearningSourceType(value);
 
         /// <inheritdoc />
@@ -59,7 +47,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

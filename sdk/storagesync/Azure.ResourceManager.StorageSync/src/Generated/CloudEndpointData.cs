@@ -6,68 +6,192 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 using Azure.ResourceManager.StorageSync.Models;
 
 namespace Azure.ResourceManager.StorageSync
 {
-    /// <summary> A class representing the CloudEndpoint data model. </summary>
+    /// <summary> Cloud Endpoint object. </summary>
     public partial class CloudEndpointData : ResourceData
     {
-        /// <summary> Initializes a new instance of CloudEndpointData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CloudEndpointData"/>. </summary>
         public CloudEndpointData()
         {
         }
 
-        /// <summary> Initializes a new instance of CloudEndpointData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="storageAccountResourceId"> Storage Account Resource Id. </param>
-        /// <param name="azureFileShareName"> Azure file share name. </param>
-        /// <param name="storageAccountTenantId"> Storage Account Tenant Id. </param>
-        /// <param name="partnershipId"> Partnership Id. </param>
-        /// <param name="friendlyName"> Friendly Name. </param>
-        /// <param name="isBackupEnabled"> Backup Enabled. </param>
-        /// <param name="provisioningState"> CloudEndpoint Provisioning State. </param>
-        /// <param name="lastWorkflowId"> CloudEndpoint lastWorkflowId. </param>
-        /// <param name="lastOperationName"> Resource Last Operation Name. </param>
-        /// <param name="changeEnumerationStatus"> Cloud endpoint change enumeration status. </param>
-        internal CloudEndpointData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, ResourceIdentifier storageAccountResourceId, string azureFileShareName, Guid? storageAccountTenantId, string partnershipId, string friendlyName, string isBackupEnabled, string provisioningState, string lastWorkflowId, string lastOperationName, CloudEndpointChangeEnumerationStatus changeEnumerationStatus) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="CloudEndpointData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> Cloud Endpoint properties. </param>
+        internal CloudEndpointData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, CloudEndpointProperties properties) : base(id, name, resourceType, systemData)
         {
-            StorageAccountResourceId = storageAccountResourceId;
-            AzureFileShareName = azureFileShareName;
-            StorageAccountTenantId = storageAccountTenantId;
-            PartnershipId = partnershipId;
-            FriendlyName = friendlyName;
-            IsBackupEnabled = isBackupEnabled;
-            ProvisioningState = provisioningState;
-            LastWorkflowId = lastWorkflowId;
-            LastOperationName = lastOperationName;
-            ChangeEnumerationStatus = changeEnumerationStatus;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
 
+        /// <summary> Cloud Endpoint properties. </summary>
+        internal CloudEndpointProperties Properties { get; set; }
+
         /// <summary> Storage Account Resource Id. </summary>
-        public ResourceIdentifier StorageAccountResourceId { get; set; }
+        public ResourceIdentifier StorageAccountResourceId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.StorageAccountResourceId;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new CloudEndpointProperties();
+                }
+                Properties.StorageAccountResourceId = value;
+            }
+        }
+
         /// <summary> Azure file share name. </summary>
-        public string AzureFileShareName { get; set; }
+        public string AzureFileShareName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.AzureFileShareName;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new CloudEndpointProperties();
+                }
+                Properties.AzureFileShareName = value;
+            }
+        }
+
         /// <summary> Storage Account Tenant Id. </summary>
-        public Guid? StorageAccountTenantId { get; set; }
+        public Guid? StorageAccountTenantId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.StorageAccountTenantId;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new CloudEndpointProperties();
+                }
+                Properties.StorageAccountTenantId = value.Value;
+            }
+        }
+
         /// <summary> Partnership Id. </summary>
-        public string PartnershipId { get; set; }
+        public string PartnershipId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.PartnershipId;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new CloudEndpointProperties();
+                }
+                Properties.PartnershipId = value;
+            }
+        }
+
         /// <summary> Friendly Name. </summary>
-        public string FriendlyName { get; set; }
+        public string FriendlyName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.FriendlyName;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new CloudEndpointProperties();
+                }
+                Properties.FriendlyName = value;
+            }
+        }
+
         /// <summary> Backup Enabled. </summary>
-        public string IsBackupEnabled { get; }
+        public string IsBackupEnabled
+        {
+            get
+            {
+                return Properties is null ? default : Properties.IsBackupEnabled;
+            }
+        }
+
         /// <summary> CloudEndpoint Provisioning State. </summary>
-        public string ProvisioningState { get; set; }
+        public string ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new CloudEndpointProperties();
+                }
+                Properties.ProvisioningState = value;
+            }
+        }
+
         /// <summary> CloudEndpoint lastWorkflowId. </summary>
-        public string LastWorkflowId { get; set; }
+        public string LastWorkflowId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.LastWorkflowId;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new CloudEndpointProperties();
+                }
+                Properties.LastWorkflowId = value;
+            }
+        }
+
         /// <summary> Resource Last Operation Name. </summary>
-        public string LastOperationName { get; set; }
+        public string LastOperationName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.LastOperationName;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new CloudEndpointProperties();
+                }
+                Properties.LastOperationName = value;
+            }
+        }
+
         /// <summary> Cloud endpoint change enumeration status. </summary>
-        public CloudEndpointChangeEnumerationStatus ChangeEnumerationStatus { get; }
+        public CloudEndpointChangeEnumerationStatus ChangeEnumerationStatus
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ChangeEnumerationStatus;
+            }
+        }
     }
 }

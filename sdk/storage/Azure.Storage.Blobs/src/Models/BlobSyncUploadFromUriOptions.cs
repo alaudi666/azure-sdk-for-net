@@ -26,11 +26,10 @@ namespace Azure.Storage.Blobs.Models
         /// </summary>
         public BlobHttpHeaders HttpHeaders { get; set; }
 
-        // TODO service bug.  https://github.com/Azure/azure-sdk-for-net/issues/15969
-        ///// <summary>
-        ///// Optional custom metadata to set for this append blob.
-        ///// </summary>
-        //public Metadata Metadata { get; set; }
+        /// <summary>
+        /// Optional custom metadata to set for this append blob.
+        /// </summary>
+        public Metadata Metadata { get; set; }
 
         /// <summary>
         /// Options tags to set for this block blob.
@@ -76,5 +75,17 @@ namespace Azure.Storage.Blobs.Models
         /// Default is to replace.
         /// </summary>
         public BlobCopySourceTagsMode? CopySourceTagsMode { get; set; }
+
+        /// <summary>
+        /// Optional, only applicable (but required) when the source is Azure Storage Files and using token authentication.
+        /// Used to indicate the intent of the request.
+        /// </summary>
+        public FileShareTokenIntent? SourceShareTokenIntent { get; set; }
+
+        /// <summary>
+        /// Optional. Specifies the source customer provided key to use to encrypt the source blob.
+        /// Applicable only for service version 2026-02-06 or later.
+        /// </summary>
+        public CustomerProvidedKey? SourceCustomerProvidedKey { get; set; }
     }
 }

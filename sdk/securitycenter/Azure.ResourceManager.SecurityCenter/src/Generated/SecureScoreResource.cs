@@ -9,10 +9,9 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.SecurityCenter.Models;
 
@@ -20,13 +19,15 @@ namespace Azure.ResourceManager.SecurityCenter
 {
     /// <summary>
     /// A Class representing a SecureScore along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="SecureScoreResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetSecureScoreResource method.
-    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource" /> using the GetSecureScore method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="SecureScoreResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetSecureScoreResource method.
+    /// Otherwise you can get one from its parent resource <see cref="SubscriptionResource"/> using the GetSecureScore method.
     /// </summary>
     public partial class SecureScoreResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="SecureScoreResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="secureScoreName"> The secureScoreName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string secureScoreName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores/{secureScoreName}";
@@ -39,12 +40,15 @@ namespace Azure.ResourceManager.SecurityCenter
         private readonly SecureScoreControlsRestOperations _secureScoreControlsRestClient;
         private readonly SecureScoreData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.Security/secureScores";
+
         /// <summary> Initializes a new instance of the <see cref="SecureScoreResource"/> class for mocking. </summary>
         protected SecureScoreResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "SecureScoreResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="SecureScoreResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal SecureScoreResource(ArmClient client, SecureScoreData data) : this(client, data.Id)
@@ -68,9 +72,6 @@ namespace Azure.ResourceManager.SecurityCenter
 #endif
         }
 
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.Security/secureScores";
-
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
 
@@ -93,9 +94,25 @@ namespace Azure.ResourceManager.SecurityCenter
         }
 
         /// <summary>
-        /// Get secure score for a specific Microsoft Defender for Cloud initiative within your current scope. For the ASC Default initiative, use &apos;ascScore&apos;.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores/{secureScoreName}
-        /// Operation Id: SecureScores_Get
+        /// Get secure score for a specific Microsoft Defender for Cloud initiative within your current scope. For the ASC Default initiative, use 'ascScore'.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores/{secureScoreName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecureScores_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecureScoreResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<SecureScoreResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -117,9 +134,25 @@ namespace Azure.ResourceManager.SecurityCenter
         }
 
         /// <summary>
-        /// Get secure score for a specific Microsoft Defender for Cloud initiative within your current scope. For the ASC Default initiative, use &apos;ascScore&apos;.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores/{secureScoreName}
-        /// Operation Id: SecureScores_Get
+        /// Get secure score for a specific Microsoft Defender for Cloud initiative within your current scope. For the ASC Default initiative, use 'ascScore'.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores/{secureScoreName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecureScores_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecureScoreResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<SecureScoreResource> Get(CancellationToken cancellationToken = default)
@@ -142,88 +175,56 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get all security controls for a specific initiative within a scope
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores/{secureScoreName}/secureScoreControls
-        /// Operation Id: SecureScoreControls_ListBySecureScore
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores/{secureScoreName}/secureScoreControls</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecureScoreControls_ListBySecureScore</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="expand"> OData expand. Optional. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="SecureScoreControlDetails" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SecureScoreControlDetails"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SecureScoreControlDetails> GetSecureScoreControlsAsync(SecurityScoreODataExpand? expand = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<SecureScoreControlDetails>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _secureScoreControlsClientDiagnostics.CreateScope("SecureScoreResource.GetSecureScoreControls");
-                scope.Start();
-                try
-                {
-                    var response = await _secureScoreControlsRestClient.ListBySecureScoreAsync(Id.SubscriptionId, Id.Name, expand, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<SecureScoreControlDetails>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _secureScoreControlsClientDiagnostics.CreateScope("SecureScoreResource.GetSecureScoreControls");
-                scope.Start();
-                try
-                {
-                    var response = await _secureScoreControlsRestClient.ListBySecureScoreNextPageAsync(nextLink, Id.SubscriptionId, Id.Name, expand, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _secureScoreControlsRestClient.CreateListBySecureScoreRequest(Id.SubscriptionId, Id.Name, expand);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _secureScoreControlsRestClient.CreateListBySecureScoreNextPageRequest(nextLink, Id.SubscriptionId, Id.Name, expand);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => SecureScoreControlDetails.DeserializeSecureScoreControlDetails(e), _secureScoreControlsClientDiagnostics, Pipeline, "SecureScoreResource.GetSecureScoreControls", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Get all security controls for a specific initiative within a scope
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores/{secureScoreName}/secureScoreControls
-        /// Operation Id: SecureScoreControls_ListBySecureScore
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/secureScores/{secureScoreName}/secureScoreControls</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SecureScoreControls_ListBySecureScore</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2020-01-01</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="expand"> OData expand. Optional. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="SecureScoreControlDetails" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SecureScoreControlDetails"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SecureScoreControlDetails> GetSecureScoreControls(SecurityScoreODataExpand? expand = null, CancellationToken cancellationToken = default)
         {
-            Page<SecureScoreControlDetails> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _secureScoreControlsClientDiagnostics.CreateScope("SecureScoreResource.GetSecureScoreControls");
-                scope.Start();
-                try
-                {
-                    var response = _secureScoreControlsRestClient.ListBySecureScore(Id.SubscriptionId, Id.Name, expand, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<SecureScoreControlDetails> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _secureScoreControlsClientDiagnostics.CreateScope("SecureScoreResource.GetSecureScoreControls");
-                scope.Start();
-                try
-                {
-                    var response = _secureScoreControlsRestClient.ListBySecureScoreNextPage(nextLink, Id.SubscriptionId, Id.Name, expand, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _secureScoreControlsRestClient.CreateListBySecureScoreRequest(Id.SubscriptionId, Id.Name, expand);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _secureScoreControlsRestClient.CreateListBySecureScoreNextPageRequest(nextLink, Id.SubscriptionId, Id.Name, expand);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => SecureScoreControlDetails.DeserializeSecureScoreControlDetails(e), _secureScoreControlsClientDiagnostics, Pipeline, "SecureScoreResource.GetSecureScoreControls", "value", "nextLink", cancellationToken);
         }
     }
 }

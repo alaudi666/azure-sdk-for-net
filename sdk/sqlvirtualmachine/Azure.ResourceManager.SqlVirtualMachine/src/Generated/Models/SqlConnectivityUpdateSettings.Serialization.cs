@@ -5,79 +5,178 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.SqlVirtualMachine;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
-    public partial class SqlConnectivityUpdateSettings : IUtf8JsonSerializable
+    /// <summary> Set the access level and network port settings for SQL Server. </summary>
+    public partial class SqlConnectivityUpdateSettings : IJsonModel<SqlConnectivityUpdateSettings>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual SqlConnectivityUpdateSettings PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlConnectivityUpdateSettings>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeSqlConnectivityUpdateSettings(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SqlConnectivityUpdateSettings)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<SqlConnectivityUpdateSettings>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlConnectivityUpdateSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SqlConnectivityUpdateSettings)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(ConnectivityType))
             {
-                writer.WritePropertyName("connectivityType");
+                writer.WritePropertyName("connectivityType"u8);
                 writer.WriteStringValue(ConnectivityType.Value.ToString());
             }
             if (Optional.IsDefined(Port))
             {
-                writer.WritePropertyName("port");
+                writer.WritePropertyName("port"u8);
                 writer.WriteNumberValue(Port.Value);
             }
             if (Optional.IsDefined(SqlAuthUpdateUserName))
             {
-                writer.WritePropertyName("sqlAuthUpdateUserName");
+                writer.WritePropertyName("sqlAuthUpdateUserName"u8);
                 writer.WriteStringValue(SqlAuthUpdateUserName);
             }
             if (Optional.IsDefined(SqlAuthUpdatePassword))
             {
-                writer.WritePropertyName("sqlAuthUpdatePassword");
+                writer.WritePropertyName("sqlAuthUpdatePassword"u8);
                 writer.WriteStringValue(SqlAuthUpdatePassword);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static SqlConnectivityUpdateSettings DeserializeSqlConnectivityUpdateSettings(JsonElement element)
-        {
-            Optional<SqlServerConnectivityType> connectivityType = default;
-            Optional<int> port = default;
-            Optional<string> sqlAuthUpdateUserName = default;
-            Optional<string> sqlAuthUpdatePassword = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("connectivityType"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    connectivityType = new SqlServerConnectivityType(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("port"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    port = property.Value.GetInt32();
-                    continue;
-                }
-                if (property.NameEquals("sqlAuthUpdateUserName"))
-                {
-                    sqlAuthUpdateUserName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("sqlAuthUpdatePassword"))
-                {
-                    sqlAuthUpdatePassword = property.Value.GetString();
-                    continue;
+#endif
                 }
             }
-            return new SqlConnectivityUpdateSettings(Optional.ToNullable(connectivityType), Optional.ToNullable(port), sqlAuthUpdateUserName.Value, sqlAuthUpdatePassword.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        SqlConnectivityUpdateSettings IJsonModel<SqlConnectivityUpdateSettings>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual SqlConnectivityUpdateSettings JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlConnectivityUpdateSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SqlConnectivityUpdateSettings)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSqlConnectivityUpdateSettings(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static SqlConnectivityUpdateSettings DeserializeSqlConnectivityUpdateSettings(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            SqlServerConnectivityType? connectivityType = default;
+            int? port = default;
+            string sqlAuthUpdateUserName = default;
+            string sqlAuthUpdatePassword = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("connectivityType"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    connectivityType = new SqlServerConnectivityType(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("port"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    port = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("sqlAuthUpdateUserName"u8))
+                {
+                    sqlAuthUpdateUserName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("sqlAuthUpdatePassword"u8))
+                {
+                    sqlAuthUpdatePassword = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new SqlConnectivityUpdateSettings(connectivityType, port, sqlAuthUpdateUserName, sqlAuthUpdatePassword, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<SqlConnectivityUpdateSettings>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlConnectivityUpdateSettings>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerSqlVirtualMachineContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(SqlConnectivityUpdateSettings)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        SqlConnectivityUpdateSettings IPersistableModel<SqlConnectivityUpdateSettings>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<SqlConnectivityUpdateSettings>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

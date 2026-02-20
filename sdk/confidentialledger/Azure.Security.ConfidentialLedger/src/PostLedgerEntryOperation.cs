@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
 using System.Threading;
@@ -11,8 +12,7 @@ using Azure.Core;
 namespace Azure.Security.ConfidentialLedger
 {
     /// <summary>
-    /// Tracks the status of a call to <see cref="ConfidentialLedgerClient.PostLedgerEntry"/> and <see cref="ConfidentialLedgerClient.PostLedgerEntryAsync"/>
-    /// until completion.
+    /// Tracks the status of a call to and until completion.
     /// </summary>
     internal class PostLedgerEntryOperation : Operation, IOperation
     {
@@ -26,13 +26,12 @@ namespace Azure.Security.ConfidentialLedger
         /// Initializes a previously run operation with the given <paramref name="transactionId"/>.
         /// </summary>
         /// <param name="client"> Tje <see cref="ConfidentialLedgerClient"/>. </param>
-        /// <param name="transactionId"> The transaction id from a previous call to
-        /// <see cref="ConfidentialLedgerClient.PostLedgerEntry"/>.</param>
+        /// <param name="transactionId"> The transaction id from a previous call to. </param>
         public PostLedgerEntryOperation(ConfidentialLedgerClient client, string transactionId)
         {
             _client = client;
             Id = transactionId;
-            _operationInternal = new(_client.ClientDiagnostics, this, rawResponse: null, nameof(PostLedgerEntryOperation));
+            _operationInternal = new(this, _client.ClientDiagnostics, rawResponse: null, nameof(PostLedgerEntryOperation));
         }
 
         /// <summary>
@@ -63,10 +62,7 @@ namespace Azure.Security.ConfidentialLedger
 
             if (statusResponse.Status != (int)HttpStatusCode.OK)
             {
-                var error = new ResponseError(null, exceptionMessage);
-                var ex = async
-                    ? await _client.ClientDiagnostics.CreateRequestFailedExceptionAsync(statusResponse, error).ConfigureAwait(false)
-                    : _client.ClientDiagnostics.CreateRequestFailedException(statusResponse, error);
+                var ex = new RequestFailedException(statusResponse, null, new PostLedgerEntryRequestFailedDetailsParser(exceptionMessage));
                 return OperationState.Failure(statusResponse, new RequestFailedException(exceptionMessage, ex));
             }
 
@@ -81,6 +77,10 @@ namespace Azure.Security.ConfidentialLedger
             return OperationState.Pending(statusResponse);
         }
 
+        // This method is never invoked since we don't override Operation<T>.GetRehydrationToken.
+        RehydrationToken IOperation.GetRehydrationToken() =>
+            throw new NotSupportedException($"{nameof(GetRehydrationToken)} is not supported.");
+
         /// <summary>
         /// The transactionId of the posted ledger entry.
         /// </summary>
@@ -88,5 +88,21 @@ namespace Azure.Security.ConfidentialLedger
 
         /// <inheritdoc />
         public override bool HasCompleted => _operationInternal.HasCompleted;
+
+        private class PostLedgerEntryRequestFailedDetailsParser : RequestFailedDetailsParser
+        {
+            private readonly string _message;
+
+            public PostLedgerEntryRequestFailedDetailsParser(string message)
+            {
+                _message = message;
+            }
+            public override bool TryParse(Response response, out ResponseError error, out IDictionary<string, string> data)
+            {
+                error = new ResponseError(null, _message);
+                data = null;
+                return true;
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 # Release History
 
-## 1.3.0-beta.1 (Unreleased)
+## 1.6.0-beta.1 (Unreleased)
 
 ### Features Added
 
@@ -10,7 +10,70 @@
 
 ### Other Changes
 
-- Updated dependency version of `Microsoft.AspNetCore.DataProtection` to mitigate [CVE-2021-24112](https://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-24112).  Note that the vulnerability only exists in a dependency referenced by the `netcoreapp3.0` target, which reach end-of-life in December, 2019.  
+## 1.5.1 (2025-06-23)
+
+### Acknowledgments
+
+Thank you to our developer community members who helped to make the Event Hubs client libraries better with their contributions to this release:
+
+- Mike Alhayek _([GitHub](https://github.com/MikeAlhayek))_
+
+### Bugs Fixed
+
+- Updated `ConfigureKeyManagementBlobClientOptions` to ensure that its dependencies were resolved in the correct scope to prevent issues due to lifetime drift.  Previously, a new scope was created to resolve `AzureBlobXmlRepository`.  However, `AzureBlobXmlRepository` is registered as a singleton and should be resolved from the same scope in which the options are being configured. Creating a new scope introduced unnecessary overhead and potential for unexpected behavior due to differences in service lifetime management.  _(A community contribution, courtesy of [danielmarbach](https://github.com/MikeAlhayek))_
+
+## 1.5.0 (2025-02-11)
+
+### Other Changes
+
+- Updated dependencies to ensure they are up-to-date with the latest targets and trimming from built-in dependencies.
+
+## 1.4.0 (2024-11-26)
+
+### Other Changes
+
+- Updated dependency `Microsoft.Extensions.DependencyInjection` to version `8.0.11`
+- Updated dependency `Microsoft.Bcl.AsyncInterfaces` to version `8.0.0`
+
+## 1.3.4 (2024-04-16)
+
+### Bugs Fixed
+
+- Correct unit mismatch in backoff calculation.
+
+## 1.3.3 (2024-02-12)
+
+### Bugs Fixed
+
+- Fix several issues related to ThreadPool starvation for synchronous scenarios
+
+## 1.3.2 (2023-03-11)
+
+### Other Changes
+
+- Upgraded dependent `Azure.Core` to `1.30.0`.
+
+## 1.3.1 (2023-03-07)
+
+### Other Changes
+
+- Updating additional dependencies to mitigate [CVE-2021-24112](https://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-24112).  Note that the vulnerability only exists in a dependency referenced by the `netcoreapp3.0` target, which reach end-of-life in December, 2019.
+
+## 1.3.0 (2023-02-07)
+
+### Acknowledgments
+
+Thank you to our developer community members who helped to make the Event Hubs client libraries better with their contributions to this release:
+
+- Tom Longhurst _([GitHub](https://github.com/thomhurst))_
+
+### Features Added
+
+- Added an overload when configuring data protection which allows token credentials to be created by a factory on-demand.  _(A community contribution, courtesy of [thomhurst](https://github.com/thomhurst))_
+
+### Other Changes
+
+- Updated dependency version of `Microsoft.AspNetCore.DataProtection` to mitigate [CVE-2021-24112](https://msrc.microsoft.com/update-guide/vulnerability/CVE-2021-24112).  Note that the vulnerability only exists in a dependency referenced by the `netcoreapp3.0` target, which reach end-of-life in December, 2019.
 
 ## 1.2.3 (2022-09-12)
 

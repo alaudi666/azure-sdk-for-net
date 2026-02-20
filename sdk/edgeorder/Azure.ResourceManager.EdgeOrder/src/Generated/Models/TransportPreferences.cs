@@ -5,16 +5,31 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Preferences related to the shipment logistics of the sku. </summary>
     internal partial class TransportPreferences
     {
-        /// <summary> Initializes a new instance of TransportPreferences. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="TransportPreferences"/>. </summary>
         /// <param name="preferredShipmentType"> Indicates Shipment Logistics type that the customer preferred. </param>
         public TransportPreferences(TransportShipmentType preferredShipmentType)
         {
             PreferredShipmentType = preferredShipmentType;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="TransportPreferences"/>. </summary>
+        /// <param name="preferredShipmentType"> Indicates Shipment Logistics type that the customer preferred. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal TransportPreferences(TransportShipmentType preferredShipmentType, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            PreferredShipmentType = preferredShipmentType;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Indicates Shipment Logistics type that the customer preferred. </summary>

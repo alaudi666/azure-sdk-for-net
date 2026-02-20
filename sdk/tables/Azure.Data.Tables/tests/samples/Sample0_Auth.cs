@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
-using Azure.Core.TestFramework;
-using NUnit.Framework;
-using Azure.Data.Tables.Tests;
-using Azure.Data.Tables.Sas;
 using System.Threading.Tasks;
+using Azure.Core.TestFramework;
+using Azure.Data.Tables.Sas;
+using Azure.Data.Tables.Tests;
 using Azure.Identity;
+using NUnit.Framework;
 
 namespace Azure.Data.Tables.Samples
 {
@@ -108,10 +108,7 @@ namespace Azure.Data.Tables.Samples
 #if SNIPPET
                 new DefaultAzureCredential());
 #else
-                new ClientSecretCredential(
-                    GetVariable("TENANT_ID"),
-                    GetVariable("CLIENT_ID"),
-                    GetVariable("CLIENT_SECRET")));
+                Credential);
 #endif
 
             // Create the table if it doesn't already exist to verify we've successfully authenticated.

@@ -2,13 +2,13 @@
 // Licensed under the MIT License.
 
 using System;
-using Azure.Core.TestFramework;
-using NUnit.Framework;
-using Azure.Data.Tables.Tests;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Azure.Core.TestFramework;
 using Azure.Data.Tables.Models;
+using Azure.Data.Tables.Tests;
+using NUnit.Framework;
 
 namespace Azure.Data.Tables.Samples
 {
@@ -33,30 +33,28 @@ namespace Azure.Data.Tables.Samples
             #region Snippet:BatchAdd
 
             // Create a list of 5 entities with the same partition key.
-#if SNIPPET
-            string partitionKey = "BatchInsertSample";
-#endif
+            string batchPartitionKey = "BatchInsertSample";
             List<TableEntity> entityList = new List<TableEntity>
             {
-                new TableEntity(partitionKey, "01")
+                new TableEntity(batchPartitionKey, "01")
                 {
                     { "Product", "Marker" },
                     { "Price", 5.00 },
                     { "Brand", "Premium" }
                 },
-                new TableEntity(partitionKey, "02")
+                new TableEntity(batchPartitionKey, "02")
                 {
                     { "Product", "Pen" },
                     { "Price", 3.00 },
                     { "Brand", "Premium" }
                 },
-                new TableEntity(partitionKey, "03")
+                new TableEntity(batchPartitionKey, "03")
                 {
                     { "Product", "Paper" },
                     { "Price", 0.10 },
                     { "Brand", "Premium" }
                 },
-                new TableEntity(partitionKey, "04")
+                new TableEntity(batchPartitionKey, "04")
                 {
                     { "Product", "Glue" },
                     { "Price", 1.00 },

@@ -29,6 +29,7 @@ namespace Microsoft.Azure.WebJobs
         public bool AutoCompleteMessages { get { throw null; } set { } }
         public string Connection { get { throw null; } set { } }
         public bool IsSessionsEnabled { get { throw null; } set { } }
+        public int MaxMessageBatchSize { get { throw null; } set { } }
         public string QueueName { get { throw null; } }
         public string SubscriptionName { get { throw null; } }
         public string TopicName { get { throw null; } }
@@ -79,9 +80,12 @@ namespace Microsoft.Azure.WebJobs.ServiceBus
         public bool EnableCrossEntityTransactions { get { throw null; } set { } }
         public Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { throw null; } set { } }
         public System.TimeSpan MaxAutoLockRenewalDuration { get { throw null; } set { } }
+        public System.TimeSpan MaxBatchWaitTime { get { throw null; } set { } }
         public int MaxConcurrentCalls { get { throw null; } set { } }
+        public int MaxConcurrentCallsPerSession { get { throw null; } set { } }
         public int MaxConcurrentSessions { get { throw null; } set { } }
         public int MaxMessageBatchSize { get { throw null; } set { } }
+        public int MinMessageBatchSize { get { throw null; } set { } }
         public int PrefetchCount { get { throw null; } set { } }
         public System.Func<Azure.Messaging.ServiceBus.ProcessErrorEventArgs, System.Threading.Tasks.Task> ProcessErrorAsync { get { throw null; } set { } }
         public System.Func<Azure.Messaging.ServiceBus.ProcessSessionEventArgs, System.Threading.Tasks.Task> SessionClosingAsync { get { throw null; } set { } }

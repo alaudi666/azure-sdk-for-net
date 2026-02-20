@@ -7,14 +7,17 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Configuration filters. </summary>
     public partial class ConfigurationFilters
     {
-        /// <summary> Initializes a new instance of ConfigurationFilters. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ConfigurationFilters"/>. </summary>
         /// <param name="hierarchyInformation"> Product hierarchy information. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="hierarchyInformation"/> is null. </exception>
         public ConfigurationFilters(HierarchyInformation hierarchyInformation)
@@ -25,9 +28,26 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             FilterableProperty = new ChangeTrackingList<FilterableProperty>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="ConfigurationFilters"/>. </summary>
+        /// <param name="hierarchyInformation"> Product hierarchy information. </param>
+        /// <param name="filterableProperty"> Filters specific to product. </param>
+        /// <param name="childConfigurationFilter"> Filter to fetch specific child configurations that exist in the configuration. This must be passed to either fetch a list of specific child configurations, or all child configurations of specific types of child configurations. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ConfigurationFilters(HierarchyInformation hierarchyInformation, IList<FilterableProperty> filterableProperty, EdgeOrderChildConfigurationFilter childConfigurationFilter, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            HierarchyInformation = hierarchyInformation;
+            FilterableProperty = filterableProperty;
+            ChildConfigurationFilter = childConfigurationFilter;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> Product hierarchy information. </summary>
         public HierarchyInformation HierarchyInformation { get; }
+
         /// <summary> Filters specific to product. </summary>
         public IList<FilterableProperty> FilterableProperty { get; }
+
+        /// <summary> Filter to fetch specific child configurations that exist in the configuration. This must be passed to either fetch a list of specific child configurations, or all child configurations of specific types of child configurations. </summary>
+        public EdgeOrderChildConfigurationFilter ChildConfigurationFilter { get; set; }
     }
 }

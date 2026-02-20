@@ -5,33 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> Represents list of placement policies. </summary>
+    /// <summary> The response of a PlacementPolicy list operation. </summary>
     internal partial class PlacementPoliciesList
     {
-        /// <summary> Initializes a new instance of PlacementPoliciesList. </summary>
-        internal PlacementPoliciesList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="PlacementPoliciesList"/>. </summary>
+        /// <param name="value"> The PlacementPolicy items on this page. </param>
+        internal PlacementPoliciesList(IEnumerable<PlacementPolicyData> value)
         {
-            Value = new ChangeTrackingList<PlacementPolicyData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of PlacementPoliciesList. </summary>
-        /// <param name="value"> The items on the page. </param>
-        /// <param name="nextLink"> URL to get the next page if any. </param>
-        internal PlacementPoliciesList(IReadOnlyList<PlacementPolicyData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="PlacementPoliciesList"/>. </summary>
+        /// <param name="value"> The PlacementPolicy items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal PlacementPoliciesList(IList<PlacementPolicyData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The items on the page. </summary>
-        public IReadOnlyList<PlacementPolicyData> Value { get; }
-        /// <summary> URL to get the next page if any. </summary>
-        public string NextLink { get; }
+        /// <summary> The PlacementPolicy items on this page. </summary>
+        public IList<PlacementPolicyData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

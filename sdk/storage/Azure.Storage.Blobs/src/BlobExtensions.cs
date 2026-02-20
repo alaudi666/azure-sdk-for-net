@@ -3,14 +3,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Net;
+using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using Azure.Core;
 using Azure.Storage.Blobs.Models;
 using Tags = System.Collections.Generic.IDictionary<string, string>;
-using Azure.Core;
-using System.IO;
-using System.Globalization;
 
 namespace Azure.Storage.Blobs
 {
@@ -232,6 +233,34 @@ namespace Azure.Storage.Blobs
 
         #region ToAccountInfo
         internal static AccountInfo ToAccountInfo(this ResponseWithHeaders<ServiceGetAccountInfoHeaders> response)
+        {
+            if (response == null)
+            {
+                return null;
+            }
+            return new AccountInfo
+            {
+                SkuName = response.Headers.SkuName.GetValueOrDefault(),
+                AccountKind = response.Headers.AccountKind.GetValueOrDefault(),
+                IsHierarchicalNamespaceEnabled = response.Headers.IsHierarchicalNamespaceEnabled.GetValueOrDefault()
+            };
+        }
+
+        internal static AccountInfo ToAccountInfo(this ResponseWithHeaders<BlobGetAccountInfoHeaders> response)
+        {
+            if (response == null)
+            {
+                return null;
+            }
+            return new AccountInfo
+            {
+                SkuName = response.Headers.SkuName.GetValueOrDefault(),
+                AccountKind = response.Headers.AccountKind.GetValueOrDefault(),
+                IsHierarchicalNamespaceEnabled = response.Headers.IsHierarchicalNamespaceEnabled.GetValueOrDefault()
+            };
+        }
+
+        internal static AccountInfo ToAccountInfo(this ResponseWithHeaders<ContainerGetAccountInfoHeaders> response)
         {
             if (response == null)
             {
@@ -889,7 +918,8 @@ namespace Azure.Storage.Blobs
                     ObjectReplicationDestinationPolicyId = response.Headers.ObjectReplicationPolicyId,
                     LastAccessed = response.Headers.LastAccessed.GetValueOrDefault(),
                     ImmutabilityPolicy = immutabilityPolicy,
-                    HasLegalHold = response.Headers.LegalHold.GetValueOrDefault()
+                    HasLegalHold = response.Headers.LegalHold.GetValueOrDefault(),
+                    CreatedOn = response.Headers.CreationTime.GetValueOrDefault()
                 }
             };
         }
@@ -1311,7 +1341,7 @@ namespace Azure.Storage.Blobs
                 LeaseStatus = response.Headers.LeaseStatus,
                 LeaseState = response.Headers.LeaseState,
                 LeaseDuration = response.Headers.LeaseDuration ?? LeaseDurationType.Infinite,
-                PublicAccess = response.Headers.BlobPublicAccess,
+                PublicAccess = response.Headers.BlobPublicAccess ?? PublicAccessType.None,
                 HasImmutabilityPolicy = response.Headers.HasImmutabilityPolicy,
                 HasLegalHold = response.Headers.HasLegalHold,
                 DefaultEncryptionScope = response.Headers.DefaultEncryptionScope,
@@ -1386,6 +1416,17 @@ namespace Azure.Storage.Blobs
             return new BlobLegalHoldResult
             {
                 HasLegalHold = response.Headers.LegalHold.GetValueOrDefault()
+            };
+        }
+        #endregion
+
+        #region ToEncryptionAlgorithmString
+        internal static string ToEncryptionAlgorithmString(this EncryptionAlgorithmType type)
+        {
+            return type switch
+            {
+                EncryptionAlgorithmType.Aes256 => EncryptionAlgorithmTypeInternal.AES256.ToSerialString(),
+                _ => throw new InvalidEnumArgumentException(),
             };
         }
         #endregion
@@ -1481,9 +1522,7 @@ namespace Azure.Storage.Blobs
             string operationName,
             string parameterName)
         {
-            if (AppContextSwitchHelper.GetConfigValue(
-                Constants.DisableRequestConditionsValidationSwitchName,
-                Constants.DisableRequestConditionsValidationEnvVar))
+            if (CompatSwitches.DisableRequestConditionsValidation)
             {
                 return;
             }
@@ -1513,9 +1552,7 @@ namespace Azure.Storage.Blobs
             string operationName,
             string parameterName)
         {
-            if (AppContextSwitchHelper.GetConfigValue(
-                Constants.DisableRequestConditionsValidationSwitchName,
-                Constants.DisableRequestConditionsValidationEnvVar))
+            if (CompatSwitches.DisableRequestConditionsValidation)
             {
                 return;
             }
@@ -1545,9 +1582,7 @@ namespace Azure.Storage.Blobs
             string operationName,
             string parameterName)
         {
-            if (AppContextSwitchHelper.GetConfigValue(
-                Constants.DisableRequestConditionsValidationSwitchName,
-                Constants.DisableRequestConditionsValidationEnvVar))
+            if (CompatSwitches.DisableRequestConditionsValidation)
             {
                 return;
             }
@@ -1576,9 +1611,7 @@ namespace Azure.Storage.Blobs
             string operationName,
             string parameterName)
         {
-            if (AppContextSwitchHelper.GetConfigValue(
-                Constants.DisableRequestConditionsValidationSwitchName,
-                Constants.DisableRequestConditionsValidationEnvVar))
+            if (CompatSwitches.DisableRequestConditionsValidation)
             {
                 return;
             }
@@ -1624,9 +1657,7 @@ namespace Azure.Storage.Blobs
             string operationName,
             string parameterName)
         {
-            if (AppContextSwitchHelper.GetConfigValue(
-                Constants.DisableRequestConditionsValidationSwitchName,
-                Constants.DisableRequestConditionsValidationEnvVar))
+            if (CompatSwitches.DisableRequestConditionsValidation)
             {
                 return;
             }
@@ -1754,6 +1785,18 @@ namespace Azure.Storage.Blobs
             {
                 invalidList ??= new List<string>();
                 invalidList.Add(nameof(BlobRequestConditions.LeaseId));
+            }
+            if ((invalidConditions & BlobRequestConditionProperty.AccessTierIfModifiedSince) == BlobRequestConditionProperty.AccessTierIfModifiedSince
+                && requestConditions.AccessTierIfModifiedSince != null)
+            {
+                invalidList ??= new List<string>();
+                invalidList.Add(nameof(BlobRequestConditions.AccessTierIfModifiedSince));
+            }
+            if ((invalidConditions & BlobRequestConditionProperty.AccessTierIfUnmodifiedSince) == BlobRequestConditionProperty.AccessTierIfUnmodifiedSince
+                && requestConditions.AccessTierIfUnmodifiedSince != null)
+            {
+                invalidList ??= new List<string>();
+                invalidList.Add(nameof(BlobRequestConditions.AccessTierIfUnmodifiedSince));
             }
         }
         #endregion

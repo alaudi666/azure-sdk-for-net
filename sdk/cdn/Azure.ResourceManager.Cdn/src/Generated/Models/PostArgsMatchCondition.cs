@@ -5,53 +5,61 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
     /// <summary> Defines the parameters for PostArgs match conditions. </summary>
-    public partial class PostArgsMatchCondition
+    public partial class PostArgsMatchCondition : DeliveryRuleConditionProperties
     {
-        /// <summary> Initializes a new instance of PostArgsMatchCondition. </summary>
-        /// <param name="conditionType"></param>
+        /// <summary> Initializes a new instance of <see cref="PostArgsMatchCondition"/>. </summary>
         /// <param name="postArgsOperator"> Describes operator to be matched. </param>
-        public PostArgsMatchCondition(PostArgsMatchConditionType conditionType, PostArgsOperator postArgsOperator)
+        public PostArgsMatchCondition(PostArgsOperator postArgsOperator)
         {
-            ConditionType = conditionType;
             PostArgsOperator = postArgsOperator;
             MatchValues = new ChangeTrackingList<string>();
             Transforms = new ChangeTrackingList<PreTransformCategory>();
+            TypeName = DeliveryRuleConditionParametersType.DeliveryRulePostArgsConditionParameters;
         }
 
-        /// <summary> Initializes a new instance of PostArgsMatchCondition. </summary>
-        /// <param name="conditionType"></param>
+        /// <summary> Initializes a new instance of <see cref="PostArgsMatchCondition"/>. </summary>
+        /// <param name="typeName"></param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="selector"> Name of PostArg to be matched. </param>
         /// <param name="postArgsOperator"> Describes operator to be matched. </param>
         /// <param name="negateCondition"> Describes if this is negate condition or not. </param>
         /// <param name="matchValues"> The match value for the condition of the delivery rule. </param>
         /// <param name="transforms"> List of transforms. </param>
-        internal PostArgsMatchCondition(PostArgsMatchConditionType conditionType, string selector, PostArgsOperator postArgsOperator, bool? negateCondition, IList<string> matchValues, IList<PreTransformCategory> transforms)
+        internal PostArgsMatchCondition(DeliveryRuleConditionParametersType typeName, IDictionary<string, BinaryData> serializedAdditionalRawData, string selector, PostArgsOperator postArgsOperator, bool? negateCondition, IList<string> matchValues, IList<PreTransformCategory> transforms) : base(typeName, serializedAdditionalRawData)
         {
-            ConditionType = conditionType;
             Selector = selector;
             PostArgsOperator = postArgsOperator;
             NegateCondition = negateCondition;
             MatchValues = matchValues;
             Transforms = transforms;
+            TypeName = typeName;
         }
 
-        /// <summary> Gets or sets the condition type. </summary>
-        public PostArgsMatchConditionType ConditionType { get; set; }
+        /// <summary> Initializes a new instance of <see cref="PostArgsMatchCondition"/> for deserialization. </summary>
+        internal PostArgsMatchCondition()
+        {
+        }
+
         /// <summary> Name of PostArg to be matched. </summary>
+        [WirePath("selector")]
         public string Selector { get; set; }
         /// <summary> Describes operator to be matched. </summary>
+        [WirePath("operator")]
         public PostArgsOperator PostArgsOperator { get; set; }
         /// <summary> Describes if this is negate condition or not. </summary>
+        [WirePath("negateCondition")]
         public bool? NegateCondition { get; set; }
         /// <summary> The match value for the condition of the delivery rule. </summary>
+        [WirePath("matchValues")]
         public IList<string> MatchValues { get; }
         /// <summary> List of transforms. </summary>
+        [WirePath("transforms")]
         public IList<PreTransformCategory> Transforms { get; }
     }
 }

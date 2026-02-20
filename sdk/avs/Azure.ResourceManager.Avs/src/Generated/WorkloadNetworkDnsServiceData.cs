@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using System.Net;
 using Azure.Core;
@@ -13,55 +14,147 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Avs
 {
-    /// <summary> A class representing the WorkloadNetworkDnsService data model. </summary>
+    /// <summary> NSX DNS Service. </summary>
     public partial class WorkloadNetworkDnsServiceData : ResourceData
     {
-        /// <summary> Initializes a new instance of WorkloadNetworkDnsServiceData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkDnsServiceData"/>. </summary>
         public WorkloadNetworkDnsServiceData()
         {
-            FqdnZones = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of WorkloadNetworkDnsServiceData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="displayName"> Display name of the DNS Service. </param>
-        /// <param name="dnsServiceIP"> DNS service IP of the DNS Service. </param>
-        /// <param name="defaultDnsZone"> Default DNS zone of the DNS Service. </param>
-        /// <param name="fqdnZones"> FQDN zones of the DNS Service. </param>
-        /// <param name="logLevel"> DNS Service log level. </param>
-        /// <param name="status"> DNS Service status. </param>
-        /// <param name="provisioningState"> The provisioning state. </param>
-        /// <param name="revision"> NSX revision number. </param>
-        internal WorkloadNetworkDnsServiceData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string displayName, IPAddress dnsServiceIP, string defaultDnsZone, IList<string> fqdnZones, DnsServiceLogLevel? logLevel, DnsServiceStatus? status, WorkloadNetworkDnsServiceProvisioningState? provisioningState, long? revision) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkDnsServiceData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> The resource-specific properties for this resource. </param>
+        internal WorkloadNetworkDnsServiceData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, WorkloadNetworkDnsServiceProperties properties) : base(id, name, resourceType, systemData)
         {
-            DisplayName = displayName;
-            DnsServiceIP = dnsServiceIP;
-            DefaultDnsZone = defaultDnsZone;
-            FqdnZones = fqdnZones;
-            LogLevel = logLevel;
-            Status = status;
-            ProvisioningState = provisioningState;
-            Revision = revision;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
+
+        /// <summary> The resource-specific properties for this resource. </summary>
+        internal WorkloadNetworkDnsServiceProperties Properties { get; set; }
 
         /// <summary> Display name of the DNS Service. </summary>
-        public string DisplayName { get; set; }
+        public string DisplayName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.DisplayName;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkloadNetworkDnsServiceProperties();
+                }
+                Properties.DisplayName = value;
+            }
+        }
+
         /// <summary> DNS service IP of the DNS Service. </summary>
-        public IPAddress DnsServiceIP { get; set; }
+        public IPAddress DnsServiceIP
+        {
+            get
+            {
+                return Properties is null ? default : Properties.DnsServiceIP;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkloadNetworkDnsServiceProperties();
+                }
+                Properties.DnsServiceIP = value;
+            }
+        }
+
         /// <summary> Default DNS zone of the DNS Service. </summary>
-        public string DefaultDnsZone { get; set; }
+        public string DefaultDnsZone
+        {
+            get
+            {
+                return Properties is null ? default : Properties.DefaultDnsZone;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkloadNetworkDnsServiceProperties();
+                }
+                Properties.DefaultDnsZone = value;
+            }
+        }
+
         /// <summary> FQDN zones of the DNS Service. </summary>
-        public IList<string> FqdnZones { get; }
+        public IList<string> FqdnZones
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkloadNetworkDnsServiceProperties();
+                }
+                return Properties.FqdnZones;
+            }
+        }
+
         /// <summary> DNS Service log level. </summary>
-        public DnsServiceLogLevel? LogLevel { get; set; }
+        public DnsServiceLogLevel? LogLevel
+        {
+            get
+            {
+                return Properties is null ? default : Properties.LogLevel;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkloadNetworkDnsServiceProperties();
+                }
+                Properties.LogLevel = value.Value;
+            }
+        }
+
         /// <summary> DNS Service status. </summary>
-        public DnsServiceStatus? Status { get; }
+        public DnsServiceStatus? Status
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Status;
+            }
+        }
+
         /// <summary> The provisioning state. </summary>
-        public WorkloadNetworkDnsServiceProvisioningState? ProvisioningState { get; }
+        public WorkloadNetworkDnsServiceProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+        }
+
         /// <summary> NSX revision number. </summary>
-        public long? Revision { get; set; }
+        public long? Revision
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Revision;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkloadNetworkDnsServiceProperties();
+                }
+                Properties.Revision = value.Value;
+            }
+        }
     }
 }

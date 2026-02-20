@@ -5,15 +5,19 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> Permissions the identity has for keys, secrets, certificates and storage. </summary>
     public partial class IdentityAccessPermissions
     {
-        /// <summary> Initializes a new instance of IdentityAccessPermissions. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="IdentityAccessPermissions"/>. </summary>
         public IdentityAccessPermissions()
         {
             Keys = new ChangeTrackingList<IdentityAccessKeyPermission>();
@@ -22,26 +26,35 @@ namespace Azure.ResourceManager.KeyVault.Models
             Storage = new ChangeTrackingList<IdentityAccessStoragePermission>();
         }
 
-        /// <summary> Initializes a new instance of IdentityAccessPermissions. </summary>
+        /// <summary> Initializes a new instance of <see cref="IdentityAccessPermissions"/>. </summary>
         /// <param name="keys"> Permissions to keys. </param>
         /// <param name="secrets"> Permissions to secrets. </param>
         /// <param name="certificates"> Permissions to certificates. </param>
         /// <param name="storage"> Permissions to storage accounts. </param>
-        internal IdentityAccessPermissions(IList<IdentityAccessKeyPermission> keys, IList<IdentityAccessSecretPermission> secrets, IList<IdentityAccessCertificatePermission> certificates, IList<IdentityAccessStoragePermission> storage)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal IdentityAccessPermissions(IList<IdentityAccessKeyPermission> keys, IList<IdentityAccessSecretPermission> secrets, IList<IdentityAccessCertificatePermission> certificates, IList<IdentityAccessStoragePermission> storage, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Keys = keys;
             Secrets = secrets;
             Certificates = certificates;
             Storage = storage;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Permissions to keys. </summary>
+        [WirePath("keys")]
         public IList<IdentityAccessKeyPermission> Keys { get; }
+
         /// <summary> Permissions to secrets. </summary>
+        [WirePath("secrets")]
         public IList<IdentityAccessSecretPermission> Secrets { get; }
+
         /// <summary> Permissions to certificates. </summary>
+        [WirePath("certificates")]
         public IList<IdentityAccessCertificatePermission> Certificates { get; }
+
         /// <summary> Permissions to storage accounts. </summary>
+        [WirePath("storage")]
         public IList<IdentityAccessStoragePermission> Storage { get; }
     }
 }

@@ -1,14 +1,15 @@
 {
   "Entries": [
     {
-      "RequestUri": "https://fakeHost.api.wus2.digitaltwins.azure.net/eventroutes/someNonExistantEventRoute?api-version=2022-05-31",
+      "RequestUri": "https://fakeHost.api.wus2.digitaltwins.azure.net/eventroutes/someNonExistantEventRoute?api-version=2023-10-31",
       "RequestMethod": "GET",
       "RequestHeaders": {
         "Accept": "application/json",
         "Authorization": "Sanitized",
-        "traceparent": "00-b49bada9da63a648beee004dc5cf99d1-ce311e75cf3ce44d-00",
-        "User-Agent": "azsdk-net-DigitalTwins.Core/1.4.0-alpha.20220629.1 (.NET Core 3.1.26; Microsoft Windows 10.0.19044)",
-        "x-ms-client-request-id": "949f031b61e2a155161d841ea7ca1d93",
+        "Connection": "keep-alive",
+        "traceparent": "00-b98e7d32e64d07b4daf7da4ef273f8b3-6778b051bbdabd7c-00",
+        "User-Agent": "azsdk-net-DigitalTwins.Core/1.6.0-alpha.20250501.1 (.NET Framework 4.8.9300.0; Microsoft Windows 10.0.26100 )",
+        "x-ms-client-request-id": "Sanitized",
         "x-ms-return-client-request-id": "true"
       },
       "RequestBody": null,
@@ -16,10 +17,11 @@
       "ResponseHeaders": {
         "Content-Length": "223",
         "Content-Type": "application/json; charset=utf-8",
-        "Date": "Wed, 29 Jun 2022 09:17:43 GMT",
-        "mise-correlation-id": "777b040f-dd52-4ab1-b55a-fbf43eb7ba51",
+        "Date": "Fri, 02 May 2025 14:55:23 GMT",
+        "mise-correlation-id": "93bf7088-5ec0-493d-83d3-a6593932b013",
         "Strict-Transport-Security": "max-age=2592000",
-        "traceresponse": "00-b49bada9da63a648beee004dc5cf99d1-fd599c7328403c9f-01"
+        "traceresponse": "00-b98e7d32e64d07b4daf7da4ef273f8b3-be1366b3b3a887bd-01",
+        "x-ms-error-code": "EventRouteNotFound"
       },
       "ResponseBody": {
         "error": {
@@ -30,8 +32,7 @@
     }
   ],
   "Variables": {
-    "AZURE_AUTHORITY_HOST": "https://login.microsoftonline.com/",
     "DIGITALTWINS_URL": "https://fakeHost.api.wus2.digitaltwins.azure.net",
-    "RandomSeed": "598962650"
+    "RandomSeed": "1482673548"
   }
 }

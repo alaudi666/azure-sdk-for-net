@@ -7,14 +7,17 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Holds Customer subscription details. Clients can display available products to unregistered customers by explicitly passing subscription details. </summary>
     public partial class CustomerSubscriptionDetails
     {
-        /// <summary> Initializes a new instance of CustomerSubscriptionDetails. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CustomerSubscriptionDetails"/>. </summary>
         /// <param name="quotaId"> Quota ID of a subscription. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="quotaId"/> is null. </exception>
         public CustomerSubscriptionDetails(string quotaId)
@@ -25,10 +28,25 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             QuotaId = quotaId;
         }
 
+        /// <summary> Initializes a new instance of <see cref="CustomerSubscriptionDetails"/>. </summary>
+        /// <param name="registeredFeatures"> List of registered feature flags for subscription. </param>
+        /// <param name="locationPlacementId"> Location placement Id of a subscription. </param>
+        /// <param name="quotaId"> Quota ID of a subscription. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CustomerSubscriptionDetails(IList<CustomerSubscriptionRegisteredFeatures> registeredFeatures, string locationPlacementId, string quotaId, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            RegisteredFeatures = registeredFeatures;
+            LocationPlacementId = locationPlacementId;
+            QuotaId = quotaId;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> List of registered feature flags for subscription. </summary>
         public IList<CustomerSubscriptionRegisteredFeatures> RegisteredFeatures { get; }
+
         /// <summary> Location placement Id of a subscription. </summary>
         public string LocationPlacementId { get; set; }
+
         /// <summary> Quota ID of a subscription. </summary>
         public string QuotaId { get; }
     }

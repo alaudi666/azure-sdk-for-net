@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.RecoveryServices;
 
 namespace Azure.ResourceManager.RecoveryServices.Models
@@ -14,24 +15,31 @@ namespace Azure.ResourceManager.RecoveryServices.Models
     /// <summary> The response model for a list of Vaults. </summary>
     internal partial class VaultList
     {
-        /// <summary> Initializes a new instance of VaultList. </summary>
-        internal VaultList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="VaultList"/>. </summary>
+        /// <param name="value"> The Vault items on this page. </param>
+        internal VaultList(IEnumerable<RecoveryServicesVaultData> value)
         {
-            Value = new ChangeTrackingList<VaultData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of VaultList. </summary>
-        /// <param name="value"></param>
-        /// <param name="nextLink"></param>
-        internal VaultList(IReadOnlyList<VaultData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="VaultList"/>. </summary>
+        /// <param name="value"> The Vault items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal VaultList(IList<RecoveryServicesVaultData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets the value. </summary>
-        public IReadOnlyList<VaultData> Value { get; }
-        /// <summary> Gets the next link. </summary>
-        public string NextLink { get; }
+        /// <summary> The Vault items on this page. </summary>
+        public IList<RecoveryServicesVaultData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

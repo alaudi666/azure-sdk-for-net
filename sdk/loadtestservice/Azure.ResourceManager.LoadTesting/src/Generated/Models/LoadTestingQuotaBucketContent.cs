@@ -5,6 +5,8 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 
@@ -13,35 +15,96 @@ namespace Azure.ResourceManager.LoadTesting.Models
     /// <summary> Request object of new quota for a quota bucket. </summary>
     public partial class LoadTestingQuotaBucketContent : ResourceData
     {
-        /// <summary> Initializes a new instance of LoadTestingQuotaBucketContent. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="LoadTestingQuotaBucketContent"/>. </summary>
         public LoadTestingQuotaBucketContent()
         {
         }
 
-        /// <summary> Initializes a new instance of LoadTestingQuotaBucketContent. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="currentUsage"> Current quota usage of the quota bucket. </param>
-        /// <param name="currentQuota"> Current quota limit of the quota bucket. </param>
-        /// <param name="newQuota"> New quota limit of the quota bucket. </param>
-        /// <param name="dimensions"> Dimensions for new quota request. </param>
-        internal LoadTestingQuotaBucketContent(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, int? currentUsage, int? currentQuota, int? newQuota, LoadTestingQuotaBucketDimensions dimensions) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="LoadTestingQuotaBucketContent"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> Request object of new quota for a quota bucket. </param>
+        internal LoadTestingQuotaBucketContent(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, QuotaBucketRequestProperties properties) : base(id, name, resourceType, systemData)
         {
-            CurrentUsage = currentUsage;
-            CurrentQuota = currentQuota;
-            NewQuota = newQuota;
-            Dimensions = dimensions;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
 
+        /// <summary> Request object of new quota for a quota bucket. </summary>
+        internal QuotaBucketRequestProperties Properties { get; set; }
+
         /// <summary> Current quota usage of the quota bucket. </summary>
-        public int? CurrentUsage { get; set; }
+        public int? CurrentUsage
+        {
+            get
+            {
+                return Properties is null ? default : Properties.CurrentUsage;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new QuotaBucketRequestProperties();
+                }
+                Properties.CurrentUsage = value.Value;
+            }
+        }
+
         /// <summary> Current quota limit of the quota bucket. </summary>
-        public int? CurrentQuota { get; set; }
+        public int? CurrentQuota
+        {
+            get
+            {
+                return Properties is null ? default : Properties.CurrentQuota;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new QuotaBucketRequestProperties();
+                }
+                Properties.CurrentQuota = value.Value;
+            }
+        }
+
         /// <summary> New quota limit of the quota bucket. </summary>
-        public int? NewQuota { get; set; }
+        public int? NewQuota
+        {
+            get
+            {
+                return Properties is null ? default : Properties.NewQuota;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new QuotaBucketRequestProperties();
+                }
+                Properties.NewQuota = value.Value;
+            }
+        }
+
         /// <summary> Dimensions for new quota request. </summary>
-        public LoadTestingQuotaBucketDimensions Dimensions { get; set; }
+        public LoadTestingQuotaBucketDimensions Dimensions
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Dimensions;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new QuotaBucketRequestProperties();
+                }
+                Properties.Dimensions = value;
+            }
+        }
     }
 }

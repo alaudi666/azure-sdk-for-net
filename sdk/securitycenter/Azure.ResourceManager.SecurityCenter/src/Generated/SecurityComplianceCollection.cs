@@ -8,20 +8,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.SecurityCenter
 {
     /// <summary>
-    /// A class representing a collection of <see cref="SecurityComplianceResource" /> and their operations.
-    /// Each <see cref="SecurityComplianceResource" /> in the collection will belong to the same instance of <see cref="ArmResource" />.
-    /// To get a <see cref="SecurityComplianceCollection" /> instance call the GetSecurityCompliances method from an instance of <see cref="ArmResource" />.
+    /// A class representing a collection of <see cref="SecurityComplianceResource"/> and their operations.
+    /// Each <see cref="SecurityComplianceResource"/> in the collection will belong to the same instance of <see cref="ArmResource"/>.
+    /// To get a <see cref="SecurityComplianceCollection"/> instance call the GetSecurityCompliances method from an instance of <see cref="ArmResource"/>.
     /// </summary>
     public partial class SecurityComplianceCollection : ArmCollection, IEnumerable<SecurityComplianceResource>, IAsyncEnumerable<SecurityComplianceResource>
     {
@@ -45,8 +43,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Details of a specific Compliance.
-        /// Request Path: /{scope}/providers/Microsoft.Security/compliances/{complianceName}
-        /// Operation Id: Compliances_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{scope}/providers/Microsoft.Security/compliances/{complianceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Compliances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-08-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityComplianceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="complianceName"> name of the Compliance. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -74,8 +88,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Details of a specific Compliance.
-        /// Request Path: /{scope}/providers/Microsoft.Security/compliances/{complianceName}
-        /// Operation Id: Compliances_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{scope}/providers/Microsoft.Security/compliances/{complianceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Compliances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-08-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityComplianceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="complianceName"> name of the Compliance. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -103,92 +133,84 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// The Compliance scores of the specific management group.
-        /// Request Path: /{scope}/providers/Microsoft.Security/compliances
-        /// Operation Id: Compliances_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{scope}/providers/Microsoft.Security/compliances</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Compliances_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-08-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityComplianceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="SecurityComplianceResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SecurityComplianceResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SecurityComplianceResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<SecurityComplianceResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _securityComplianceCompliancesClientDiagnostics.CreateScope("SecurityComplianceCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _securityComplianceCompliancesRestClient.ListAsync(Id, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SecurityComplianceResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<SecurityComplianceResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _securityComplianceCompliancesClientDiagnostics.CreateScope("SecurityComplianceCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _securityComplianceCompliancesRestClient.ListNextPageAsync(nextLink, Id, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SecurityComplianceResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _securityComplianceCompliancesRestClient.CreateListRequest(Id);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _securityComplianceCompliancesRestClient.CreateListNextPageRequest(nextLink, Id);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new SecurityComplianceResource(Client, SecurityComplianceData.DeserializeSecurityComplianceData(e)), _securityComplianceCompliancesClientDiagnostics, Pipeline, "SecurityComplianceCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// The Compliance scores of the specific management group.
-        /// Request Path: /{scope}/providers/Microsoft.Security/compliances
-        /// Operation Id: Compliances_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{scope}/providers/Microsoft.Security/compliances</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Compliances_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-08-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityComplianceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="SecurityComplianceResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SecurityComplianceResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SecurityComplianceResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<SecurityComplianceResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _securityComplianceCompliancesClientDiagnostics.CreateScope("SecurityComplianceCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _securityComplianceCompliancesRestClient.List(Id, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SecurityComplianceResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<SecurityComplianceResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _securityComplianceCompliancesClientDiagnostics.CreateScope("SecurityComplianceCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _securityComplianceCompliancesRestClient.ListNextPage(nextLink, Id, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SecurityComplianceResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _securityComplianceCompliancesRestClient.CreateListRequest(Id);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _securityComplianceCompliancesRestClient.CreateListNextPageRequest(nextLink, Id);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new SecurityComplianceResource(Client, SecurityComplianceData.DeserializeSecurityComplianceData(e)), _securityComplianceCompliancesClientDiagnostics, Pipeline, "SecurityComplianceCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /{scope}/providers/Microsoft.Security/compliances/{complianceName}
-        /// Operation Id: Compliances_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{scope}/providers/Microsoft.Security/compliances/{complianceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Compliances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-08-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityComplianceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="complianceName"> name of the Compliance. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -214,8 +236,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /{scope}/providers/Microsoft.Security/compliances/{complianceName}
-        /// Operation Id: Compliances_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{scope}/providers/Microsoft.Security/compliances/{complianceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Compliances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-08-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityComplianceResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="complianceName"> name of the Compliance. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -231,6 +269,96 @@ namespace Azure.ResourceManager.SecurityCenter
             {
                 var response = _securityComplianceCompliancesRestClient.Get(Id, complianceName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{scope}/providers/Microsoft.Security/compliances/{complianceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Compliances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-08-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityComplianceResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="complianceName"> name of the Compliance. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="complianceName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="complianceName"/> is null. </exception>
+        public virtual async Task<NullableResponse<SecurityComplianceResource>> GetIfExistsAsync(string complianceName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(complianceName, nameof(complianceName));
+
+            using var scope = _securityComplianceCompliancesClientDiagnostics.CreateScope("SecurityComplianceCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _securityComplianceCompliancesRestClient.GetAsync(Id, complianceName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<SecurityComplianceResource>(response.GetRawResponse());
+                return Response.FromValue(new SecurityComplianceResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{scope}/providers/Microsoft.Security/compliances/{complianceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Compliances_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-08-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityComplianceResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="complianceName"> name of the Compliance. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="complianceName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="complianceName"/> is null. </exception>
+        public virtual NullableResponse<SecurityComplianceResource> GetIfExists(string complianceName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(complianceName, nameof(complianceName));
+
+            using var scope = _securityComplianceCompliancesClientDiagnostics.CreateScope("SecurityComplianceCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _securityComplianceCompliancesRestClient.Get(Id, complianceName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<SecurityComplianceResource>(response.GetRawResponse());
+                return Response.FromValue(new SecurityComplianceResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

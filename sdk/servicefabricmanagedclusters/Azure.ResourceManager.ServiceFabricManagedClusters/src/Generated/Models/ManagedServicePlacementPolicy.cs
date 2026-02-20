@@ -5,28 +5,37 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary>
     /// Describes the policy to be used for placement of a Service Fabric service.
-    /// Please note <see cref="ManagedServicePlacementPolicy"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-    /// The available derived classes include <see cref="ServicePlacementInvalidDomainPolicy"/>, <see cref="ServicePlacementNonPartiallyPlaceServicePolicy"/>, <see cref="ServicePlacementPreferPrimaryDomainPolicy"/>, <see cref="ServicePlacementRequiredDomainPolicy"/> and <see cref="ServicePlacementRequireDomainDistributionPolicy"/>.
+    /// Please note this is the abstract base class. The derived classes available for instantiation are: <see cref="ServicePlacementInvalidDomainPolicy"/>, <see cref="ServicePlacementRequiredDomainPolicy"/>, <see cref="ServicePlacementPreferPrimaryDomainPolicy"/>, <see cref="ServicePlacementRequireDomainDistributionPolicy"/>, and <see cref="ServicePlacementNonPartiallyPlaceServicePolicy"/>.
     /// </summary>
     public abstract partial class ManagedServicePlacementPolicy
     {
-        /// <summary> Initializes a new instance of ManagedServicePlacementPolicy. </summary>
-        protected ManagedServicePlacementPolicy()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedServicePlacementPolicy"/>. </summary>
+        /// <param name="type"></param>
+        private protected ManagedServicePlacementPolicy(ServicePlacementPolicyType @type)
         {
+            Type = @type;
         }
 
-        /// <summary> Initializes a new instance of ManagedServicePlacementPolicy. </summary>
-        /// <param name="servicePlacementPolicyType"> The type of placement policy for a service fabric service. Following are the possible values. </param>
-        internal ManagedServicePlacementPolicy(ServicePlacementPolicyType servicePlacementPolicyType)
+        /// <summary> Initializes a new instance of <see cref="ManagedServicePlacementPolicy"/>. </summary>
+        /// <param name="type"></param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedServicePlacementPolicy(ServicePlacementPolicyType @type, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            ServicePlacementPolicyType = servicePlacementPolicyType;
+            Type = @type;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The type of placement policy for a service fabric service. Following are the possible values. </summary>
-        internal ServicePlacementPolicyType ServicePlacementPolicyType { get; set; }
+        /// <summary> Gets or sets the Type. </summary>
+        internal ServicePlacementPolicyType Type { get; set; }
     }
 }

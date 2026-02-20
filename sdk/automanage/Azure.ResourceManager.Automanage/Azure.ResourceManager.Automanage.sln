@@ -1,19 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30309.148
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{F4B88C1B-C195-4106-BCE4-7BE1DD64B743}") = "Azure.ResourceManager.Automanage", "src\Azure.ResourceManager.Automanage.csproj", "{871B13AF-B220-47E6-AE4F-AA6F7940B579}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.ResourceManager.Automanage", "src\Azure.ResourceManager.Automanage.csproj", "{871B13AF-B220-47E6-AE4F-AA6F7940B579}"
 EndProject
-Project("{F4B88C1B-C195-4106-BCE4-7BE1DD64B743}") = "Azure.ResourceManager.Automanage.Tests", "tests\Azure.ResourceManager.Automanage.Tests.csproj", "{5569966E-8B03-498F-870C-D177C5A3B6C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Azure.ResourceManager.Automanage.Tests", "tests\Azure.ResourceManager.Automanage.Tests.csproj", "{5569966E-8B03-498F-870C-D177C5A3B6C3}"
 EndProject
 Global
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {7ED0253E-3F1A-405C-93C6-89D753FE23E6}
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Debug|x64 = Debug|x64
@@ -47,5 +41,10 @@ Global
 		{5569966E-8B03-498F-870C-D177C5A3B6C3}.Release|x64.Build.0 = Release|Any CPU
 		{5569966E-8B03-498F-870C-D177C5A3B6C3}.Release|x86.ActiveCfg = Release|Any CPU
 		{5569966E-8B03-498F-870C-D177C5A3B6C3}.Release|x86.Build.0 = Release|Any CPU
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7ED0253E-3F1A-405C-93C6-89D753FE23E6}
 	EndGlobalSection
 EndGlobal

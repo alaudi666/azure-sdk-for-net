@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Sql.Models;
 
 namespace Azure.ResourceManager.Sql
 {
     /// <summary>
-    /// A class representing a collection of <see cref="SqlServerAzureADOnlyAuthenticationResource" /> and their operations.
-    /// Each <see cref="SqlServerAzureADOnlyAuthenticationResource" /> in the collection will belong to the same instance of <see cref="SqlServerResource" />.
-    /// To get a <see cref="SqlServerAzureADOnlyAuthenticationCollection" /> instance call the GetSqlServerAzureADOnlyAuthentications method from an instance of <see cref="SqlServerResource" />.
+    /// A class representing a collection of <see cref="SqlServerAzureADOnlyAuthenticationResource"/> and their operations.
+    /// Each <see cref="SqlServerAzureADOnlyAuthenticationResource"/> in the collection will belong to the same instance of <see cref="SqlServerResource"/>.
+    /// To get a <see cref="SqlServerAzureADOnlyAuthenticationCollection"/> instance call the GetSqlServerAzureADOnlyAuthentications method from an instance of <see cref="SqlServerResource"/>.
     /// </summary>
     public partial class SqlServerAzureADOnlyAuthenticationCollection : ArmCollection, IEnumerable<SqlServerAzureADOnlyAuthenticationResource>, IAsyncEnumerable<SqlServerAzureADOnlyAuthenticationResource>
     {
@@ -56,8 +54,24 @@ namespace Azure.ResourceManager.Sql
 
         /// <summary>
         /// Sets Server Active Directory only authentication property or updates an existing server Active Directory only authentication property.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}
-        /// Operation Id: ServerAzureADOnlyAuthentications_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ServerAzureADOnlyAuthentications_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlServerAzureADOnlyAuthenticationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="authenticationName"> The name of server azure active directory only authentication. </param>
@@ -87,8 +101,24 @@ namespace Azure.ResourceManager.Sql
 
         /// <summary>
         /// Sets Server Active Directory only authentication property or updates an existing server Active Directory only authentication property.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}
-        /// Operation Id: ServerAzureADOnlyAuthentications_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ServerAzureADOnlyAuthentications_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlServerAzureADOnlyAuthenticationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="authenticationName"> The name of server azure active directory only authentication. </param>
@@ -118,8 +148,24 @@ namespace Azure.ResourceManager.Sql
 
         /// <summary>
         /// Gets a specific Azure Active Directory only authentication property.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}
-        /// Operation Id: ServerAzureADOnlyAuthentications_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ServerAzureADOnlyAuthentications_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlServerAzureADOnlyAuthenticationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="authenticationName"> The name of server azure active directory only authentication. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -143,8 +189,24 @@ namespace Azure.ResourceManager.Sql
 
         /// <summary>
         /// Gets a specific Azure Active Directory only authentication property.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}
-        /// Operation Id: ServerAzureADOnlyAuthentications_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ServerAzureADOnlyAuthentications_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlServerAzureADOnlyAuthenticationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="authenticationName"> The name of server azure active directory only authentication. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -168,92 +230,84 @@ namespace Azure.ResourceManager.Sql
 
         /// <summary>
         /// Gets a list of server Azure Active Directory only authentications.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications
-        /// Operation Id: ServerAzureADOnlyAuthentications_ListByServer
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ServerAzureADOnlyAuthentications_ListByServer</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlServerAzureADOnlyAuthenticationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="SqlServerAzureADOnlyAuthenticationResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SqlServerAzureADOnlyAuthenticationResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SqlServerAzureADOnlyAuthenticationResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<SqlServerAzureADOnlyAuthenticationResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsClientDiagnostics.CreateScope("SqlServerAzureADOnlyAuthenticationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsRestClient.ListByServerAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SqlServerAzureADOnlyAuthenticationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<SqlServerAzureADOnlyAuthenticationResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsClientDiagnostics.CreateScope("SqlServerAzureADOnlyAuthenticationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsRestClient.ListByServerNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SqlServerAzureADOnlyAuthenticationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsRestClient.CreateListByServerRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsRestClient.CreateListByServerNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new SqlServerAzureADOnlyAuthenticationResource(Client, SqlServerAzureADOnlyAuthenticationData.DeserializeSqlServerAzureADOnlyAuthenticationData(e)), _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsClientDiagnostics, Pipeline, "SqlServerAzureADOnlyAuthenticationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Gets a list of server Azure Active Directory only authentications.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications
-        /// Operation Id: ServerAzureADOnlyAuthentications_ListByServer
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ServerAzureADOnlyAuthentications_ListByServer</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlServerAzureADOnlyAuthenticationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="SqlServerAzureADOnlyAuthenticationResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SqlServerAzureADOnlyAuthenticationResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SqlServerAzureADOnlyAuthenticationResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<SqlServerAzureADOnlyAuthenticationResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsClientDiagnostics.CreateScope("SqlServerAzureADOnlyAuthenticationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsRestClient.ListByServer(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SqlServerAzureADOnlyAuthenticationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<SqlServerAzureADOnlyAuthenticationResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsClientDiagnostics.CreateScope("SqlServerAzureADOnlyAuthenticationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsRestClient.ListByServerNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SqlServerAzureADOnlyAuthenticationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsRestClient.CreateListByServerRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsRestClient.CreateListByServerNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new SqlServerAzureADOnlyAuthenticationResource(Client, SqlServerAzureADOnlyAuthenticationData.DeserializeSqlServerAzureADOnlyAuthenticationData(e)), _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsClientDiagnostics, Pipeline, "SqlServerAzureADOnlyAuthenticationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}
-        /// Operation Id: ServerAzureADOnlyAuthentications_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ServerAzureADOnlyAuthentications_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlServerAzureADOnlyAuthenticationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="authenticationName"> The name of server azure active directory only authentication. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -275,8 +329,24 @@ namespace Azure.ResourceManager.Sql
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}
-        /// Operation Id: ServerAzureADOnlyAuthentications_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ServerAzureADOnlyAuthentications_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlServerAzureADOnlyAuthenticationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="authenticationName"> The name of server azure active directory only authentication. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -288,6 +358,88 @@ namespace Azure.ResourceManager.Sql
             {
                 var response = _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, authenticationName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ServerAzureADOnlyAuthentications_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlServerAzureADOnlyAuthenticationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="authenticationName"> The name of server azure active directory only authentication. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        public virtual async Task<NullableResponse<SqlServerAzureADOnlyAuthenticationResource>> GetIfExistsAsync(AuthenticationName authenticationName, CancellationToken cancellationToken = default)
+        {
+            using var scope = _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsClientDiagnostics.CreateScope("SqlServerAzureADOnlyAuthenticationCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, authenticationName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<SqlServerAzureADOnlyAuthenticationResource>(response.GetRawResponse());
+                return Response.FromValue(new SqlServerAzureADOnlyAuthenticationResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Sql/servers/{serverName}/azureADOnlyAuthentications/{authenticationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ServerAzureADOnlyAuthentications_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SqlServerAzureADOnlyAuthenticationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="authenticationName"> The name of server azure active directory only authentication. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        public virtual NullableResponse<SqlServerAzureADOnlyAuthenticationResource> GetIfExists(AuthenticationName authenticationName, CancellationToken cancellationToken = default)
+        {
+            using var scope = _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsClientDiagnostics.CreateScope("SqlServerAzureADOnlyAuthenticationCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _sqlServerAzureADOnlyAuthenticationServerAzureADOnlyAuthenticationsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, authenticationName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<SqlServerAzureADOnlyAuthenticationResource>(response.GetRawResponse());
+                return Response.FromValue(new SqlServerAzureADOnlyAuthenticationResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

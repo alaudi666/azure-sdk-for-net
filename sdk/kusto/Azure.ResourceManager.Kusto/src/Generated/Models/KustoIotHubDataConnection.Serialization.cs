@@ -6,55 +6,68 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Kusto.Models
 {
-    public partial class KustoIotHubDataConnection : IUtf8JsonSerializable
+    public partial class KustoIotHubDataConnection : IUtf8JsonSerializable, IJsonModel<KustoIotHubDataConnection>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<KustoIotHubDataConnection>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<KustoIotHubDataConnection>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(Location))
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KustoIotHubDataConnection>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                writer.WritePropertyName("location");
-                writer.WriteStringValue(Location.Value);
+                throw new FormatException($"The model {nameof(KustoIotHubDataConnection)} does not support writing '{format}' format.");
             }
-            writer.WritePropertyName("kind");
-            writer.WriteStringValue(Kind.ToString());
-            writer.WritePropertyName("properties");
+
+            base.JsonModelWriteCore(writer, options);
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsDefined(IotHubResourceId))
             {
-                writer.WritePropertyName("iotHubResourceId");
+                writer.WritePropertyName("iotHubResourceId"u8);
                 writer.WriteStringValue(IotHubResourceId);
             }
             if (Optional.IsDefined(ConsumerGroup))
             {
-                writer.WritePropertyName("consumerGroup");
+                writer.WritePropertyName("consumerGroup"u8);
                 writer.WriteStringValue(ConsumerGroup);
             }
             if (Optional.IsDefined(TableName))
             {
-                writer.WritePropertyName("tableName");
+                writer.WritePropertyName("tableName"u8);
                 writer.WriteStringValue(TableName);
             }
             if (Optional.IsDefined(MappingRuleName))
             {
-                writer.WritePropertyName("mappingRuleName");
+                writer.WritePropertyName("mappingRuleName"u8);
                 writer.WriteStringValue(MappingRuleName);
             }
             if (Optional.IsDefined(DataFormat))
             {
-                writer.WritePropertyName("dataFormat");
+                writer.WritePropertyName("dataFormat"u8);
                 writer.WriteStringValue(DataFormat.Value.ToString());
             }
             if (Optional.IsCollectionDefined(EventSystemProperties))
             {
-                writer.WritePropertyName("eventSystemProperties");
+                writer.WritePropertyName("eventSystemProperties"u8);
                 writer.WriteStartArray();
                 foreach (var item in EventSystemProperties)
                 {
@@ -64,84 +77,106 @@ namespace Azure.ResourceManager.Kusto.Models
             }
             if (Optional.IsDefined(SharedAccessPolicyName))
             {
-                writer.WritePropertyName("sharedAccessPolicyName");
+                writer.WritePropertyName("sharedAccessPolicyName"u8);
                 writer.WriteStringValue(SharedAccessPolicyName);
             }
             if (Optional.IsDefined(DatabaseRouting))
             {
-                writer.WritePropertyName("databaseRouting");
+                writer.WritePropertyName("databaseRouting"u8);
                 writer.WriteStringValue(DatabaseRouting.Value.ToString());
             }
             if (Optional.IsDefined(RetrievalStartOn))
             {
-                writer.WritePropertyName("retrievalStartDate");
+                writer.WritePropertyName("retrievalStartDate"u8);
                 writer.WriteStringValue(RetrievalStartOn.Value, "O");
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && Optional.IsDefined(ProvisioningState))
+            {
+                writer.WritePropertyName("provisioningState"u8);
+                writer.WriteStringValue(ProvisioningState.Value.ToString());
+            }
             writer.WriteEndObject();
         }
 
-        internal static KustoIotHubDataConnection DeserializeKustoIotHubDataConnection(JsonElement element)
+        KustoIotHubDataConnection IJsonModel<KustoIotHubDataConnection>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<AzureLocation> location = default;
+            var format = options.Format == "W" ? ((IPersistableModel<KustoIotHubDataConnection>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(KustoIotHubDataConnection)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeKustoIotHubDataConnection(document.RootElement, options);
+        }
+
+        internal static KustoIotHubDataConnection DeserializeKustoIotHubDataConnection(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            AzureLocation? location = default;
             DataConnectionKind kind = default;
             ResourceIdentifier id = default;
             string name = default;
             ResourceType type = default;
-            Optional<SystemData> systemData = default;
-            Optional<ResourceIdentifier> iotHubResourceId = default;
-            Optional<string> consumerGroup = default;
-            Optional<string> tableName = default;
-            Optional<string> mappingRuleName = default;
-            Optional<KustoIotHubDataFormat> dataFormat = default;
-            Optional<IList<string>> eventSystemProperties = default;
-            Optional<string> sharedAccessPolicyName = default;
-            Optional<KustoDatabaseRouting> databaseRouting = default;
-            Optional<DateTimeOffset> retrievalStartDate = default;
-            Optional<KustoProvisioningState> provisioningState = default;
+            SystemData systemData = default;
+            ResourceIdentifier iotHubResourceId = default;
+            string consumerGroup = default;
+            string tableName = default;
+            string mappingRuleName = default;
+            KustoIotHubDataFormat? dataFormat = default;
+            IList<string> eventSystemProperties = default;
+            string sharedAccessPolicyName = default;
+            KustoDatabaseRouting? databaseRouting = default;
+            DateTimeOffset? retrievalStartDate = default;
+            KustoProvisioningState? provisioningState = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("location"))
+                if (property.NameEquals("location"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     location = new AzureLocation(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("kind"))
+                if (property.NameEquals("kind"u8))
                 {
                     kind = new DataConnectionKind(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = new ResourceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("systemData"))
+                if (property.NameEquals("systemData"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.GetRawText());
+                    systemData = ModelReaderWriter.Read<SystemData>(new BinaryData(Encoding.UTF8.GetBytes(property.Value.GetRawText())), ModelSerializationExtensions.WireOptions, AzureResourceManagerKustoContext.Default);
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -150,46 +185,43 @@ namespace Azure.ResourceManager.Kusto.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("iotHubResourceId"))
+                        if (property0.NameEquals("iotHubResourceId"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             iotHubResourceId = new ResourceIdentifier(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("consumerGroup"))
+                        if (property0.NameEquals("consumerGroup"u8))
                         {
                             consumerGroup = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("tableName"))
+                        if (property0.NameEquals("tableName"u8))
                         {
                             tableName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("mappingRuleName"))
+                        if (property0.NameEquals("mappingRuleName"u8))
                         {
                             mappingRuleName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("dataFormat"))
+                        if (property0.NameEquals("dataFormat"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             dataFormat = new KustoIotHubDataFormat(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("eventSystemProperties"))
+                        if (property0.NameEquals("eventSystemProperties"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<string> array = new List<string>();
@@ -200,36 +232,33 @@ namespace Azure.ResourceManager.Kusto.Models
                             eventSystemProperties = array;
                             continue;
                         }
-                        if (property0.NameEquals("sharedAccessPolicyName"))
+                        if (property0.NameEquals("sharedAccessPolicyName"u8))
                         {
                             sharedAccessPolicyName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("databaseRouting"))
+                        if (property0.NameEquals("databaseRouting"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             databaseRouting = new KustoDatabaseRouting(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("retrievalStartDate"))
+                        if (property0.NameEquals("retrievalStartDate"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             retrievalStartDate = property0.Value.GetDateTimeOffset("O");
                             continue;
                         }
-                        if (property0.NameEquals("provisioningState"))
+                        if (property0.NameEquals("provisioningState"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             provisioningState = new KustoProvisioningState(property0.Value.GetString());
@@ -238,8 +267,365 @@ namespace Azure.ResourceManager.Kusto.Models
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new KustoIotHubDataConnection(id, name, type, systemData.Value, Optional.ToNullable(location), kind, iotHubResourceId.Value, consumerGroup.Value, tableName.Value, mappingRuleName.Value, Optional.ToNullable(dataFormat), Optional.ToList(eventSystemProperties), sharedAccessPolicyName.Value, Optional.ToNullable(databaseRouting), Optional.ToNullable(retrievalStartDate), Optional.ToNullable(provisioningState));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new KustoIotHubDataConnection(
+                id,
+                name,
+                type,
+                systemData,
+                location,
+                kind,
+                serializedAdditionalRawData,
+                iotHubResourceId,
+                consumerGroup,
+                tableName,
+                mappingRuleName,
+                dataFormat,
+                eventSystemProperties ?? new ChangeTrackingList<string>(),
+                sharedAccessPolicyName,
+                databaseRouting,
+                retrievalStartDate,
+                provisioningState);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Name))
+                {
+                    builder.Append("  name: ");
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Location), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  location: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Location))
+                {
+                    builder.Append("  location: ");
+                    builder.AppendLine($"'{Location.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Kind), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  kind: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  kind: ");
+                builder.AppendLine($"'{Kind.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Id), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  id: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Id))
+                {
+                    builder.Append("  id: ");
+                    builder.AppendLine($"'{Id.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SystemData), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  systemData: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(SystemData))
+                {
+                    builder.Append("  systemData: ");
+                    builder.AppendLine($"'{SystemData.ToString()}'");
+                }
+            }
+
+            builder.Append("  properties:");
+            builder.AppendLine(" {");
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IotHubResourceId), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    iotHubResourceId: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(IotHubResourceId))
+                {
+                    builder.Append("    iotHubResourceId: ");
+                    builder.AppendLine($"'{IotHubResourceId.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ConsumerGroup), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    consumerGroup: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ConsumerGroup))
+                {
+                    builder.Append("    consumerGroup: ");
+                    if (ConsumerGroup.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{ConsumerGroup}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{ConsumerGroup}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(TableName), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    tableName: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(TableName))
+                {
+                    builder.Append("    tableName: ");
+                    if (TableName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{TableName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{TableName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(MappingRuleName), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    mappingRuleName: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(MappingRuleName))
+                {
+                    builder.Append("    mappingRuleName: ");
+                    if (MappingRuleName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{MappingRuleName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{MappingRuleName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DataFormat), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    dataFormat: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DataFormat))
+                {
+                    builder.Append("    dataFormat: ");
+                    builder.AppendLine($"'{DataFormat.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EventSystemProperties), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    eventSystemProperties: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(EventSystemProperties))
+                {
+                    if (EventSystemProperties.Any())
+                    {
+                        builder.Append("    eventSystemProperties: ");
+                        builder.AppendLine("[");
+                        foreach (var item in EventSystemProperties)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("      '''");
+                                builder.AppendLine($"{item}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"      '{item}'");
+                            }
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SharedAccessPolicyName), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    sharedAccessPolicyName: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(SharedAccessPolicyName))
+                {
+                    builder.Append("    sharedAccessPolicyName: ");
+                    if (SharedAccessPolicyName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{SharedAccessPolicyName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{SharedAccessPolicyName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DatabaseRouting), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    databaseRouting: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DatabaseRouting))
+                {
+                    builder.Append("    databaseRouting: ");
+                    builder.AppendLine($"'{DatabaseRouting.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RetrievalStartOn), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    retrievalStartDate: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(RetrievalStartOn))
+                {
+                    builder.Append("    retrievalStartDate: ");
+                    var formattedDateTimeString = TypeFormatters.ToString(RetrievalStartOn.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ProvisioningState), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    provisioningState: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ProvisioningState))
+                {
+                    builder.Append("    provisioningState: ");
+                    builder.AppendLine($"'{ProvisioningState.Value.ToString()}'");
+                }
+            }
+
+            builder.AppendLine("  }");
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<KustoIotHubDataConnection>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KustoIotHubDataConnection>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerKustoContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(KustoIotHubDataConnection)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        KustoIotHubDataConnection IPersistableModel<KustoIotHubDataConnection>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KustoIotHubDataConnection>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeKustoIotHubDataConnection(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(KustoIotHubDataConnection)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<KustoIotHubDataConnection>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

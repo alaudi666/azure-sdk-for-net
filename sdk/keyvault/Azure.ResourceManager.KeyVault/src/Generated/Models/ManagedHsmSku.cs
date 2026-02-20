@@ -5,12 +5,19 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.KeyVault;
+
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> SKU details. </summary>
     public partial class ManagedHsmSku
     {
-        /// <summary> Initializes a new instance of ManagedHsmSku. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmSku"/>. </summary>
         /// <param name="family"> SKU Family of the managed HSM Pool. </param>
         /// <param name="name"> SKU of the managed HSM Pool. </param>
         public ManagedHsmSku(ManagedHsmSkuFamily family, ManagedHsmSkuName name)
@@ -19,9 +26,23 @@ namespace Azure.ResourceManager.KeyVault.Models
             Name = name;
         }
 
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmSku"/>. </summary>
+        /// <param name="family"> SKU Family of the managed HSM Pool. </param>
+        /// <param name="name"> SKU of the managed HSM Pool. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedHsmSku(ManagedHsmSkuFamily family, ManagedHsmSkuName name, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Family = family;
+            Name = name;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> SKU Family of the managed HSM Pool. </summary>
+        [WirePath("family")]
         public ManagedHsmSkuFamily Family { get; set; }
+
         /// <summary> SKU of the managed HSM Pool. </summary>
+        [WirePath("name")]
         public ManagedHsmSkuName Name { get; set; }
     }
 }

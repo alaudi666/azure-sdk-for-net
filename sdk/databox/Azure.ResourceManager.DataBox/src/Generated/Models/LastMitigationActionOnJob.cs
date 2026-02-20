@@ -6,38 +6,46 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Last Mitigation Action Performed On Job. </summary>
     public partial class LastMitigationActionOnJob
     {
-        /// <summary> Initializes a new instance of LastMitigationActionOnJob. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="LastMitigationActionOnJob"/>. </summary>
         internal LastMitigationActionOnJob()
         {
         }
 
-        /// <summary> Initializes a new instance of LastMitigationActionOnJob. </summary>
+        /// <summary> Initializes a new instance of <see cref="LastMitigationActionOnJob"/>. </summary>
         /// <param name="actionPerformedOn"> Action performed date time. </param>
         /// <param name="isPerformedByCustomer">
         /// Action performed by customer,
         /// possibility is that mitigation might happen by customer or service or by ops
         /// </param>
         /// <param name="customerResolution"> Resolution code provided by customer. </param>
-        internal LastMitigationActionOnJob(DateTimeOffset? actionPerformedOn, bool? isPerformedByCustomer, CustomerResolutionCode? customerResolution)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal LastMitigationActionOnJob(DateTimeOffset? actionPerformedOn, bool? isPerformedByCustomer, CustomerResolutionCode? customerResolution, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ActionPerformedOn = actionPerformedOn;
             IsPerformedByCustomer = isPerformedByCustomer;
             CustomerResolution = customerResolution;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Action performed date time. </summary>
         public DateTimeOffset? ActionPerformedOn { get; }
+
         /// <summary>
         /// Action performed by customer,
         /// possibility is that mitigation might happen by customer or service or by ops
         /// </summary>
         public bool? IsPerformedByCustomer { get; }
+
         /// <summary> Resolution code provided by customer. </summary>
         public CustomerResolutionCode? CustomerResolution { get; }
     }

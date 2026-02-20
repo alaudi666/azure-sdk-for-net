@@ -5,8 +5,10 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
+using Azure.ResourceManager.HealthBot;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.HealthBot.Models
@@ -14,31 +16,58 @@ namespace Azure.ResourceManager.HealthBot.Models
     /// <summary> Parameters for updating a Azure Health Bot. </summary>
     public partial class HealthBotPatch
     {
-        /// <summary> Initializes a new instance of HealthBotPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="HealthBotPatch"/>. </summary>
         public HealthBotPatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="HealthBotPatch"/>. </summary>
+        /// <param name="properties"> Properties of Azure Health Bot. </param>
+        /// <param name="tags"> Tags for a Azure Health Bot. </param>
+        /// <param name="sku"> SKU of the Azure Health Bot. </param>
+        /// <param name="identity"> The identity of the Azure Health Bot. </param>
+        /// <param name="location"></param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal HealthBotPatch(HealthBotProperties properties, IDictionary<string, string> tags, HealthBotSku sku, ManagedServiceIdentity identity, AzureLocation? location, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Properties = properties;
+            Tags = tags;
+            Sku = sku;
+            Identity = identity;
+            Location = location;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> Properties of Azure Health Bot. </summary>
         public HealthBotProperties Properties { get; set; }
+
         /// <summary> Tags for a Azure Health Bot. </summary>
         public IDictionary<string, string> Tags { get; }
+
         /// <summary> SKU of the Azure Health Bot. </summary>
         internal HealthBotSku Sku { get; set; }
-        /// <summary> The name of the Azure Health Bot SKU. </summary>
-        public HealthBotSkuName? SkuName
-        {
-            get => Sku is null ? default(HealthBotSkuName?) : Sku.Name;
-            set
-            {
-                Sku = value.HasValue ? new HealthBotSku(value.Value) : null;
-            }
-        }
 
         /// <summary> The identity of the Azure Health Bot. </summary>
         public ManagedServiceIdentity Identity { get; set; }
-        /// <summary> Gets or sets the location. </summary>
+
+        /// <summary> Gets or sets the Location. </summary>
         public AzureLocation? Location { get; set; }
+
+        /// <summary> The name of the Azure Health Bot SKU. </summary>
+        public HealthBotSkuName? SkuName
+        {
+            get
+            {
+                return Sku is null ? default : Sku.Name;
+            }
+            set
+            {
+                Sku = value.HasValue ? new HealthBotSku(value.Value) : default;
+            }
+        }
     }
 }

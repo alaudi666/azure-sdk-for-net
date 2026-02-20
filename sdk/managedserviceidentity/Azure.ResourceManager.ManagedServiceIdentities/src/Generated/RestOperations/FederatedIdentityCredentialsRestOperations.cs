@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ManagedServiceIdentities.Models;
@@ -33,8 +32,31 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2022-01-31-preview";
+            _apiVersion = apiVersion ?? "2024-11-30";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
+        }
+
+        internal RequestUriBuilder CreateListRequestUri(string subscriptionId, string resourceGroupName, string resourceName, int? top, string skiptoken)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.ManagedIdentity/userAssignedIdentities/", false);
+            uri.AppendPath(resourceName, true);
+            uri.AppendPath("/federatedIdentityCredentials", false);
+            if (top != null)
+            {
+                uri.AppendQuery("$top", top.Value, true);
+            }
+            if (skiptoken != null)
+            {
+                uri.AppendQuery("$skiptoken", skiptoken, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListRequest(string subscriptionId, string resourceGroupName, string resourceName, int? top, string skiptoken)
@@ -68,7 +90,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
 
         /// <summary> Lists all the federated identity credentials under the specified user assigned identity. </summary>
         /// <param name="subscriptionId"> The Id of the Subscription to which the identity belongs. </param>
-        /// <param name="resourceGroupName"> The name of the Resource Group to which the identity belongs. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the identity resource. </param>
         /// <param name="top"> Number of records to return. </param>
         /// <param name="skiptoken"> A skip token is used to continue retrieving items after an operation returns a partial result. If a previous response contains a nextLink element, the value of the nextLink element will include a skipToken parameter that specifies a starting point to use for subsequent calls. </param>
@@ -88,7 +110,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
                 case 200:
                     {
                         FederatedIdentityCredentialsListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = FederatedIdentityCredentialsListResult.DeserializeFederatedIdentityCredentialsListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -99,7 +121,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
 
         /// <summary> Lists all the federated identity credentials under the specified user assigned identity. </summary>
         /// <param name="subscriptionId"> The Id of the Subscription to which the identity belongs. </param>
-        /// <param name="resourceGroupName"> The name of the Resource Group to which the identity belongs. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the identity resource. </param>
         /// <param name="top"> Number of records to return. </param>
         /// <param name="skiptoken"> A skip token is used to continue retrieving items after an operation returns a partial result. If a previous response contains a nextLink element, the value of the nextLink element will include a skipToken parameter that specifies a starting point to use for subsequent calls. </param>
@@ -119,13 +141,29 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
                 case 200:
                     {
                         FederatedIdentityCredentialsListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = FederatedIdentityCredentialsListResult.DeserializeFederatedIdentityCredentialsListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateCreateOrUpdateRequestUri(string subscriptionId, string resourceGroupName, string resourceName, string federatedIdentityCredentialResourceName, FederatedIdentityCredentialData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.ManagedIdentity/userAssignedIdentities/", false);
+            uri.AppendPath(resourceName, true);
+            uri.AppendPath("/federatedIdentityCredentials/", false);
+            uri.AppendPath(federatedIdentityCredentialResourceName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string resourceName, string federatedIdentityCredentialResourceName, FederatedIdentityCredentialData data)
@@ -148,7 +186,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -156,7 +194,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
 
         /// <summary> Create or update a federated identity credential under the specified user assigned identity. </summary>
         /// <param name="subscriptionId"> The Id of the Subscription to which the identity belongs. </param>
-        /// <param name="resourceGroupName"> The name of the Resource Group to which the identity belongs. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the identity resource. </param>
         /// <param name="federatedIdentityCredentialResourceName"> The name of the federated identity credential resource. </param>
         /// <param name="data"> Parameters to create or update the federated identity credential. </param>
@@ -179,7 +217,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
                 case 201:
                     {
                         FederatedIdentityCredentialData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = FederatedIdentityCredentialData.DeserializeFederatedIdentityCredentialData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -190,7 +228,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
 
         /// <summary> Create or update a federated identity credential under the specified user assigned identity. </summary>
         /// <param name="subscriptionId"> The Id of the Subscription to which the identity belongs. </param>
-        /// <param name="resourceGroupName"> The name of the Resource Group to which the identity belongs. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the identity resource. </param>
         /// <param name="federatedIdentityCredentialResourceName"> The name of the federated identity credential resource. </param>
         /// <param name="data"> Parameters to create or update the federated identity credential. </param>
@@ -213,13 +251,29 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
                 case 201:
                     {
                         FederatedIdentityCredentialData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = FederatedIdentityCredentialData.DeserializeFederatedIdentityCredentialData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetRequestUri(string subscriptionId, string resourceGroupName, string resourceName, string federatedIdentityCredentialResourceName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.ManagedIdentity/userAssignedIdentities/", false);
+            uri.AppendPath(resourceName, true);
+            uri.AppendPath("/federatedIdentityCredentials/", false);
+            uri.AppendPath(federatedIdentityCredentialResourceName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetRequest(string subscriptionId, string resourceGroupName, string resourceName, string federatedIdentityCredentialResourceName)
@@ -246,7 +300,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
 
         /// <summary> Gets the federated identity credential. </summary>
         /// <param name="subscriptionId"> The Id of the Subscription to which the identity belongs. </param>
-        /// <param name="resourceGroupName"> The name of the Resource Group to which the identity belongs. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the identity resource. </param>
         /// <param name="federatedIdentityCredentialResourceName"> The name of the federated identity credential resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -266,7 +320,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
                 case 200:
                     {
                         FederatedIdentityCredentialData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = FederatedIdentityCredentialData.DeserializeFederatedIdentityCredentialData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -279,7 +333,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
 
         /// <summary> Gets the federated identity credential. </summary>
         /// <param name="subscriptionId"> The Id of the Subscription to which the identity belongs. </param>
-        /// <param name="resourceGroupName"> The name of the Resource Group to which the identity belongs. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the identity resource. </param>
         /// <param name="federatedIdentityCredentialResourceName"> The name of the federated identity credential resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -299,7 +353,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
                 case 200:
                     {
                         FederatedIdentityCredentialData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = FederatedIdentityCredentialData.DeserializeFederatedIdentityCredentialData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -308,6 +362,22 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateDeleteRequestUri(string subscriptionId, string resourceGroupName, string resourceName, string federatedIdentityCredentialResourceName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.ManagedIdentity/userAssignedIdentities/", false);
+            uri.AppendPath(resourceName, true);
+            uri.AppendPath("/federatedIdentityCredentials/", false);
+            uri.AppendPath(federatedIdentityCredentialResourceName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateDeleteRequest(string subscriptionId, string resourceGroupName, string resourceName, string federatedIdentityCredentialResourceName)
@@ -334,7 +404,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
 
         /// <summary> Deletes the federated identity credential. </summary>
         /// <param name="subscriptionId"> The Id of the Subscription to which the identity belongs. </param>
-        /// <param name="resourceGroupName"> The name of the Resource Group to which the identity belongs. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the identity resource. </param>
         /// <param name="federatedIdentityCredentialResourceName"> The name of the federated identity credential resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -361,7 +431,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
 
         /// <summary> Deletes the federated identity credential. </summary>
         /// <param name="subscriptionId"> The Id of the Subscription to which the identity belongs. </param>
-        /// <param name="resourceGroupName"> The name of the Resource Group to which the identity belongs. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the identity resource. </param>
         /// <param name="federatedIdentityCredentialResourceName"> The name of the federated identity credential resource. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -386,6 +456,14 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
             }
         }
 
+        internal RequestUriBuilder CreateListNextPageRequestUri(string nextLink, string subscriptionId, string resourceGroupName, string resourceName, int? top, string skiptoken)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
+        }
+
         internal HttpMessage CreateListNextPageRequest(string nextLink, string subscriptionId, string resourceGroupName, string resourceName, int? top, string skiptoken)
         {
             var message = _pipeline.CreateMessage();
@@ -403,7 +481,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
         /// <summary> Lists all the federated identity credentials under the specified user assigned identity. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The Id of the Subscription to which the identity belongs. </param>
-        /// <param name="resourceGroupName"> The name of the Resource Group to which the identity belongs. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the identity resource. </param>
         /// <param name="top"> Number of records to return. </param>
         /// <param name="skiptoken"> A skip token is used to continue retrieving items after an operation returns a partial result. If a previous response contains a nextLink element, the value of the nextLink element will include a skipToken parameter that specifies a starting point to use for subsequent calls. </param>
@@ -424,7 +502,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
                 case 200:
                     {
                         FederatedIdentityCredentialsListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = FederatedIdentityCredentialsListResult.DeserializeFederatedIdentityCredentialsListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -436,7 +514,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
         /// <summary> Lists all the federated identity credentials under the specified user assigned identity. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The Id of the Subscription to which the identity belongs. </param>
-        /// <param name="resourceGroupName"> The name of the Resource Group to which the identity belongs. </param>
+        /// <param name="resourceGroupName"> The name of the resource group. The name is case insensitive. </param>
         /// <param name="resourceName"> The name of the identity resource. </param>
         /// <param name="top"> Number of records to return. </param>
         /// <param name="skiptoken"> A skip token is used to continue retrieving items after an operation returns a partial result. If a previous response contains a nextLink element, the value of the nextLink element will include a skipToken parameter that specifies a starting point to use for subsequent calls. </param>
@@ -457,7 +535,7 @@ namespace Azure.ResourceManager.ManagedServiceIdentities
                 case 200:
                     {
                         FederatedIdentityCredentialsListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = FederatedIdentityCredentialsListResult.DeserializeFederatedIdentityCredentialsListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

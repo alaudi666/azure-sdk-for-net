@@ -5,65 +5,178 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
-    public partial class PurchaseMeterDetails
+    /// <summary> Billing type Purchase meter details. </summary>
+    public partial class PurchaseMeterDetails : EdgeOrderProductMeterDetails, IJsonModel<PurchaseMeterDetails>
     {
-        internal static PurchaseMeterDetails DeserializePurchaseMeterDetails(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override EdgeOrderProductMeterDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<string> productId = default;
-            Optional<string> skuId = default;
-            Optional<string> termId = default;
-            BillingType billingType = default;
-            Optional<double> multiplier = default;
-            Optional<EdgeOrderProductChargingType> chargingType = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<PurchaseMeterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("productId"))
-                {
-                    productId = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("skuId"))
-                {
-                    skuId = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("termId"))
-                {
-                    termId = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("billingType"))
-                {
-                    billingType = new BillingType(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("multiplier"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        return DeserializePurchaseMeterDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(PurchaseMeterDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<PurchaseMeterDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<PurchaseMeterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(PurchaseMeterDetails)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
+            if (options.Format != "W" && Optional.IsDefined(ProductId))
+            {
+                writer.WritePropertyName("productId"u8);
+                writer.WriteStringValue(ProductId);
+            }
+            if (options.Format != "W" && Optional.IsDefined(SkuId))
+            {
+                writer.WritePropertyName("skuId"u8);
+                writer.WriteStringValue(SkuId);
+            }
+            if (options.Format != "W" && Optional.IsDefined(TermId))
+            {
+                writer.WritePropertyName("termId"u8);
+                writer.WriteStringValue(TermId);
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        PurchaseMeterDetails IJsonModel<PurchaseMeterDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (PurchaseMeterDetails)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override EdgeOrderProductMeterDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<PurchaseMeterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(PurchaseMeterDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializePurchaseMeterDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static PurchaseMeterDetails DeserializePurchaseMeterDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            BillingType billingType = default;
+            double? multiplier = default;
+            EdgeOrderProductChargingType? chargingType = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            string productId = default;
+            string skuId = default;
+            string termId = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("billingType"u8))
+                {
+                    billingType = new BillingType(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("multiplier"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
-                    multiplier = property.Value.GetDouble();
+                    multiplier = prop.Value.GetDouble();
                     continue;
                 }
-                if (property.NameEquals("chargingType"))
+                if (prop.NameEquals("chargingType"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    chargingType = new EdgeOrderProductChargingType(property.Value.GetString());
+                    chargingType = new EdgeOrderProductChargingType(prop.Value.GetString());
                     continue;
+                }
+                if (prop.NameEquals("productId"u8))
+                {
+                    productId = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("skuId"u8))
+                {
+                    skuId = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("termId"u8))
+                {
+                    termId = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new PurchaseMeterDetails(billingType, Optional.ToNullable(multiplier), Optional.ToNullable(chargingType), productId.Value, skuId.Value, termId.Value);
+            return new PurchaseMeterDetails(
+                billingType,
+                multiplier,
+                chargingType,
+                additionalBinaryDataProperties,
+                productId,
+                skuId,
+                termId);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<PurchaseMeterDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<PurchaseMeterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerEdgeOrderContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(PurchaseMeterDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        PurchaseMeterDetails IPersistableModel<PurchaseMeterDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => (PurchaseMeterDetails)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<PurchaseMeterDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

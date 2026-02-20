@@ -87,7 +87,7 @@ namespace Azure.Core.TestFramework.Tests
         public async Task DoesNotThrowForCorrectPageableScopes()
         {
             InvalidDiagnosticScopeTestClient client = InstrumentClient(new InvalidDiagnosticScopeTestClient());
-            Assert.AreEqual(new[] {1, 2, 3, 4, 5, 6}, await client.GetPageableValidScopesAsync().ToEnumerableAsync());
+            Assert.AreEqual(new[] { 1, 2, 3, 4, 5, 6 }, await client.GetPageableValidScopesAsync().ToEnumerableAsync());
             await client.ForwardsAsync();
         }
 
@@ -116,7 +116,8 @@ namespace Azure.Core.TestFramework.Tests
         {
             private DiagnosticScope CreateScope(string method)
             {
-                DiagnosticScopeFactory clientDiagnostics = new DiagnosticScopeFactory("Azure.Core.Tests", "random", true, false);
+                // intentionally does not suppress nested activities
+                DiagnosticScopeFactory clientDiagnostics = new DiagnosticScopeFactory("Azure.Core.Tests", "random", true, false, true);
                 string activityName = $"{typeof(InvalidDiagnosticScopeTestClient).Name}.{method}";
                 DiagnosticScope scope = clientDiagnostics.CreateScope(activityName);
                 return scope;
@@ -135,8 +136,8 @@ namespace Azure.Core.TestFramework.Tests
                     "Azure.Core.Http.Request",
                     new DiagnosticListener("Azure.Core"),
                     null,
-                    ActivityExtensions.CreateActivitySource("Azure.Core.Http"),
-                    DiagnosticScope.ActivityKind.Client,
+                    new ActivitySource("Azure.Core.Http"),
+                    ActivityKind.Client,
                     false);
                 coreScope.Start();
             }
@@ -273,10 +274,10 @@ namespace Azure.Core.TestFramework.Tests
                 {
                     if (s == null)
                     {
-                        return Task.FromResult(Page<int>.FromValues(new[] {1, 2, 3}, "1", new MockResponse(200)));
+                        return Task.FromResult(Page<int>.FromValues(new[] { 1, 2, 3 }, "1", new MockResponse(200)));
                     }
 
-                    return Task.FromResult(Page<int>.FromValues(new[] {4, 5, 6}, null, new MockResponse(200)));
+                    return Task.FromResult(Page<int>.FromValues(new[] { 4, 5, 6 }, null, new MockResponse(200)));
                 });
             }
 
@@ -288,10 +289,10 @@ namespace Azure.Core.TestFramework.Tests
                 {
                     if (s == null)
                     {
-                        return Page<int>.FromValues(new[] {1, 2, 3}, "1", new MockResponse(200));
+                        return Page<int>.FromValues(new[] { 1, 2, 3 }, "1", new MockResponse(200));
                     }
 
-                    return Page<int>.FromValues(new[] {4, 5, 6}, null, new MockResponse(200));
+                    return Page<int>.FromValues(new[] { 4, 5, 6 }, null, new MockResponse(200));
                 });
             }
 
@@ -303,10 +304,10 @@ namespace Azure.Core.TestFramework.Tests
 
                     if (s == null)
                     {
-                        return Task.FromResult(Page<int>.FromValues(new[] {1, 2, 3}, "1", new MockResponse(200)));
+                        return Task.FromResult(Page<int>.FromValues(new[] { 1, 2, 3 }, "1", new MockResponse(200)));
                     }
 
-                    return Task.FromResult(Page<int>.FromValues(new[] {4, 5, 6}, null, new MockResponse(200)));
+                    return Task.FromResult(Page<int>.FromValues(new[] { 4, 5, 6 }, null, new MockResponse(200)));
                 });
             }
 
@@ -318,10 +319,10 @@ namespace Azure.Core.TestFramework.Tests
 
                     if (s == null)
                     {
-                        return Page<int>.FromValues(new[] {1, 2, 3}, "1", new MockResponse(200));
+                        return Page<int>.FromValues(new[] { 1, 2, 3 }, "1", new MockResponse(200));
                     }
 
-                    return Page<int>.FromValues(new[] {4, 5, 6}, null, new MockResponse(200));
+                    return Page<int>.FromValues(new[] { 4, 5, 6 }, null, new MockResponse(200));
                 });
             }
         }

@@ -5,57 +5,37 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The MachineLearningAssetBase.
-    /// Serialized Name: AssetBase
-    /// </summary>
+    /// <summary> The MachineLearningAssetBase. </summary>
     public partial class MachineLearningAssetBase : MachineLearningResourceBase
     {
-        /// <summary> Initializes a new instance of MachineLearningAssetBase. </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningAssetBase"/>. </summary>
         public MachineLearningAssetBase()
         {
         }
 
-        /// <summary> Initializes a new instance of MachineLearningAssetBase. </summary>
-        /// <param name="description">
-        /// The asset description text.
-        /// Serialized Name: ResourceBase.description
-        /// </param>
-        /// <param name="properties">
-        /// The asset property dictionary.
-        /// Serialized Name: ResourceBase.properties
-        /// </param>
-        /// <param name="tags">
-        /// Tag dictionary. Tags can be added, removed, and updated.
-        /// Serialized Name: ResourceBase.tags
-        /// </param>
-        /// <param name="isAnonymous">
-        /// If the name version are system generated (anonymous registration).
-        /// Serialized Name: AssetBase.isAnonymous
-        /// </param>
-        /// <param name="isArchived">
-        /// Is the asset archived?
-        /// Serialized Name: AssetBase.isArchived
-        /// </param>
-        internal MachineLearningAssetBase(string description, IDictionary<string, string> properties, IDictionary<string, string> tags, bool? isAnonymous, bool? isArchived) : base(description, properties, tags)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningAssetBase"/>. </summary>
+        /// <param name="description"> The asset description text. </param>
+        /// <param name="tags"> Tag dictionary. Tags can be added, removed, and updated. </param>
+        /// <param name="properties"> The asset property dictionary. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="isArchived"> Is the asset archived?. </param>
+        /// <param name="isAnonymous"> If the name version are system generated (anonymous registration). </param>
+        internal MachineLearningAssetBase(string description, IDictionary<string, string> tags, IDictionary<string, string> properties, IDictionary<string, BinaryData> serializedAdditionalRawData, bool? isArchived, bool? isAnonymous) : base(description, tags, properties, serializedAdditionalRawData)
         {
-            IsAnonymous = isAnonymous;
             IsArchived = isArchived;
+            IsAnonymous = isAnonymous;
         }
 
-        /// <summary>
-        /// If the name version are system generated (anonymous registration).
-        /// Serialized Name: AssetBase.isAnonymous
-        /// </summary>
-        public bool? IsAnonymous { get; set; }
-        /// <summary>
-        /// Is the asset archived?
-        /// Serialized Name: AssetBase.isArchived
-        /// </summary>
+        /// <summary> Is the asset archived?. </summary>
+        [WirePath("isArchived")]
         public bool? IsArchived { get; set; }
+        /// <summary> If the name version are system generated (anonymous registration). </summary>
+        [WirePath("isAnonymous")]
+        public bool? IsAnonymous { get; set; }
     }
 }

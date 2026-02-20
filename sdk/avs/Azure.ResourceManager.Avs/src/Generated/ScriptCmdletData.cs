@@ -13,35 +13,80 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Avs
 {
-    /// <summary> A class representing the ScriptCmdlet data model. </summary>
+    /// <summary> A cmdlet available for script execution. </summary>
     public partial class ScriptCmdletData : ResourceData
     {
-        /// <summary> Initializes a new instance of ScriptCmdletData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ScriptCmdletData"/>. </summary>
         public ScriptCmdletData()
         {
-            Parameters = new ChangeTrackingList<ScriptParameter>();
         }
 
-        /// <summary> Initializes a new instance of ScriptCmdletData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="description"> Description of the scripts functionality. </param>
-        /// <param name="timeout"> Recommended time limit for execution. </param>
-        /// <param name="parameters"> Parameters the script will accept. </param>
-        internal ScriptCmdletData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string description, TimeSpan? timeout, IReadOnlyList<ScriptParameter> parameters) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="ScriptCmdletData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> The resource-specific properties for this resource. </param>
+        internal ScriptCmdletData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, ScriptCmdletProperties properties) : base(id, name, resourceType, systemData)
         {
-            Description = description;
-            Timeout = timeout;
-            Parameters = parameters;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
+        }
+
+        /// <summary> The resource-specific properties for this resource. </summary>
+        internal ScriptCmdletProperties Properties { get; set; }
+
+        /// <summary> The provisioning state of the resource. </summary>
+        public ScriptCmdletProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
         }
 
         /// <summary> Description of the scripts functionality. </summary>
-        public string Description { get; }
+        public string Description
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Description;
+            }
+        }
+
         /// <summary> Recommended time limit for execution. </summary>
-        public TimeSpan? Timeout { get; }
+        public TimeSpan? Timeout
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Timeout;
+            }
+        }
+
+        /// <summary> Specifies whether a script cmdlet is intended to be invoked only through automation or visible to customers. </summary>
+        public ScriptCmdletAudience? Audience
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Audience;
+            }
+        }
+
         /// <summary> Parameters the script will accept. </summary>
-        public IReadOnlyList<ScriptParameter> Parameters { get; }
+        public IReadOnlyList<ScriptParameter> Parameters
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new ScriptCmdletProperties();
+                }
+                return Properties.Parameters;
+            }
+        }
     }
 }

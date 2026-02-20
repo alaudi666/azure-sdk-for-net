@@ -5,29 +5,36 @@
 
 #nullable disable
 
-using Azure.Core;
+using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Managed identity properties. </summary>
     public partial class DataBoxManagedIdentity
     {
-        /// <summary> Initializes a new instance of DataBoxManagedIdentity. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DataBoxManagedIdentity"/>. </summary>
         public DataBoxManagedIdentity()
         {
         }
 
-        /// <summary> Initializes a new instance of DataBoxManagedIdentity. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataBoxManagedIdentity"/>. </summary>
         /// <param name="identityType"> Managed service identity type. </param>
         /// <param name="userAssigned"> User assigned identity properties. </param>
-        internal DataBoxManagedIdentity(string identityType, DataBoxUserAssignedIdentity userAssigned)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DataBoxManagedIdentity(string identityType, DataBoxUserAssignedIdentity userAssigned, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             IdentityType = identityType;
             UserAssigned = userAssigned;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Managed service identity type. </summary>
         public string IdentityType { get; set; }
+
         /// <summary> User assigned identity properties. </summary>
         internal DataBoxUserAssignedIdentity UserAssigned { get; set; }
     }

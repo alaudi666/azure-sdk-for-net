@@ -5,25 +5,34 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary>
     /// Details for log generated during copy.
-    /// Please note <see cref="CopyLogDetails"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-    /// The available derived classes include <see cref="DataBoxAccountCopyLogDetails"/>, <see cref="DataBoxCustomerDiskCopyLogDetails"/>, <see cref="DataBoxDiskCopyLogDetails"/> and <see cref="DataBoxHeavyAccountCopyLogDetails"/>.
+    /// Please note this is the abstract base class. The derived classes available for instantiation are: <see cref="DataBoxAccountCopyLogDetails"/>, <see cref="DataBoxCustomerDiskCopyLogDetails"/>, <see cref="DataBoxDiskCopyLogDetails"/>, and <see cref="DataBoxHeavyAccountCopyLogDetails"/>.
     /// </summary>
     public abstract partial class CopyLogDetails
     {
-        /// <summary> Initializes a new instance of CopyLogDetails. </summary>
-        protected CopyLogDetails()
-        {
-        }
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-        /// <summary> Initializes a new instance of CopyLogDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="CopyLogDetails"/>. </summary>
         /// <param name="copyLogDetailsType"> Indicates the type of job details. </param>
-        internal CopyLogDetails(DataBoxOrderType copyLogDetailsType)
+        private protected CopyLogDetails(DataBoxOrderType copyLogDetailsType)
         {
             CopyLogDetailsType = copyLogDetailsType;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="CopyLogDetails"/>. </summary>
+        /// <param name="copyLogDetailsType"> Indicates the type of job details. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CopyLogDetails(DataBoxOrderType copyLogDetailsType, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            CopyLogDetailsType = copyLogDetailsType;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Indicates the type of job details. </summary>

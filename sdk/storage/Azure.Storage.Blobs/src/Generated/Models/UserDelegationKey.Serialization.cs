@@ -21,6 +21,7 @@ namespace Azure.Storage.Blobs.Models
             DateTimeOffset signedExpiresOn = default;
             string signedService = default;
             string signedVersion = default;
+            string signedDelegatedUserTenantId = default;
             string value = default;
             if (element.Element("SignedOid") is XElement signedOidElement)
             {
@@ -46,11 +47,23 @@ namespace Azure.Storage.Blobs.Models
             {
                 signedVersion = (string)signedVersionElement;
             }
+            if (element.Element("SignedDelegatedUserTid") is XElement signedDelegatedUserTidElement)
+            {
+                signedDelegatedUserTenantId = (string)signedDelegatedUserTidElement;
+            }
             if (element.Element("Value") is XElement valueElement)
             {
                 value = (string)valueElement;
             }
-            return new UserDelegationKey(signedObjectId, signedTenantId, signedStartsOn, signedExpiresOn, signedService, signedVersion, value);
+            return new UserDelegationKey(
+                signedObjectId,
+                signedTenantId,
+                signedStartsOn,
+                signedExpiresOn,
+                signedService,
+                signedVersion,
+                signedDelegatedUserTenantId,
+                value);
         }
     }
 }

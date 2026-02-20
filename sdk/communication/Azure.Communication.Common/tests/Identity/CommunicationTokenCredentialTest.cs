@@ -61,6 +61,20 @@ namespace Azure.Communication.Identity
         }
 
         [Test]
+        public async Task CommunicationTokenCredential_CreateNotRefreshableWithoutInitialToken()
+        {
+            using var tokenCredential = new CommunicationTokenCredential(
+                new CommunicationTokenRefreshOptions(
+                    refreshProactively: false,
+                    tokenRefresher: cancellationToken => FetchTokenForUserFromMyServer("bob@contoso.com", cancellationToken))
+                {
+                    AsyncTokenRefresher = cancellationToken => FetchTokenForUserFromMyServerAsync("bob@contoso.com", cancellationToken)
+                });
+            var accessToken = await tokenCredential.GetTokenAsync();
+            Assert.AreEqual(SampleToken, accessToken.Token);
+        }
+
+        [Test]
         public async Task CommunicationTokenCredential_CreateRefreshableWithInitialToken()
         {
             var initialToken = ExpiredToken;
@@ -432,7 +446,7 @@ namespace Azure.Communication.Identity
             var expiresOn = utcNow.AddMinutes(minutes).ToUnixTimeSeconds();
             var tokenString = $"{{\"exp\": {expiresOn}}}";
             var base64Token = Convert.ToBase64String(Encoding.ASCII.GetBytes(tokenString));
-            return $"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.{ base64Token}.adM-ddBZZlQ1WlN3pdPBOF5G4Wh9iZpxNP_fSvpF4cWs";
+            return $"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.{base64Token}.adM-ddBZZlQ1WlN3pdPBOF5G4Wh9iZpxNP_fSvpF4cWs";
         }
     }
 }

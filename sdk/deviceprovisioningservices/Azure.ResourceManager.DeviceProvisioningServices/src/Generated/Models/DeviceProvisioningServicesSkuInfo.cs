@@ -5,31 +5,41 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.DeviceProvisioningServices.Models
 {
     /// <summary> List of possible provisioning service SKUs. </summary>
     public partial class DeviceProvisioningServicesSkuInfo
     {
-        /// <summary> Initializes a new instance of DeviceProvisioningServicesSkuInfo. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DeviceProvisioningServicesSkuInfo"/>. </summary>
         public DeviceProvisioningServicesSkuInfo()
         {
         }
 
-        /// <summary> Initializes a new instance of DeviceProvisioningServicesSkuInfo. </summary>
+        /// <summary> Initializes a new instance of <see cref="DeviceProvisioningServicesSkuInfo"/>. </summary>
         /// <param name="name"> Sku name. </param>
         /// <param name="tier"> Pricing tier name of the provisioning service. </param>
         /// <param name="capacity"> The number of units to provision. </param>
-        internal DeviceProvisioningServicesSkuInfo(DeviceProvisioningServicesSku? name, string tier, long? capacity)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DeviceProvisioningServicesSkuInfo(DeviceProvisioningServicesSku? name, string tier, long? capacity, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Name = name;
             Tier = tier;
             Capacity = capacity;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Sku name. </summary>
         public DeviceProvisioningServicesSku? Name { get; set; }
+
         /// <summary> Pricing tier name of the provisioning service. </summary>
         public string Tier { get; }
+
         /// <summary> The number of units to provision. </summary>
         public long? Capacity { get; set; }
     }

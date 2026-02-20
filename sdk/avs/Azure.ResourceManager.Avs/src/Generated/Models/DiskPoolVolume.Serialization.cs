@@ -5,63 +5,174 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    public partial class DiskPoolVolume : IUtf8JsonSerializable
+    /// <summary> An iSCSI volume from Microsoft.StoragePool provider. </summary>
+    public partial class DiskPoolVolume : IJsonModel<DiskPoolVolume>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="DiskPoolVolume"/> for deserialization. </summary>
+        internal DiskPoolVolume()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DiskPoolVolume PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DiskPoolVolume>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDiskPoolVolume(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DiskPoolVolume)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DiskPoolVolume>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("targetId");
-            writer.WriteStringValue(TargetId);
-            writer.WritePropertyName("lunName");
-            writer.WriteStringValue(LunName);
-            if (Optional.IsDefined(MountOption))
-            {
-                writer.WritePropertyName("mountOption");
-                writer.WriteStringValue(MountOption.Value.ToString());
-            }
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static DiskPoolVolume DeserializeDiskPoolVolume(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            ResourceIdentifier targetId = default;
-            string lunName = default;
-            Optional<LunMountMode> mountOption = default;
-            Optional<string> path = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DiskPoolVolume>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("targetId"))
+                throw new FormatException($"The model {nameof(DiskPoolVolume)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("targetId"u8);
+            writer.WriteStringValue(TargetId);
+            writer.WritePropertyName("lunName"u8);
+            writer.WriteStringValue(LunName);
+            if (Optional.IsDefined(MountOption))
+            {
+                writer.WritePropertyName("mountOption"u8);
+                writer.WriteStringValue(MountOption.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(Path))
+            {
+                writer.WritePropertyName("path"u8);
+                writer.WriteStringValue(Path);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    targetId = new ResourceIdentifier(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("lunName"))
-                {
-                    lunName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("mountOption"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    mountOption = new LunMountMode(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("path"))
-                {
-                    path = property.Value.GetString();
-                    continue;
+#endif
                 }
             }
-            return new DiskPoolVolume(targetId, lunName, Optional.ToNullable(mountOption), path.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DiskPoolVolume IJsonModel<DiskPoolVolume>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DiskPoolVolume JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DiskPoolVolume>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DiskPoolVolume)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDiskPoolVolume(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DiskPoolVolume DeserializeDiskPoolVolume(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ResourceIdentifier targetId = default;
+            string lunName = default;
+            LunMountMode? mountOption = default;
+            string path = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("targetId"u8))
+                {
+                    targetId = new ResourceIdentifier(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("lunName"u8))
+                {
+                    lunName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("mountOption"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    mountOption = new LunMountMode(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("path"u8))
+                {
+                    path = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new DiskPoolVolume(targetId, lunName, mountOption, path, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DiskPoolVolume>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DiskPoolVolume>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerAvsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DiskPoolVolume)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DiskPoolVolume IPersistableModel<DiskPoolVolume>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DiskPoolVolume>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -5,38 +5,43 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
+using Azure.ResourceManager.SignalR;
 
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Contains a list of PrivateLinkResource and a possible link to query more results. </summary>
     internal partial class SignalRPrivateLinkResourceListResult
     {
-        /// <summary> Initializes a new instance of SignalRPrivateLinkResourceListResult. </summary>
-        internal SignalRPrivateLinkResourceListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRPrivateLinkResourceListResult"/>. </summary>
+        /// <param name="value"> The PrivateLinkResource items on this page. </param>
+        internal SignalRPrivateLinkResourceListResult(IEnumerable<SignalRPrivateLinkResource> value)
         {
-            Value = new ChangeTrackingList<SignalRPrivateLinkResource>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of SignalRPrivateLinkResourceListResult. </summary>
-        /// <param name="value"> List of PrivateLinkResource. </param>
-        /// <param name="nextLink">
-        /// The URL the client should use to fetch the next page (per server side paging).
-        /// It&apos;s null for now, added for future use.
-        /// </param>
-        internal SignalRPrivateLinkResourceListResult(IReadOnlyList<SignalRPrivateLinkResource> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="SignalRPrivateLinkResourceListResult"/>. </summary>
+        /// <param name="value"> The PrivateLinkResource items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRPrivateLinkResourceListResult(IList<SignalRPrivateLinkResource> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of PrivateLinkResource. </summary>
-        public IReadOnlyList<SignalRPrivateLinkResource> Value { get; }
-        /// <summary>
-        /// The URL the client should use to fetch the next page (per server side paging).
-        /// It&apos;s null for now, added for future use.
-        /// </summary>
-        public string NextLink { get; }
+        /// <summary> The PrivateLinkResource items on this page. </summary>
+        [WirePath("value")]
+        public IList<SignalRPrivateLinkResource> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        [WirePath("nextLink")]
+        public Uri NextLink { get; }
     }
 }

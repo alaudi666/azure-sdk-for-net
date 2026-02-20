@@ -6,14 +6,18 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.HealthBot;
 
 namespace Azure.ResourceManager.HealthBot.Models
 {
     /// <summary> Properties of the key vault. </summary>
     public partial class HealthBotKeyVaultProperties
     {
-        /// <summary> Initializes a new instance of HealthBotKeyVaultProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="HealthBotKeyVaultProperties"/>. </summary>
         /// <param name="keyName"> The name of the key vault key. </param>
         /// <param name="keyVaultUri"> The Uri of the key vault. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="keyName"/> or <paramref name="keyVaultUri"/> is null. </exception>
@@ -26,25 +30,30 @@ namespace Azure.ResourceManager.HealthBot.Models
             KeyVaultUri = keyVaultUri;
         }
 
-        /// <summary> Initializes a new instance of HealthBotKeyVaultProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="HealthBotKeyVaultProperties"/>. </summary>
         /// <param name="keyName"> The name of the key vault key. </param>
         /// <param name="keyVersion"> The version of the key vault key. </param>
         /// <param name="keyVaultUri"> The Uri of the key vault. </param>
         /// <param name="userIdentity"> The user assigned identity (ARM resource id) that has access to the key. </param>
-        internal HealthBotKeyVaultProperties(string keyName, string keyVersion, Uri keyVaultUri, string userIdentity)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal HealthBotKeyVaultProperties(string keyName, string keyVersion, Uri keyVaultUri, string userIdentity, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             KeyName = keyName;
             KeyVersion = keyVersion;
             KeyVaultUri = keyVaultUri;
             UserIdentity = userIdentity;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The name of the key vault key. </summary>
         public string KeyName { get; set; }
+
         /// <summary> The version of the key vault key. </summary>
         public string KeyVersion { get; set; }
+
         /// <summary> The Uri of the key vault. </summary>
         public Uri KeyVaultUri { get; set; }
+
         /// <summary> The user assigned identity (ARM resource id) that has access to the key. </summary>
         public string UserIdentity { get; set; }
     }

@@ -5,47 +5,59 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
     /// <summary>
-    /// Base class for WorkloadNetworkDhcpServer and WorkloadNetworkDhcpRelay to inherit from
-    /// Please note <see cref="WorkloadNetworkDhcpEntity"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-    /// The available derived classes include <see cref="WorkloadNetworkDhcpRelay"/> and <see cref="WorkloadNetworkDhcpServer"/>.
+    /// Base class for WorkloadNetworkDhcpServer and WorkloadNetworkDhcpRelay to
+    /// inherit from
+    /// Please note this is the abstract base class. The derived classes available for instantiation are: <see cref="WorkloadNetworkDhcpServer"/> and <see cref="WorkloadNetworkDhcpRelay"/>.
     /// </summary>
     public abstract partial class WorkloadNetworkDhcpEntity
     {
-        /// <summary> Initializes a new instance of WorkloadNetworkDhcpEntity. </summary>
-        protected WorkloadNetworkDhcpEntity()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkDhcpEntity"/>. </summary>
+        /// <param name="dhcpType"> Type of DHCP: SERVER or RELAY. </param>
+        private protected WorkloadNetworkDhcpEntity(DhcpTypeEnum dhcpType)
         {
+            DhcpType = dhcpType;
             Segments = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of WorkloadNetworkDhcpEntity. </summary>
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkDhcpEntity"/>. </summary>
         /// <param name="dhcpType"> Type of DHCP: SERVER or RELAY. </param>
         /// <param name="displayName"> Display name of the DHCP entity. </param>
         /// <param name="segments"> NSX Segments consuming DHCP. </param>
         /// <param name="provisioningState"> The provisioning state. </param>
         /// <param name="revision"> NSX revision number. </param>
-        internal WorkloadNetworkDhcpEntity(DhcpTypeEnum dhcpType, string displayName, IReadOnlyList<string> segments, WorkloadNetworkDhcpProvisioningState? provisioningState, long? revision)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal WorkloadNetworkDhcpEntity(DhcpTypeEnum dhcpType, string displayName, IReadOnlyList<string> segments, WorkloadNetworkDhcpProvisioningState? provisioningState, long? revision, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             DhcpType = dhcpType;
             DisplayName = displayName;
             Segments = segments;
             ProvisioningState = provisioningState;
             Revision = revision;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Type of DHCP: SERVER or RELAY. </summary>
         internal DhcpTypeEnum DhcpType { get; set; }
+
         /// <summary> Display name of the DHCP entity. </summary>
         public string DisplayName { get; set; }
+
         /// <summary> NSX Segments consuming DHCP. </summary>
         public IReadOnlyList<string> Segments { get; }
+
         /// <summary> The provisioning state. </summary>
         public WorkloadNetworkDhcpProvisioningState? ProvisioningState { get; }
+
         /// <summary> NSX revision number. </summary>
         public long? Revision { get; set; }
     }

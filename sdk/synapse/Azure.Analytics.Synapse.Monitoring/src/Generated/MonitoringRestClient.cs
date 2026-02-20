@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Analytics.Synapse.Monitoring.Models;
 using Azure.Core;
 using Azure.Core.Pipeline;
@@ -64,12 +63,12 @@ namespace Azure.Analytics.Synapse.Monitoring
                 case 200:
                     {
                         SparkJobListViewResponse value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = SparkJobListViewResponse.DeserializeSparkJobListViewResponse(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -84,12 +83,12 @@ namespace Azure.Analytics.Synapse.Monitoring
                 case 200:
                     {
                         SparkJobListViewResponse value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = SparkJobListViewResponse.DeserializeSparkJobListViewResponse(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -120,9 +119,9 @@ namespace Azure.Analytics.Synapse.Monitoring
         }
 
         /// <summary> Get SQL OD/DW Query for the workspace. </summary>
-        /// <param name="filter"> The String to use. </param>
-        /// <param name="orderby"> The String to use. </param>
-        /// <param name="skip"> The String to use. </param>
+        /// <param name="filter"> The <see cref="string"/> to use. </param>
+        /// <param name="orderby"> The <see cref="string"/> to use. </param>
+        /// <param name="skip"> The <see cref="string"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public async Task<Response<SqlQueryStringDataModel>> GetSqlJobQueryStringAsync(string filter = null, string orderby = null, string skip = null, CancellationToken cancellationToken = default)
         {
@@ -133,19 +132,19 @@ namespace Azure.Analytics.Synapse.Monitoring
                 case 200:
                     {
                         SqlQueryStringDataModel value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = SqlQueryStringDataModel.DeserializeSqlQueryStringDataModel(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Get SQL OD/DW Query for the workspace. </summary>
-        /// <param name="filter"> The String to use. </param>
-        /// <param name="orderby"> The String to use. </param>
-        /// <param name="skip"> The String to use. </param>
+        /// <param name="filter"> The <see cref="string"/> to use. </param>
+        /// <param name="orderby"> The <see cref="string"/> to use. </param>
+        /// <param name="skip"> The <see cref="string"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public Response<SqlQueryStringDataModel> GetSqlJobQueryString(string filter = null, string orderby = null, string skip = null, CancellationToken cancellationToken = default)
         {
@@ -156,12 +155,12 @@ namespace Azure.Analytics.Synapse.Monitoring
                 case 200:
                     {
                         SqlQueryStringDataModel value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = SqlQueryStringDataModel.DeserializeSqlQueryStringDataModel(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
     }

@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Subscription.Models;
@@ -37,6 +36,15 @@ namespace Azure.ResourceManager.Subscription
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
+        internal RequestUriBuilder CreateAddUpdatePolicyForTenantRequestUri(TenantPolicyCreateOrUpdateContent content)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/providers/Microsoft.Subscription/policies/default", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
         internal HttpMessage CreateAddUpdatePolicyForTenantRequest(TenantPolicyCreateOrUpdateContent content)
         {
             var message = _pipeline.CreateMessage();
@@ -50,14 +58,14 @@ namespace Azure.ResourceManager.Subscription
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content0 = new Utf8JsonRequestContent();
-            content0.JsonWriter.WriteObjectValue(content);
+            content0.JsonWriter.WriteObjectValue(content, ModelSerializationExtensions.WireOptions);
             request.Content = content0;
             _userAgent.Apply(message);
             return message;
         }
 
-        /// <summary> Create or Update Subscription tenant policy for user&apos;s tenant. </summary>
-        /// <param name="content"> The TenantPolicyCreateOrUpdateContent to use. </param>
+        /// <summary> Create or Update Subscription tenant policy for user's tenant. </summary>
+        /// <param name="content"> The <see cref="TenantPolicyCreateOrUpdateContent"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
         public async Task<Response<TenantPolicyData>> AddUpdatePolicyForTenantAsync(TenantPolicyCreateOrUpdateContent content, CancellationToken cancellationToken = default)
@@ -71,7 +79,7 @@ namespace Azure.ResourceManager.Subscription
                 case 200:
                     {
                         TenantPolicyData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = TenantPolicyData.DeserializeTenantPolicyData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -80,8 +88,8 @@ namespace Azure.ResourceManager.Subscription
             }
         }
 
-        /// <summary> Create or Update Subscription tenant policy for user&apos;s tenant. </summary>
-        /// <param name="content"> The TenantPolicyCreateOrUpdateContent to use. </param>
+        /// <summary> Create or Update Subscription tenant policy for user's tenant. </summary>
+        /// <param name="content"> The <see cref="TenantPolicyCreateOrUpdateContent"/> to use. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
         public Response<TenantPolicyData> AddUpdatePolicyForTenant(TenantPolicyCreateOrUpdateContent content, CancellationToken cancellationToken = default)
@@ -95,13 +103,22 @@ namespace Azure.ResourceManager.Subscription
                 case 200:
                     {
                         TenantPolicyData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = TenantPolicyData.DeserializeTenantPolicyData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetPolicyForTenantRequestUri()
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/providers/Microsoft.Subscription/policies/default", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetPolicyForTenantRequest()
@@ -119,7 +136,7 @@ namespace Azure.ResourceManager.Subscription
             return message;
         }
 
-        /// <summary> Get the subscription tenant policy for the user&apos;s tenant. </summary>
+        /// <summary> Get the subscription tenant policy for the user's tenant. </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public async Task<Response<TenantPolicyData>> GetPolicyForTenantAsync(CancellationToken cancellationToken = default)
         {
@@ -130,7 +147,7 @@ namespace Azure.ResourceManager.Subscription
                 case 200:
                     {
                         TenantPolicyData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = TenantPolicyData.DeserializeTenantPolicyData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -141,7 +158,7 @@ namespace Azure.ResourceManager.Subscription
             }
         }
 
-        /// <summary> Get the subscription tenant policy for the user&apos;s tenant. </summary>
+        /// <summary> Get the subscription tenant policy for the user's tenant. </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public Response<TenantPolicyData> GetPolicyForTenant(CancellationToken cancellationToken = default)
         {
@@ -152,7 +169,7 @@ namespace Azure.ResourceManager.Subscription
                 case 200:
                     {
                         TenantPolicyData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = TenantPolicyData.DeserializeTenantPolicyData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -161,6 +178,15 @@ namespace Azure.ResourceManager.Subscription
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListPolicyForTenantRequestUri()
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/providers/Microsoft.Subscription/policies", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListPolicyForTenantRequest()
@@ -178,7 +204,7 @@ namespace Azure.ResourceManager.Subscription
             return message;
         }
 
-        /// <summary> Get the subscription tenant policy for the user&apos;s tenant. </summary>
+        /// <summary> Get the subscription tenant policy for the user's tenant. </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public async Task<Response<TenantPoliciesResult>> ListPolicyForTenantAsync(CancellationToken cancellationToken = default)
         {
@@ -189,7 +215,7 @@ namespace Azure.ResourceManager.Subscription
                 case 200:
                     {
                         TenantPoliciesResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = TenantPoliciesResult.DeserializeTenantPoliciesResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -198,7 +224,7 @@ namespace Azure.ResourceManager.Subscription
             }
         }
 
-        /// <summary> Get the subscription tenant policy for the user&apos;s tenant. </summary>
+        /// <summary> Get the subscription tenant policy for the user's tenant. </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public Response<TenantPoliciesResult> ListPolicyForTenant(CancellationToken cancellationToken = default)
         {
@@ -209,13 +235,21 @@ namespace Azure.ResourceManager.Subscription
                 case 200:
                     {
                         TenantPoliciesResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = TenantPoliciesResult.DeserializeTenantPoliciesResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListPolicyForTenantNextPageRequestUri(string nextLink)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListPolicyForTenantNextPageRequest(string nextLink)
@@ -232,7 +266,7 @@ namespace Azure.ResourceManager.Subscription
             return message;
         }
 
-        /// <summary> Get the subscription tenant policy for the user&apos;s tenant. </summary>
+        /// <summary> Get the subscription tenant policy for the user's tenant. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
@@ -247,7 +281,7 @@ namespace Azure.ResourceManager.Subscription
                 case 200:
                     {
                         TenantPoliciesResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = TenantPoliciesResult.DeserializeTenantPoliciesResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -256,7 +290,7 @@ namespace Azure.ResourceManager.Subscription
             }
         }
 
-        /// <summary> Get the subscription tenant policy for the user&apos;s tenant. </summary>
+        /// <summary> Get the subscription tenant policy for the user's tenant. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
@@ -271,7 +305,7 @@ namespace Azure.ResourceManager.Subscription
                 case 200:
                     {
                         TenantPoliciesResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = TenantPoliciesResult.DeserializeTenantPoliciesResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

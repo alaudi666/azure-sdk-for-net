@@ -6,10 +6,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.TestFramework;
-using Azure.ResourceManager.Resources;
-using Azure.ResourceManager.Resources.Models;
 using Azure.ResourceManager.FrontDoor.Models;
 using Azure.ResourceManager.FrontDoor.Tests.Helpers;
+using Azure.ResourceManager.Resources;
+using Azure.ResourceManager.Resources.Models;
 using NUnit.Framework;
 
 namespace Azure.ResourceManager.FrontDoor.Tests.TestCase
@@ -29,14 +29,25 @@ namespace Azure.ResourceManager.FrontDoor.Tests.TestCase
 
         [TestCase]
         [RecordedTest]
-        [Ignore("Object reference not set to an instance of an object")]
+        public async Task WafLogScurbbing()
+        {
+            var collection = await GetFirewallCollectionAsync();
+            var name = Recording.GenerateAssetName("TestFrontDoor");
+            var input = ResourceDataHelpers.GetPolicyData(DefaultLocation);
+            input.PolicySettings.EnabledState = PolicyEnabledState.Enabled;
+            input.PolicySettings.ScrubbingRules.Add(new WebApplicationFirewallScrubbingRules(ScrubbingRuleEntryMatchVariable.RequestUri, ScrubbingRuleEntryMatchOperator.EqualsAny));
+            await collection.CreateOrUpdateAsync(WaitUntil.Completed, name, input);
+        }
+
+        [TestCase]
+        [RecordedTest]
         public async Task FirewallApiTests()
         {
             //1.CreateorUpdate
             var collection = await GetFirewallCollectionAsync();
-            var name = Recording.GenerateAssetName("TestFrontDoor-");
-            var name2 = Recording.GenerateAssetName("TestFrontDoor-");
-            var name3 = Recording.GenerateAssetName("TestFrontDoor-");
+            var name = Recording.GenerateAssetName("TestFrontDoor");
+            var name2 = Recording.GenerateAssetName("TestFrontDoor");
+            var name3 = Recording.GenerateAssetName("TestFrontDoor");
             var input = ResourceDataHelpers.GetPolicyData(DefaultLocation);
             var lro = await collection.CreateOrUpdateAsync(WaitUntil.Completed, name, input);
             FrontDoorWebApplicationFirewallPolicyResource firewall1 = lro.Value;

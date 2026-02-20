@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.EventGrid
 {
     /// <summary>
-    /// A class representing a collection of <see cref="VerifiedPartnerResource" /> and their operations.
-    /// Each <see cref="VerifiedPartnerResource" /> in the collection will belong to the same instance of <see cref="TenantResource" />.
-    /// To get a <see cref="VerifiedPartnerCollection" /> instance call the GetVerifiedPartners method from an instance of <see cref="TenantResource" />.
+    /// A class representing a collection of <see cref="VerifiedPartnerResource"/> and their operations.
+    /// Each <see cref="VerifiedPartnerResource"/> in the collection will belong to the same instance of <see cref="TenantResource"/>.
+    /// To get a <see cref="VerifiedPartnerCollection"/> instance call the GetVerifiedPartners method from an instance of <see cref="TenantResource"/>.
     /// </summary>
     public partial class VerifiedPartnerCollection : ArmCollection, IEnumerable<VerifiedPartnerResource>, IAsyncEnumerable<VerifiedPartnerResource>
     {
@@ -56,8 +54,24 @@ namespace Azure.ResourceManager.EventGrid
 
         /// <summary>
         /// Get properties of a verified partner.
-        /// Request Path: /providers/Microsoft.EventGrid/verifiedPartners/{verifiedPartnerName}
-        /// Operation Id: VerifiedPartners_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.EventGrid/verifiedPartners/{verifiedPartnerName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>VerifiedPartners_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="VerifiedPartnerResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="verifiedPartnerName"> Name of the verified partner. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -85,8 +99,24 @@ namespace Azure.ResourceManager.EventGrid
 
         /// <summary>
         /// Get properties of a verified partner.
-        /// Request Path: /providers/Microsoft.EventGrid/verifiedPartners/{verifiedPartnerName}
-        /// Operation Id: VerifiedPartners_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.EventGrid/verifiedPartners/{verifiedPartnerName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>VerifiedPartners_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="VerifiedPartnerResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="verifiedPartnerName"> Name of the verified partner. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -114,96 +144,88 @@ namespace Azure.ResourceManager.EventGrid
 
         /// <summary>
         /// Get a list of all verified partners.
-        /// Request Path: /providers/Microsoft.EventGrid/verifiedPartners
-        /// Operation Id: VerifiedPartners_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.EventGrid/verifiedPartners</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>VerifiedPartners_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="VerifiedPartnerResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="filter"> The query used to filter the search results using OData syntax. Filtering is permitted on the &apos;name&apos; property only and with limited number of OData operations. These operations are: the &apos;contains&apos; function as well as the following logical operations: not, and, or, eq (for equal), and ne (for not equal). No arithmetic operations are supported. The following is a valid filter example: $filter=contains(namE, &apos;PATTERN&apos;) and name ne &apos;PATTERN-1&apos;. The following is not a valid filter example: $filter=location eq &apos;westus&apos;. </param>
+        /// <param name="filter"> The query used to filter the search results using OData syntax. Filtering is permitted on the 'name' property only and with limited number of OData operations. These operations are: the 'contains' function as well as the following logical operations: not, and, or, eq (for equal), and ne (for not equal). No arithmetic operations are supported. The following is a valid filter example: $filter=contains(namE, 'PATTERN') and name ne 'PATTERN-1'. The following is not a valid filter example: $filter=location eq 'westus'. </param>
         /// <param name="top"> The number of results to return per page for the list operation. Valid range for top parameter is 1 to 100. If not specified, the default number of results to be returned is 20 items per page. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="VerifiedPartnerResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="VerifiedPartnerResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<VerifiedPartnerResource> GetAllAsync(string filter = null, int? top = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<VerifiedPartnerResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _verifiedPartnerClientDiagnostics.CreateScope("VerifiedPartnerCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _verifiedPartnerRestClient.ListAsync(filter, top, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new VerifiedPartnerResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<VerifiedPartnerResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _verifiedPartnerClientDiagnostics.CreateScope("VerifiedPartnerCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _verifiedPartnerRestClient.ListNextPageAsync(nextLink, filter, top, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new VerifiedPartnerResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _verifiedPartnerRestClient.CreateListRequest(filter, top);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _verifiedPartnerRestClient.CreateListNextPageRequest(nextLink, filter, top);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new VerifiedPartnerResource(Client, VerifiedPartnerData.DeserializeVerifiedPartnerData(e)), _verifiedPartnerClientDiagnostics, Pipeline, "VerifiedPartnerCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Get a list of all verified partners.
-        /// Request Path: /providers/Microsoft.EventGrid/verifiedPartners
-        /// Operation Id: VerifiedPartners_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.EventGrid/verifiedPartners</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>VerifiedPartners_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="VerifiedPartnerResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="filter"> The query used to filter the search results using OData syntax. Filtering is permitted on the &apos;name&apos; property only and with limited number of OData operations. These operations are: the &apos;contains&apos; function as well as the following logical operations: not, and, or, eq (for equal), and ne (for not equal). No arithmetic operations are supported. The following is a valid filter example: $filter=contains(namE, &apos;PATTERN&apos;) and name ne &apos;PATTERN-1&apos;. The following is not a valid filter example: $filter=location eq &apos;westus&apos;. </param>
+        /// <param name="filter"> The query used to filter the search results using OData syntax. Filtering is permitted on the 'name' property only and with limited number of OData operations. These operations are: the 'contains' function as well as the following logical operations: not, and, or, eq (for equal), and ne (for not equal). No arithmetic operations are supported. The following is a valid filter example: $filter=contains(namE, 'PATTERN') and name ne 'PATTERN-1'. The following is not a valid filter example: $filter=location eq 'westus'. </param>
         /// <param name="top"> The number of results to return per page for the list operation. Valid range for top parameter is 1 to 100. If not specified, the default number of results to be returned is 20 items per page. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="VerifiedPartnerResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="VerifiedPartnerResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<VerifiedPartnerResource> GetAll(string filter = null, int? top = null, CancellationToken cancellationToken = default)
         {
-            Page<VerifiedPartnerResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _verifiedPartnerClientDiagnostics.CreateScope("VerifiedPartnerCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _verifiedPartnerRestClient.List(filter, top, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new VerifiedPartnerResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<VerifiedPartnerResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _verifiedPartnerClientDiagnostics.CreateScope("VerifiedPartnerCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _verifiedPartnerRestClient.ListNextPage(nextLink, filter, top, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new VerifiedPartnerResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _verifiedPartnerRestClient.CreateListRequest(filter, top);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _verifiedPartnerRestClient.CreateListNextPageRequest(nextLink, filter, top);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new VerifiedPartnerResource(Client, VerifiedPartnerData.DeserializeVerifiedPartnerData(e)), _verifiedPartnerClientDiagnostics, Pipeline, "VerifiedPartnerCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /providers/Microsoft.EventGrid/verifiedPartners/{verifiedPartnerName}
-        /// Operation Id: VerifiedPartners_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.EventGrid/verifiedPartners/{verifiedPartnerName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>VerifiedPartners_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="VerifiedPartnerResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="verifiedPartnerName"> Name of the verified partner. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -229,8 +251,24 @@ namespace Azure.ResourceManager.EventGrid
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /providers/Microsoft.EventGrid/verifiedPartners/{verifiedPartnerName}
-        /// Operation Id: VerifiedPartners_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.EventGrid/verifiedPartners/{verifiedPartnerName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>VerifiedPartners_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="VerifiedPartnerResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="verifiedPartnerName"> Name of the verified partner. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -246,6 +284,96 @@ namespace Azure.ResourceManager.EventGrid
             {
                 var response = _verifiedPartnerRestClient.Get(verifiedPartnerName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.EventGrid/verifiedPartners/{verifiedPartnerName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>VerifiedPartners_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="VerifiedPartnerResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="verifiedPartnerName"> Name of the verified partner. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="verifiedPartnerName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="verifiedPartnerName"/> is null. </exception>
+        public virtual async Task<NullableResponse<VerifiedPartnerResource>> GetIfExistsAsync(string verifiedPartnerName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(verifiedPartnerName, nameof(verifiedPartnerName));
+
+            using var scope = _verifiedPartnerClientDiagnostics.CreateScope("VerifiedPartnerCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _verifiedPartnerRestClient.GetAsync(verifiedPartnerName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<VerifiedPartnerResource>(response.GetRawResponse());
+                return Response.FromValue(new VerifiedPartnerResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.EventGrid/verifiedPartners/{verifiedPartnerName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>VerifiedPartners_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="VerifiedPartnerResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="verifiedPartnerName"> Name of the verified partner. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="verifiedPartnerName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="verifiedPartnerName"/> is null. </exception>
+        public virtual NullableResponse<VerifiedPartnerResource> GetIfExists(string verifiedPartnerName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(verifiedPartnerName, nameof(verifiedPartnerName));
+
+            using var scope = _verifiedPartnerClientDiagnostics.CreateScope("VerifiedPartnerCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _verifiedPartnerRestClient.Get(verifiedPartnerName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<VerifiedPartnerResource>(response.GetRawResponse());
+                return Response.FromValue(new VerifiedPartnerResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

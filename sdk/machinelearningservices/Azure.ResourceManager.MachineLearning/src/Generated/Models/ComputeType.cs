@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The type of compute
-    /// Serialized Name: ComputeType
-    /// </summary>
+    /// <summary> The type of compute. </summary>
     internal readonly partial struct ComputeType : IEquatable<ComputeType>
     {
         private readonly string _value;
@@ -36,61 +33,31 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string DataLakeAnalyticsValue = "DataLakeAnalytics";
         private const string SynapseSparkValue = "SynapseSpark";
 
-        /// <summary>
-        /// AKS
-        /// Serialized Name: ComputeType.AKS
-        /// </summary>
+        /// <summary> AKS. </summary>
         public static ComputeType Aks { get; } = new ComputeType(AksValue);
-        /// <summary>
-        /// Kubernetes
-        /// Serialized Name: ComputeType.Kubernetes
-        /// </summary>
+        /// <summary> Kubernetes. </summary>
         public static ComputeType Kubernetes { get; } = new ComputeType(KubernetesValue);
-        /// <summary>
-        /// AmlCompute
-        /// Serialized Name: ComputeType.AmlCompute
-        /// </summary>
+        /// <summary> AmlCompute. </summary>
         public static ComputeType AmlCompute { get; } = new ComputeType(AmlComputeValue);
-        /// <summary>
-        /// ComputeInstance
-        /// Serialized Name: ComputeType.ComputeInstance
-        /// </summary>
+        /// <summary> ComputeInstance. </summary>
         public static ComputeType ComputeInstance { get; } = new ComputeType(ComputeInstanceValue);
-        /// <summary>
-        /// DataFactory
-        /// Serialized Name: ComputeType.DataFactory
-        /// </summary>
+        /// <summary> DataFactory. </summary>
         public static ComputeType DataFactory { get; } = new ComputeType(DataFactoryValue);
-        /// <summary>
-        /// VirtualMachine
-        /// Serialized Name: ComputeType.VirtualMachine
-        /// </summary>
+        /// <summary> VirtualMachine. </summary>
         public static ComputeType VirtualMachine { get; } = new ComputeType(VirtualMachineValue);
-        /// <summary>
-        /// HDInsight
-        /// Serialized Name: ComputeType.HDInsight
-        /// </summary>
+        /// <summary> HDInsight. </summary>
         public static ComputeType HDInsight { get; } = new ComputeType(HDInsightValue);
-        /// <summary>
-        /// Databricks
-        /// Serialized Name: ComputeType.Databricks
-        /// </summary>
+        /// <summary> Databricks. </summary>
         public static ComputeType Databricks { get; } = new ComputeType(DatabricksValue);
-        /// <summary>
-        /// DataLakeAnalytics
-        /// Serialized Name: ComputeType.DataLakeAnalytics
-        /// </summary>
+        /// <summary> DataLakeAnalytics. </summary>
         public static ComputeType DataLakeAnalytics { get; } = new ComputeType(DataLakeAnalyticsValue);
-        /// <summary>
-        /// SynapseSpark
-        /// Serialized Name: ComputeType.SynapseSpark
-        /// </summary>
+        /// <summary> SynapseSpark. </summary>
         public static ComputeType SynapseSpark { get; } = new ComputeType(SynapseSparkValue);
         /// <summary> Determines if two <see cref="ComputeType"/> values are the same. </summary>
         public static bool operator ==(ComputeType left, ComputeType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="ComputeType"/> values are not the same. </summary>
         public static bool operator !=(ComputeType left, ComputeType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="ComputeType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="ComputeType"/>. </summary>
         public static implicit operator ComputeType(string value) => new ComputeType(value);
 
         /// <inheritdoc />
@@ -101,7 +68,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

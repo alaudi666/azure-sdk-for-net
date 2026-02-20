@@ -2,10 +2,22 @@
   "version": 1,
   "isRoot": true,
   "tools": {
+    "Azure.Sdk.Tools.SnippetGenerator": {
+      "version": "1.0.0-dev.20241213.1",
+      "commands": [
+        "snippet-generator"
+      ]
+    },
     "dotnet-reportgenerator-globaltool": {
       "version": "4.8.0",
       "commands": [
         "reportgenerator"
+      ]
+    },
+    "Azure.Sdk.Tools.TestProxy": {
+      "version": "1.0.0-dev.20251209.1",
+      "commands": [
+        "test-proxy"
       ]
     }
   }

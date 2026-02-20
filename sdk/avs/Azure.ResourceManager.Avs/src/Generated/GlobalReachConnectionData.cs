@@ -5,52 +5,129 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Avs.Models;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Avs
 {
-    /// <summary> A class representing the GlobalReachConnection data model. </summary>
+    /// <summary> A global reach connection resource. </summary>
     public partial class GlobalReachConnectionData : ResourceData
     {
-        /// <summary> Initializes a new instance of GlobalReachConnectionData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="GlobalReachConnectionData"/>. </summary>
         public GlobalReachConnectionData()
         {
         }
 
-        /// <summary> Initializes a new instance of GlobalReachConnectionData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="provisioningState"> The state of the  ExpressRoute Circuit Authorization provisioning. </param>
-        /// <param name="addressPrefix"> The network used for global reach carved out from the original network block provided for the private cloud. </param>
-        /// <param name="authorizationKey"> Authorization key from the peer express route used for the global reach connection. </param>
-        /// <param name="circuitConnectionStatus"> The connection status of the global reach connection. </param>
-        /// <param name="peerExpressRouteCircuit"> Identifier of the ExpressRoute Circuit to peer with in the global reach connection. </param>
-        /// <param name="expressRouteId"> The ID of the Private Cloud&apos;s ExpressRoute Circuit that is participating in the global reach connection. </param>
-        internal GlobalReachConnectionData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, GlobalReachConnectionProvisioningState? provisioningState, string addressPrefix, string authorizationKey, GlobalReachConnectionStatus? circuitConnectionStatus, ResourceIdentifier peerExpressRouteCircuit, ResourceIdentifier expressRouteId) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="GlobalReachConnectionData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> The resource-specific properties for this resource. </param>
+        internal GlobalReachConnectionData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, GlobalReachConnectionProperties properties) : base(id, name, resourceType, systemData)
         {
-            ProvisioningState = provisioningState;
-            AddressPrefix = addressPrefix;
-            AuthorizationKey = authorizationKey;
-            CircuitConnectionStatus = circuitConnectionStatus;
-            PeerExpressRouteCircuit = peerExpressRouteCircuit;
-            ExpressRouteId = expressRouteId;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
 
+        /// <summary> The resource-specific properties for this resource. </summary>
+        internal GlobalReachConnectionProperties Properties { get; set; }
+
         /// <summary> The state of the  ExpressRoute Circuit Authorization provisioning. </summary>
-        public GlobalReachConnectionProvisioningState? ProvisioningState { get; }
-        /// <summary> The network used for global reach carved out from the original network block provided for the private cloud. </summary>
-        public string AddressPrefix { get; }
-        /// <summary> Authorization key from the peer express route used for the global reach connection. </summary>
-        public string AuthorizationKey { get; set; }
+        public GlobalReachConnectionProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+        }
+
+        /// <summary>
+        /// The network used for global reach carved out from the original network block
+        /// provided for the private cloud
+        /// </summary>
+        public string AddressPrefix
+        {
+            get
+            {
+                return Properties is null ? default : Properties.AddressPrefix;
+            }
+        }
+
+        /// <summary>
+        /// Authorization key from the peer express route used for the global reach
+        /// connection
+        /// </summary>
+        public string AuthorizationKey
+        {
+            get
+            {
+                return Properties is null ? default : Properties.AuthorizationKey;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new GlobalReachConnectionProperties();
+                }
+                Properties.AuthorizationKey = value;
+            }
+        }
+
         /// <summary> The connection status of the global reach connection. </summary>
-        public GlobalReachConnectionStatus? CircuitConnectionStatus { get; }
-        /// <summary> Identifier of the ExpressRoute Circuit to peer with in the global reach connection. </summary>
-        public ResourceIdentifier PeerExpressRouteCircuit { get; set; }
-        /// <summary> The ID of the Private Cloud&apos;s ExpressRoute Circuit that is participating in the global reach connection. </summary>
-        public ResourceIdentifier ExpressRouteId { get; set; }
+        public GlobalReachConnectionStatus? CircuitConnectionStatus
+        {
+            get
+            {
+                return Properties is null ? default : Properties.CircuitConnectionStatus;
+            }
+        }
+
+        /// <summary>
+        /// Identifier of the ExpressRoute Circuit to peer with in the global reach
+        /// connection
+        /// </summary>
+        public ResourceIdentifier PeerExpressRouteCircuit
+        {
+            get
+            {
+                return Properties is null ? default : Properties.PeerExpressRouteCircuit;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new GlobalReachConnectionProperties();
+                }
+                Properties.PeerExpressRouteCircuit = value;
+            }
+        }
+
+        /// <summary>
+        /// The ID of the Private Cloud's ExpressRoute Circuit that is participating in the
+        /// global reach connection
+        /// </summary>
+        public ResourceIdentifier ExpressRouteId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ExpressRouteId;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new GlobalReachConnectionProperties();
+                }
+                Properties.ExpressRouteId = value;
+            }
+        }
     }
 }

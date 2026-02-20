@@ -4,14 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using Azure.ResourceManager.Resources;
-using Azure.Core.TestFramework;
-using Azure.ResourceManager.EventHubs.Models;
-using Azure.ResourceManager.EventHubs;
-using Azure.ResourceManager.EventHubs.Tests.Helpers;
-using Azure.ResourceManager.Resources.Models;
 using Azure.Core;
+using Azure.Core.TestFramework;
+using Azure.ResourceManager.EventHubs;
+using Azure.ResourceManager.EventHubs.Models;
+using Azure.ResourceManager.Resources;
+using Azure.ResourceManager.Resources.Models;
+using NUnit.Framework;
 
 namespace Azure.ResourceManager.EventHubs.Tests
 {
@@ -24,7 +23,7 @@ namespace Azure.ResourceManager.EventHubs.Tests
 
         [Test]
         [RecordedTest]
-        [Ignore("not supported yet in 2021-11-01")]
+        [Ignore("RequestFailedException: the supported api-versions are '2018-01-01-preview'")]
         public async Task GetAvailableClusterRegions()
         {
             await foreach (var _ in DefaultSubscription.GetAvailableClusterRegionClustersAsync())

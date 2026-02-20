@@ -9,23 +9,23 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.SecurityCenter.Models;
 
 namespace Azure.ResourceManager.SecurityCenter
 {
     /// <summary>
     /// A Class representing a SecurityAssessment along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="SecurityAssessmentResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetSecurityAssessmentResource method.
-    /// Otherwise you can get one from its parent resource <see cref="ArmResource" /> using the GetSecurityAssessment method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="SecurityAssessmentResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetSecurityAssessmentResource method.
+    /// Otherwise you can get one from its parent resource <see cref="ArmResource"/> using the GetSecurityAssessment method.
     /// </summary>
     public partial class SecurityAssessmentResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="SecurityAssessmentResource"/> instance. </summary>
+        /// <param name="resourceId"> The resourceId. </param>
+        /// <param name="assessmentName"> The assessmentName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string resourceId, string assessmentName)
         {
             var resourceId0 = $"{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}";
@@ -36,12 +36,15 @@ namespace Azure.ResourceManager.SecurityCenter
         private readonly AssessmentsRestOperations _securityAssessmentAssessmentsRestClient;
         private readonly SecurityAssessmentData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.Security/assessments";
+
         /// <summary> Initializes a new instance of the <see cref="SecurityAssessmentResource"/> class for mocking. </summary>
         protected SecurityAssessmentResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "SecurityAssessmentResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="SecurityAssessmentResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal SecurityAssessmentResource(ArmClient client, SecurityAssessmentData data) : this(client, data.Id)
@@ -62,9 +65,6 @@ namespace Azure.ResourceManager.SecurityCenter
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.Security/assessments";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -91,18 +91,34 @@ namespace Azure.ResourceManager.SecurityCenter
         /// <returns> An object representing collection of SecuritySubAssessmentResources and their operations over a SecuritySubAssessmentResource. </returns>
         public virtual SecuritySubAssessmentCollection GetSecuritySubAssessments()
         {
-            return GetCachedClient(Client => new SecuritySubAssessmentCollection(Client, Id));
+            return GetCachedClient(client => new SecuritySubAssessmentCollection(client, Id));
         }
 
         /// <summary>
         /// Get a security sub-assessment on your scanned resource
-        /// Request Path: /{scope}/providers/Microsoft.Security/assessments/{assessmentName}/subAssessments/{subAssessmentName}
-        /// Operation Id: SubAssessments_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{scope}/providers/Microsoft.Security/assessments/{assessmentName}/subAssessments/{subAssessmentName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SubAssessments_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecuritySubAssessmentResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="subAssessmentName"> The Sub-Assessment Key - Unique key for the sub-assessment type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="subAssessmentName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="subAssessmentName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subAssessmentName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<SecuritySubAssessmentResource>> GetSecuritySubAssessmentAsync(string subAssessmentName, CancellationToken cancellationToken = default)
         {
@@ -111,13 +127,29 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get a security sub-assessment on your scanned resource
-        /// Request Path: /{scope}/providers/Microsoft.Security/assessments/{assessmentName}/subAssessments/{subAssessmentName}
-        /// Operation Id: SubAssessments_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{scope}/providers/Microsoft.Security/assessments/{assessmentName}/subAssessments/{subAssessmentName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SubAssessments_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecuritySubAssessmentResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="subAssessmentName"> The Sub-Assessment Key - Unique key for the sub-assessment type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="subAssessmentName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="subAssessmentName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="subAssessmentName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<SecuritySubAssessmentResource> GetSecuritySubAssessment(string subAssessmentName, CancellationToken cancellationToken = default)
         {
@@ -128,18 +160,34 @@ namespace Azure.ResourceManager.SecurityCenter
         /// <returns> An object representing collection of GovernanceAssignmentResources and their operations over a GovernanceAssignmentResource. </returns>
         public virtual GovernanceAssignmentCollection GetGovernanceAssignments()
         {
-            return GetCachedClient(Client => new GovernanceAssignmentCollection(Client, Id));
+            return GetCachedClient(client => new GovernanceAssignmentCollection(client, Id));
         }
 
         /// <summary>
         /// Get a specific governanceAssignment for the requested scope by AssignmentKey
-        /// Request Path: /{scope}/providers/Microsoft.Security/assessments/{assessmentName}/governanceAssignments/{assignmentKey}
-        /// Operation Id: GovernanceAssignments_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{scope}/providers/Microsoft.Security/assessments/{assessmentName}/governanceAssignments/{assignmentKey}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>GovernanceAssignments_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="GovernanceAssignmentResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="assignmentKey"> The security governance assignment key - the assessment key of the required governance assignment. </param>
+        /// <param name="assignmentKey"> The governance assignment key - the assessment key of the required governance assignment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="assignmentKey"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="assignmentKey"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="assignmentKey"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<GovernanceAssignmentResource>> GetGovernanceAssignmentAsync(string assignmentKey, CancellationToken cancellationToken = default)
         {
@@ -148,13 +196,29 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get a specific governanceAssignment for the requested scope by AssignmentKey
-        /// Request Path: /{scope}/providers/Microsoft.Security/assessments/{assessmentName}/governanceAssignments/{assignmentKey}
-        /// Operation Id: GovernanceAssignments_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{scope}/providers/Microsoft.Security/assessments/{assessmentName}/governanceAssignments/{assignmentKey}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>GovernanceAssignments_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="GovernanceAssignmentResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="assignmentKey"> The security governance assignment key - the assessment key of the required governance assignment. </param>
+        /// <param name="assignmentKey"> The governance assignment key - the assessment key of the required governance assignment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="assignmentKey"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="assignmentKey"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="assignmentKey"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<GovernanceAssignmentResource> GetGovernanceAssignment(string assignmentKey, CancellationToken cancellationToken = default)
         {
@@ -163,8 +227,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get a security assessment on your scanned resource
-        /// Request Path: /{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}
-        /// Operation Id: Assessments_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Assessments_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityAssessmentResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="expand"> OData expand. Optional. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -188,8 +268,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get a security assessment on your scanned resource
-        /// Request Path: /{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}
-        /// Operation Id: Assessments_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Assessments_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityAssessmentResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="expand"> OData expand. Optional. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -213,8 +309,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Delete a security assessment on your resource. An assessment metadata that describes this assessment must be predefined with the same name before inserting the assessment result
-        /// Request Path: /{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}
-        /// Operation Id: Assessments_Delete
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Assessments_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityAssessmentResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -225,7 +337,9 @@ namespace Azure.ResourceManager.SecurityCenter
             try
             {
                 var response = await _securityAssessmentAssessmentsRestClient.DeleteAsync(Id.Parent, Id.Name, cancellationToken).ConfigureAwait(false);
-                var operation = new SecurityCenterArmOperation(response);
+                var uri = _securityAssessmentAssessmentsRestClient.CreateDeleteRequestUri(Id.Parent, Id.Name);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Delete, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new SecurityCenterArmOperation(response, rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionResponseAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -239,8 +353,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Delete a security assessment on your resource. An assessment metadata that describes this assessment must be predefined with the same name before inserting the assessment result
-        /// Request Path: /{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}
-        /// Operation Id: Assessments_Delete
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Assessments_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityAssessmentResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -251,7 +381,9 @@ namespace Azure.ResourceManager.SecurityCenter
             try
             {
                 var response = _securityAssessmentAssessmentsRestClient.Delete(Id.Parent, Id.Name, cancellationToken);
-                var operation = new SecurityCenterArmOperation(response);
+                var uri = _securityAssessmentAssessmentsRestClient.CreateDeleteRequestUri(Id.Parent, Id.Name);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Delete, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new SecurityCenterArmOperation(response, rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletionResponse(cancellationToken);
                 return operation;
@@ -265,8 +397,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Create a security assessment on your resource. An assessment metadata that describes this assessment must be predefined with the same name before inserting the assessment result
-        /// Request Path: /{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}
-        /// Operation Id: Assessments_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Assessments_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityAssessmentResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="content"> Calculated assessment on a pre-defined assessment metadata. </param>
@@ -281,7 +429,9 @@ namespace Azure.ResourceManager.SecurityCenter
             try
             {
                 var response = await _securityAssessmentAssessmentsRestClient.CreateOrUpdateAsync(Id.Parent, Id.Name, content, cancellationToken).ConfigureAwait(false);
-                var operation = new SecurityCenterArmOperation<SecurityAssessmentResource>(Response.FromValue(new SecurityAssessmentResource(Client, response), response.GetRawResponse()));
+                var uri = _securityAssessmentAssessmentsRestClient.CreateCreateOrUpdateRequestUri(Id.Parent, Id.Name, content);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new SecurityCenterArmOperation<SecurityAssessmentResource>(Response.FromValue(new SecurityAssessmentResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -295,8 +445,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Create a security assessment on your resource. An assessment metadata that describes this assessment must be predefined with the same name before inserting the assessment result
-        /// Request Path: /{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}
-        /// Operation Id: Assessments_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceId}/providers/Microsoft.Security/assessments/{assessmentName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Assessments_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SecurityAssessmentResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="content"> Calculated assessment on a pre-defined assessment metadata. </param>
@@ -311,7 +477,9 @@ namespace Azure.ResourceManager.SecurityCenter
             try
             {
                 var response = _securityAssessmentAssessmentsRestClient.CreateOrUpdate(Id.Parent, Id.Name, content, cancellationToken);
-                var operation = new SecurityCenterArmOperation<SecurityAssessmentResource>(Response.FromValue(new SecurityAssessmentResource(Client, response), response.GetRawResponse()));
+                var uri = _securityAssessmentAssessmentsRestClient.CreateCreateOrUpdateRequestUri(Id.Parent, Id.Name, content);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new SecurityCenterArmOperation<SecurityAssessmentResource>(Response.FromValue(new SecurityAssessmentResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;

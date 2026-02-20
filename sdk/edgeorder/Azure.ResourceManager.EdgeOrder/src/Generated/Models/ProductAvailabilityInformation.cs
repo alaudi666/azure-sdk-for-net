@@ -5,31 +5,41 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Availability information of a product system. </summary>
     public partial class ProductAvailabilityInformation
     {
-        /// <summary> Initializes a new instance of ProductAvailabilityInformation. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ProductAvailabilityInformation"/>. </summary>
         internal ProductAvailabilityInformation()
         {
         }
 
-        /// <summary> Initializes a new instance of ProductAvailabilityInformation. </summary>
-        /// <param name="availabilityStage"> Current availability stage of the product. Availability stage. </param>
+        /// <summary> Initializes a new instance of <see cref="ProductAvailabilityInformation"/>. </summary>
+        /// <param name="availabilityStage"> Current availability stage of the product. </param>
         /// <param name="disabledReason"> Reason why the product is disabled. </param>
         /// <param name="disabledReasonMessage"> Message for why the product is disabled. </param>
-        internal ProductAvailabilityInformation(ProductAvailabilityStage? availabilityStage, ProductDisabledReason? disabledReason, string disabledReasonMessage)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ProductAvailabilityInformation(ProductAvailabilityStage? availabilityStage, ProductDisabledReason? disabledReason, string disabledReasonMessage, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             AvailabilityStage = availabilityStage;
             DisabledReason = disabledReason;
             DisabledReasonMessage = disabledReasonMessage;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Current availability stage of the product. Availability stage. </summary>
+        /// <summary> Current availability stage of the product. </summary>
         public ProductAvailabilityStage? AvailabilityStage { get; }
+
         /// <summary> Reason why the product is disabled. </summary>
         public ProductDisabledReason? DisabledReason { get; }
+
         /// <summary> Message for why the product is disabled. </summary>
         public string DisabledReasonMessage { get; }
     }

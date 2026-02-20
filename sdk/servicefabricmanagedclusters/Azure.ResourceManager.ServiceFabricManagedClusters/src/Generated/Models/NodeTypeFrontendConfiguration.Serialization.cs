@@ -5,73 +5,187 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    public partial class NodeTypeFrontendConfiguration : IUtf8JsonSerializable
+    /// <summary> Describes the frontend configurations for the node type. </summary>
+    public partial class NodeTypeFrontendConfiguration : IJsonModel<NodeTypeFrontendConfiguration>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual NodeTypeFrontendConfiguration PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<NodeTypeFrontendConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeNodeTypeFrontendConfiguration(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(NodeTypeFrontendConfiguration)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<NodeTypeFrontendConfiguration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<NodeTypeFrontendConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NodeTypeFrontendConfiguration)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(IPAddressType))
             {
-                writer.WritePropertyName("ipAddressType");
+                writer.WritePropertyName("ipAddressType"u8);
                 writer.WriteStringValue(IPAddressType.Value.ToString());
             }
             if (Optional.IsDefined(LoadBalancerBackendAddressPoolId))
             {
-                writer.WritePropertyName("loadBalancerBackendAddressPoolId");
+                writer.WritePropertyName("loadBalancerBackendAddressPoolId"u8);
                 writer.WriteStringValue(LoadBalancerBackendAddressPoolId);
             }
             if (Optional.IsDefined(LoadBalancerInboundNatPoolId))
             {
-                writer.WritePropertyName("loadBalancerInboundNatPoolId");
+                writer.WritePropertyName("loadBalancerInboundNatPoolId"u8);
                 writer.WriteStringValue(LoadBalancerInboundNatPoolId);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static NodeTypeFrontendConfiguration DeserializeNodeTypeFrontendConfiguration(JsonElement element)
-        {
-            Optional<NodeTypeFrontendConfigurationIPAddressType> ipAddressType = default;
-            Optional<ResourceIdentifier> loadBalancerBackendAddressPoolId = default;
-            Optional<ResourceIdentifier> loadBalancerInboundNatPoolId = default;
-            foreach (var property in element.EnumerateObject())
+            if (Optional.IsDefined(ApplicationGatewayBackendAddressPoolId))
             {
-                if (property.NameEquals("ipAddressType"))
+                writer.WritePropertyName("applicationGatewayBackendAddressPoolId"u8);
+                writer.WriteStringValue(ApplicationGatewayBackendAddressPoolId);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    ipAddressType = new NodeTypeFrontendConfigurationIPAddressType(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("loadBalancerBackendAddressPoolId"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    loadBalancerBackendAddressPoolId = new ResourceIdentifier(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("loadBalancerInboundNatPoolId"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    loadBalancerInboundNatPoolId = new ResourceIdentifier(property.Value.GetString());
-                    continue;
+#endif
                 }
             }
-            return new NodeTypeFrontendConfiguration(Optional.ToNullable(ipAddressType), loadBalancerBackendAddressPoolId.Value, loadBalancerInboundNatPoolId.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        NodeTypeFrontendConfiguration IJsonModel<NodeTypeFrontendConfiguration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual NodeTypeFrontendConfiguration JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<NodeTypeFrontendConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NodeTypeFrontendConfiguration)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeNodeTypeFrontendConfiguration(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static NodeTypeFrontendConfiguration DeserializeNodeTypeFrontendConfiguration(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            NodeTypeFrontendConfigurationIPAddressType? ipAddressType = default;
+            ResourceIdentifier loadBalancerBackendAddressPoolId = default;
+            ResourceIdentifier loadBalancerInboundNatPoolId = default;
+            ResourceIdentifier applicationGatewayBackendAddressPoolId = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("ipAddressType"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    ipAddressType = new NodeTypeFrontendConfigurationIPAddressType(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("loadBalancerBackendAddressPoolId"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    loadBalancerBackendAddressPoolId = new ResourceIdentifier(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("loadBalancerInboundNatPoolId"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    loadBalancerInboundNatPoolId = new ResourceIdentifier(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("applicationGatewayBackendAddressPoolId"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    applicationGatewayBackendAddressPoolId = new ResourceIdentifier(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new NodeTypeFrontendConfiguration(ipAddressType, loadBalancerBackendAddressPoolId, loadBalancerInboundNatPoolId, applicationGatewayBackendAddressPoolId, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<NodeTypeFrontendConfiguration>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<NodeTypeFrontendConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerServiceFabricManagedClustersContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(NodeTypeFrontendConfiguration)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        NodeTypeFrontendConfiguration IPersistableModel<NodeTypeFrontendConfiguration>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<NodeTypeFrontendConfiguration>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

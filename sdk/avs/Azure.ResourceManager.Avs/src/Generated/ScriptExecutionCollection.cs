@@ -8,8 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
@@ -20,63 +19,90 @@ using Azure.ResourceManager;
 namespace Azure.ResourceManager.Avs
 {
     /// <summary>
-    /// A class representing a collection of <see cref="ScriptExecutionResource" /> and their operations.
-    /// Each <see cref="ScriptExecutionResource" /> in the collection will belong to the same instance of <see cref="AvsPrivateCloudResource" />.
-    /// To get a <see cref="ScriptExecutionCollection" /> instance call the GetScriptExecutions method from an instance of <see cref="AvsPrivateCloudResource" />.
+    /// A class representing a collection of <see cref="ScriptExecutionResource"/> and their operations.
+    /// Each <see cref="ScriptExecutionResource"/> in the collection will belong to the same instance of <see cref="AvsPrivateCloudResource"/>.
+    /// To get a <see cref="ScriptExecutionCollection"/> instance call the GetScriptExecutions method from an instance of <see cref="AvsPrivateCloudResource"/>.
     /// </summary>
     public partial class ScriptExecutionCollection : ArmCollection, IEnumerable<ScriptExecutionResource>, IAsyncEnumerable<ScriptExecutionResource>
     {
-        private readonly ClientDiagnostics _scriptExecutionClientDiagnostics;
-        private readonly ScriptExecutionsRestOperations _scriptExecutionRestClient;
+        private readonly ClientDiagnostics _scriptExecutionsClientDiagnostics;
+        private readonly ScriptExecutions _scriptExecutionsRestClient;
 
-        /// <summary> Initializes a new instance of the <see cref="ScriptExecutionCollection"/> class for mocking. </summary>
+        /// <summary> Initializes a new instance of ScriptExecutionCollection for mocking. </summary>
         protected ScriptExecutionCollection()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref="ScriptExecutionCollection"/> class. </summary>
+        /// <summary> Initializes a new instance of <see cref="ScriptExecutionCollection"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
-        /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
+        /// <param name="id"> The identifier of the resource that is the target of operations. </param>
         internal ScriptExecutionCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _scriptExecutionClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Avs", ScriptExecutionResource.ResourceType.Namespace, Diagnostics);
             TryGetApiVersion(ScriptExecutionResource.ResourceType, out string scriptExecutionApiVersion);
-            _scriptExecutionRestClient = new ScriptExecutionsRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, scriptExecutionApiVersion);
-#if DEBUG
-			ValidateResourceId(Id);
-#endif
+            _scriptExecutionsClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Avs", ScriptExecutionResource.ResourceType.Namespace, Diagnostics);
+            _scriptExecutionsRestClient = new ScriptExecutions(_scriptExecutionsClientDiagnostics, Pipeline, Endpoint, scriptExecutionApiVersion ?? "2025-09-01");
+            ValidateResourceId(id);
         }
 
+        /// <param name="id"></param>
+        [Conditional("DEBUG")]
         internal static void ValidateResourceId(ResourceIdentifier id)
         {
             if (id.ResourceType != AvsPrivateCloudResource.ResourceType)
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, AvsPrivateCloudResource.ResourceType), nameof(id));
+            {
+                throw new ArgumentException(string.Format("Invalid resource type {0} expected {1}", id.ResourceType, AvsPrivateCloudResource.ResourceType), id);
+            }
         }
 
         /// <summary>
-        /// Create or update a script execution in a private cloud
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}
-        /// Operation Id: ScriptExecutions_CreateOrUpdate
+        /// Create a ScriptExecution
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> ScriptExecutions_CreateOrUpdate. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="scriptExecutionName"> Name of the user-invoked script execution resource. </param>
-        /// <param name="data"> A script running in the private cloud. </param>
+        /// <param name="scriptExecutionName"> Name of the script cmdlet. </param>
+        /// <param name="data"> Resource create parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="scriptExecutionName"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<ArmOperation<ScriptExecutionResource>> CreateOrUpdateAsync(WaitUntil waitUntil, string scriptExecutionName, ScriptExecutionData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(scriptExecutionName, nameof(scriptExecutionName));
             Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _scriptExecutionClientDiagnostics.CreateScope("ScriptExecutionCollection.CreateOrUpdate");
+            using DiagnosticScope scope = _scriptExecutionsClientDiagnostics.CreateScope("ScriptExecutionCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = await _scriptExecutionRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, scriptExecutionName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new AvsArmOperation<ScriptExecutionResource>(new ScriptExecutionOperationSource(Client), _scriptExecutionClientDiagnostics, Pipeline, _scriptExecutionRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, scriptExecutionName, data).Request, response, OperationFinalStateVia.Location);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _scriptExecutionsRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, scriptExecutionName, ScriptExecutionData.ToRequestContent(data), context);
+                Response response = await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                AvsArmOperation<ScriptExecutionResource> operation = new AvsArmOperation<ScriptExecutionResource>(
+                    new ScriptExecutionOperationSource(Client),
+                    _scriptExecutionsClientDiagnostics,
+                    Pipeline,
+                    message.Request,
+                    response,
+                    OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
+                {
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
+                }
                 return operation;
             }
             catch (Exception e)
@@ -87,29 +113,54 @@ namespace Azure.ResourceManager.Avs
         }
 
         /// <summary>
-        /// Create or update a script execution in a private cloud
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}
-        /// Operation Id: ScriptExecutions_CreateOrUpdate
+        /// Create a ScriptExecution
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> ScriptExecutions_CreateOrUpdate. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="scriptExecutionName"> Name of the user-invoked script execution resource. </param>
-        /// <param name="data"> A script running in the private cloud. </param>
+        /// <param name="scriptExecutionName"> Name of the script cmdlet. </param>
+        /// <param name="data"> Resource create parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="scriptExecutionName"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual ArmOperation<ScriptExecutionResource> CreateOrUpdate(WaitUntil waitUntil, string scriptExecutionName, ScriptExecutionData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(scriptExecutionName, nameof(scriptExecutionName));
             Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _scriptExecutionClientDiagnostics.CreateScope("ScriptExecutionCollection.CreateOrUpdate");
+            using DiagnosticScope scope = _scriptExecutionsClientDiagnostics.CreateScope("ScriptExecutionCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = _scriptExecutionRestClient.CreateOrUpdate(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, scriptExecutionName, data, cancellationToken);
-                var operation = new AvsArmOperation<ScriptExecutionResource>(new ScriptExecutionOperationSource(Client), _scriptExecutionClientDiagnostics, Pipeline, _scriptExecutionRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, scriptExecutionName, data).Request, response, OperationFinalStateVia.Location);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _scriptExecutionsRestClient.CreateCreateOrUpdateRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, scriptExecutionName, ScriptExecutionData.ToRequestContent(data), context);
+                Response response = Pipeline.ProcessMessage(message, context);
+                AvsArmOperation<ScriptExecutionResource> operation = new AvsArmOperation<ScriptExecutionResource>(
+                    new ScriptExecutionOperationSource(Client),
+                    _scriptExecutionsClientDiagnostics,
+                    Pipeline,
+                    message.Request,
+                    response,
+                    OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
+                {
                     operation.WaitForCompletion(cancellationToken);
+                }
                 return operation;
             }
             catch (Exception e)
@@ -120,25 +171,45 @@ namespace Azure.ResourceManager.Avs
         }
 
         /// <summary>
-        /// Get an script execution by name in a private cloud
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}
-        /// Operation Id: ScriptExecutions_Get
+        /// Get a ScriptExecution
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> ScriptExecutions_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="scriptExecutionName"> Name of the user-invoked script execution resource. </param>
+        /// <param name="scriptExecutionName"> Name of the script cmdlet. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="scriptExecutionName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<ScriptExecutionResource>> GetAsync(string scriptExecutionName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(scriptExecutionName, nameof(scriptExecutionName));
 
-            using var scope = _scriptExecutionClientDiagnostics.CreateScope("ScriptExecutionCollection.Get");
+            using DiagnosticScope scope = _scriptExecutionsClientDiagnostics.CreateScope("ScriptExecutionCollection.Get");
             scope.Start();
             try
             {
-                var response = await _scriptExecutionRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, scriptExecutionName, cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _scriptExecutionsRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, scriptExecutionName, context);
+                Response result = await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                Response<ScriptExecutionData> response = Response.FromValue(ScriptExecutionData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new ScriptExecutionResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -149,25 +220,45 @@ namespace Azure.ResourceManager.Avs
         }
 
         /// <summary>
-        /// Get an script execution by name in a private cloud
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}
-        /// Operation Id: ScriptExecutions_Get
+        /// Get a ScriptExecution
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> ScriptExecutions_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="scriptExecutionName"> Name of the user-invoked script execution resource. </param>
+        /// <param name="scriptExecutionName"> Name of the script cmdlet. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="scriptExecutionName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<ScriptExecutionResource> Get(string scriptExecutionName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(scriptExecutionName, nameof(scriptExecutionName));
 
-            using var scope = _scriptExecutionClientDiagnostics.CreateScope("ScriptExecutionCollection.Get");
+            using DiagnosticScope scope = _scriptExecutionsClientDiagnostics.CreateScope("ScriptExecutionCollection.Get");
             scope.Start();
             try
             {
-                var response = _scriptExecutionRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, scriptExecutionName, cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _scriptExecutionsRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, scriptExecutionName, context);
+                Response result = Pipeline.ProcessMessage(message, context);
+                Response<ScriptExecutionData> response = Response.FromValue(ScriptExecutionData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new ScriptExecutionResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -178,107 +269,109 @@ namespace Azure.ResourceManager.Avs
         }
 
         /// <summary>
-        /// List script executions in a private cloud
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions
-        /// Operation Id: ScriptExecutions_List
+        /// List ScriptExecution resources by PrivateCloud
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> ScriptExecutions_List. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="ScriptExecutionResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="ScriptExecutionResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<ScriptExecutionResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<ScriptExecutionResource>> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _scriptExecutionClientDiagnostics.CreateScope("ScriptExecutionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _scriptExecutionRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new ScriptExecutionResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<ScriptExecutionResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _scriptExecutionClientDiagnostics.CreateScope("ScriptExecutionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _scriptExecutionRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new ScriptExecutionResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new AsyncPageableWrapper<ScriptExecutionData, ScriptExecutionResource>(new ScriptExecutionsGetAllAsyncCollectionResultOfT(_scriptExecutionsRestClient, Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, context), data => new ScriptExecutionResource(Client, data));
         }
 
         /// <summary>
-        /// List script executions in a private cloud
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions
-        /// Operation Id: ScriptExecutions_List
+        /// List ScriptExecution resources by PrivateCloud
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> ScriptExecutions_List. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="ScriptExecutionResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="ScriptExecutionResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<ScriptExecutionResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<ScriptExecutionResource> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _scriptExecutionClientDiagnostics.CreateScope("ScriptExecutionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _scriptExecutionRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new ScriptExecutionResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<ScriptExecutionResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _scriptExecutionClientDiagnostics.CreateScope("ScriptExecutionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _scriptExecutionRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new ScriptExecutionResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new PageableWrapper<ScriptExecutionData, ScriptExecutionResource>(new ScriptExecutionsGetAllCollectionResultOfT(_scriptExecutionsRestClient, Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, context), data => new ScriptExecutionResource(Client, data));
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}
-        /// Operation Id: ScriptExecutions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> ScriptExecutions_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="scriptExecutionName"> Name of the user-invoked script execution resource. </param>
+        /// <param name="scriptExecutionName"> Name of the script cmdlet. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="scriptExecutionName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<bool>> ExistsAsync(string scriptExecutionName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(scriptExecutionName, nameof(scriptExecutionName));
 
-            using var scope = _scriptExecutionClientDiagnostics.CreateScope("ScriptExecutionCollection.Exists");
+            using DiagnosticScope scope = _scriptExecutionsClientDiagnostics.CreateScope("ScriptExecutionCollection.Exists");
             scope.Start();
             try
             {
-                var response = await _scriptExecutionRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, scriptExecutionName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _scriptExecutionsRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, scriptExecutionName, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<ScriptExecutionData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(ScriptExecutionData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((ScriptExecutionData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -290,23 +383,175 @@ namespace Azure.ResourceManager.Avs
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}
-        /// Operation Id: ScriptExecutions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> ScriptExecutions_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="scriptExecutionName"> Name of the user-invoked script execution resource. </param>
+        /// <param name="scriptExecutionName"> Name of the script cmdlet. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="scriptExecutionName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<bool> Exists(string scriptExecutionName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(scriptExecutionName, nameof(scriptExecutionName));
 
-            using var scope = _scriptExecutionClientDiagnostics.CreateScope("ScriptExecutionCollection.Exists");
+            using DiagnosticScope scope = _scriptExecutionsClientDiagnostics.CreateScope("ScriptExecutionCollection.Exists");
             scope.Start();
             try
             {
-                var response = _scriptExecutionRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, scriptExecutionName, cancellationToken: cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _scriptExecutionsRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, scriptExecutionName, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<ScriptExecutionData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(ScriptExecutionData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((ScriptExecutionData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> ScriptExecutions_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="scriptExecutionName"> Name of the script cmdlet. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="scriptExecutionName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual async Task<NullableResponse<ScriptExecutionResource>> GetIfExistsAsync(string scriptExecutionName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(scriptExecutionName, nameof(scriptExecutionName));
+
+            using DiagnosticScope scope = _scriptExecutionsClientDiagnostics.CreateScope("ScriptExecutionCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _scriptExecutionsRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, scriptExecutionName, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<ScriptExecutionData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(ScriptExecutionData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((ScriptExecutionData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<ScriptExecutionResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new ScriptExecutionResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/scriptExecutions/{scriptExecutionName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> ScriptExecutions_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="scriptExecutionName"> Name of the script cmdlet. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="scriptExecutionName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="scriptExecutionName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual NullableResponse<ScriptExecutionResource> GetIfExists(string scriptExecutionName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(scriptExecutionName, nameof(scriptExecutionName));
+
+            using DiagnosticScope scope = _scriptExecutionsClientDiagnostics.CreateScope("ScriptExecutionCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _scriptExecutionsRestClient.CreateGetRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Name, scriptExecutionName, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<ScriptExecutionData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(ScriptExecutionData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((ScriptExecutionData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<ScriptExecutionResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new ScriptExecutionResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {
@@ -325,6 +570,7 @@ namespace Azure.ResourceManager.Avs
             return GetAll().GetEnumerator();
         }
 
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
         IAsyncEnumerator<ScriptExecutionResource> IAsyncEnumerable<ScriptExecutionResource>.GetAsyncEnumerator(CancellationToken cancellationToken)
         {
             return GetAllAsync(cancellationToken: cancellationToken).GetAsyncEnumerator(cancellationToken);

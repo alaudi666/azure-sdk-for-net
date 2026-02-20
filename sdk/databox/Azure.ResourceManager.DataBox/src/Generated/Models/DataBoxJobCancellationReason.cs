@@ -6,14 +6,18 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Reason for cancellation. </summary>
     public partial class DataBoxJobCancellationReason
     {
-        /// <summary> Initializes a new instance of DataBoxJobCancellationReason. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DataBoxJobCancellationReason"/>. </summary>
         /// <param name="reason"> Reason for cancellation. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="reason"/> is null. </exception>
         public DataBoxJobCancellationReason(string reason)
@@ -21,6 +25,15 @@ namespace Azure.ResourceManager.DataBox.Models
             Argument.AssertNotNull(reason, nameof(reason));
 
             Reason = reason;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="DataBoxJobCancellationReason"/>. </summary>
+        /// <param name="reason"> Reason for cancellation. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DataBoxJobCancellationReason(string reason, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Reason = reason;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Reason for cancellation. </summary>

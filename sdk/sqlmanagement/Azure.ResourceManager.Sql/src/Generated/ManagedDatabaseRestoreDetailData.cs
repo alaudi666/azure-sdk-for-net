@@ -13,24 +13,59 @@ using Azure.ResourceManager.Sql.Models;
 
 namespace Azure.ResourceManager.Sql
 {
-    /// <summary> A class representing the ManagedDatabaseRestoreDetail data model. </summary>
+    /// <summary>
+    /// A class representing the ManagedDatabaseRestoreDetail data model.
+    /// A managed database restore details.
+    /// </summary>
     public partial class ManagedDatabaseRestoreDetailData : ResourceData
     {
-        /// <summary> Initializes a new instance of ManagedDatabaseRestoreDetailData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedDatabaseRestoreDetailData"/>. </summary>
         public ManagedDatabaseRestoreDetailData()
         {
-            FullBackupSets = new ChangeTrackingList<ManagedDatabaseRestoreDetailsBackupSetProperties>();
-            DiffBackupSets = new ChangeTrackingList<ManagedDatabaseRestoreDetailsBackupSetProperties>();
-            LogBackupSets = new ChangeTrackingList<ManagedDatabaseRestoreDetailsBackupSetProperties>();
-            UnrestorableFileList = new ChangeTrackingList<ManagedDatabaseRestoreDetailsUnrestorableFileProperties>();
+            FullBackupSets = new ChangeTrackingList<ManagedDatabaseRestoreDetailBackupSetProperties>();
+            DiffBackupSets = new ChangeTrackingList<ManagedDatabaseRestoreDetailBackupSetProperties>();
+            LogBackupSets = new ChangeTrackingList<ManagedDatabaseRestoreDetailBackupSetProperties>();
+            UnrestorableFileList = new ChangeTrackingList<ManagedDatabaseRestoreDetailUnrestorableFileProperties>();
         }
 
-        /// <summary> Initializes a new instance of ManagedDatabaseRestoreDetailData. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedDatabaseRestoreDetailData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
         /// <param name="systemData"> The systemData. </param>
-        /// <param name="typePropertiesType"> Restore type. </param>
+        /// <param name="restoreType"> Restore type. </param>
         /// <param name="status"> Restore status. </param>
         /// <param name="blockReason"> The reason why restore is in Blocked state. </param>
         /// <param name="lastUploadedFileName"> Last uploaded file name. </param>
@@ -38,8 +73,8 @@ namespace Azure.ResourceManager.Sql
         /// <param name="lastRestoredFileName"> Last restored file name. </param>
         /// <param name="lastRestoredFileOn"> Last restored file time. </param>
         /// <param name="completedPercent"> Percent completed. </param>
-        /// <param name="currentRestoredSizeMB"> Current restored size MB. </param>
-        /// <param name="currentRestorePlanSizeMB"> Current restore plan size MB. </param>
+        /// <param name="currentRestoredSizeInMB"> Current restored size MB. </param>
+        /// <param name="currentRestorePlanSizeInMB"> Current restore plan size MB. </param>
         /// <param name="currentBackupType"> Current backup type. </param>
         /// <param name="currentRestoringFileName"> Current restoring file name. </param>
         /// <param name="numberOfFilesFound"> Number of files detected. </param>
@@ -52,9 +87,10 @@ namespace Azure.ResourceManager.Sql
         /// <param name="diffBackupSets"> Diff backup sets. </param>
         /// <param name="logBackupSets"> Log backup sets. </param>
         /// <param name="unrestorableFileList"> Unrestorable files. </param>
-        internal ManagedDatabaseRestoreDetailData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string typePropertiesType, string status, string blockReason, string lastUploadedFileName, DateTimeOffset? lastUploadedFileOn, string lastRestoredFileName, DateTimeOffset? lastRestoredFileOn, int? completedPercent, int? currentRestoredSizeMB, int? currentRestorePlanSizeMB, string currentBackupType, string currentRestoringFileName, int? numberOfFilesFound, int? numberOfFilesQueued, int? numberOfFilesSkipped, int? numberOfFilesRestoring, int? numberOfFilesRestored, int? numberOfFilesUnrestorable, IReadOnlyList<ManagedDatabaseRestoreDetailsBackupSetProperties> fullBackupSets, IReadOnlyList<ManagedDatabaseRestoreDetailsBackupSetProperties> diffBackupSets, IReadOnlyList<ManagedDatabaseRestoreDetailsBackupSetProperties> logBackupSets, IReadOnlyList<ManagedDatabaseRestoreDetailsUnrestorableFileProperties> unrestorableFileList) : base(id, name, resourceType, systemData)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedDatabaseRestoreDetailData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string restoreType, string status, string blockReason, string lastUploadedFileName, DateTimeOffset? lastUploadedFileOn, string lastRestoredFileName, DateTimeOffset? lastRestoredFileOn, int? completedPercent, int? currentRestoredSizeInMB, int? currentRestorePlanSizeInMB, string currentBackupType, string currentRestoringFileName, int? numberOfFilesFound, int? numberOfFilesQueued, int? numberOfFilesSkipped, int? numberOfFilesRestoring, int? numberOfFilesRestored, int? numberOfFilesUnrestorable, IReadOnlyList<ManagedDatabaseRestoreDetailBackupSetProperties> fullBackupSets, IReadOnlyList<ManagedDatabaseRestoreDetailBackupSetProperties> diffBackupSets, IReadOnlyList<ManagedDatabaseRestoreDetailBackupSetProperties> logBackupSets, IReadOnlyList<ManagedDatabaseRestoreDetailUnrestorableFileProperties> unrestorableFileList, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData)
         {
-            TypePropertiesType = typePropertiesType;
+            RestoreType = restoreType;
             Status = status;
             BlockReason = blockReason;
             LastUploadedFileName = lastUploadedFileName;
@@ -62,8 +98,8 @@ namespace Azure.ResourceManager.Sql
             LastRestoredFileName = lastRestoredFileName;
             LastRestoredFileOn = lastRestoredFileOn;
             CompletedPercent = completedPercent;
-            CurrentRestoredSizeMB = currentRestoredSizeMB;
-            CurrentRestorePlanSizeMB = currentRestorePlanSizeMB;
+            CurrentRestoredSizeInMB = currentRestoredSizeInMB;
+            CurrentRestorePlanSizeInMB = currentRestorePlanSizeInMB;
             CurrentBackupType = currentBackupType;
             CurrentRestoringFileName = currentRestoringFileName;
             NumberOfFilesFound = numberOfFilesFound;
@@ -76,51 +112,74 @@ namespace Azure.ResourceManager.Sql
             DiffBackupSets = diffBackupSets;
             LogBackupSets = logBackupSets;
             UnrestorableFileList = unrestorableFileList;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> Restore type. </summary>
-        public string TypePropertiesType { get; }
+        [WirePath("properties.type")]
+        public string RestoreType { get; }
         /// <summary> Restore status. </summary>
+        [WirePath("properties.status")]
         public string Status { get; }
         /// <summary> The reason why restore is in Blocked state. </summary>
+        [WirePath("properties.blockReason")]
         public string BlockReason { get; }
         /// <summary> Last uploaded file name. </summary>
+        [WirePath("properties.lastUploadedFileName")]
         public string LastUploadedFileName { get; }
         /// <summary> Last uploaded file time. </summary>
+        [WirePath("properties.lastUploadedFileTime")]
         public DateTimeOffset? LastUploadedFileOn { get; }
         /// <summary> Last restored file name. </summary>
+        [WirePath("properties.lastRestoredFileName")]
         public string LastRestoredFileName { get; }
         /// <summary> Last restored file time. </summary>
+        [WirePath("properties.lastRestoredFileTime")]
         public DateTimeOffset? LastRestoredFileOn { get; }
         /// <summary> Percent completed. </summary>
+        [WirePath("properties.percentCompleted")]
         public int? CompletedPercent { get; }
         /// <summary> Current restored size MB. </summary>
-        public int? CurrentRestoredSizeMB { get; }
+        [WirePath("properties.currentRestoredSizeMB")]
+        public int? CurrentRestoredSizeInMB { get; }
         /// <summary> Current restore plan size MB. </summary>
-        public int? CurrentRestorePlanSizeMB { get; }
+        [WirePath("properties.currentRestorePlanSizeMB")]
+        public int? CurrentRestorePlanSizeInMB { get; }
         /// <summary> Current backup type. </summary>
+        [WirePath("properties.currentBackupType")]
         public string CurrentBackupType { get; }
         /// <summary> Current restoring file name. </summary>
+        [WirePath("properties.currentRestoringFileName")]
         public string CurrentRestoringFileName { get; }
         /// <summary> Number of files detected. </summary>
+        [WirePath("properties.numberOfFilesDetected")]
         public int? NumberOfFilesFound { get; }
         /// <summary> Number of files queued. </summary>
+        [WirePath("properties.numberOfFilesQueued")]
         public int? NumberOfFilesQueued { get; }
         /// <summary> Number of files skipped. </summary>
+        [WirePath("properties.numberOfFilesSkipped")]
         public int? NumberOfFilesSkipped { get; }
         /// <summary> Number of files restoring. </summary>
+        [WirePath("properties.numberOfFilesRestoring")]
         public int? NumberOfFilesRestoring { get; }
         /// <summary> Number of files restored. </summary>
+        [WirePath("properties.numberOfFilesRestored")]
         public int? NumberOfFilesRestored { get; }
         /// <summary> Number of files unrestorable. </summary>
+        [WirePath("properties.numberOfFilesUnrestorable")]
         public int? NumberOfFilesUnrestorable { get; }
         /// <summary> Full backup sets. </summary>
-        public IReadOnlyList<ManagedDatabaseRestoreDetailsBackupSetProperties> FullBackupSets { get; }
+        [WirePath("properties.fullBackupSets")]
+        public IReadOnlyList<ManagedDatabaseRestoreDetailBackupSetProperties> FullBackupSets { get; }
         /// <summary> Diff backup sets. </summary>
-        public IReadOnlyList<ManagedDatabaseRestoreDetailsBackupSetProperties> DiffBackupSets { get; }
+        [WirePath("properties.diffBackupSets")]
+        public IReadOnlyList<ManagedDatabaseRestoreDetailBackupSetProperties> DiffBackupSets { get; }
         /// <summary> Log backup sets. </summary>
-        public IReadOnlyList<ManagedDatabaseRestoreDetailsBackupSetProperties> LogBackupSets { get; }
+        [WirePath("properties.logBackupSets")]
+        public IReadOnlyList<ManagedDatabaseRestoreDetailBackupSetProperties> LogBackupSets { get; }
         /// <summary> Unrestorable files. </summary>
-        public IReadOnlyList<ManagedDatabaseRestoreDetailsUnrestorableFileProperties> UnrestorableFileList { get; }
+        [WirePath("properties.unrestorableFiles")]
+        public IReadOnlyList<ManagedDatabaseRestoreDetailUnrestorableFileProperties> UnrestorableFileList { get; }
     }
 }

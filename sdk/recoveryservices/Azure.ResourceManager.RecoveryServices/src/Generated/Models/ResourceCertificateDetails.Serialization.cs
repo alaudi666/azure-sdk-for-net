@@ -5,23 +5,185 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Text.Json;
+using Azure.ResourceManager.RecoveryServices;
 
 namespace Azure.ResourceManager.RecoveryServices.Models
 {
-    public partial class ResourceCertificateDetails
+    /// <summary>
+    /// Certificate details representing the Vault credentials.
+    /// Please note this is the abstract base class. The derived classes available for instantiation are: <see cref="ResourceCertificateAndAadDetails"/> and <see cref="ResourceCertificateAndAcsDetails"/>.
+    /// </summary>
+    [PersistableModelProxy(typeof(UnknownResourceCertificateDetails))]
+    public abstract partial class ResourceCertificateDetails : IJsonModel<ResourceCertificateDetails>
     {
-        internal static ResourceCertificateDetails DeserializeResourceCertificateDetails(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ResourceCertificateDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            if (element.TryGetProperty("authType", out JsonElement discriminator))
+            string format = options.Format == "W" ? ((IPersistableModel<ResourceCertificateDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeResourceCertificateDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ResourceCertificateDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ResourceCertificateDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ResourceCertificateDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ResourceCertificateDetails)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("authType"u8);
+            writer.WriteStringValue(AuthType);
+            if (Optional.IsDefined(Certificate))
+            {
+                writer.WritePropertyName("certificate"u8);
+                writer.WriteStartArray();
+                foreach (byte item in Certificate)
+                {
+                    writer.WriteNumberValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsDefined(FriendlyName))
+            {
+                writer.WritePropertyName("friendlyName"u8);
+                writer.WriteStringValue(FriendlyName);
+            }
+            if (Optional.IsDefined(Issuer))
+            {
+                writer.WritePropertyName("issuer"u8);
+                writer.WriteStringValue(Issuer);
+            }
+            if (Optional.IsDefined(ResourceId))
+            {
+                writer.WritePropertyName("resourceId"u8);
+                writer.WriteNumberValue(ResourceId.Value);
+            }
+            if (Optional.IsDefined(Subject))
+            {
+                writer.WritePropertyName("subject"u8);
+                writer.WriteStringValue(Subject);
+            }
+            if (Optional.IsDefined(Thumbprint))
+            {
+                writer.WritePropertyName("thumbprint"u8);
+#if NET6_0_OR_GREATER
+                writer.WriteRawValue(Thumbprint);
+#else
+                using (JsonDocument document = JsonDocument.Parse(Thumbprint))
+                {
+                    JsonSerializer.Serialize(writer, document.RootElement);
+                }
+#endif
+            }
+            if (Optional.IsDefined(ValidStartOn))
+            {
+                writer.WritePropertyName("validFrom"u8);
+                writer.WriteStringValue(ValidStartOn.Value, "O");
+            }
+            if (Optional.IsDefined(ValidEndOn))
+            {
+                writer.WritePropertyName("validTo"u8);
+                writer.WriteStringValue(ValidEndOn.Value, "O");
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ResourceCertificateDetails IJsonModel<ResourceCertificateDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ResourceCertificateDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ResourceCertificateDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ResourceCertificateDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeResourceCertificateDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ResourceCertificateDetails DeserializeResourceCertificateDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            if (element.TryGetProperty("authType"u8, out JsonElement discriminator))
             {
                 switch (discriminator.GetString())
                 {
-                    case "AccessControlService": return ResourceCertificateAndAcsDetails.DeserializeResourceCertificateAndAcsDetails(element);
-                    case "AzureActiveDirectory": return ResourceCertificateAndAadDetails.DeserializeResourceCertificateAndAadDetails(element);
+                    case "AzureActiveDirectory":
+                        return ResourceCertificateAndAadDetails.DeserializeResourceCertificateAndAadDetails(element, options);
+                    case "AccessControlService":
+                        return ResourceCertificateAndAcsDetails.DeserializeResourceCertificateAndAcsDetails(element, options);
                 }
             }
-            return UnknownResourceCertificateDetails.DeserializeUnknownResourceCertificateDetails(element);
+            return UnknownResourceCertificateDetails.DeserializeUnknownResourceCertificateDetails(element, options);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ResourceCertificateDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ResourceCertificateDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerRecoveryServicesContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ResourceCertificateDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ResourceCertificateDetails IPersistableModel<ResourceCertificateDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ResourceCertificateDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

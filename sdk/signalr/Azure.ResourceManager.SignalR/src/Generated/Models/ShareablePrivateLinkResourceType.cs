@@ -5,28 +5,40 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.SignalR;
+
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Describes a  resource type that has been onboarded to private link service. </summary>
     public partial class ShareablePrivateLinkResourceType
     {
-        /// <summary> Initializes a new instance of ShareablePrivateLinkResourceType. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ShareablePrivateLinkResourceType"/>. </summary>
         public ShareablePrivateLinkResourceType()
         {
         }
 
-        /// <summary> Initializes a new instance of ShareablePrivateLinkResourceType. </summary>
+        /// <summary> Initializes a new instance of <see cref="ShareablePrivateLinkResourceType"/>. </summary>
         /// <param name="name"> The name of the resource type that has been onboarded to private link service. </param>
         /// <param name="properties"> Describes the properties of a resource type that has been onboarded to private link service. </param>
-        internal ShareablePrivateLinkResourceType(string name, ShareablePrivateLinkResourceProperties properties)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ShareablePrivateLinkResourceType(string name, ShareablePrivateLinkResourceProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Name = name;
             Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The name of the resource type that has been onboarded to private link service. </summary>
+        [WirePath("name")]
         public string Name { get; set; }
+
         /// <summary> Describes the properties of a resource type that has been onboarded to private link service. </summary>
+        [WirePath("properties")]
         public ShareablePrivateLinkResourceProperties Properties { get; set; }
     }
 }

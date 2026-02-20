@@ -6,150 +6,258 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    public partial class SingleSignOnIdentitySource : IUtf8JsonSerializable
+    /// <summary> vCenter Single Sign On Identity Source. </summary>
+    public partial class SingleSignOnIdentitySource : IJsonModel<SingleSignOnIdentitySource>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual SingleSignOnIdentitySource PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SingleSignOnIdentitySource>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeSingleSignOnIdentitySource(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SingleSignOnIdentitySource)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<SingleSignOnIdentitySource>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SingleSignOnIdentitySource>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SingleSignOnIdentitySource)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(Name))
             {
-                writer.WritePropertyName("name");
+                writer.WritePropertyName("name"u8);
                 writer.WriteStringValue(Name);
             }
             if (Optional.IsDefined(Alias))
             {
-                writer.WritePropertyName("alias");
+                writer.WritePropertyName("alias"u8);
                 writer.WriteStringValue(Alias);
             }
             if (Optional.IsDefined(Domain))
             {
-                writer.WritePropertyName("domain");
+                writer.WritePropertyName("domain"u8);
                 writer.WriteStringValue(Domain);
             }
             if (Optional.IsDefined(BaseUserDN))
             {
-                writer.WritePropertyName("baseUserDN");
+                writer.WritePropertyName("baseUserDN"u8);
                 writer.WriteStringValue(BaseUserDN);
             }
             if (Optional.IsDefined(BaseGroupDN))
             {
-                writer.WritePropertyName("baseGroupDN");
+                writer.WritePropertyName("baseGroupDN"u8);
                 writer.WriteStringValue(BaseGroupDN);
             }
             if (Optional.IsDefined(PrimaryServer))
             {
-                writer.WritePropertyName("primaryServer");
+                writer.WritePropertyName("primaryServer"u8);
                 writer.WriteStringValue(PrimaryServer.AbsoluteUri);
             }
             if (Optional.IsDefined(SecondaryServer))
             {
-                writer.WritePropertyName("secondaryServer");
+                writer.WritePropertyName("secondaryServer"u8);
                 writer.WriteStringValue(SecondaryServer.AbsoluteUri);
             }
             if (Optional.IsDefined(Ssl))
             {
-                writer.WritePropertyName("ssl");
+                writer.WritePropertyName("ssl"u8);
                 writer.WriteStringValue(Ssl.Value.ToString());
             }
             if (Optional.IsDefined(Username))
             {
-                writer.WritePropertyName("username");
+                writer.WritePropertyName("username"u8);
                 writer.WriteStringValue(Username);
             }
             if (Optional.IsDefined(Password))
             {
-                writer.WritePropertyName("password");
+                writer.WritePropertyName("password"u8);
                 writer.WriteStringValue(Password);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static SingleSignOnIdentitySource DeserializeSingleSignOnIdentitySource(JsonElement element)
-        {
-            Optional<string> name = default;
-            Optional<string> @alias = default;
-            Optional<string> domain = default;
-            Optional<string> baseUserDN = default;
-            Optional<string> baseGroupDN = default;
-            Optional<Uri> primaryServer = default;
-            Optional<Uri> secondaryServer = default;
-            Optional<SslCertificateStatus> ssl = default;
-            Optional<string> username = default;
-            Optional<string> password = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("name"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    name = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("alias"))
-                {
-                    @alias = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("domain"))
-                {
-                    domain = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("baseUserDN"))
-                {
-                    baseUserDN = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("baseGroupDN"))
-                {
-                    baseGroupDN = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("primaryServer"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        primaryServer = null;
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    primaryServer = new Uri(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("secondaryServer"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        secondaryServer = null;
-                        continue;
-                    }
-                    secondaryServer = new Uri(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("ssl"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    ssl = new SslCertificateStatus(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("username"))
-                {
-                    username = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("password"))
-                {
-                    password = property.Value.GetString();
-                    continue;
+#endif
                 }
             }
-            return new SingleSignOnIdentitySource(name.Value, @alias.Value, domain.Value, baseUserDN.Value, baseGroupDN.Value, primaryServer.Value, secondaryServer.Value, Optional.ToNullable(ssl), username.Value, password.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        SingleSignOnIdentitySource IJsonModel<SingleSignOnIdentitySource>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual SingleSignOnIdentitySource JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SingleSignOnIdentitySource>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SingleSignOnIdentitySource)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSingleSignOnIdentitySource(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static SingleSignOnIdentitySource DeserializeSingleSignOnIdentitySource(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string name = default;
+            string @alias = default;
+            string domain = default;
+            string baseUserDN = default;
+            string baseGroupDN = default;
+            Uri primaryServer = default;
+            Uri secondaryServer = default;
+            SslCertificateStatus? ssl = default;
+            string username = default;
+            string password = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("name"u8))
+                {
+                    name = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("alias"u8))
+                {
+                    @alias = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("domain"u8))
+                {
+                    domain = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("baseUserDN"u8))
+                {
+                    baseUserDN = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("baseGroupDN"u8))
+                {
+                    baseGroupDN = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("primaryServer"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    primaryServer = string.IsNullOrEmpty(prop.Value.GetString()) ? null : new Uri(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("secondaryServer"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    secondaryServer = string.IsNullOrEmpty(prop.Value.GetString()) ? null : new Uri(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("ssl"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    ssl = new SslCertificateStatus(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("username"u8))
+                {
+                    username = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("password"u8))
+                {
+                    password = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new SingleSignOnIdentitySource(
+                name,
+                @alias,
+                domain,
+                baseUserDN,
+                baseGroupDN,
+                primaryServer,
+                secondaryServer,
+                ssl,
+                username,
+                password,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<SingleSignOnIdentitySource>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SingleSignOnIdentitySource>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerAvsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(SingleSignOnIdentitySource)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        SingleSignOnIdentitySource IPersistableModel<SingleSignOnIdentitySource>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<SingleSignOnIdentitySource>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

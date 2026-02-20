@@ -5,25 +5,87 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Cdn.Models
 {
     /// <summary> AFDOrigin group properties needed for origin group creation or update. </summary>
     public partial class FrontDoorOriginGroupPatch
     {
-        /// <summary> Initializes a new instance of FrontDoorOriginGroupPatch. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="FrontDoorOriginGroupPatch"/>. </summary>
         public FrontDoorOriginGroupPatch()
         {
         }
 
+        /// <summary> Initializes a new instance of <see cref="FrontDoorOriginGroupPatch"/>. </summary>
+        /// <param name="profileName"> The name of the profile which holds the origin group. </param>
+        /// <param name="loadBalancingSettings"> Load balancing settings for a backend pool. </param>
+        /// <param name="healthProbeSettings"> Health probe settings to the origin that is used to determine the health of the origin. </param>
+        /// <param name="trafficRestorationTimeInMinutes"> Time in minutes to shift the traffic to the endpoint gradually when an unhealthy endpoint comes healthy or a new endpoint is added. Default is 10 mins. This property is currently not supported. </param>
+        /// <param name="sessionAffinityState"> Whether to allow session affinity on this host. Valid options are 'Enabled' or 'Disabled'. </param>
+        /// <param name="authentication"> Authentication settings for origin in origin group. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal FrontDoorOriginGroupPatch(string profileName, LoadBalancingSettings loadBalancingSettings, HealthProbeSettings healthProbeSettings, int? trafficRestorationTimeInMinutes, EnabledState? sessionAffinityState, OriginAuthenticationProperties authentication, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        {
+            ProfileName = profileName;
+            LoadBalancingSettings = loadBalancingSettings;
+            HealthProbeSettings = healthProbeSettings;
+            TrafficRestorationTimeInMinutes = trafficRestorationTimeInMinutes;
+            SessionAffinityState = sessionAffinityState;
+            Authentication = authentication;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
         /// <summary> The name of the profile which holds the origin group. </summary>
+        [WirePath("properties.profileName")]
         public string ProfileName { get; }
         /// <summary> Load balancing settings for a backend pool. </summary>
+        [WirePath("properties.loadBalancingSettings")]
         public LoadBalancingSettings LoadBalancingSettings { get; set; }
         /// <summary> Health probe settings to the origin that is used to determine the health of the origin. </summary>
+        [WirePath("properties.healthProbeSettings")]
         public HealthProbeSettings HealthProbeSettings { get; set; }
         /// <summary> Time in minutes to shift the traffic to the endpoint gradually when an unhealthy endpoint comes healthy or a new endpoint is added. Default is 10 mins. This property is currently not supported. </summary>
+        [WirePath("properties.trafficRestorationTimeToHealedOrNewEndpointsInMinutes")]
         public int? TrafficRestorationTimeInMinutes { get; set; }
-        /// <summary> Whether to allow session affinity on this host. Valid options are &apos;Enabled&apos; or &apos;Disabled&apos;. </summary>
+        /// <summary> Whether to allow session affinity on this host. Valid options are 'Enabled' or 'Disabled'. </summary>
+        [WirePath("properties.sessionAffinityState")]
         public EnabledState? SessionAffinityState { get; set; }
+        /// <summary> Authentication settings for origin in origin group. </summary>
+        [WirePath("properties.authentication")]
+        public OriginAuthenticationProperties Authentication { get; set; }
     }
 }

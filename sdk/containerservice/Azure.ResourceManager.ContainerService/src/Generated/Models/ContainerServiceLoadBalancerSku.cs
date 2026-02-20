@@ -10,7 +10,10 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.ContainerService.Models
 {
-    /// <summary> The default is &apos;standard&apos;. See [Azure Load Balancer SKUs](https://docs.microsoft.com/azure/load-balancer/skus) for more information about the differences between load balancer SKUs. </summary>
+    /// <summary>
+    /// The load balancer sku for the managed cluster. The default is 'standard'. See [Azure Load Balancer SKUs](https://docs.microsoft.com/azure/load-balancer/skus) for more information about the differences between load balancer SKUs.
+    /// Serialized Name: LoadBalancerSku
+    /// </summary>
     public readonly partial struct ContainerServiceLoadBalancerSku : IEquatable<ContainerServiceLoadBalancerSku>
     {
         private readonly string _value;
@@ -25,15 +28,21 @@ namespace Azure.ResourceManager.ContainerService.Models
         private const string StandardValue = "standard";
         private const string BasicValue = "basic";
 
-        /// <summary> Use a a standard Load Balancer. This is the recommended Load Balancer SKU. For more information about on working with the load balancer in the managed cluster, see the [standard Load Balancer](https://docs.microsoft.com/azure/aks/load-balancer-standard) article. </summary>
+        /// <summary>
+        /// Use a a standard Load Balancer. This is the recommended Load Balancer SKU. For more information about on working with the load balancer in the managed cluster, see the [standard Load Balancer](https://docs.microsoft.com/azure/aks/load-balancer-standard) article.
+        /// Serialized Name: LoadBalancerSku.standard
+        /// </summary>
         public static ContainerServiceLoadBalancerSku Standard { get; } = new ContainerServiceLoadBalancerSku(StandardValue);
-        /// <summary> Use a basic Load Balancer with limited functionality. </summary>
+        /// <summary>
+        /// Use a basic Load Balancer with limited functionality.
+        /// Serialized Name: LoadBalancerSku.basic
+        /// </summary>
         public static ContainerServiceLoadBalancerSku Basic { get; } = new ContainerServiceLoadBalancerSku(BasicValue);
         /// <summary> Determines if two <see cref="ContainerServiceLoadBalancerSku"/> values are the same. </summary>
         public static bool operator ==(ContainerServiceLoadBalancerSku left, ContainerServiceLoadBalancerSku right) => left.Equals(right);
         /// <summary> Determines if two <see cref="ContainerServiceLoadBalancerSku"/> values are not the same. </summary>
         public static bool operator !=(ContainerServiceLoadBalancerSku left, ContainerServiceLoadBalancerSku right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="ContainerServiceLoadBalancerSku"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="ContainerServiceLoadBalancerSku"/>. </summary>
         public static implicit operator ContainerServiceLoadBalancerSku(string value) => new ContainerServiceLoadBalancerSku(value);
 
         /// <inheritdoc />
@@ -44,7 +53,7 @@ namespace Azure.ResourceManager.ContainerService.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

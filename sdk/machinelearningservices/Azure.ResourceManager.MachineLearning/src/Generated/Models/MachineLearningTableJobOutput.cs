@@ -6,54 +6,37 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The MachineLearningTableJobOutput.
-    /// Serialized Name: MLTableJobOutput
-    /// </summary>
+    /// <summary> The MachineLearningTableJobOutput. </summary>
     public partial class MachineLearningTableJobOutput : MachineLearningJobOutput
     {
-        /// <summary> Initializes a new instance of MachineLearningTableJobOutput. </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningTableJobOutput"/>. </summary>
         public MachineLearningTableJobOutput()
         {
             JobOutputType = JobOutputType.Mltable;
         }
 
-        /// <summary> Initializes a new instance of MachineLearningTableJobOutput. </summary>
-        /// <param name="description">
-        /// Description for the output.
-        /// Serialized Name: JobOutput.description
-        /// </param>
-        /// <param name="jobOutputType">
-        /// [Required] Specifies the type of job.
-        /// Serialized Name: JobOutput.jobOutputType
-        /// </param>
-        /// <param name="mode">
-        /// Output Asset Delivery Mode.
-        /// Serialized Name: AssetJobOutput.mode
-        /// </param>
-        /// <param name="uri">
-        /// Output Asset URI.
-        /// Serialized Name: AssetJobOutput.uri
-        /// </param>
-        internal MachineLearningTableJobOutput(string description, JobOutputType jobOutputType, MachineLearningOutputDeliveryMode? mode, Uri uri) : base(description, jobOutputType)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningTableJobOutput"/>. </summary>
+        /// <param name="jobOutputType"> [Required] Specifies the type of job. </param>
+        /// <param name="description"> Description for the output. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="uri"> Output Asset URI. </param>
+        /// <param name="mode"> Output Asset Delivery Mode. </param>
+        internal MachineLearningTableJobOutput(JobOutputType jobOutputType, string description, IDictionary<string, BinaryData> serializedAdditionalRawData, Uri uri, MachineLearningOutputDeliveryMode? mode) : base(jobOutputType, description, serializedAdditionalRawData)
         {
-            Mode = mode;
             Uri = uri;
+            Mode = mode;
             JobOutputType = jobOutputType;
         }
 
-        /// <summary>
-        /// Output Asset Delivery Mode.
-        /// Serialized Name: AssetJobOutput.mode
-        /// </summary>
-        public MachineLearningOutputDeliveryMode? Mode { get; set; }
-        /// <summary>
-        /// Output Asset URI.
-        /// Serialized Name: AssetJobOutput.uri
-        /// </summary>
+        /// <summary> Output Asset URI. </summary>
+        [WirePath("uri")]
         public Uri Uri { get; set; }
+        /// <summary> Output Asset Delivery Mode. </summary>
+        [WirePath("mode")]
+        public MachineLearningOutputDeliveryMode? Mode { get; set; }
     }
 }

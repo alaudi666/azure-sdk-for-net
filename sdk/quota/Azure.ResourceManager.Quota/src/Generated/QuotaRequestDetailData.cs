@@ -13,43 +13,82 @@ using Azure.ResourceManager.Quota.Models;
 
 namespace Azure.ResourceManager.Quota
 {
-    /// <summary> A class representing the QuotaRequestDetail data model. </summary>
+    /// <summary> List of quota requests with details. </summary>
     public partial class QuotaRequestDetailData : ResourceData
     {
-        /// <summary> Initializes a new instance of QuotaRequestDetailData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="QuotaRequestDetailData"/>. </summary>
         internal QuotaRequestDetailData()
         {
-            Value = new ChangeTrackingList<SubRequest>();
         }
 
-        /// <summary> Initializes a new instance of QuotaRequestDetailData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="provisioningState"> The quota request status. </param>
-        /// <param name="message"> User-friendly status message. </param>
-        /// <param name="error"> Error details of the quota request. </param>
-        /// <param name="requestSubmitOn"> The quota request submission time. The date conforms to the following format specified by the ISO 8601 standard: yyyy-MM-ddTHH:mm:ssZ. </param>
-        /// <param name="value"> Quota request details. </param>
-        internal QuotaRequestDetailData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, QuotaRequestState? provisioningState, string message, ServiceErrorDetail error, DateTimeOffset? requestSubmitOn, IReadOnlyList<SubRequest> value) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="QuotaRequestDetailData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> Quota request details. </param>
+        internal QuotaRequestDetailData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, QuotaRequestProperties properties) : base(id, name, resourceType, systemData)
         {
-            ProvisioningState = provisioningState;
-            Message = message;
-            Error = error;
-            RequestSubmitOn = requestSubmitOn;
-            Value = value;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
+
+        /// <summary> Quota request details. </summary>
+        [WirePath("properties")]
+        internal QuotaRequestProperties Properties { get; }
 
         /// <summary> The quota request status. </summary>
-        public QuotaRequestState? ProvisioningState { get; }
+        [WirePath("properties.provisioningState")]
+        public QuotaRequestState? ProvisioningState
+        {
+            get
+            {
+                return Properties.ProvisioningState;
+            }
+        }
+
         /// <summary> User-friendly status message. </summary>
-        public string Message { get; }
+        [WirePath("properties.message")]
+        public string Message
+        {
+            get
+            {
+                return Properties.Message;
+            }
+        }
+
         /// <summary> Error details of the quota request. </summary>
-        public ServiceErrorDetail Error { get; }
+        [WirePath("properties.error")]
+        public ServiceErrorDetail Error
+        {
+            get
+            {
+                return Properties.Error;
+            }
+        }
+
         /// <summary> The quota request submission time. The date conforms to the following format specified by the ISO 8601 standard: yyyy-MM-ddTHH:mm:ssZ. </summary>
-        public DateTimeOffset? RequestSubmitOn { get; }
+        [WirePath("properties.requestSubmitTime")]
+        public DateTimeOffset? RequestSubmitOn
+        {
+            get
+            {
+                return Properties.RequestSubmitOn;
+            }
+        }
+
         /// <summary> Quota request details. </summary>
-        public IReadOnlyList<SubRequest> Value { get; }
+        [WirePath("properties.value")]
+        public IReadOnlyList<QuotaSubRequestDetail> Value
+        {
+            get
+            {
+                return Properties.Value;
+            }
+        }
     }
 }

@@ -6,54 +6,190 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
-    public partial class ReverseShippingDetails
+    /// <summary> Reverse shipment details. </summary>
+    public partial class ReverseShippingDetails : IJsonModel<ReverseShippingDetails>
     {
-        internal static ReverseShippingDetails DeserializeReverseShippingDetails(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ReverseShippingDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<string> sasKeyForLabel = default;
-            Optional<string> carrierName = default;
-            Optional<string> carrierDisplayName = default;
-            Optional<string> trackingId = default;
-            Optional<Uri> trackingUrl = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ReverseShippingDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("sasKeyForLabel"))
-                {
-                    sasKeyForLabel = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("carrierName"))
-                {
-                    carrierName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("carrierDisplayName"))
-                {
-                    carrierDisplayName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("trackingId"))
-                {
-                    trackingId = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("trackingUrl"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        trackingUrl = null;
-                        continue;
+                        return DeserializeReverseShippingDetails(document.RootElement, options);
                     }
-                    trackingUrl = new Uri(property.Value.GetString());
-                    continue;
+                default:
+                    throw new FormatException($"The model {nameof(ReverseShippingDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ReverseShippingDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ReverseShippingDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ReverseShippingDetails)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(SasKeyForLabel))
+            {
+                writer.WritePropertyName("sasKeyForLabel"u8);
+                writer.WriteStringValue(SasKeyForLabel);
+            }
+            if (options.Format != "W" && Optional.IsDefined(CarrierName))
+            {
+                writer.WritePropertyName("carrierName"u8);
+                writer.WriteStringValue(CarrierName);
+            }
+            if (options.Format != "W" && Optional.IsDefined(CarrierDisplayName))
+            {
+                writer.WritePropertyName("carrierDisplayName"u8);
+                writer.WriteStringValue(CarrierDisplayName);
+            }
+            if (options.Format != "W" && Optional.IsDefined(TrackingId))
+            {
+                writer.WritePropertyName("trackingId"u8);
+                writer.WriteStringValue(TrackingId);
+            }
+            if (options.Format != "W" && Optional.IsDefined(TrackingUri))
+            {
+                writer.WritePropertyName("trackingUrl"u8);
+                writer.WriteStringValue(TrackingUri.AbsoluteUri);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
                 }
             }
-            return new ReverseShippingDetails(sasKeyForLabel.Value, carrierName.Value, carrierDisplayName.Value, trackingId.Value, trackingUrl.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ReverseShippingDetails IJsonModel<ReverseShippingDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ReverseShippingDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ReverseShippingDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ReverseShippingDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeReverseShippingDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ReverseShippingDetails DeserializeReverseShippingDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string sasKeyForLabel = default;
+            string carrierName = default;
+            string carrierDisplayName = default;
+            string trackingId = default;
+            Uri trackingUri = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("sasKeyForLabel"u8))
+                {
+                    sasKeyForLabel = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("carrierName"u8))
+                {
+                    carrierName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("carrierDisplayName"u8))
+                {
+                    carrierDisplayName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("trackingId"u8))
+                {
+                    trackingId = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("trackingUrl"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    trackingUri = string.IsNullOrEmpty(prop.Value.GetString()) ? null : new Uri(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new ReverseShippingDetails(
+                sasKeyForLabel,
+                carrierName,
+                carrierDisplayName,
+                trackingId,
+                trackingUri,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ReverseShippingDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ReverseShippingDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerEdgeOrderContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ReverseShippingDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ReverseShippingDetails IPersistableModel<ReverseShippingDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ReverseShippingDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -5,28 +5,35 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.SignalR;
 
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> The settings for the Upstream when the service is in server-less mode. </summary>
     internal partial class ServerlessUpstreamSettings
     {
-        /// <summary> Initializes a new instance of ServerlessUpstreamSettings. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ServerlessUpstreamSettings"/>. </summary>
         public ServerlessUpstreamSettings()
         {
             Templates = new ChangeTrackingList<SignalRUpstreamTemplate>();
         }
 
-        /// <summary> Initializes a new instance of ServerlessUpstreamSettings. </summary>
+        /// <summary> Initializes a new instance of <see cref="ServerlessUpstreamSettings"/>. </summary>
         /// <param name="templates"> Gets or sets the list of Upstream URL templates. Order matters, and the first matching template takes effects. </param>
-        internal ServerlessUpstreamSettings(IList<SignalRUpstreamTemplate> templates)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ServerlessUpstreamSettings(IList<SignalRUpstreamTemplate> templates, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Templates = templates;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Gets or sets the list of Upstream URL templates. Order matters, and the first matching template takes effects. </summary>
+        [WirePath("templates")]
         public IList<SignalRUpstreamTemplate> Templates { get; }
     }
 }

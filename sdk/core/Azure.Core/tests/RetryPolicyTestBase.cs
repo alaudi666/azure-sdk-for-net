@@ -75,7 +75,7 @@ namespace Azure.Core.Tests
             var pipeline = new HttpPipeline(mockTransport, new[] { policy });
             HttpMessage message = pipeline.CreateMessage();
             Task<HttpMessage> task = SendMessageGetRequest(pipeline, message);
-            RetryPolicyMock mockPolicy = (RetryPolicyMock) policy;
+            RetryPolicyMock mockPolicy = (RetryPolicyMock)policy;
 
             await mockTransport.RequestGate.Cycle(new MockResponse(500));
             Assert.GreaterOrEqual(message.ProcessingStartTime, beforeSend);
@@ -112,7 +112,7 @@ namespace Azure.Core.Tests
             var pipeline = new HttpPipeline(mockTransport, new[] { policy });
             HttpMessage message = pipeline.CreateMessage();
             Task<HttpMessage> task = SendMessageGetRequest(pipeline, message);
-            RetryPolicyMock mockPolicy = (RetryPolicyMock) policy;
+            RetryPolicyMock mockPolicy = (RetryPolicyMock)policy;
 
             await mockTransport.RequestGate.Cycle(new MockResponse(500));
             Assert.AreEqual(0, message.ProcessingContext.RetryNumber);
@@ -355,7 +355,7 @@ namespace Azure.Core.Tests
 
             Response response = await task.TimeoutAfterDefault();
 
-            Assert.AreEqual(TimeSpan.FromMilliseconds(120000), retryDelay);
+            Assert.That(retryDelay, Is.EqualTo(TimeSpan.FromMilliseconds(120000)).Within(TimeSpan.FromMilliseconds(0.2 * 120000)));
             Assert.AreEqual(501, response.Status);
         }
 
@@ -388,7 +388,7 @@ namespace Azure.Core.Tests
         [Test]
         public async Task CyclesThroughReadHosts()
         {
-           (HttpPipelinePolicy policy, AsyncGate<TimeSpan, object> gate) = CreateRetryPolicy(maxRetries: 3);
+            (HttpPipelinePolicy policy, AsyncGate<TimeSpan, object> gate) = CreateRetryPolicy(maxRetries: 3);
             MockTransport mockTransport = CreateMockTransport();
             var geoPolicy = new GeoRedundantFallbackPolicy(new[] { "host1", "host2" }, null);
             var pipeline = new HttpPipeline(mockTransport, new[] { policy, geoPolicy });
@@ -662,14 +662,12 @@ namespace Azure.Core.Tests
 
             internal Exception LastException { get; set; }
 
-            public RetryPolicyMock(RetryMode mode, int maxRetries = 3, TimeSpan delay = default, TimeSpan maxDelay = default) : base(
-                new RetryOptions
-                {
-                    Mode = mode,
-                    Delay = delay,
-                    MaxDelay = maxDelay,
-                    MaxRetries = maxRetries
-                })
+            public RetryPolicyMock(RetryMode mode, int maxRetries = 3, TimeSpan delay = default, TimeSpan maxDelay = default)
+                : base(
+                    maxRetries,
+                    mode == RetryMode.Exponential ?
+                        DelayStrategy.CreateExponentialDelayStrategy(delay, maxDelay) :
+                        DelayStrategy.CreateFixedDelayStrategy(delay))
             {
             }
 

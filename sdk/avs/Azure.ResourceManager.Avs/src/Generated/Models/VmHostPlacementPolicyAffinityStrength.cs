@@ -7,45 +7,65 @@
 
 using System;
 using System.ComponentModel;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> VM-Host placement policy affinity strength (should/must). </summary>
+    /// <summary> Affinity Strength. </summary>
     public readonly partial struct VmHostPlacementPolicyAffinityStrength : IEquatable<VmHostPlacementPolicyAffinityStrength>
     {
         private readonly string _value;
+        /// <summary> is should. </summary>
+        private const string ShouldValue = "Should";
+        /// <summary> is must. </summary>
+        private const string MustValue = "Must";
 
         /// <summary> Initializes a new instance of <see cref="VmHostPlacementPolicyAffinityStrength"/>. </summary>
+        /// <param name="value"> The value. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
         public VmHostPlacementPolicyAffinityStrength(string value)
         {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
+            Argument.AssertNotNull(value, nameof(value));
+
+            _value = value;
         }
 
-        private const string ShouldValue = "Should";
-        private const string MustValue = "Must";
-
-        /// <summary> Should. </summary>
+        /// <summary> is should. </summary>
         public static VmHostPlacementPolicyAffinityStrength Should { get; } = new VmHostPlacementPolicyAffinityStrength(ShouldValue);
-        /// <summary> Must. </summary>
+
+        /// <summary> is must. </summary>
         public static VmHostPlacementPolicyAffinityStrength Must { get; } = new VmHostPlacementPolicyAffinityStrength(MustValue);
+
         /// <summary> Determines if two <see cref="VmHostPlacementPolicyAffinityStrength"/> values are the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator ==(VmHostPlacementPolicyAffinityStrength left, VmHostPlacementPolicyAffinityStrength right) => left.Equals(right);
+
         /// <summary> Determines if two <see cref="VmHostPlacementPolicyAffinityStrength"/> values are not the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator !=(VmHostPlacementPolicyAffinityStrength left, VmHostPlacementPolicyAffinityStrength right) => !left.Equals(right);
+
         /// <summary> Converts a string to a <see cref="VmHostPlacementPolicyAffinityStrength"/>. </summary>
+        /// <param name="value"> The value. </param>
         public static implicit operator VmHostPlacementPolicyAffinityStrength(string value) => new VmHostPlacementPolicyAffinityStrength(value);
 
-        /// <inheritdoc />
+        /// <summary> Converts a string to a <see cref="VmHostPlacementPolicyAffinityStrength"/>. </summary>
+        /// <param name="value"> The value. </param>
+        public static implicit operator VmHostPlacementPolicyAffinityStrength?(string value) => value == null ? null : new VmHostPlacementPolicyAffinityStrength(value);
+
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj) => obj is VmHostPlacementPolicyAffinityStrength other && Equals(other);
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public bool Equals(VmHostPlacementPolicyAffinityStrength other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-        /// <inheritdoc />
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
+
+        /// <inheritdoc/>
         public override string ToString() => _value;
     }
 }

@@ -6,14 +6,18 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Return order item request body. </summary>
     public partial class EdgeOrderItemReturnContent
     {
-        /// <summary> Initializes a new instance of EdgeOrderItemReturnContent. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderItemReturnContent"/>. </summary>
         /// <param name="returnReason"> Return Reason. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="returnReason"/> is null. </exception>
         public EdgeOrderItemReturnContent(string returnReason)
@@ -23,12 +27,30 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             ReturnReason = returnReason;
         }
 
-        /// <summary> customer return address. </summary>
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderItemReturnContent"/>. </summary>
+        /// <param name="returnAddress"> Customer return address. </param>
+        /// <param name="returnReason"> Return Reason. </param>
+        /// <param name="serviceTag"> Service tag (located on the bottom-right corner of the device). </param>
+        /// <param name="isShippingBoxRequired"> Shipping Box required. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EdgeOrderItemReturnContent(EdgeOrderItemAddressProperties returnAddress, string returnReason, string serviceTag, bool? isShippingBoxRequired, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            ReturnAddress = returnAddress;
+            ReturnReason = returnReason;
+            ServiceTag = serviceTag;
+            IsShippingBoxRequired = isShippingBoxRequired;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> Customer return address. </summary>
         public EdgeOrderItemAddressProperties ReturnAddress { get; set; }
+
         /// <summary> Return Reason. </summary>
         public string ReturnReason { get; }
+
         /// <summary> Service tag (located on the bottom-right corner of the device). </summary>
         public string ServiceTag { get; set; }
+
         /// <summary> Shipping Box required. </summary>
         public bool? IsShippingBoxRequired { get; set; }
     }

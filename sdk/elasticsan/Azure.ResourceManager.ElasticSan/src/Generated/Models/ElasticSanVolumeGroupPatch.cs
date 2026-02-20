@@ -5,36 +5,118 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.ElasticSan.Models
 {
     /// <summary> Volume Group request. </summary>
     public partial class ElasticSanVolumeGroupPatch
     {
-        /// <summary> Initializes a new instance of ElasticSanVolumeGroupPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ElasticSanVolumeGroupPatch"/>. </summary>
         public ElasticSanVolumeGroupPatch()
         {
-            Tags = new ChangeTrackingDictionary<string, string>();
         }
 
-        /// <summary> Resource tags. </summary>
-        public IDictionary<string, string> Tags { get; }
+        /// <summary> Initializes a new instance of <see cref="ElasticSanVolumeGroupPatch"/>. </summary>
+        /// <param name="identity"> The identity of the resource. </param>
+        /// <param name="properties"> Properties of VolumeGroup. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ElasticSanVolumeGroupPatch(ManagedServiceIdentity identity, VolumeGroupUpdateProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Identity = identity;
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> The identity of the resource. </summary>
+        public ManagedServiceIdentity Identity { get; set; }
+
+        /// <summary> Properties of VolumeGroup. </summary>
+        internal VolumeGroupUpdateProperties Properties { get; set; }
+
         /// <summary> Type of storage target. </summary>
-        public StorageTargetType? ProtocolType { get; set; }
+        public ElasticSanStorageTargetType? ProtocolType
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProtocolType;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new VolumeGroupUpdateProperties();
+                }
+                Properties.ProtocolType = value.Value;
+            }
+        }
+
         /// <summary> Type of encryption. </summary>
-        public ElasticSanEncryptionType? Encryption { get; set; }
-        /// <summary> A collection of rules governing the accessibility from specific network locations. </summary>
-        internal NetworkRuleSet NetworkAcls { get; set; }
+        public ElasticSanEncryptionType? Encryption
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Encryption;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new VolumeGroupUpdateProperties();
+                }
+                Properties.Encryption = value.Value;
+            }
+        }
+
+        /// <summary> Encryption Properties describing Key Vault and Identity information. </summary>
+        public ElasticSanEncryptionProperties EncryptionProperties
+        {
+            get
+            {
+                return Properties is null ? default : Properties.EncryptionProperties;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new VolumeGroupUpdateProperties();
+                }
+                Properties.EncryptionProperties = value;
+            }
+        }
+
+        /// <summary> A boolean indicating whether or not Data Integrity Check is enabled. </summary>
+        public bool? EnforceDataIntegrityCheckForIscsi
+        {
+            get
+            {
+                return Properties is null ? default : Properties.EnforceDataIntegrityCheckForIscsi;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new VolumeGroupUpdateProperties();
+                }
+                Properties.EnforceDataIntegrityCheckForIscsi = value.Value;
+            }
+        }
+
         /// <summary> The list of virtual network rules. </summary>
         public IList<ElasticSanVirtualNetworkRule> VirtualNetworkRules
         {
             get
             {
-                if (NetworkAcls is null)
-                    NetworkAcls = new NetworkRuleSet();
-                return NetworkAcls.VirtualNetworkRules;
+                if (Properties is null)
+                {
+                    Properties = new VolumeGroupUpdateProperties();
+                }
+                return Properties.VirtualNetworkRules;
             }
         }
     }

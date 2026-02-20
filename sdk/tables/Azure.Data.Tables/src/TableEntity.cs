@@ -247,7 +247,7 @@ namespace Azure.Data.Tables
                 }
                 if (type == typeof(BinaryData) && value is byte[] byteArray)
                 {
-                     return new BinaryData(byteArray);
+                    return new BinaryData(byteArray);
                 }
                 EnforceType(type, valueType);
             }
@@ -294,6 +294,7 @@ namespace Azure.Data.Tables
                         int newIntValue => (long)newIntValue,
                         _ => newValue
                     },
+                    string when newValue is DateTime || newValue is DateTimeOffset _ => newValue.ToString(),
                     _ => newValue
                 };
             }

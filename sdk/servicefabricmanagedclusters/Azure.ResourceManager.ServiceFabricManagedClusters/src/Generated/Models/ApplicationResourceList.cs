@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
@@ -14,24 +15,31 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
     /// <summary> The list of application resources. </summary>
     internal partial class ApplicationResourceList
     {
-        /// <summary> Initializes a new instance of ApplicationResourceList. </summary>
-        internal ApplicationResourceList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ApplicationResourceList"/>. </summary>
+        /// <param name="value"> The ApplicationResource items on this page. </param>
+        internal ApplicationResourceList(IEnumerable<ServiceFabricManagedApplicationData> value)
         {
-            Value = new ChangeTrackingList<ServiceFabricManagedApplicationData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of ApplicationResourceList. </summary>
-        /// <param name="value"></param>
-        /// <param name="nextLink"> URL to get the next set of application list results if there are any. </param>
-        internal ApplicationResourceList(IReadOnlyList<ServiceFabricManagedApplicationData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ApplicationResourceList"/>. </summary>
+        /// <param name="value"> The ApplicationResource items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ApplicationResourceList(IList<ServiceFabricManagedApplicationData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets the value. </summary>
-        public IReadOnlyList<ServiceFabricManagedApplicationData> Value { get; }
-        /// <summary> URL to get the next set of application list results if there are any. </summary>
-        public string NextLink { get; }
+        /// <summary> The ApplicationResource items on this page. </summary>
+        public IList<ServiceFabricManagedApplicationData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

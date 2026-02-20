@@ -54,13 +54,14 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Assert
             Assert.AreEqual(uri, serviceClient.Uri);
+            Assert.IsNotNull(serviceClient.ClientConfiguration.SharedKeyCredential);
         }
 
         [RecordedTest]
         public async Task Ctor_TokenCredential()
         {
             // Arrange
-            TokenCredential tokenCredential = Tenants.GetOAuthCredential(TestConfigHierarchicalNamespace);
+            TokenCredential tokenCredential = TestEnvironment.Credential;
             Uri uri = new Uri(TestConfigHierarchicalNamespace.BlobServiceEndpoint).ToHttps();
             DataLakeServiceClient serviceClient = InstrumentClient(new DataLakeServiceClient(uri, tokenCredential, GetOptions()));
 
@@ -69,6 +70,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Assert
             Assert.AreEqual(uri, serviceClient.Uri);
+            Assert.IsNotNull(serviceClient.ClientConfiguration.TokenCredential);
         }
 
         [RecordedTest]
@@ -83,6 +85,7 @@ namespace Azure.Storage.Files.DataLake.Tests
             try
             {
                 await fileSystem.CreateAsync();
+                Assert.IsNotNull(fileSystem.ClientConfiguration.SharedKeyCredential);
             }
 
             // Cleanup
@@ -124,11 +127,28 @@ namespace Azure.Storage.Files.DataLake.Tests
             }
         }
 
+        [Test]
+        public void Ctor_ConnectionString_CustomUri()
+        {
+            var accountName = "accountName";
+            var accountKey = Convert.ToBase64String(new byte[] { 0, 1, 2, 3, 4, 5 });
+
+            var credentials = new StorageSharedKeyCredential(accountName, accountKey);
+            var blobEndpoint = new Uri("http://customdomain/" + accountName);
+            var blobSecondaryEndpoint = new Uri("http://customdomain/" + accountName + "-secondary");
+
+            var connectionString = new StorageConnectionString(credentials, blobStorageUri: (blobEndpoint, blobSecondaryEndpoint));
+
+            DataLakeServiceClient service = new DataLakeServiceClient(connectionString.ToString(true));
+
+            Assert.AreEqual(accountName, service.AccountName);
+        }
+
         [RecordedTest]
         public void Ctor_TokenCredential_Http()
         {
             // Arrange
-            TokenCredential tokenCredential = Tenants.GetOAuthCredential(TestConfigHierarchicalNamespace);
+            TokenCredential tokenCredential = TestEnvironment.Credential;
             Uri uri = new Uri(TestConfigHierarchicalNamespace.BlobServiceEndpoint).ToHttp();
 
             // Act
@@ -139,6 +159,20 @@ namespace Azure.Storage.Files.DataLake.Tests
             TestHelper.AssertExpectedException(
                 () => new DataLakeServiceClient(uri, tokenCredential, new DataLakeClientOptions()),
                 new ArgumentException("Cannot use TokenCredential without HTTPS."));
+        }
+
+        [Test]
+        public void Ctor_SharedKey_AccountName()
+        {
+            // Arrange
+            var accountName = "accountName";
+            var accountKey = Convert.ToBase64String(new byte[] { 0, 1, 2, 3, 4, 5 });
+            var credentials = new StorageSharedKeyCredential(accountName, accountKey);
+            var blobEndpoint = new Uri($"https://customdomain/");
+
+            DataLakeServiceClient service = new DataLakeServiceClient(blobEndpoint, credentials);
+
+            Assert.AreEqual(accountName, service.AccountName);
         }
 
         [RecordedTest]
@@ -154,6 +188,7 @@ namespace Azure.Storage.Files.DataLake.Tests
 
             // Assert
             Assert.IsNotNull(fileSystems);
+            Assert.IsNotNull(sasClient.ClientConfiguration.SasCredential);
         }
 
         [RecordedTest]
@@ -188,13 +223,92 @@ namespace Azure.Storage.Files.DataLake.Tests
         }
 
         [RecordedTest]
+        public async Task Ctor_DefaultAudience()
+        {
+            // Arrange
+            DataLakeServiceClient service = DataLakeClientBuilder.GetServiceClient_Hns();
+
+            // Act - Create new blob client with the OAuth Credential and Audience
+            DataLakeClientOptions options = GetOptionsWithAudience(DataLakeAudience.DefaultAudience);
+
+            DataLakeServiceClient aadServiceClient = InstrumentClient(new DataLakeServiceClient(
+                service.Uri,
+                GetOAuthHnsCredential(),
+                options));
+
+            // Assert
+            DataLakeServiceProperties properties = await aadServiceClient.GetPropertiesAsync();
+            Assert.IsNotNull(properties);
+        }
+
+        [RecordedTest]
+        public async Task Ctor_CustomAudience()
+        {
+            // Arrange
+            DataLakeServiceClient service = DataLakeClientBuilder.GetServiceClient_Hns();
+
+            // Act - Create new blob client with the OAuth Credential and Audience
+            DataLakeClientOptions options = GetOptionsWithAudience(new DataLakeAudience($"https://{service.AccountName}.blob.core.windows.net/"));
+
+            DataLakeServiceClient aadServiceClient = InstrumentClient(new DataLakeServiceClient(
+                service.Uri,
+                GetOAuthHnsCredential(),
+                options));
+
+            // Assert
+            DataLakeServiceProperties properties = await aadServiceClient.GetPropertiesAsync();
+            Assert.IsNotNull(properties);
+        }
+
+        [RecordedTest]
+        public async Task Ctor_StorageAccountAudience()
+        {
+            // Arrange
+            DataLakeServiceClient service = DataLakeClientBuilder.GetServiceClient_Hns();
+
+            // Act - Create new blob client with the OAuth Credential and Audience
+            DataLakeClientOptions options = GetOptionsWithAudience(DataLakeAudience.CreateDataLakeServiceAccountAudience(service.AccountName));
+
+            DataLakeServiceClient aadServiceClient = InstrumentClient(new DataLakeServiceClient(
+                service.Uri,
+                GetOAuthHnsCredential(),
+                options));
+
+            // Assert
+            DataLakeServiceProperties properties = await aadServiceClient.GetPropertiesAsync();
+            Assert.IsNotNull(properties);
+        }
+
+        [RecordedTest]
+        public async Task Ctor_AudienceError()
+        {
+            // Arrange
+            DataLakeServiceClient service = DataLakeClientBuilder.GetServiceClient_Hns();
+
+            // Act - Create new blob client with the OAuth Credential and Audience
+            DataLakeClientOptions options = GetOptionsWithAudience(new DataLakeAudience("https://badaudience.blob.core.windows.net"));
+
+            DataLakeServiceClient aadServiceClient = InstrumentClient(new DataLakeServiceClient(
+                service.Uri,
+                new MockCredential(),
+                options));
+
+            // Assert
+            await TestHelper.AssertExpectedExceptionAsync<RequestFailedException>(
+                aadServiceClient.GetPropertiesAsync(),
+                e => Assert.AreEqual("InvalidAuthenticationInfo", e.ErrorCode));
+        }
+
+        [RecordedTest]
         public async Task GetUserDelegationKey()
         {
             // Arrange
             DataLakeServiceClient service = GetServiceClient_OAuth();
 
             // Act
-            Response<UserDelegationKey> response = await service.GetUserDelegationKeyAsync(startsOn: null, expiresOn: Recording.UtcNow.AddHours(1));
+            DataLakeGetUserDelegationKeyOptions getUserDelegationKeyOptions = new DataLakeGetUserDelegationKeyOptions(expiresOn: Recording.UtcNow.AddHours(1));
+            Response<UserDelegationKey> response = await service.GetUserDelegationKeyAsync(
+                options: getUserDelegationKeyOptions);
 
             // Assert
             Assert.IsNotNull(response.Value);
@@ -207,8 +321,9 @@ namespace Azure.Storage.Files.DataLake.Tests
             DataLakeServiceClient service = DataLakeClientBuilder.GetServiceClient_Hns();
 
             // Act
+            DataLakeGetUserDelegationKeyOptions getUserDelegationKeyOptions = new DataLakeGetUserDelegationKeyOptions(expiresOn: Recording.UtcNow.AddHours(1));
             await TestHelper.AssertExpectedExceptionAsync<RequestFailedException>(
-                service.GetUserDelegationKeyAsync(startsOn: null, expiresOn: Recording.UtcNow.AddHours(1)),
+                service.GetUserDelegationKeyAsync(options: getUserDelegationKeyOptions),
                 e => Assert.AreEqual("AuthenticationFailed", e.ErrorCode));
         }
 
@@ -360,6 +475,7 @@ namespace Azure.Storage.Files.DataLake.Tests
         }
 
         [RecordedTest]
+        [PlaybackOnly("Enabling static website is not allowed on Network Security Perimeter enabled accounts.")]
         [NonParallelizable]
         [ServiceVersion(Min = DataLakeClientOptions.ServiceVersion.V2020_10_02)]
         public async Task GetFileSystemsAsync_System()
@@ -704,6 +820,7 @@ namespace Azure.Storage.Files.DataLake.Tests
         }
 
         [Test]
+        [PlaybackOnly("Enabling static website is not allowed on Network Security Perimeter enabled accounts.")]
         [ServiceVersion(Min = DataLakeClientOptions.ServiceVersion.V2019_12_12)]
         [NonParallelizable]
         public async Task SetPropertiesAsync_StaticWebsite()
@@ -983,11 +1100,14 @@ namespace Azure.Storage.Files.DataLake.Tests
                 blobEndpoint,
                 constants.Sas.SharedKeyCredential, GetOptions()));
 
+            string stringToSign = null;
+
             // Act
             Uri sasUri = serviceClient.GenerateAccountSasUri(
                 permissions: permissions,
                 expiresOn: expiresOn,
-                resourceTypes: resourceTypes);
+                resourceTypes: resourceTypes,
+                out stringToSign);
 
             // Assert
             AccountSasBuilder sasBuilder = new AccountSasBuilder(permissions, expiresOn, AccountSasServices.Blobs, resourceTypes);
@@ -996,6 +1116,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                 Query = sasBuilder.ToSasQueryParameters(constants.Sas.SharedKeyCredential).ToString()
             };
             Assert.AreEqual(expectedUri.Uri.ToString(), sasUri.ToString());
+            Assert.IsNotNull(stringToSign);
         }
 
         [RecordedTest]
@@ -1019,8 +1140,10 @@ namespace Azure.Storage.Files.DataLake.Tests
                 StartsOn = startsOn
             };
 
+            string stringToSign = null;
+
             // Act
-            Uri sasUri = serviceClient.GenerateAccountSasUri(sasBuilder);
+            Uri sasUri = serviceClient.GenerateAccountSasUri(sasBuilder, out stringToSign);
 
             // Assert
             AccountSasBuilder sasBuilder2 = new AccountSasBuilder(permissions, expiresOn, services, resourceTypes)
@@ -1030,6 +1153,7 @@ namespace Azure.Storage.Files.DataLake.Tests
             UriBuilder expectedUri = new UriBuilder(serviceUri);
             expectedUri.Query += sasBuilder.ToSasQueryParameters(constants.Sas.SharedKeyCredential).ToString();
             Assert.AreEqual(expectedUri.Uri, sasUri);
+            Assert.IsNotNull(stringToSign);
         }
 
         [RecordedTest]
@@ -1067,7 +1191,7 @@ namespace Azure.Storage.Files.DataLake.Tests
             mock = new Mock<DataLakeServiceClient>(new Uri("https://test/test"), new DataLakeClientOptions()).Object;
             mock = new Mock<DataLakeServiceClient>(new Uri("https://test/test"), Tenants.GetNewHnsSharedKeyCredentials(), new DataLakeClientOptions()).Object;
             mock = new Mock<DataLakeServiceClient>(new Uri("https://test/test"), new AzureSasCredential("foo"), new DataLakeClientOptions()).Object;
-            mock = new Mock<DataLakeServiceClient>(new Uri("https://test/test"), Tenants.GetOAuthCredential(TestConfigHierarchicalNamespace), new DataLakeClientOptions()).Object;
+            mock = new Mock<DataLakeServiceClient>(new Uri("https://test/test"), TestEnvironment.Credential, new DataLakeClientOptions()).Object;
         }
     }
 }

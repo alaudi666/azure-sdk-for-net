@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.SignalR;
 
 namespace Azure.ResourceManager.SignalR.Models
@@ -14,24 +15,33 @@ namespace Azure.ResourceManager.SignalR.Models
     /// <summary> A list of shared private link resources. </summary>
     internal partial class SignalRSharedPrivateLinkResourceListResult
     {
-        /// <summary> Initializes a new instance of SignalRSharedPrivateLinkResourceListResult. </summary>
-        internal SignalRSharedPrivateLinkResourceListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRSharedPrivateLinkResourceListResult"/>. </summary>
+        /// <param name="value"> The SharedPrivateLinkResource items on this page. </param>
+        internal SignalRSharedPrivateLinkResourceListResult(IEnumerable<SignalRSharedPrivateLinkResourceData> value)
         {
-            Value = new ChangeTrackingList<SignalRSharedPrivateLinkResourceData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of SignalRSharedPrivateLinkResourceListResult. </summary>
-        /// <param name="value"> The list of the shared private link resources. </param>
-        /// <param name="nextLink"> Request URL that can be used to query next page of private endpoint connections. Returned when the total number of requested private endpoint connections exceed maximum page size. </param>
-        internal SignalRSharedPrivateLinkResourceListResult(IReadOnlyList<SignalRSharedPrivateLinkResourceData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="SignalRSharedPrivateLinkResourceListResult"/>. </summary>
+        /// <param name="value"> The SharedPrivateLinkResource items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRSharedPrivateLinkResourceListResult(IList<SignalRSharedPrivateLinkResourceData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The list of the shared private link resources. </summary>
-        public IReadOnlyList<SignalRSharedPrivateLinkResourceData> Value { get; }
-        /// <summary> Request URL that can be used to query next page of private endpoint connections. Returned when the total number of requested private endpoint connections exceed maximum page size. </summary>
-        public string NextLink { get; }
+        /// <summary> The SharedPrivateLinkResource items on this page. </summary>
+        [WirePath("value")]
+        public IList<SignalRSharedPrivateLinkResourceData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        [WirePath("nextLink")]
+        public Uri NextLink { get; }
     }
 }

@@ -3,9 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace Azure.Identity
 {
@@ -40,6 +40,9 @@ namespace Azure.Identity
         /// <param name="info">The <see cref="SerializationInfo"/>.</param>
         /// <param name="context">The <see cref="StreamingContext"/>.</param>
         /// <returns></returns>
+#if NET8_0_OR_GREATER
+        [Obsolete(DiagnosticId = "SYSLIB0051")]
+#endif
         protected AuthenticationFailedException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }

@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Elastic;
 
 namespace Azure.ResourceManager.Elastic.Models
@@ -14,24 +15,31 @@ namespace Azure.ResourceManager.Elastic.Models
     /// <summary> Response of a list operation. </summary>
     internal partial class MonitoringTagRulesListResponse
     {
-        /// <summary> Initializes a new instance of MonitoringTagRulesListResponse. </summary>
-        internal MonitoringTagRulesListResponse()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="MonitoringTagRulesListResponse"/>. </summary>
+        /// <param name="value"> The MonitoringTagRules items on this page. </param>
+        internal MonitoringTagRulesListResponse(IEnumerable<ElasticTagRuleData> value)
         {
-            Value = new ChangeTrackingList<MonitoringTagRuleData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of MonitoringTagRulesListResponse. </summary>
-        /// <param name="value"> Results of a list operation. </param>
-        /// <param name="nextLink"> Link to the next set of results, if any. </param>
-        internal MonitoringTagRulesListResponse(IReadOnlyList<MonitoringTagRuleData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="MonitoringTagRulesListResponse"/>. </summary>
+        /// <param name="value"> The MonitoringTagRules items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal MonitoringTagRulesListResponse(IList<ElasticTagRuleData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Results of a list operation. </summary>
-        public IReadOnlyList<MonitoringTagRuleData> Value { get; }
-        /// <summary> Link to the next set of results, if any. </summary>
-        public string NextLink { get; }
+        /// <summary> The MonitoringTagRules items on this page. </summary>
+        public IList<ElasticTagRuleData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

@@ -5,38 +5,47 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.SignalR;
 
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> The list skus operation response. </summary>
     internal partial class SignalRSkuListResult
     {
-        /// <summary> Initializes a new instance of SignalRSkuListResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRSkuListResult"/>. </summary>
         internal SignalRSkuListResult()
         {
             Value = new ChangeTrackingList<SignalRSku>();
         }
 
-        /// <summary> Initializes a new instance of SignalRSkuListResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRSkuListResult"/>. </summary>
         /// <param name="value"> The list of skus available for the resource. </param>
         /// <param name="nextLink">
         /// The URL the client should use to fetch the next page (per server side paging).
-        /// It&apos;s null for now, added for future use.
+        /// It's null for now, added for future use.
         /// </param>
-        internal SignalRSkuListResult(IReadOnlyList<SignalRSku> value, string nextLink)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRSkuListResult(IReadOnlyList<SignalRSku> value, string nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The list of skus available for the resource. </summary>
+        [WirePath("value")]
         public IReadOnlyList<SignalRSku> Value { get; }
+
         /// <summary>
         /// The URL the client should use to fetch the next page (per server side paging).
-        /// It&apos;s null for now, added for future use.
+        /// It's null for now, added for future use.
         /// </summary>
+        [WirePath("nextLink")]
         public string NextLink { get; }
     }
 }

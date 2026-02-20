@@ -1,0 +1,10 @@
+trigger: none
+extends:
+  template: /eng/pipelines/templates/stages/archetype-sdk-client.yml
+  parameters:
+    ServiceDirectory: paloaltonetworks.ngfw
+    BuildSnippets: false
+    LimitForPullRequest: true
+    Artifacts:
+    - name: Azure.ResourceManager.PaloAltoNetworks.Ngfw
+      safeName: AzureResourceManagerPaloAltoNetworksNgfw

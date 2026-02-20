@@ -9,7 +9,7 @@ using NUnit.Framework;
 
 namespace Azure.ResourceManager.Compute.Tests
 {
-    [ClientTestFixture(true, "2022-08-01", "2021-04-01", "2020-06-01")]
+    [ClientTestFixture(true, "2022-08-01", "2021-04-01", "2020-06-01", "2022-11-01", "2023-03-01", "2023-07-01", "2023-09-01", "2024-03-01", "2024-11-01")]
     public class VirtualMachineOperationsTests : VirtualMachineTestBase
     {
         public VirtualMachineOperationsTests(bool isAsync, string apiVersion)
@@ -91,7 +91,7 @@ namespace Azure.ResourceManager.Compute.Tests
 
             VirtualMachinePatch updateOptions2 = new VirtualMachinePatch();
             updateOptions2.DiagnosticsProfile = new DiagnosticsProfile();
-            updateOptions2.DiagnosticsProfile.BootDiagnostics= new BootDiagnostics();
+            updateOptions2.DiagnosticsProfile.BootDiagnostics = new BootDiagnostics();
             updateOptions2.DiagnosticsProfile.BootDiagnostics.Enabled = true;
             virtualMachine2 = (await virtualMachine2.UpdateAsync(WaitUntil.Completed, updateOptions2)).Value;
             Assert.AreEqual(true, virtualMachine2.Data.DiagnosticsProfile.BootDiagnostics.Enabled);

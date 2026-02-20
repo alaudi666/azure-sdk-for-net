@@ -5,37 +5,69 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
+using Azure.ResourceManager.Nginx;
 
 namespace Azure.ResourceManager.Nginx.Models
 {
-    /// <summary> The NginxDeploymentPatch. </summary>
+    /// <summary> Nginx Deployment Update Parameters. </summary>
     public partial class NginxDeploymentPatch
     {
-        /// <summary> Initializes a new instance of NginxDeploymentPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NginxDeploymentPatch"/>. </summary>
         public NginxDeploymentPatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
-        /// <summary> Gets or sets the identity. </summary>
+        /// <summary> Initializes a new instance of <see cref="NginxDeploymentPatch"/>. </summary>
+        /// <param name="identity"> Identity Properties. </param>
+        /// <param name="tags"> Dictionary of &lt;string&gt;. </param>
+        /// <param name="sku"> Resource Sku. </param>
+        /// <param name="location"> The geo-location where the resource lives. </param>
+        /// <param name="properties"> Nginx Deployment Update Properties. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NginxDeploymentPatch(ManagedServiceIdentity identity, IDictionary<string, string> tags, NginxResourceSku sku, AzureLocation? location, NginxDeploymentUpdateProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Identity = identity;
+            Tags = tags;
+            Sku = sku;
+            Location = location;
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> Identity Properties. </summary>
         public ManagedServiceIdentity Identity { get; set; }
+
         /// <summary> Dictionary of &lt;string&gt;. </summary>
         public IDictionary<string, string> Tags { get; }
-        /// <summary> Gets or sets the sku. </summary>
-        internal ResourceSku Sku { get; set; }
+
+        /// <summary> Resource Sku. </summary>
+        internal NginxResourceSku Sku { get; set; }
+
+        /// <summary> The geo-location where the resource lives. </summary>
+        public AzureLocation? Location { get; set; }
+
+        /// <summary> Nginx Deployment Update Properties. </summary>
+        public NginxDeploymentUpdateProperties Properties { get; set; }
+
         /// <summary> Name of the SKU. </summary>
         public string SkuName
         {
-            get => Sku is null ? default : Sku.Name;
-            set => Sku = new ResourceSku(value);
+            get
+            {
+                return Sku is null ? default : Sku.Name;
+            }
+            set
+            {
+                Sku = new NginxResourceSku(value);
+            }
         }
-
-        /// <summary> Gets or sets the location. </summary>
-        public AzureLocation? Location { get; set; }
-        /// <summary> Gets or sets the properties. </summary>
-        public NginxDeploymentUpdateProperties Properties { get; set; }
     }
 }

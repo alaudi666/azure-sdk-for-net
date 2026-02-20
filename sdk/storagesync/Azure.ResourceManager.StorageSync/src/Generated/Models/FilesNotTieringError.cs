@@ -5,27 +5,36 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.StorageSync.Models
 {
     /// <summary> Files not tiering error object. </summary>
     public partial class FilesNotTieringError
     {
-        /// <summary> Initializes a new instance of FilesNotTieringError. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="FilesNotTieringError"/>. </summary>
         internal FilesNotTieringError()
         {
         }
 
-        /// <summary> Initializes a new instance of FilesNotTieringError. </summary>
+        /// <summary> Initializes a new instance of <see cref="FilesNotTieringError"/>. </summary>
         /// <param name="errorCode"> Error code (HResult). </param>
         /// <param name="fileCount"> Count of files with this error. </param>
-        internal FilesNotTieringError(int? errorCode, long? fileCount)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal FilesNotTieringError(int? errorCode, long? fileCount, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ErrorCode = errorCode;
             FileCount = fileCount;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Error code (HResult). </summary>
         public int? ErrorCode { get; }
+
         /// <summary> Count of files with this error. </summary>
         public long? FileCount { get; }
     }

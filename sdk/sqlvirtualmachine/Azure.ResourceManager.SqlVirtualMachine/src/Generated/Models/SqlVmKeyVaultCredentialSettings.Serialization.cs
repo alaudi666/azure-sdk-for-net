@@ -6,90 +6,194 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.SqlVirtualMachine;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
-    public partial class SqlVmKeyVaultCredentialSettings : IUtf8JsonSerializable
+    /// <summary> Configure your SQL virtual machine to be able to connect to the Azure Key Vault service. </summary>
+    public partial class SqlVmKeyVaultCredentialSettings : IJsonModel<SqlVmKeyVaultCredentialSettings>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual SqlVmKeyVaultCredentialSettings PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlVmKeyVaultCredentialSettings>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeSqlVmKeyVaultCredentialSettings(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SqlVmKeyVaultCredentialSettings)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<SqlVmKeyVaultCredentialSettings>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlVmKeyVaultCredentialSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SqlVmKeyVaultCredentialSettings)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(IsEnabled))
             {
-                writer.WritePropertyName("enable");
+                writer.WritePropertyName("enable"u8);
                 writer.WriteBooleanValue(IsEnabled.Value);
             }
             if (Optional.IsDefined(CredentialName))
             {
-                writer.WritePropertyName("credentialName");
+                writer.WritePropertyName("credentialName"u8);
                 writer.WriteStringValue(CredentialName);
             }
             if (Optional.IsDefined(AzureKeyVaultUri))
             {
-                writer.WritePropertyName("azureKeyVaultUrl");
+                writer.WritePropertyName("azureKeyVaultUrl"u8);
                 writer.WriteStringValue(AzureKeyVaultUri.AbsoluteUri);
             }
             if (Optional.IsDefined(ServicePrincipalName))
             {
-                writer.WritePropertyName("servicePrincipalName");
+                writer.WritePropertyName("servicePrincipalName"u8);
                 writer.WriteStringValue(ServicePrincipalName);
             }
             if (Optional.IsDefined(ServicePrincipalSecret))
             {
-                writer.WritePropertyName("servicePrincipalSecret");
+                writer.WritePropertyName("servicePrincipalSecret"u8);
                 writer.WriteStringValue(ServicePrincipalSecret);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static SqlVmKeyVaultCredentialSettings DeserializeSqlVmKeyVaultCredentialSettings(JsonElement element)
-        {
-            Optional<bool> enable = default;
-            Optional<string> credentialName = default;
-            Optional<Uri> azureKeyVaultUrl = default;
-            Optional<string> servicePrincipalName = default;
-            Optional<string> servicePrincipalSecret = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("enable"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    enable = property.Value.GetBoolean();
-                    continue;
-                }
-                if (property.NameEquals("credentialName"))
-                {
-                    credentialName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("azureKeyVaultUrl"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        azureKeyVaultUrl = null;
-                        continue;
-                    }
-                    azureKeyVaultUrl = new Uri(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("servicePrincipalName"))
-                {
-                    servicePrincipalName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("servicePrincipalSecret"))
-                {
-                    servicePrincipalSecret = property.Value.GetString();
-                    continue;
+#endif
                 }
             }
-            return new SqlVmKeyVaultCredentialSettings(Optional.ToNullable(enable), credentialName.Value, azureKeyVaultUrl.Value, servicePrincipalName.Value, servicePrincipalSecret.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        SqlVmKeyVaultCredentialSettings IJsonModel<SqlVmKeyVaultCredentialSettings>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual SqlVmKeyVaultCredentialSettings JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlVmKeyVaultCredentialSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SqlVmKeyVaultCredentialSettings)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSqlVmKeyVaultCredentialSettings(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static SqlVmKeyVaultCredentialSettings DeserializeSqlVmKeyVaultCredentialSettings(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            bool? isEnabled = default;
+            string credentialName = default;
+            Uri azureKeyVaultUri = default;
+            string servicePrincipalName = default;
+            string servicePrincipalSecret = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("enable"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    isEnabled = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (prop.NameEquals("credentialName"u8))
+                {
+                    credentialName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("azureKeyVaultUrl"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    azureKeyVaultUri = string.IsNullOrEmpty(prop.Value.GetString()) ? null : new Uri(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("servicePrincipalName"u8))
+                {
+                    servicePrincipalName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("servicePrincipalSecret"u8))
+                {
+                    servicePrincipalSecret = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new SqlVmKeyVaultCredentialSettings(
+                isEnabled,
+                credentialName,
+                azureKeyVaultUri,
+                servicePrincipalName,
+                servicePrincipalSecret,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<SqlVmKeyVaultCredentialSettings>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlVmKeyVaultCredentialSettings>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerSqlVirtualMachineContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(SqlVmKeyVaultCredentialSettings)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        SqlVmKeyVaultCredentialSettings IPersistableModel<SqlVmKeyVaultCredentialSettings>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<SqlVmKeyVaultCredentialSettings>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

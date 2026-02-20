@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
@@ -14,24 +15,31 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
     /// <summary> The list of application type names. </summary>
     internal partial class ApplicationTypeResourceList
     {
-        /// <summary> Initializes a new instance of ApplicationTypeResourceList. </summary>
-        internal ApplicationTypeResourceList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ApplicationTypeResourceList"/>. </summary>
+        /// <param name="value"> The ApplicationTypeResource items on this page. </param>
+        internal ApplicationTypeResourceList(IEnumerable<ServiceFabricManagedApplicationTypeData> value)
         {
-            Value = new ChangeTrackingList<ServiceFabricManagedApplicationTypeData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of ApplicationTypeResourceList. </summary>
-        /// <param name="value"></param>
-        /// <param name="nextLink"> URL to get the next set of application type list results if there are any. </param>
-        internal ApplicationTypeResourceList(IReadOnlyList<ServiceFabricManagedApplicationTypeData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ApplicationTypeResourceList"/>. </summary>
+        /// <param name="value"> The ApplicationTypeResource items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ApplicationTypeResourceList(IList<ServiceFabricManagedApplicationTypeData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets the value. </summary>
-        public IReadOnlyList<ServiceFabricManagedApplicationTypeData> Value { get; }
-        /// <summary> URL to get the next set of application type list results if there are any. </summary>
-        public string NextLink { get; }
+        /// <summary> The ApplicationTypeResource items on this page. </summary>
+        public IList<ServiceFabricManagedApplicationTypeData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

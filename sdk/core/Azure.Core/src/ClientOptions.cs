@@ -4,7 +4,9 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using Azure.Core.Pipeline;
+using Microsoft.Extensions.Configuration;
 
 namespace Azure.Core
 {
@@ -31,12 +33,12 @@ namespace Azure.Core
         /// <summary>
         /// Creates a new instance of <see cref="ClientOptions"/>.
         /// </summary>
-        protected ClientOptions(): this(Default, null)
+        protected ClientOptions() : this(Default, null)
         {
         }
 
         /// <summary>
-        /// Creates a new instance of <see cref="ClientOptions"/> with the specificed <see cref="DiagnosticsOptions"/>.
+        /// Creates a new instance of <see cref="ClientOptions"/> with the specified <see cref="DiagnosticsOptions"/>.
         /// </summary>
         /// <param name="diagnostics"><see cref="DiagnosticsOptions"/> to be used for <see cref="Diagnostics"/>.</param>
         protected ClientOptions(DiagnosticsOptions? diagnostics)
@@ -63,8 +65,29 @@ namespace Azure.Core
                 // null as the argument rather than calling their default constructors. Calling their default constructors would result
                 // in a stack overflow as this constructor is called from a static initializer.
                 _transport = HttpPipelineTransport.Create();
-                Diagnostics = new DiagnosticsOptions(null);
-                Retry = new RetryOptions(null);
+                Diagnostics = new DiagnosticsOptions((DiagnosticsOptions?)null);
+                Retry = new RetryOptions((RetryOptions?)null);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new instance of <see cref="ClientOptions"/> with the specified <see cref="IConfigurationSection"/>.
+        /// </summary>
+        /// <param name="section">The <see cref="IConfigurationSection"/> to read from.</param>
+        /// <param name="diagnostics"><see cref="DiagnosticsOptions"/> to be used for <see cref="Diagnostics"/>.</param>
+        [Experimental("SCME0002")]
+        protected ClientOptions(IConfigurationSection section, DiagnosticsOptions? diagnostics)
+        {
+            _transport = HttpPipelineTransport.Create();
+            if (section is null || !section.Exists())
+            {
+                Diagnostics = diagnostics ?? new DiagnosticsOptions((DiagnosticsOptions?)null);
+                Retry = new RetryOptions((RetryOptions?)null);
+            }
+            else
+            {
+                Diagnostics = diagnostics ?? new DiagnosticsOptions(section.GetSection("Diagnostics"));
+                Retry = new RetryOptions(section.GetSection("Retry"));
             }
         }
 
@@ -87,14 +110,28 @@ namespace Azure.Core
         public DiagnosticsOptions Diagnostics { get; }
 
         /// <summary>
+        /// Gets or sets the maximum allowed length for <see cref="DiagnosticsOptions.ApplicationId"/>.
+        /// </summary>
+        /// <remarks>
+        /// The default value is 24 characters. SDK authors can increase this
+        /// in their derived <see cref="ClientOptions"/> constructor to accommodate longer application identifiers.
+        /// </remarks>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when the value is less than 24.</exception>
+        protected int MaxApplicationIdLength
+        {
+            get => Diagnostics.MaxApplicationIdLength;
+            set => Diagnostics.MaxApplicationIdLength = value;
+        }
+
+        /// <summary>
         /// Gets the client retry options.
         /// </summary>
         public RetryOptions Retry { get; }
 
         /// <summary>
         /// Gets or sets the policy to use for retries. If a policy is specified, it will be used in place of the <see cref="Retry"/> property.
-        /// The <see cref="RetryPolicy"/> type can be derived from to modify the default behavior without needing to fully implement the retry logic.
-        /// If <see cref="RetryPolicy.Process"/> is overriden or a custom <see cref="HttpPipelinePolicy"/> is specified,
+        /// The <see cref="Pipeline.RetryPolicy"/> type can be derived from to modify the default behavior without needing to fully implement the retry logic.
+        /// If <see cref="RetryPolicy.Process"/> is overridden or a custom <see cref="HttpPipelinePolicy"/> is specified,
         /// it is the implementer's responsibility to update the <see cref="HttpMessage.ProcessingContext"/> values.
         /// </summary>
         public HttpPipelinePolicy? RetryPolicy { get; set; }

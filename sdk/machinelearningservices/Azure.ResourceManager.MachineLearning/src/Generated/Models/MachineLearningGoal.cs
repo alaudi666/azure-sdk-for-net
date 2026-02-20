@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Defines supported metric goals for hyperparameter tuning
-    /// Serialized Name: Goal
-    /// </summary>
+    /// <summary> Defines supported metric goals for hyperparameter tuning. </summary>
     public readonly partial struct MachineLearningGoal : IEquatable<MachineLearningGoal>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string MinimizeValue = "Minimize";
         private const string MaximizeValue = "Maximize";
 
-        /// <summary>
-        /// Minimize
-        /// Serialized Name: Goal.Minimize
-        /// </summary>
+        /// <summary> Minimize. </summary>
         public static MachineLearningGoal Minimize { get; } = new MachineLearningGoal(MinimizeValue);
-        /// <summary>
-        /// Maximize
-        /// Serialized Name: Goal.Maximize
-        /// </summary>
+        /// <summary> Maximize. </summary>
         public static MachineLearningGoal Maximize { get; } = new MachineLearningGoal(MaximizeValue);
         /// <summary> Determines if two <see cref="MachineLearningGoal"/> values are the same. </summary>
         public static bool operator ==(MachineLearningGoal left, MachineLearningGoal right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningGoal"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningGoal left, MachineLearningGoal right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningGoal"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningGoal"/>. </summary>
         public static implicit operator MachineLearningGoal(string value) => new MachineLearningGoal(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

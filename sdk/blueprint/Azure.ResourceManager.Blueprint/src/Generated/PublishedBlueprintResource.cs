@@ -9,22 +9,23 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Blueprint
 {
     /// <summary>
     /// A Class representing a PublishedBlueprint along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="PublishedBlueprintResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetPublishedBlueprintResource method.
-    /// Otherwise you can get one from its parent resource <see cref="BlueprintResource" /> using the GetPublishedBlueprint method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="PublishedBlueprintResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetPublishedBlueprintResource method.
+    /// Otherwise you can get one from its parent resource <see cref="BlueprintResource"/> using the GetPublishedBlueprint method.
     /// </summary>
     public partial class PublishedBlueprintResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="PublishedBlueprintResource"/> instance. </summary>
+        /// <param name="resourceScope"> The resourceScope. </param>
+        /// <param name="blueprintName"> The blueprintName. </param>
+        /// <param name="versionId"> The versionId. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string resourceScope, string blueprintName, string versionId)
         {
             var resourceId = $"{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}";
@@ -35,12 +36,15 @@ namespace Azure.ResourceManager.Blueprint
         private readonly PublishedBlueprintsRestOperations _publishedBlueprintRestClient;
         private readonly PublishedBlueprintData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.Blueprint/blueprints/versions";
+
         /// <summary> Initializes a new instance of the <see cref="PublishedBlueprintResource"/> class for mocking. </summary>
         protected PublishedBlueprintResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "PublishedBlueprintResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="PublishedBlueprintResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal PublishedBlueprintResource(ArmClient client, PublishedBlueprintData data) : this(client, data.Id)
@@ -61,9 +65,6 @@ namespace Azure.ResourceManager.Blueprint
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.Blueprint/blueprints/versions";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -90,18 +91,34 @@ namespace Azure.ResourceManager.Blueprint
         /// <returns> An object representing collection of BlueprintVersionArtifactResources and their operations over a BlueprintVersionArtifactResource. </returns>
         public virtual BlueprintVersionArtifactCollection GetBlueprintVersionArtifacts()
         {
-            return GetCachedClient(Client => new BlueprintVersionArtifactCollection(Client, Id));
+            return GetCachedClient(client => new BlueprintVersionArtifactCollection(client, Id));
         }
 
         /// <summary>
         /// Get an artifact for a published blueprint definition.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}/artifacts/{artifactName}
-        /// Operation Id: PublishedArtifacts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}/artifacts/{artifactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PublishedArtifacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BlueprintVersionArtifactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="artifactName"> Name of the blueprint artifact. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="artifactName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="artifactName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="artifactName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<BlueprintVersionArtifactResource>> GetBlueprintVersionArtifactAsync(string artifactName, CancellationToken cancellationToken = default)
         {
@@ -110,13 +127,29 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary>
         /// Get an artifact for a published blueprint definition.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}/artifacts/{artifactName}
-        /// Operation Id: PublishedArtifacts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}/artifacts/{artifactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PublishedArtifacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BlueprintVersionArtifactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="artifactName"> Name of the blueprint artifact. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="artifactName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="artifactName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="artifactName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<BlueprintVersionArtifactResource> GetBlueprintVersionArtifact(string artifactName, CancellationToken cancellationToken = default)
         {
@@ -125,8 +158,24 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary>
         /// Get a published version of a blueprint definition.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}
-        /// Operation Id: PublishedBlueprints_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PublishedBlueprints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PublishedBlueprintResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<PublishedBlueprintResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -149,8 +198,24 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary>
         /// Get a published version of a blueprint definition.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}
-        /// Operation Id: PublishedBlueprints_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PublishedBlueprints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PublishedBlueprintResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<PublishedBlueprintResource> Get(CancellationToken cancellationToken = default)
@@ -173,8 +238,24 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary>
         /// Delete a published version of a blueprint definition.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}
-        /// Operation Id: PublishedBlueprints_Delete
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PublishedBlueprints_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PublishedBlueprintResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -185,7 +266,9 @@ namespace Azure.ResourceManager.Blueprint
             try
             {
                 var response = await _publishedBlueprintRestClient.DeleteAsync(Id.Parent.Parent, Id.Parent.Name, Id.Name, cancellationToken).ConfigureAwait(false);
-                var operation = new BlueprintArmOperation<PublishedBlueprintResource>(Response.FromValue(new PublishedBlueprintResource(Client, response), response.GetRawResponse()));
+                var uri = _publishedBlueprintRestClient.CreateDeleteRequestUri(Id.Parent.Parent, Id.Parent.Name, Id.Name);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Delete, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new BlueprintArmOperation<PublishedBlueprintResource>(Response.FromValue(new PublishedBlueprintResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -199,8 +282,24 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary>
         /// Delete a published version of a blueprint definition.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}
-        /// Operation Id: PublishedBlueprints_Delete
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PublishedBlueprints_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PublishedBlueprintResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -211,7 +310,9 @@ namespace Azure.ResourceManager.Blueprint
             try
             {
                 var response = _publishedBlueprintRestClient.Delete(Id.Parent.Parent, Id.Parent.Name, Id.Name, cancellationToken);
-                var operation = new BlueprintArmOperation<PublishedBlueprintResource>(Response.FromValue(new PublishedBlueprintResource(Client, response), response.GetRawResponse()));
+                var uri = _publishedBlueprintRestClient.CreateDeleteRequestUri(Id.Parent.Parent, Id.Parent.Name, Id.Name);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Delete, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new BlueprintArmOperation<PublishedBlueprintResource>(Response.FromValue(new PublishedBlueprintResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -225,8 +326,24 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary>
         /// Publish a new version of the blueprint definition with the latest artifacts. Published blueprint definitions are immutable.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}
-        /// Operation Id: PublishedBlueprints_Create
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PublishedBlueprints_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PublishedBlueprintResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="data"> Published Blueprint to create or update. </param>
@@ -241,7 +358,9 @@ namespace Azure.ResourceManager.Blueprint
             try
             {
                 var response = await _publishedBlueprintRestClient.CreateAsync(Id.Parent.Parent, Id.Parent.Name, Id.Name, data, cancellationToken).ConfigureAwait(false);
-                var operation = new BlueprintArmOperation<PublishedBlueprintResource>(Response.FromValue(new PublishedBlueprintResource(Client, response), response.GetRawResponse()));
+                var uri = _publishedBlueprintRestClient.CreateCreateRequestUri(Id.Parent.Parent, Id.Parent.Name, Id.Name, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new BlueprintArmOperation<PublishedBlueprintResource>(Response.FromValue(new PublishedBlueprintResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -255,8 +374,24 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary>
         /// Publish a new version of the blueprint definition with the latest artifacts. Published blueprint definitions are immutable.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}
-        /// Operation Id: PublishedBlueprints_Create
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprints/{blueprintName}/versions/{versionId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PublishedBlueprints_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PublishedBlueprintResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="data"> Published Blueprint to create or update. </param>
@@ -271,7 +406,9 @@ namespace Azure.ResourceManager.Blueprint
             try
             {
                 var response = _publishedBlueprintRestClient.Create(Id.Parent.Parent, Id.Parent.Name, Id.Name, data, cancellationToken);
-                var operation = new BlueprintArmOperation<PublishedBlueprintResource>(Response.FromValue(new PublishedBlueprintResource(Client, response), response.GetRawResponse()));
+                var uri = _publishedBlueprintRestClient.CreateCreateRequestUri(Id.Parent.Parent, Id.Parent.Name, Id.Name, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new BlueprintArmOperation<PublishedBlueprintResource>(Response.FromValue(new PublishedBlueprintResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;

@@ -5,27 +5,36 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.StorageSync.Models
 {
     /// <summary> Cloud endpoint AFS file share metadata signing certificate public keys. </summary>
     public partial class CloudEndpointAfsShareMetadataCertificatePublicKeys
     {
-        /// <summary> Initializes a new instance of CloudEndpointAfsShareMetadataCertificatePublicKeys. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CloudEndpointAfsShareMetadataCertificatePublicKeys"/>. </summary>
         internal CloudEndpointAfsShareMetadataCertificatePublicKeys()
         {
         }
 
-        /// <summary> Initializes a new instance of CloudEndpointAfsShareMetadataCertificatePublicKeys. </summary>
+        /// <summary> Initializes a new instance of <see cref="CloudEndpointAfsShareMetadataCertificatePublicKeys"/>. </summary>
         /// <param name="firstKey"> The first public key. </param>
         /// <param name="secondKey"> The second public key. </param>
-        internal CloudEndpointAfsShareMetadataCertificatePublicKeys(string firstKey, string secondKey)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CloudEndpointAfsShareMetadataCertificatePublicKeys(string firstKey, string secondKey, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             FirstKey = firstKey;
             SecondKey = secondKey;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The first public key. </summary>
         public string FirstKey { get; }
+
         /// <summary> The second public key. </summary>
         public string SecondKey { get; }
     }

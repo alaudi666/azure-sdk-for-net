@@ -5,61 +5,53 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Preferences related to the order. </summary>
     public partial class DataBoxOrderPreferences
     {
-        /// <summary> Initializes a new instance of DataBoxOrderPreferences. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DataBoxOrderPreferences"/>. </summary>
         public DataBoxOrderPreferences()
         {
             PreferredDataCenterRegion = new ChangeTrackingList<string>();
             StorageAccountAccessTierPreferences = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of DataBoxOrderPreferences. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataBoxOrderPreferences"/>. </summary>
         /// <param name="preferredDataCenterRegion"> Preferred data center region. </param>
         /// <param name="transportPreferences"> Preferences related to the shipment logistics of the sku. </param>
+        /// <param name="reverseTransportPreferences"> Optional Preferences related to the reverse shipment logistics of the sku. </param>
         /// <param name="encryptionPreferences"> Preferences related to the Encryption. </param>
         /// <param name="storageAccountAccessTierPreferences"> Preferences related to the Access Tier of storage accounts. </param>
-        internal DataBoxOrderPreferences(IList<string> preferredDataCenterRegion, TransportPreferences transportPreferences, DataBoxEncryptionPreferences encryptionPreferences, IList<string> storageAccountAccessTierPreferences)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DataBoxOrderPreferences(IList<string> preferredDataCenterRegion, TransportPreferences transportPreferences, TransportPreferences reverseTransportPreferences, DataBoxEncryptionPreferences encryptionPreferences, IList<string> storageAccountAccessTierPreferences, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             PreferredDataCenterRegion = preferredDataCenterRegion;
             TransportPreferences = transportPreferences;
+            ReverseTransportPreferences = reverseTransportPreferences;
             EncryptionPreferences = encryptionPreferences;
             StorageAccountAccessTierPreferences = storageAccountAccessTierPreferences;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Preferred data center region. </summary>
         public IList<string> PreferredDataCenterRegion { get; }
+
         /// <summary> Preferences related to the shipment logistics of the sku. </summary>
-        internal TransportPreferences TransportPreferences { get; set; }
-        /// <summary> Indicates Shipment Logistics type that the customer preferred. </summary>
-        public TransportShipmentType? TransportPreferencesPreferredShipmentType
-        {
-            get => TransportPreferences is null ? default(TransportShipmentType?) : TransportPreferences.PreferredShipmentType;
-            set
-            {
-                TransportPreferences = value.HasValue ? new TransportPreferences(value.Value) : null;
-            }
-        }
+        public TransportPreferences TransportPreferences { get; set; }
+
+        /// <summary> Optional Preferences related to the reverse shipment logistics of the sku. </summary>
+        public TransportPreferences ReverseTransportPreferences { get; set; }
 
         /// <summary> Preferences related to the Encryption. </summary>
-        internal DataBoxEncryptionPreferences EncryptionPreferences { get; set; }
-        /// <summary> Defines secondary layer of software-based encryption enablement. </summary>
-        public DataBoxDoubleEncryption? DoubleEncryption
-        {
-            get => EncryptionPreferences is null ? default : EncryptionPreferences.DoubleEncryption;
-            set
-            {
-                if (EncryptionPreferences is null)
-                    EncryptionPreferences = new DataBoxEncryptionPreferences();
-                EncryptionPreferences.DoubleEncryption = value;
-            }
-        }
+        public DataBoxEncryptionPreferences EncryptionPreferences { get; set; }
 
         /// <summary> Preferences related to the Access Tier of storage accounts. </summary>
         public IList<string> StorageAccountAccessTierPreferences { get; }

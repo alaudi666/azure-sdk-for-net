@@ -5,32 +5,46 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.KeyVault;
+
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> An object that represents the approval state of the private link connection. </summary>
     public partial class KeyVaultPrivateLinkServiceConnectionState
     {
-        /// <summary> Initializes a new instance of KeyVaultPrivateLinkServiceConnectionState. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="KeyVaultPrivateLinkServiceConnectionState"/>. </summary>
         public KeyVaultPrivateLinkServiceConnectionState()
         {
         }
 
-        /// <summary> Initializes a new instance of KeyVaultPrivateLinkServiceConnectionState. </summary>
+        /// <summary> Initializes a new instance of <see cref="KeyVaultPrivateLinkServiceConnectionState"/>. </summary>
         /// <param name="status"> Indicates whether the connection has been approved, rejected or removed by the key vault owner. </param>
         /// <param name="description"> The reason for approval or rejection. </param>
         /// <param name="actionsRequired"> A message indicating if changes on the service provider require any updates on the consumer. </param>
-        internal KeyVaultPrivateLinkServiceConnectionState(KeyVaultPrivateEndpointServiceConnectionStatus? status, string description, KeyVaultActionsRequiredMessage? actionsRequired)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal KeyVaultPrivateLinkServiceConnectionState(KeyVaultPrivateEndpointServiceConnectionStatus? status, string description, KeyVaultActionsRequiredMessage? actionsRequired, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Status = status;
             Description = description;
             ActionsRequired = actionsRequired;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Indicates whether the connection has been approved, rejected or removed by the key vault owner. </summary>
+        [WirePath("status")]
         public KeyVaultPrivateEndpointServiceConnectionStatus? Status { get; set; }
+
         /// <summary> The reason for approval or rejection. </summary>
+        [WirePath("description")]
         public string Description { get; set; }
+
         /// <summary> A message indicating if changes on the service provider require any updates on the consumer. </summary>
+        [WirePath("actionsRequired")]
         public KeyVaultActionsRequiredMessage? ActionsRequired { get; set; }
     }
 }

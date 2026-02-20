@@ -7,15 +7,14 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.Analytics.Synapse.Artifacts.Models
 {
     /// <summary> Linked service for SAP ERP Central Component(SAP ECC). </summary>
     public partial class SapEccLinkedService : LinkedService
     {
-        /// <summary> Initializes a new instance of SapEccLinkedService. </summary>
-        /// <param name="url"> The URL of SAP ECC OData API. For example, &apos;[https://hostname:port/sap/opu/odata/sap/servicename/]&apos;. Type: string (or Expression with resultType string). </param>
+        /// <summary> Initializes a new instance of <see cref="SapEccLinkedService"/>. </summary>
+        /// <param name="url"> The URL of SAP ECC OData API. For example, '[https://hostname:port/sap/opu/odata/sap/servicename/]'. Type: string (or Expression with resultType string). </param>
         /// <exception cref="ArgumentNullException"> <paramref name="url"/> is null. </exception>
         public SapEccLinkedService(string url)
         {
@@ -25,14 +24,15 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             Type = "SapEcc";
         }
 
-        /// <summary> Initializes a new instance of SapEccLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="SapEccLinkedService"/>. </summary>
         /// <param name="type"> Type of linked service. </param>
+        /// <param name="version"> Version of the linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
         /// <param name="parameters"> Parameters for linked service. </param>
         /// <param name="annotations"> List of tags that can be used for describing the linked service. </param>
         /// <param name="additionalProperties"> Additional Properties. </param>
-        /// <param name="url"> The URL of SAP ECC OData API. For example, &apos;[https://hostname:port/sap/opu/odata/sap/servicename/]&apos;. Type: string (or Expression with resultType string). </param>
+        /// <param name="url"> The URL of SAP ECC OData API. For example, '[https://hostname:port/sap/opu/odata/sap/servicename/]'. Type: string (or Expression with resultType string). </param>
         /// <param name="username"> The username for Basic authentication. Type: string (or Expression with resultType string). </param>
         /// <param name="password">
         /// The password for Basic authentication.
@@ -40,7 +40,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         /// The available derived classes include <see cref="AzureKeyVaultSecretReference"/> and <see cref="SecureString"/>.
         /// </param>
         /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Either encryptedCredential or username/password must be provided. Type: string (or Expression with resultType string). </param>
-        internal SapEccLinkedService(string type, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<object> annotations, IDictionary<string, object> additionalProperties, string url, string username, SecretBase password, string encryptedCredential) : base(type, connectVia, description, parameters, annotations, additionalProperties)
+        internal SapEccLinkedService(string type, string version, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<object> annotations, IDictionary<string, object> additionalProperties, string url, string username, SecretBase password, string encryptedCredential) : base(type, version, connectVia, description, parameters, annotations, additionalProperties)
         {
             Url = url;
             Username = username;
@@ -49,7 +49,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             Type = type ?? "SapEcc";
         }
 
-        /// <summary> The URL of SAP ECC OData API. For example, &apos;[https://hostname:port/sap/opu/odata/sap/servicename/]&apos;. Type: string (or Expression with resultType string). </summary>
+        /// <summary> The URL of SAP ECC OData API. For example, '[https://hostname:port/sap/opu/odata/sap/servicename/]'. Type: string (or Expression with resultType string). </summary>
         public string Url { get; set; }
         /// <summary> The username for Basic authentication. Type: string (or Expression with resultType string). </summary>
         public string Username { get; set; }

@@ -5,44 +5,39 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The CustomSeasonality.
-    /// Serialized Name: CustomSeasonality
-    /// </summary>
+    /// <summary> The CustomSeasonality. </summary>
     public partial class CustomSeasonality : ForecastingSeasonality
     {
-        /// <summary> Initializes a new instance of CustomSeasonality. </summary>
-        /// <param name="value">
-        /// [Required] Seasonality value.
-        /// Serialized Name: CustomSeasonality.value
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="CustomSeasonality"/>. </summary>
+        /// <param name="value"> [Required] Seasonality value. </param>
         public CustomSeasonality(int value)
         {
             Value = value;
             Mode = SeasonalityMode.Custom;
         }
 
-        /// <summary> Initializes a new instance of CustomSeasonality. </summary>
-        /// <param name="mode">
-        /// [Required] Seasonality mode.
-        /// Serialized Name: Seasonality.mode
-        /// </param>
-        /// <param name="value">
-        /// [Required] Seasonality value.
-        /// Serialized Name: CustomSeasonality.value
-        /// </param>
-        internal CustomSeasonality(SeasonalityMode mode, int value) : base(mode)
+        /// <summary> Initializes a new instance of <see cref="CustomSeasonality"/>. </summary>
+        /// <param name="mode"> [Required] Seasonality mode. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="value"> [Required] Seasonality value. </param>
+        internal CustomSeasonality(SeasonalityMode mode, IDictionary<string, BinaryData> serializedAdditionalRawData, int value) : base(mode, serializedAdditionalRawData)
         {
             Value = value;
             Mode = mode;
         }
 
-        /// <summary>
-        /// [Required] Seasonality value.
-        /// Serialized Name: CustomSeasonality.value
-        /// </summary>
+        /// <summary> Initializes a new instance of <see cref="CustomSeasonality"/> for deserialization. </summary>
+        internal CustomSeasonality()
+        {
+        }
+
+        /// <summary> [Required] Seasonality value. </summary>
+        [WirePath("value")]
         public int Value { get; set; }
     }
 }

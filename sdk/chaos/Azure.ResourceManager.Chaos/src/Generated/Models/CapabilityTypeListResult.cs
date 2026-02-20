@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Chaos;
 
 namespace Azure.ResourceManager.Chaos.Models
@@ -14,24 +15,31 @@ namespace Azure.ResourceManager.Chaos.Models
     /// <summary> Model that represents a list of Capability Type resources and a link for pagination. </summary>
     internal partial class CapabilityTypeListResult
     {
-        /// <summary> Initializes a new instance of CapabilityTypeListResult. </summary>
-        internal CapabilityTypeListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CapabilityTypeListResult"/>. </summary>
+        /// <param name="value"> The CapabilityType items on this page. </param>
+        internal CapabilityTypeListResult(IEnumerable<ChaosCapabilityMetadataData> value)
         {
-            Value = new ChangeTrackingList<CapabilityTypeData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of CapabilityTypeListResult. </summary>
-        /// <param name="value"> List of Capability Type resources. </param>
-        /// <param name="nextLink"> URL to retrieve the next page of Capability Type resources. </param>
-        internal CapabilityTypeListResult(IReadOnlyList<CapabilityTypeData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="CapabilityTypeListResult"/>. </summary>
+        /// <param name="value"> The CapabilityType items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CapabilityTypeListResult(IList<ChaosCapabilityMetadataData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of Capability Type resources. </summary>
-        public IReadOnlyList<CapabilityTypeData> Value { get; }
-        /// <summary> URL to retrieve the next page of Capability Type resources. </summary>
-        public string NextLink { get; }
+        /// <summary> The CapabilityType items on this page. </summary>
+        public IList<ChaosCapabilityMetadataData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

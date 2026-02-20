@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.NetworkFunction
 {
     /// <summary>
-    /// A class representing a collection of <see cref="AzureTrafficCollectorResource" /> and their operations.
-    /// Each <see cref="AzureTrafficCollectorResource" /> in the collection will belong to the same instance of <see cref="ResourceGroupResource" />.
-    /// To get an <see cref="AzureTrafficCollectorCollection" /> instance call the GetAzureTrafficCollectors method from an instance of <see cref="ResourceGroupResource" />.
+    /// A class representing a collection of <see cref="AzureTrafficCollectorResource"/> and their operations.
+    /// Each <see cref="AzureTrafficCollectorResource"/> in the collection will belong to the same instance of <see cref="ResourceGroupResource"/>.
+    /// To get an <see cref="AzureTrafficCollectorCollection"/> instance call the GetAzureTrafficCollectors method from an instance of <see cref="ResourceGroupResource"/>.
     /// </summary>
     public partial class AzureTrafficCollectorCollection : ArmCollection, IEnumerable<AzureTrafficCollectorResource>, IAsyncEnumerable<AzureTrafficCollectorResource>
     {
@@ -61,8 +59,24 @@ namespace Azure.ResourceManager.NetworkFunction
 
         /// <summary>
         /// Creates or updates a Azure Traffic Collector resource
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}
-        /// Operation Id: AzureTrafficCollectors_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureTrafficCollectors_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureTrafficCollectorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="azureTrafficCollectorName"> Azure Traffic Collector name. </param>
@@ -94,8 +108,24 @@ namespace Azure.ResourceManager.NetworkFunction
 
         /// <summary>
         /// Creates or updates a Azure Traffic Collector resource
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}
-        /// Operation Id: AzureTrafficCollectors_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureTrafficCollectors_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureTrafficCollectorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="azureTrafficCollectorName"> Azure Traffic Collector name. </param>
@@ -127,8 +157,24 @@ namespace Azure.ResourceManager.NetworkFunction
 
         /// <summary>
         /// Gets the specified Azure Traffic Collector in a specified resource group
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}
-        /// Operation Id: AzureTrafficCollectors_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureTrafficCollectors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureTrafficCollectorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="azureTrafficCollectorName"> Azure Traffic Collector name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -156,8 +202,24 @@ namespace Azure.ResourceManager.NetworkFunction
 
         /// <summary>
         /// Gets the specified Azure Traffic Collector in a specified resource group
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}
-        /// Operation Id: AzureTrafficCollectors_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureTrafficCollectors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureTrafficCollectorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="azureTrafficCollectorName"> Azure Traffic Collector name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -185,92 +247,84 @@ namespace Azure.ResourceManager.NetworkFunction
 
         /// <summary>
         /// Return list of Azure Traffic Collectors in a Resource Group
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors
-        /// Operation Id: AzureTrafficCollectorsByResourceGroup_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureTrafficCollectorsByResourceGroup_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureTrafficCollectorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="AzureTrafficCollectorResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="AzureTrafficCollectorResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<AzureTrafficCollectorResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<AzureTrafficCollectorResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupClientDiagnostics.CreateScope("AzureTrafficCollectorCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new AzureTrafficCollectorResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<AzureTrafficCollectorResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupClientDiagnostics.CreateScope("AzureTrafficCollectorCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new AzureTrafficCollectorResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new AzureTrafficCollectorResource(Client, AzureTrafficCollectorData.DeserializeAzureTrafficCollectorData(e)), _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupClientDiagnostics, Pipeline, "AzureTrafficCollectorCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Return list of Azure Traffic Collectors in a Resource Group
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors
-        /// Operation Id: AzureTrafficCollectorsByResourceGroup_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureTrafficCollectorsByResourceGroup_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureTrafficCollectorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="AzureTrafficCollectorResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="AzureTrafficCollectorResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<AzureTrafficCollectorResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<AzureTrafficCollectorResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupClientDiagnostics.CreateScope("AzureTrafficCollectorCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new AzureTrafficCollectorResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<AzureTrafficCollectorResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupClientDiagnostics.CreateScope("AzureTrafficCollectorCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new AzureTrafficCollectorResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new AzureTrafficCollectorResource(Client, AzureTrafficCollectorData.DeserializeAzureTrafficCollectorData(e)), _azureTrafficCollectorAzureTrafficCollectorsByResourceGroupClientDiagnostics, Pipeline, "AzureTrafficCollectorCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}
-        /// Operation Id: AzureTrafficCollectors_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureTrafficCollectors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureTrafficCollectorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="azureTrafficCollectorName"> Azure Traffic Collector name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -296,8 +350,24 @@ namespace Azure.ResourceManager.NetworkFunction
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}
-        /// Operation Id: AzureTrafficCollectors_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureTrafficCollectors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureTrafficCollectorResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="azureTrafficCollectorName"> Azure Traffic Collector name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -313,6 +383,96 @@ namespace Azure.ResourceManager.NetworkFunction
             {
                 var response = _azureTrafficCollectorRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, azureTrafficCollectorName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureTrafficCollectors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureTrafficCollectorResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="azureTrafficCollectorName"> Azure Traffic Collector name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="azureTrafficCollectorName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="azureTrafficCollectorName"/> is null. </exception>
+        public virtual async Task<NullableResponse<AzureTrafficCollectorResource>> GetIfExistsAsync(string azureTrafficCollectorName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(azureTrafficCollectorName, nameof(azureTrafficCollectorName));
+
+            using var scope = _azureTrafficCollectorClientDiagnostics.CreateScope("AzureTrafficCollectorCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _azureTrafficCollectorRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, azureTrafficCollectorName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<AzureTrafficCollectorResource>(response.GetRawResponse());
+                return Response.FromValue(new AzureTrafficCollectorResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.NetworkFunction/azureTrafficCollectors/{azureTrafficCollectorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureTrafficCollectors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureTrafficCollectorResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="azureTrafficCollectorName"> Azure Traffic Collector name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="azureTrafficCollectorName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="azureTrafficCollectorName"/> is null. </exception>
+        public virtual NullableResponse<AzureTrafficCollectorResource> GetIfExists(string azureTrafficCollectorName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(azureTrafficCollectorName, nameof(azureTrafficCollectorName));
+
+            using var scope = _azureTrafficCollectorClientDiagnostics.CreateScope("AzureTrafficCollectorCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _azureTrafficCollectorRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, azureTrafficCollectorName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<AzureTrafficCollectorResource>(response.GetRawResponse());
+                return Response.FromValue(new AzureTrafficCollectorResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

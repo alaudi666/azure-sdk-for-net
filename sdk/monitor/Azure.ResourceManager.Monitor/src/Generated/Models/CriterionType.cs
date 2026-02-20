@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.Monitor.Models
 {
-    /// <summary> Specifies the type of threshold criteria. </summary>
+    /// <summary> Specifies the type of threshold criteria. Previously undocumented values might be returned. </summary>
     internal readonly partial struct CriterionType : IEquatable<CriterionType>
     {
         private readonly string _value;
@@ -33,7 +33,7 @@ namespace Azure.ResourceManager.Monitor.Models
         public static bool operator ==(CriterionType left, CriterionType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="CriterionType"/> values are not the same. </summary>
         public static bool operator !=(CriterionType left, CriterionType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="CriterionType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="CriterionType"/>. </summary>
         public static implicit operator CriterionType(string value) => new CriterionType(value);
 
         /// <inheritdoc />
@@ -44,7 +44,7 @@ namespace Azure.ResourceManager.Monitor.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

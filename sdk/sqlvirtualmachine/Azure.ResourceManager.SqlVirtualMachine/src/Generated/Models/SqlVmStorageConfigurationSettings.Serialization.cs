@@ -5,121 +5,239 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.SqlVirtualMachine;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
-    public partial class SqlVmStorageConfigurationSettings : IUtf8JsonSerializable
+    /// <summary> Storage Configurations for SQL Data, Log and TempDb. </summary>
+    public partial class SqlVmStorageConfigurationSettings : IJsonModel<SqlVmStorageConfigurationSettings>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual SqlVmStorageConfigurationSettings PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlVmStorageConfigurationSettings>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeSqlVmStorageConfigurationSettings(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SqlVmStorageConfigurationSettings)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<SqlVmStorageConfigurationSettings>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlVmStorageConfigurationSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SqlVmStorageConfigurationSettings)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(SqlDataSettings))
             {
-                writer.WritePropertyName("sqlDataSettings");
-                writer.WriteObjectValue(SqlDataSettings);
+                writer.WritePropertyName("sqlDataSettings"u8);
+                writer.WriteObjectValue(SqlDataSettings, options);
             }
             if (Optional.IsDefined(SqlLogSettings))
             {
-                writer.WritePropertyName("sqlLogSettings");
-                writer.WriteObjectValue(SqlLogSettings);
+                writer.WritePropertyName("sqlLogSettings"u8);
+                writer.WriteObjectValue(SqlLogSettings, options);
             }
             if (Optional.IsDefined(SqlTempDBSettings))
             {
-                writer.WritePropertyName("sqlTempDbSettings");
-                writer.WriteObjectValue(SqlTempDBSettings);
+                writer.WritePropertyName("sqlTempDbSettings"u8);
+                writer.WriteObjectValue(SqlTempDBSettings, options);
             }
             if (Optional.IsDefined(IsSqlSystemDBOnDataDisk))
             {
-                writer.WritePropertyName("sqlSystemDbOnDataDisk");
+                writer.WritePropertyName("sqlSystemDbOnDataDisk"u8);
                 writer.WriteBooleanValue(IsSqlSystemDBOnDataDisk.Value);
             }
             if (Optional.IsDefined(DiskConfigurationType))
             {
-                writer.WritePropertyName("diskConfigurationType");
+                writer.WritePropertyName("diskConfigurationType"u8);
                 writer.WriteStringValue(DiskConfigurationType.Value.ToString());
             }
             if (Optional.IsDefined(StorageWorkloadType))
             {
-                writer.WritePropertyName("storageWorkloadType");
+                writer.WritePropertyName("storageWorkloadType"u8);
                 writer.WriteStringValue(StorageWorkloadType.Value.ToString());
             }
-            writer.WriteEndObject();
-        }
-
-        internal static SqlVmStorageConfigurationSettings DeserializeSqlVmStorageConfigurationSettings(JsonElement element)
-        {
-            Optional<SqlStorageSettings> sqlDataSettings = default;
-            Optional<SqlStorageSettings> sqlLogSettings = default;
-            Optional<SqlTempDBSettings> sqlTempDBSettings = default;
-            Optional<bool> sqlSystemDBOnDataDisk = default;
-            Optional<SqlVmDiskConfigurationType> diskConfigurationType = default;
-            Optional<SqlVmStorageWorkloadType> storageWorkloadType = default;
-            foreach (var property in element.EnumerateObject())
+            if (Optional.IsDefined(EnableStorageConfigBlade))
             {
-                if (property.NameEquals("sqlDataSettings"))
+                writer.WritePropertyName("enableStorageConfigBlade"u8);
+                writer.WriteBooleanValue(EnableStorageConfigBlade.Value);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    sqlDataSettings = SqlStorageSettings.DeserializeSqlStorageSettings(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("sqlLogSettings"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    sqlLogSettings = SqlStorageSettings.DeserializeSqlStorageSettings(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("sqlTempDbSettings"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    sqlTempDBSettings = SqlTempDBSettings.DeserializeSqlTempDBSettings(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("sqlSystemDbOnDataDisk"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    sqlSystemDBOnDataDisk = property.Value.GetBoolean();
-                    continue;
-                }
-                if (property.NameEquals("diskConfigurationType"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    diskConfigurationType = new SqlVmDiskConfigurationType(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("storageWorkloadType"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    storageWorkloadType = new SqlVmStorageWorkloadType(property.Value.GetString());
-                    continue;
+#endif
                 }
             }
-            return new SqlVmStorageConfigurationSettings(sqlDataSettings.Value, sqlLogSettings.Value, sqlTempDBSettings.Value, Optional.ToNullable(sqlSystemDBOnDataDisk), Optional.ToNullable(diskConfigurationType), Optional.ToNullable(storageWorkloadType));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        SqlVmStorageConfigurationSettings IJsonModel<SqlVmStorageConfigurationSettings>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual SqlVmStorageConfigurationSettings JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlVmStorageConfigurationSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SqlVmStorageConfigurationSettings)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSqlVmStorageConfigurationSettings(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static SqlVmStorageConfigurationSettings DeserializeSqlVmStorageConfigurationSettings(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            SqlStorageSettings sqlDataSettings = default;
+            SqlStorageSettings sqlLogSettings = default;
+            SqlTempDBSettings sqlTempDBSettings = default;
+            bool? isSqlSystemDBOnDataDisk = default;
+            SqlVmDiskConfigurationType? diskConfigurationType = default;
+            SqlVmStorageWorkloadType? storageWorkloadType = default;
+            bool? enableStorageConfigBlade = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("sqlDataSettings"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    sqlDataSettings = SqlStorageSettings.DeserializeSqlStorageSettings(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("sqlLogSettings"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    sqlLogSettings = SqlStorageSettings.DeserializeSqlStorageSettings(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("sqlTempDbSettings"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    sqlTempDBSettings = SqlTempDBSettings.DeserializeSqlTempDBSettings(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("sqlSystemDbOnDataDisk"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    isSqlSystemDBOnDataDisk = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (prop.NameEquals("diskConfigurationType"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    diskConfigurationType = new SqlVmDiskConfigurationType(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("storageWorkloadType"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    storageWorkloadType = new SqlVmStorageWorkloadType(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("enableStorageConfigBlade"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    enableStorageConfigBlade = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new SqlVmStorageConfigurationSettings(
+                sqlDataSettings,
+                sqlLogSettings,
+                sqlTempDBSettings,
+                isSqlSystemDBOnDataDisk,
+                diskConfigurationType,
+                storageWorkloadType,
+                enableStorageConfigBlade,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<SqlVmStorageConfigurationSettings>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<SqlVmStorageConfigurationSettings>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerSqlVirtualMachineContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(SqlVmStorageConfigurationSettings)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        SqlVmStorageConfigurationSettings IPersistableModel<SqlVmStorageConfigurationSettings>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<SqlVmStorageConfigurationSettings>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

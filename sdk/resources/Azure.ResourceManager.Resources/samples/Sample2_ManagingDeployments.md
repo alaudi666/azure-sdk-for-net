@@ -5,15 +5,15 @@
 Namespaces for this example:
 ```C# Snippet:Manage_Deployments_Namespaces
 using System;
+using System.IO;
+using System.Security.Policy;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Identity;
 using Azure.ResourceManager.Resources.Models;
 using NUnit.Framework;
-using System.Text.Json;
-using System.IO;
 using JsonObject = System.Collections.Generic.Dictionary<string, object>;
-using System.Security.Policy;
 ```
 
 When you first create your ARM client, choose the subscription you're going to work in. You can use the `GetDefaultSubscription`/`GetDefaultSubscriptionAsync` methods to return the default subscription configured for your user:
@@ -130,4 +130,4 @@ await deployment.DeleteAsync(WaitUntil.Completed);
 
 
 ## Learn more
-Take a look at the [ARM template documentation](https://docs.microsoft.com/azure/azure-resource-manager/templates/).
+Take a look at the [ARM template documentation](https://learn.microsoft.com/azure/azure-resource-manager/templates/).

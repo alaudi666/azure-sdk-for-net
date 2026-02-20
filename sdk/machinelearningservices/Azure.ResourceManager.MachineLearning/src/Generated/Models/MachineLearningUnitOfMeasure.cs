@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The unit of time measurement for the specified VM price. Example: OneHour
-    /// Serialized Name: UnitOfMeasure
-    /// </summary>
+    /// <summary> The unit of time measurement for the specified VM price. Example: OneHour. </summary>
     public readonly partial struct MachineLearningUnitOfMeasure : IEquatable<MachineLearningUnitOfMeasure>
     {
         private readonly string _value;
@@ -27,16 +24,13 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         private const string OneHourValue = "OneHour";
 
-        /// <summary>
-        /// OneHour
-        /// Serialized Name: UnitOfMeasure.OneHour
-        /// </summary>
+        /// <summary> OneHour. </summary>
         public static MachineLearningUnitOfMeasure OneHour { get; } = new MachineLearningUnitOfMeasure(OneHourValue);
         /// <summary> Determines if two <see cref="MachineLearningUnitOfMeasure"/> values are the same. </summary>
         public static bool operator ==(MachineLearningUnitOfMeasure left, MachineLearningUnitOfMeasure right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningUnitOfMeasure"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningUnitOfMeasure left, MachineLearningUnitOfMeasure right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningUnitOfMeasure"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningUnitOfMeasure"/>. </summary>
         public static implicit operator MachineLearningUnitOfMeasure(string value) => new MachineLearningUnitOfMeasure(value);
 
         /// <inheritdoc />
@@ -47,7 +41,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

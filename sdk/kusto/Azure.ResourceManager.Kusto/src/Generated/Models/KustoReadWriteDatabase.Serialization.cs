@@ -6,96 +6,153 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Kusto.Models
 {
-    public partial class KustoReadWriteDatabase : IUtf8JsonSerializable
+    public partial class KustoReadWriteDatabase : IUtf8JsonSerializable, IJsonModel<KustoReadWriteDatabase>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<KustoReadWriteDatabase>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<KustoReadWriteDatabase>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(Location))
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KustoReadWriteDatabase>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                writer.WritePropertyName("location");
-                writer.WriteStringValue(Location.Value);
+                throw new FormatException($"The model {nameof(KustoReadWriteDatabase)} does not support writing '{format}' format.");
             }
-            writer.WritePropertyName("kind");
-            writer.WriteStringValue(Kind.ToString());
-            writer.WritePropertyName("properties");
+
+            base.JsonModelWriteCore(writer, options);
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
+            if (options.Format != "W" && Optional.IsDefined(ProvisioningState))
+            {
+                writer.WritePropertyName("provisioningState"u8);
+                writer.WriteStringValue(ProvisioningState.Value.ToString());
+            }
             if (Optional.IsDefined(SoftDeletePeriod))
             {
-                writer.WritePropertyName("softDeletePeriod");
+                writer.WritePropertyName("softDeletePeriod"u8);
                 writer.WriteStringValue(SoftDeletePeriod.Value, "P");
             }
             if (Optional.IsDefined(HotCachePeriod))
             {
-                writer.WritePropertyName("hotCachePeriod");
+                writer.WritePropertyName("hotCachePeriod"u8);
                 writer.WriteStringValue(HotCachePeriod.Value, "P");
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && Optional.IsDefined(Statistics))
+            {
+                writer.WritePropertyName("statistics"u8);
+                writer.WriteObjectValue(Statistics, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(IsFollowed))
+            {
+                writer.WritePropertyName("isFollowed"u8);
+                writer.WriteBooleanValue(IsFollowed.Value);
+            }
+            if (Optional.IsDefined(KeyVaultProperties))
+            {
+                writer.WritePropertyName("keyVaultProperties"u8);
+                writer.WriteObjectValue(KeyVaultProperties, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(SuspensionDetails))
+            {
+                writer.WritePropertyName("suspensionDetails"u8);
+                writer.WriteObjectValue(SuspensionDetails, options);
+            }
             writer.WriteEndObject();
         }
 
-        internal static KustoReadWriteDatabase DeserializeKustoReadWriteDatabase(JsonElement element)
+        KustoReadWriteDatabase IJsonModel<KustoReadWriteDatabase>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<AzureLocation> location = default;
+            var format = options.Format == "W" ? ((IPersistableModel<KustoReadWriteDatabase>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(KustoReadWriteDatabase)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeKustoReadWriteDatabase(document.RootElement, options);
+        }
+
+        internal static KustoReadWriteDatabase DeserializeKustoReadWriteDatabase(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            AzureLocation? location = default;
             KustoKind kind = default;
             ResourceIdentifier id = default;
             string name = default;
             ResourceType type = default;
-            Optional<SystemData> systemData = default;
-            Optional<KustoProvisioningState> provisioningState = default;
-            Optional<TimeSpan> softDeletePeriod = default;
-            Optional<TimeSpan> hotCachePeriod = default;
-            Optional<DatabaseStatistics> statistics = default;
-            Optional<bool> isFollowed = default;
+            SystemData systemData = default;
+            KustoProvisioningState? provisioningState = default;
+            TimeSpan? softDeletePeriod = default;
+            TimeSpan? hotCachePeriod = default;
+            DatabaseStatistics statistics = default;
+            bool? isFollowed = default;
+            KustoKeyVaultProperties keyVaultProperties = default;
+            SuspensionDetails suspensionDetails = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("location"))
+                if (property.NameEquals("location"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     location = new AzureLocation(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("kind"))
+                if (property.NameEquals("kind"u8))
                 {
                     kind = new KustoKind(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     id = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = new ResourceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("systemData"))
+                if (property.NameEquals("systemData"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    systemData = JsonSerializer.Deserialize<SystemData>(property.Value.GetRawText());
+                    systemData = ModelReaderWriter.Read<SystemData>(new BinaryData(Encoding.UTF8.GetBytes(property.Value.GetRawText())), ModelSerializationExtensions.WireOptions, AzureResourceManagerKustoContext.Default);
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -104,61 +161,342 @@ namespace Azure.ResourceManager.Kusto.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("provisioningState"))
+                        if (property0.NameEquals("provisioningState"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             provisioningState = new KustoProvisioningState(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("softDeletePeriod"))
+                        if (property0.NameEquals("softDeletePeriod"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             softDeletePeriod = property0.Value.GetTimeSpan("P");
                             continue;
                         }
-                        if (property0.NameEquals("hotCachePeriod"))
+                        if (property0.NameEquals("hotCachePeriod"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             hotCachePeriod = property0.Value.GetTimeSpan("P");
                             continue;
                         }
-                        if (property0.NameEquals("statistics"))
+                        if (property0.NameEquals("statistics"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            statistics = DatabaseStatistics.DeserializeDatabaseStatistics(property0.Value);
+                            statistics = DatabaseStatistics.DeserializeDatabaseStatistics(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("isFollowed"))
+                        if (property0.NameEquals("isFollowed"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             isFollowed = property0.Value.GetBoolean();
                             continue;
                         }
+                        if (property0.NameEquals("keyVaultProperties"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            keyVaultProperties = KustoKeyVaultProperties.DeserializeKustoKeyVaultProperties(property0.Value, options);
+                            continue;
+                        }
+                        if (property0.NameEquals("suspensionDetails"u8))
+                        {
+                            if (property0.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                continue;
+                            }
+                            suspensionDetails = SuspensionDetails.DeserializeSuspensionDetails(property0.Value, options);
+                            continue;
+                        }
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new KustoReadWriteDatabase(id, name, type, systemData.Value, Optional.ToNullable(location), kind, Optional.ToNullable(provisioningState), Optional.ToNullable(softDeletePeriod), Optional.ToNullable(hotCachePeriod), statistics.Value, Optional.ToNullable(isFollowed));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new KustoReadWriteDatabase(
+                id,
+                name,
+                type,
+                systemData,
+                location,
+                kind,
+                serializedAdditionalRawData,
+                provisioningState,
+                softDeletePeriod,
+                hotCachePeriod,
+                statistics,
+                isFollowed,
+                keyVaultProperties,
+                suspensionDetails);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Name))
+                {
+                    builder.Append("  name: ");
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Location), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  location: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Location))
+                {
+                    builder.Append("  location: ");
+                    builder.AppendLine($"'{Location.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Kind), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  kind: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  kind: ");
+                builder.AppendLine($"'{Kind.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Id), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  id: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Id))
+                {
+                    builder.Append("  id: ");
+                    builder.AppendLine($"'{Id.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SystemData), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  systemData: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(SystemData))
+                {
+                    builder.Append("  systemData: ");
+                    builder.AppendLine($"'{SystemData.ToString()}'");
+                }
+            }
+
+            builder.Append("  properties:");
+            builder.AppendLine(" {");
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ProvisioningState), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    provisioningState: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ProvisioningState))
+                {
+                    builder.Append("    provisioningState: ");
+                    builder.AppendLine($"'{ProvisioningState.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SoftDeletePeriod), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    softDeletePeriod: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(SoftDeletePeriod))
+                {
+                    builder.Append("    softDeletePeriod: ");
+                    var formattedTimeSpan = TypeFormatters.ToString(SoftDeletePeriod.Value, "P");
+                    builder.AppendLine($"'{formattedTimeSpan}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(HotCachePeriod), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    hotCachePeriod: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(HotCachePeriod))
+                {
+                    builder.Append("    hotCachePeriod: ");
+                    var formattedTimeSpan = TypeFormatters.ToString(HotCachePeriod.Value, "P");
+                    builder.AppendLine($"'{formattedTimeSpan}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("StatisticsSize", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    statistics: ");
+                builder.AppendLine("{");
+                builder.AppendLine("      statistics: {");
+                builder.Append("        size: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("      }");
+                builder.AppendLine("    }");
+            }
+            else
+            {
+                if (Optional.IsDefined(Statistics))
+                {
+                    builder.Append("    statistics: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, Statistics, options, 4, false, "    statistics: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IsFollowed), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    isFollowed: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(IsFollowed))
+                {
+                    builder.Append("    isFollowed: ");
+                    var boolValue = IsFollowed.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(KeyVaultProperties), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    keyVaultProperties: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(KeyVaultProperties))
+                {
+                    builder.Append("    keyVaultProperties: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, KeyVaultProperties, options, 4, false, "    keyVaultProperties: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("SuspensionStartOn", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    suspensionDetails: ");
+                builder.AppendLine("{");
+                builder.AppendLine("      suspensionDetails: {");
+                builder.Append("        suspensionStartDate: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("      }");
+                builder.AppendLine("    }");
+            }
+            else
+            {
+                if (Optional.IsDefined(SuspensionDetails))
+                {
+                    builder.Append("    suspensionDetails: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, SuspensionDetails, options, 4, false, "    suspensionDetails: ");
+                }
+            }
+
+            builder.AppendLine("  }");
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<KustoReadWriteDatabase>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KustoReadWriteDatabase>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerKustoContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(KustoReadWriteDatabase)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        KustoReadWriteDatabase IPersistableModel<KustoReadWriteDatabase>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KustoReadWriteDatabase>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeKustoReadWriteDatabase(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(KustoReadWriteDatabase)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<KustoReadWriteDatabase>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

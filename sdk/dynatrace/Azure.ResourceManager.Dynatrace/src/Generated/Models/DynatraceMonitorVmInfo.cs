@@ -5,6 +5,8 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Dynatrace.Models
@@ -12,12 +14,15 @@ namespace Azure.ResourceManager.Dynatrace.Models
     /// <summary> Details of VM Resource having Dynatrace OneAgent installed. </summary>
     public partial class DynatraceMonitorVmInfo
     {
-        /// <summary> Initializes a new instance of DynatraceMonitorVmInfo. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DynatraceMonitorVmInfo"/>. </summary>
         internal DynatraceMonitorVmInfo()
         {
         }
 
-        /// <summary> Initializes a new instance of DynatraceMonitorVmInfo. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynatraceMonitorVmInfo"/>. </summary>
         /// <param name="resourceId"> Azure VM resource ID. </param>
         /// <param name="version"> Version of the Dynatrace agent installed on the VM. </param>
         /// <param name="monitoringType"> The monitoring mode of OneAgent. </param>
@@ -27,7 +32,8 @@ namespace Azure.ResourceManager.Dynatrace.Models
         /// <param name="logModule"> Tells whether log modules are enabled or not. </param>
         /// <param name="hostGroup"> The name of the host group. </param>
         /// <param name="hostName"> The name of the host. </param>
-        internal DynatraceMonitorVmInfo(ResourceIdentifier resourceId, string version, DynatraceOneAgentMonitoringType? monitoringType, DynatraceOneAgentAutoUpdateSetting? autoUpdateSetting, DynatraceOneAgentUpdateStatus? updateStatus, DynatraceOneAgentAvailabilityState? availabilityState, DynatraceLogModuleState? logModule, string hostGroup, string hostName)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DynatraceMonitorVmInfo(ResourceIdentifier resourceId, string version, DynatraceOneAgentMonitoringType? monitoringType, DynatraceOneAgentAutoUpdateSetting? autoUpdateSetting, DynatraceOneAgentUpdateStatus? updateStatus, DynatraceOneAgentAvailabilityState? availabilityState, DynatraceLogModuleState? logModule, string hostGroup, string hostName, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ResourceId = resourceId;
             Version = version;
@@ -38,24 +44,33 @@ namespace Azure.ResourceManager.Dynatrace.Models
             LogModule = logModule;
             HostGroup = hostGroup;
             HostName = hostName;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Azure VM resource ID. </summary>
         public ResourceIdentifier ResourceId { get; }
+
         /// <summary> Version of the Dynatrace agent installed on the VM. </summary>
         public string Version { get; }
+
         /// <summary> The monitoring mode of OneAgent. </summary>
         public DynatraceOneAgentMonitoringType? MonitoringType { get; }
+
         /// <summary> Update settings of OneAgent. </summary>
         public DynatraceOneAgentAutoUpdateSetting? AutoUpdateSetting { get; }
+
         /// <summary> The current update status of OneAgent. </summary>
         public DynatraceOneAgentUpdateStatus? UpdateStatus { get; }
+
         /// <summary> The availability state of OneAgent. </summary>
         public DynatraceOneAgentAvailabilityState? AvailabilityState { get; }
+
         /// <summary> Tells whether log modules are enabled or not. </summary>
         public DynatraceLogModuleState? LogModule { get; }
+
         /// <summary> The name of the host group. </summary>
         public string HostGroup { get; }
+
         /// <summary> The name of the host. </summary>
         public string HostName { get; }
     }

@@ -5,52 +5,138 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class DataBoxStorageAccountDetails : IUtf8JsonSerializable
+    /// <summary> Details for the storage account. </summary>
+    public partial class DataBoxStorageAccountDetails : DataAccountDetails, IJsonModel<DataBoxStorageAccountDetails>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="DataBoxStorageAccountDetails"/> for deserialization. </summary>
+        internal DataBoxStorageAccountDetails()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override DataAccountDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxStorageAccountDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDataBoxStorageAccountDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxStorageAccountDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DataBoxStorageAccountDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("storageAccountId");
-            writer.WriteStringValue(StorageAccountId);
-            writer.WritePropertyName("dataAccountType");
-            writer.WriteStringValue(DataAccountType.ToSerialString());
-            if (Optional.IsDefined(SharePassword))
-            {
-                writer.WritePropertyName("sharePassword");
-                writer.WriteStringValue(SharePassword);
-            }
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static DataBoxStorageAccountDetails DeserializeDataBoxStorageAccountDetails(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            ResourceIdentifier storageAccountId = default;
-            DataAccountType dataAccountType = default;
-            Optional<string> sharePassword = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxStorageAccountDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("storageAccountId"))
+                throw new FormatException($"The model {nameof(DataBoxStorageAccountDetails)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
+            writer.WritePropertyName("storageAccountId"u8);
+            writer.WriteStringValue(StorageAccountId);
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxStorageAccountDetails IJsonModel<DataBoxStorageAccountDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (DataBoxStorageAccountDetails)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override DataAccountDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxStorageAccountDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DataBoxStorageAccountDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDataBoxStorageAccountDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DataBoxStorageAccountDetails DeserializeDataBoxStorageAccountDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DataAccountType dataAccountType = default;
+            string sharePassword = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            ResourceIdentifier storageAccountId = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("dataAccountType"u8))
                 {
-                    storageAccountId = new ResourceIdentifier(property.Value.GetString());
+                    dataAccountType = prop.Value.GetString().ToDataAccountType();
                     continue;
                 }
-                if (property.NameEquals("dataAccountType"))
+                if (prop.NameEquals("sharePassword"u8))
                 {
-                    dataAccountType = property.Value.GetString().ToDataAccountType();
+                    sharePassword = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("sharePassword"))
+                if (prop.NameEquals("storageAccountId"u8))
                 {
-                    sharePassword = property.Value.GetString();
+                    storageAccountId = new ResourceIdentifier(prop.Value.GetString());
                     continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new DataBoxStorageAccountDetails(dataAccountType, sharePassword.Value, storageAccountId);
+            return new DataBoxStorageAccountDetails(dataAccountType, sharePassword, additionalBinaryDataProperties, storageAccountId);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DataBoxStorageAccountDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxStorageAccountDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxStorageAccountDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxStorageAccountDetails IPersistableModel<DataBoxStorageAccountDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => (DataBoxStorageAccountDetails)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DataBoxStorageAccountDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

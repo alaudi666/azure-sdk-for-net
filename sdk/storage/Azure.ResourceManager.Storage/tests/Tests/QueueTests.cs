@@ -3,13 +3,12 @@
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Resources;
-using NUnit.Framework;
 using Azure.ResourceManager.Storage.Models;
-using Azure.ResourceManager.Storage.Tests.Helpers;
+using NUnit.Framework;
 
 namespace Azure.ResourceManager.Storage.Tests
 {
-    public class QueueTests : StorageTestBase
+    public class QueueTests : StorageManagementTestBase
     {
         private ResourceGroupResource _resourceGroup;
         private StorageAccountResource _storageAccount;

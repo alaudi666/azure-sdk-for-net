@@ -5,32 +5,46 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.SignalR;
+
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Connection state of the private endpoint connection. </summary>
     public partial class SignalRPrivateLinkServiceConnectionState
     {
-        /// <summary> Initializes a new instance of SignalRPrivateLinkServiceConnectionState. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRPrivateLinkServiceConnectionState"/>. </summary>
         public SignalRPrivateLinkServiceConnectionState()
         {
         }
 
-        /// <summary> Initializes a new instance of SignalRPrivateLinkServiceConnectionState. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRPrivateLinkServiceConnectionState"/>. </summary>
         /// <param name="status"> Indicates whether the connection has been Approved/Rejected/Removed by the owner of the service. </param>
         /// <param name="description"> The reason for approval/rejection of the connection. </param>
         /// <param name="actionsRequired"> A message indicating if changes on the service provider require any updates on the consumer. </param>
-        internal SignalRPrivateLinkServiceConnectionState(PrivateLinkServiceConnectionStatus? status, string description, string actionsRequired)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRPrivateLinkServiceConnectionState(PrivateLinkServiceConnectionStatus? status, string description, string actionsRequired, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Status = status;
             Description = description;
             ActionsRequired = actionsRequired;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Indicates whether the connection has been Approved/Rejected/Removed by the owner of the service. </summary>
+        [WirePath("status")]
         public PrivateLinkServiceConnectionStatus? Status { get; set; }
+
         /// <summary> The reason for approval/rejection of the connection. </summary>
+        [WirePath("description")]
         public string Description { get; set; }
+
         /// <summary> A message indicating if changes on the service provider require any updates on the consumer. </summary>
+        [WirePath("actionsRequired")]
         public string ActionsRequired { get; set; }
     }
 }

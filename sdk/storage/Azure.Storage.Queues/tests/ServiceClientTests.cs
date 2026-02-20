@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.TestFramework;
+using Azure.Identity;
 using Azure.Storage.Queues.Models;
 using Azure.Storage.Queues.Tests;
 using Azure.Storage.Sas;
@@ -20,8 +21,8 @@ namespace Azure.Storage.Queues.Test
     [NonParallelizable]
     public class ServiceClientTests : QueueTestBase
     {
-        public ServiceClientTests(bool async)
-            : base(async, null /* RecordedTestMode.Record /* to re-record */)
+        public ServiceClientTests(bool async, QueueClientOptions.ServiceVersion serviceVersion)
+            : base(async, serviceVersion, null /* RecordedTestMode.Record /* to re-record */)
         {
         }
         [RecordedTest]
@@ -48,11 +49,28 @@ namespace Azure.Storage.Queues.Test
             Assert.AreEqual(accountName, builder2.AccountName);
         }
 
+        [Test]
+        public void Ctor_ConnectionString_CustomUri()
+        {
+            var accountName = "accountName";
+            var accountKey = Convert.ToBase64String(new byte[] { 0, 1, 2, 3, 4, 5 });
+
+            var credentials = new StorageSharedKeyCredential(accountName, accountKey);
+            var fileEndpoint = new Uri("http://customdomain/" + accountName);
+            var fileSecondaryEndpoint = new Uri("http://customdomain/" + accountName + "-secondary");
+
+            var connectionString = new StorageConnectionString(credentials, (default, default), (default, default), (default, default), (fileEndpoint, fileSecondaryEndpoint));
+
+            QueueServiceClient service = new QueueServiceClient(connectionString.ToString(true));
+
+            Assert.AreEqual(accountName, service.AccountName);
+        }
+
         [RecordedTest]
         public void Ctor_TokenCredential_Http()
         {
             // Arrange
-            TokenCredential tokenCredential = Tenants.GetOAuthCredential(Tenants.TestConfigHierarchicalNamespace);
+            TokenCredential tokenCredential = TestEnvironment.Credential;
             Uri uri = new Uri(Tenants.TestConfigPremiumBlob.BlobServiceEndpoint).ToHttp();
 
             // Act
@@ -74,6 +92,20 @@ namespace Azure.Storage.Queues.Test
 
             Assert.IsEmpty(builder.QueueName);
             Assert.AreEqual(accountName, builder.AccountName);
+        }
+
+        [Test]
+        public void Ctor_SharedKey_AccountName()
+        {
+            // Arrange
+            var accountName = "accountName";
+            var accountKey = Convert.ToBase64String(new byte[] { 0, 1, 2, 3, 4, 5 });
+            var credentials = new StorageSharedKeyCredential(accountName, accountKey);
+            var queueEndpoint = new Uri($"https://customdomain/");
+
+            QueueServiceClient service = new QueueServiceClient(queueEndpoint, credentials);
+
+            Assert.AreEqual(accountName, service.AccountName);
         }
 
         [RecordedTest]
@@ -104,6 +136,77 @@ namespace Azure.Storage.Queues.Test
             TestHelper.AssertExpectedException<ArgumentException>(
                 () => new QueueClient(uri, new AzureSasCredential(sas)),
                 e => e.Message.Contains($"You cannot use {nameof(AzureSasCredential)} when the resource URI also contains a Shared Access Signature"));
+        }
+
+        [RecordedTest]
+        public async Task Ctor_DefaultAudience()
+        {
+            // Act - Create new Queue client with the OAuth Credential and Audience
+            QueueClientOptions options = GetOptionsWithAudience(QueueAudience.PublicAudience);
+
+            QueueServiceClient aadService = InstrumentClient(new QueueServiceClient(
+                new Uri(Tenants.TestConfigOAuth.QueueServiceEndpoint),
+                TestEnvironment.Credential,
+                options));
+
+            // Assert
+            Response<QueueServiceProperties> properties = await aadService.GetPropertiesAsync();
+            Assert.IsNotNull(properties);
+        }
+
+        [RecordedTest]
+        public async Task Ctor_CustomAudience()
+        {
+            // Arrange
+            QueueUriBuilder uriBuilder = new QueueUriBuilder(new Uri(Tenants.TestConfigOAuth.QueueServiceEndpoint));
+
+            // Act - Create new Queue client with the OAuth Credential and Audience
+            QueueClientOptions options = GetOptionsWithAudience(new QueueAudience($"https://{uriBuilder.AccountName}.queue.core.windows.net/"));
+
+            QueueServiceClient aadService = InstrumentClient(new QueueServiceClient(
+                new Uri(Tenants.TestConfigOAuth.QueueServiceEndpoint),
+                TestEnvironment.Credential,
+                options));
+
+            // Assert
+            Response<QueueServiceProperties> properties = await aadService.GetPropertiesAsync();
+            Assert.IsNotNull(properties);
+        }
+
+        [RecordedTest]
+        public async Task Ctor_StorageAccountAudience()
+        {
+            // Arrange
+            QueueUriBuilder uriBuilder = new QueueUriBuilder(new Uri(Tenants.TestConfigOAuth.QueueServiceEndpoint));
+
+            // Act - Create new Queue client with the OAuth Credential and Audience
+            QueueClientOptions options = GetOptionsWithAudience(QueueAudience.CreateQueueServiceAccountAudience(uriBuilder.AccountName));
+
+            QueueServiceClient aadService = InstrumentClient(new QueueServiceClient(
+                new Uri(Tenants.TestConfigOAuth.QueueServiceEndpoint),
+                TestEnvironment.Credential,
+                options));
+
+            // Assert
+            Response<QueueServiceProperties> properties = await aadService.GetPropertiesAsync();
+            Assert.IsNotNull(properties);
+        }
+
+        [RecordedTest]
+        public async Task Ctor_AudienceError()
+        {
+            // Act - Create new Queue client with the OAuth Credential and Audience
+            QueueClientOptions options = GetOptionsWithAudience(new QueueAudience("https://badaudience.queue.core.windows.net"));
+
+            QueueServiceClient aadContainer = InstrumentClient(new QueueServiceClient(
+                new Uri(Tenants.TestConfigOAuth.QueueServiceEndpoint),
+                new MockCredential(),
+                options));
+
+            // Assert
+            await TestHelper.AssertExpectedExceptionAsync<RequestFailedException>(
+                aadContainer.GetPropertiesAsync(),
+                e => Assert.AreEqual("InvalidAuthenticationInfo", e.ErrorCode));
         }
 
         [RecordedTest]
@@ -195,6 +298,57 @@ namespace Azure.Storage.Queues.Test
             await TestHelper.AssertExpectedExceptionAsync<RequestFailedException>(
                 service.GetQueuesAsync().AsPages(continuationToken: "garbage").FirstAsync(),
                 e => Assert.AreEqual("OutOfRangeInput", e.ErrorCode));
+        }
+
+        [RecordedTest]
+        [ServiceVersion(Min = QueueClientOptions.ServiceVersion.V2026_02_06)]
+        public async Task GetUserDelegatioKey()
+        {
+            // Arrange
+            QueueServiceClient service = GetServiceClient_OAuth();
+
+            // Act
+            QueueGetUserDelegationKeyOptions options = new QueueGetUserDelegationKeyOptions(expiresOn: Recording.UtcNow.AddHours(1));
+            Response<UserDelegationKey> response = await service.GetUserDelegationKeyAsync(
+                options: options);
+
+            // Assert
+            Assert.IsNotNull(response.Value);
+        }
+
+        [RecordedTest]
+        [ServiceVersion(Min = QueueClientOptions.ServiceVersion.V2026_02_06)]
+        public async Task GetUserDelegationKey_Error()
+        {
+            // Arrange
+            QueueServiceClient service = GetServiceClient_SharedKey();
+
+            // Act
+            QueueGetUserDelegationKeyOptions options = new QueueGetUserDelegationKeyOptions(expiresOn: Recording.UtcNow.AddHours(1));
+            await TestHelper.AssertExpectedExceptionAsync<RequestFailedException>(
+                service.GetUserDelegationKeyAsync(options: options),
+                e => Assert.AreEqual("AuthenticationFailed", e.ErrorCode));
+        }
+
+        [RecordedTest]
+        [ServiceVersion(Min = QueueClientOptions.ServiceVersion.V2026_02_06)]
+        public async Task GetUserDelegationKey_ArgumentException()
+        {
+            // Arrange
+            QueueServiceClient service = GetServiceClient_OAuth();
+
+            // Act
+            QueueGetUserDelegationKeyOptions options = new QueueGetUserDelegationKeyOptions(
+                    // ensure the time used is not UTC, as DateTimeOffset.Now could actually be UTC based on OS settings
+                    // Use a custom time zone so we aren't dependent on OS having specific standard time zone.
+                    expiresOn: TimeZoneInfo.ConvertTime(
+                        Recording.Now.AddHours(1),
+                        TimeZoneInfo.CreateCustomTimeZone("Storage Test Custom Time Zone", TimeSpan.FromHours(-3), "CTZ", "CTZ")));
+            await TestHelper.AssertExpectedExceptionAsync<ArgumentException>(
+                service.GetUserDelegationKeyAsync(
+                    options: options),
+                e => Assert.AreEqual("expiresOn must be UTC", e.Message));
+            ;
         }
 
         #region Secondary Storage
@@ -469,11 +623,14 @@ namespace Azure.Storage.Queues.Test
                     constants.Sas.SharedKeyCredential,
                     GetOptions()));
 
+            string stringToSign = null;
+
             // Act
             Uri sasUri = serviceClient.GenerateAccountSasUri(
                 permissions: permissions,
                 expiresOn: expiresOn,
-                resourceTypes: resourceTypes);
+                resourceTypes: resourceTypes,
+                out stringToSign);
 
             // Assert
             AccountSasBuilder sasBuilder = new AccountSasBuilder(permissions, expiresOn, AccountSasServices.Queues, resourceTypes);
@@ -482,6 +639,7 @@ namespace Azure.Storage.Queues.Test
                 Query = sasBuilder.ToSasQueryParameters(constants.Sas.SharedKeyCredential).ToString()
             };
             Assert.AreEqual(expectedUri.Uri, sasUri);
+            Assert.IsNotNull(stringToSign);
         }
 
         [RecordedTest]
@@ -504,14 +662,17 @@ namespace Azure.Storage.Queues.Test
             // Add more properties on the builder
             sasBuilder.SetPermissions(permissions);
 
+            string stringToSign = null;
+
             // Act
-            Uri sasUri = serviceClient.GenerateAccountSasUri(sasBuilder);
+            Uri sasUri = serviceClient.GenerateAccountSasUri(sasBuilder, out stringToSign);
 
             // Assert
             AccountSasBuilder sasBuilder2 = new AccountSasBuilder(permissions, expiresOn, services, resourceTypes);
             UriBuilder expectedUri = new UriBuilder(serviceUri);
             expectedUri.Query += sasBuilder.ToSasQueryParameters(constants.Sas.SharedKeyCredential).ToString();
             Assert.AreEqual(expectedUri.Uri, sasUri);
+            Assert.IsNotNull(stringToSign);
         }
 
         [RecordedTest]
@@ -541,13 +702,14 @@ namespace Azure.Storage.Queues.Test
         [RecordedTest]
         public void CanMockClientConstructors()
         {
+            TokenCredential mockTokenCredential = new Mock<TokenCredential>().Object;
             // One has to call .Object to trigger constructor. It's lazy.
             var mock = new Mock<QueueServiceClient>(TestConfigDefault.ConnectionString, new QueueClientOptions()).Object;
             mock = new Mock<QueueServiceClient>(TestConfigDefault.ConnectionString).Object;
             mock = new Mock<QueueServiceClient>(new Uri("https://test/test"), new QueueClientOptions()).Object;
             mock = new Mock<QueueServiceClient>(new Uri("https://test/test"), GetNewSharedKeyCredentials(), new QueueClientOptions()).Object;
             mock = new Mock<QueueServiceClient>(new Uri("https://test/test"), new AzureSasCredential("foo"), new QueueClientOptions()).Object;
-            mock = new Mock<QueueServiceClient>(new Uri("https://test/test"), Tenants.GetOAuthCredential(Tenants.TestConfigHierarchicalNamespace), new QueueClientOptions()).Object;
+            mock = new Mock<QueueServiceClient>(new Uri("https://test/test"), mockTokenCredential, new QueueClientOptions()).Object;
         }
     }
 }

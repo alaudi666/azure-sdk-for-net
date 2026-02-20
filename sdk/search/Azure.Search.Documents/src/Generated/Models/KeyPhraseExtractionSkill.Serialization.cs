@@ -5,22 +5,41 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.Search.Documents.Indexes.Models
 {
-    public partial class KeyPhraseExtractionSkill : IUtf8JsonSerializable
+    public partial class KeyPhraseExtractionSkill : IUtf8JsonSerializable, IJsonModel<KeyPhraseExtractionSkill>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<KeyPhraseExtractionSkill>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<KeyPhraseExtractionSkill>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KeyPhraseExtractionSkill>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(KeyPhraseExtractionSkill)} does not support writing '{format}' format.");
+            }
+
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(DefaultLanguageCode))
             {
                 if (DefaultLanguageCode != null)
                 {
-                    writer.WritePropertyName("defaultLanguageCode");
+                    writer.WritePropertyName("defaultLanguageCode"u8);
                     writer.WriteStringValue(DefaultLanguageCode.Value.ToString());
                 }
                 else
@@ -32,7 +51,7 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 if (MaxKeyPhraseCount != null)
                 {
-                    writer.WritePropertyName("maxKeyPhraseCount");
+                    writer.WritePropertyName("maxKeyPhraseCount"u8);
                     writer.WriteNumberValue(MaxKeyPhraseCount.Value);
                 }
                 else
@@ -44,7 +63,7 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 if (ModelVersion != null)
                 {
-                    writer.WritePropertyName("modelVersion");
+                    writer.WritePropertyName("modelVersion"u8);
                     writer.WriteStringValue(ModelVersion);
                 }
                 else
@@ -52,54 +71,42 @@ namespace Azure.Search.Documents.Indexes.Models
                     writer.WriteNull("modelVersion");
                 }
             }
-            writer.WritePropertyName("@odata.type");
-            writer.WriteStringValue(ODataType);
-            if (Optional.IsDefined(Name))
-            {
-                writer.WritePropertyName("name");
-                writer.WriteStringValue(Name);
-            }
-            if (Optional.IsDefined(Description))
-            {
-                writer.WritePropertyName("description");
-                writer.WriteStringValue(Description);
-            }
-            if (Optional.IsDefined(Context))
-            {
-                writer.WritePropertyName("context");
-                writer.WriteStringValue(Context);
-            }
-            writer.WritePropertyName("inputs");
-            writer.WriteStartArray();
-            foreach (var item in Inputs)
-            {
-                writer.WriteObjectValue(item);
-            }
-            writer.WriteEndArray();
-            writer.WritePropertyName("outputs");
-            writer.WriteStartArray();
-            foreach (var item in Outputs)
-            {
-                writer.WriteObjectValue(item);
-            }
-            writer.WriteEndArray();
-            writer.WriteEndObject();
         }
 
-        internal static KeyPhraseExtractionSkill DeserializeKeyPhraseExtractionSkill(JsonElement element)
+        KeyPhraseExtractionSkill IJsonModel<KeyPhraseExtractionSkill>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<KeyPhraseExtractionSkillLanguage?> defaultLanguageCode = default;
-            Optional<int?> maxKeyPhraseCount = default;
-            Optional<string> modelVersion = default;
+            var format = options.Format == "W" ? ((IPersistableModel<KeyPhraseExtractionSkill>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(KeyPhraseExtractionSkill)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeKeyPhraseExtractionSkill(document.RootElement, options);
+        }
+
+        internal static KeyPhraseExtractionSkill DeserializeKeyPhraseExtractionSkill(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            KeyPhraseExtractionSkillLanguage? defaultLanguageCode = default;
+            int? maxKeyPhraseCount = default;
+            string modelVersion = default;
             string odataType = default;
-            Optional<string> name = default;
-            Optional<string> description = default;
-            Optional<string> context = default;
+            string name = default;
+            string description = default;
+            string context = default;
             IList<InputFieldMappingEntry> inputs = default;
             IList<OutputFieldMappingEntry> outputs = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("defaultLanguageCode"))
+                if (property.NameEquals("defaultLanguageCode"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -109,7 +116,7 @@ namespace Azure.Search.Documents.Indexes.Models
                     defaultLanguageCode = new KeyPhraseExtractionSkillLanguage(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("maxKeyPhraseCount"))
+                if (property.NameEquals("maxKeyPhraseCount"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -119,7 +126,7 @@ namespace Azure.Search.Documents.Indexes.Models
                     maxKeyPhraseCount = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("modelVersion"))
+                if (property.NameEquals("modelVersion"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -129,48 +136,110 @@ namespace Azure.Search.Documents.Indexes.Models
                     modelVersion = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("@odata.type"))
+                if (property.NameEquals("@odata.type"u8))
                 {
                     odataType = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("description"))
+                if (property.NameEquals("description"u8))
                 {
                     description = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("context"))
+                if (property.NameEquals("context"u8))
                 {
                     context = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("inputs"))
+                if (property.NameEquals("inputs"u8))
                 {
                     List<InputFieldMappingEntry> array = new List<InputFieldMappingEntry>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(InputFieldMappingEntry.DeserializeInputFieldMappingEntry(item));
+                        array.Add(InputFieldMappingEntry.DeserializeInputFieldMappingEntry(item, options));
                     }
                     inputs = array;
                     continue;
                 }
-                if (property.NameEquals("outputs"))
+                if (property.NameEquals("outputs"u8))
                 {
                     List<OutputFieldMappingEntry> array = new List<OutputFieldMappingEntry>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(OutputFieldMappingEntry.DeserializeOutputFieldMappingEntry(item));
+                        array.Add(OutputFieldMappingEntry.DeserializeOutputFieldMappingEntry(item, options));
                     }
                     outputs = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new KeyPhraseExtractionSkill(odataType, name.Value, description.Value, context.Value, inputs, outputs, Optional.ToNullable(defaultLanguageCode), Optional.ToNullable(maxKeyPhraseCount), modelVersion.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new KeyPhraseExtractionSkill(
+                odataType,
+                name,
+                description,
+                context,
+                inputs,
+                outputs,
+                serializedAdditionalRawData,
+                defaultLanguageCode,
+                maxKeyPhraseCount,
+                modelVersion);
+        }
+
+        BinaryData IPersistableModel<KeyPhraseExtractionSkill>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KeyPhraseExtractionSkill>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureSearchDocumentsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(KeyPhraseExtractionSkill)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        KeyPhraseExtractionSkill IPersistableModel<KeyPhraseExtractionSkill>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<KeyPhraseExtractionSkill>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeKeyPhraseExtractionSkill(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(KeyPhraseExtractionSkill)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<KeyPhraseExtractionSkill>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static new KeyPhraseExtractionSkill FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeKeyPhraseExtractionSkill(document.RootElement);
+        }
+
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
+        internal override RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue(this, ModelSerializationExtensions.WireOptions);
+            return content;
         }
     }
 }

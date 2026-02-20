@@ -5,90 +5,181 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    public partial class AvsManagementCluster : IUtf8JsonSerializable
+    /// <summary> The properties of a management cluster. </summary>
+    public partial class AvsManagementCluster : CommonClusterProperties, IJsonModel<AvsManagementCluster>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override CommonClusterProperties PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvsManagementCluster>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeAvsManagementCluster(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AvsManagementCluster)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<AvsManagementCluster>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(ClusterSize))
-            {
-                writer.WritePropertyName("clusterSize");
-                writer.WriteNumberValue(ClusterSize.Value);
-            }
-            if (Optional.IsCollectionDefined(Hosts))
-            {
-                writer.WritePropertyName("hosts");
-                writer.WriteStartArray();
-                foreach (var item in Hosts)
-                {
-                    writer.WriteStringValue(item);
-                }
-                writer.WriteEndArray();
-            }
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static AvsManagementCluster DeserializeAvsManagementCluster(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<int> clusterSize = default;
-            Optional<AvsPrivateCloudClusterProvisioningState> provisioningState = default;
-            Optional<int> clusterId = default;
-            Optional<IList<string>> hosts = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<AvsManagementCluster>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("clusterSize"))
+                throw new FormatException($"The model {nameof(AvsManagementCluster)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
+            if (Optional.IsDefined(VsanDatastoreName))
+            {
+                writer.WritePropertyName("vsanDatastoreName"u8);
+                writer.WriteStringValue(VsanDatastoreName);
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AvsManagementCluster IJsonModel<AvsManagementCluster>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (AvsManagementCluster)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override CommonClusterProperties JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvsManagementCluster>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AvsManagementCluster)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAvsManagementCluster(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static AvsManagementCluster DeserializeAvsManagementCluster(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            int? clusterSize = default;
+            AvsPrivateCloudClusterProvisioningState? provisioningState = default;
+            int? clusterId = default;
+            IList<string> hosts = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            string vsanDatastoreName = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("clusterSize"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    clusterSize = property.Value.GetInt32();
+                    clusterSize = prop.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("provisioningState"))
+                if (prop.NameEquals("provisioningState"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    provisioningState = new AvsPrivateCloudClusterProvisioningState(property.Value.GetString());
+                    provisioningState = new AvsPrivateCloudClusterProvisioningState(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("clusterId"))
+                if (prop.NameEquals("clusterId"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    clusterId = property.Value.GetInt32();
+                    clusterId = prop.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("hosts"))
+                if (prop.NameEquals("hosts"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(item.GetString());
+                        if (item.ValueKind == JsonValueKind.Null)
+                        {
+                            array.Add(null);
+                        }
+                        else
+                        {
+                            array.Add(item.GetString());
+                        }
                     }
                     hosts = array;
                     continue;
                 }
+                if (prop.NameEquals("vsanDatastoreName"u8))
+                {
+                    vsanDatastoreName = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
             }
-            return new AvsManagementCluster(Optional.ToNullable(clusterSize), Optional.ToNullable(provisioningState), Optional.ToNullable(clusterId), Optional.ToList(hosts));
+            return new AvsManagementCluster(
+                clusterSize,
+                provisioningState,
+                clusterId,
+                hosts ?? new ChangeTrackingList<string>(),
+                additionalBinaryDataProperties,
+                vsanDatastoreName);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<AvsManagementCluster>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvsManagementCluster>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerAvsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(AvsManagementCluster)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AvsManagementCluster IPersistableModel<AvsManagementCluster>.Create(BinaryData data, ModelReaderWriterOptions options) => (AvsManagementCluster)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<AvsManagementCluster>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -8,17 +8,19 @@ using Azure.AI.FormRecognizer.Models;
 using Azure.AI.FormRecognizer.Tests;
 using Azure.AI.FormRecognizer.Training;
 using Azure.Core.TestFramework;
+using NUnit.Framework;
 
 namespace Azure.AI.FormRecognizer.Samples
 {
     public partial class FormRecognizerSamples
     {
         [RecordedTest]
+        [Ignore("https://github.com/Azure/azure-sdk-for-net/issues/47689")]
         public async Task RecognizeCustomFormsFromFile()
         {
             string endpoint = TestEnvironment.Endpoint;
             string apiKey = TestEnvironment.ApiKey;
-            string trainingFileUrl = TestEnvironment.BlobContainerSasUrlV2;
+            string trainingFileUrl = TestEnvironment.BlobContainerSasUrl;
 
             // Firstly, create a trained model we can use to recognize the custom form. Please note that
             // models can also be trained using a graphical user interface such as the Form Recognizer
@@ -70,7 +72,7 @@ namespace Azure.AI.FormRecognizer.Samples
                 {
                     for (int i = 0; i < page.Tables.Count; i++)
                     {
-                        Console.WriteLine($"Table {i+1} on page {page.Tables[i].PageNumber}");
+                        Console.WriteLine($"Table {i + 1} on page {page.Tables[i].PageNumber}");
                         foreach (var cell in page.Tables[i].Cells)
                         {
                             Console.WriteLine($"  Cell[{cell.RowIndex}][{cell.ColumnIndex}] has text '{cell.Text}' with confidence {cell.Confidence}");

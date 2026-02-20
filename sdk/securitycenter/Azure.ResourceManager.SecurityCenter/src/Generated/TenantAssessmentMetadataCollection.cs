@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.SecurityCenter
 {
     /// <summary>
-    /// A class representing a collection of <see cref="TenantAssessmentMetadataResource" /> and their operations.
-    /// Each <see cref="TenantAssessmentMetadataResource" /> in the collection will belong to the same instance of <see cref="TenantResource" />.
-    /// To get a <see cref="TenantAssessmentMetadataCollection" /> instance call the GetTenantAssessmentMetadata method from an instance of <see cref="TenantResource" />.
+    /// A class representing a collection of <see cref="TenantAssessmentMetadataResource"/> and their operations.
+    /// Each <see cref="TenantAssessmentMetadataResource"/> in the collection will belong to the same instance of <see cref="TenantResource"/>.
+    /// To get a <see cref="TenantAssessmentMetadataCollection"/> instance call the GetTenantAssessmentMetadata method from an instance of <see cref="TenantResource"/>.
     /// </summary>
     public partial class TenantAssessmentMetadataCollection : ArmCollection, IEnumerable<TenantAssessmentMetadataResource>, IAsyncEnumerable<TenantAssessmentMetadataResource>
     {
@@ -56,8 +54,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get metadata information on an assessment type
-        /// Request Path: /providers/Microsoft.Security/assessmentMetadata/{assessmentMetadataName}
-        /// Operation Id: AssessmentsMetadata_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Security/assessmentMetadata/{assessmentMetadataName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssessmentsMetadata_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TenantAssessmentMetadataResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="assessmentMetadataName"> The Assessment Key - Unique key for the assessment type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -85,8 +99,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get metadata information on an assessment type
-        /// Request Path: /providers/Microsoft.Security/assessmentMetadata/{assessmentMetadataName}
-        /// Operation Id: AssessmentsMetadata_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Security/assessmentMetadata/{assessmentMetadataName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssessmentsMetadata_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TenantAssessmentMetadataResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="assessmentMetadataName"> The Assessment Key - Unique key for the assessment type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -114,92 +144,84 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get metadata information on all assessment types
-        /// Request Path: /providers/Microsoft.Security/assessmentMetadata
-        /// Operation Id: AssessmentsMetadata_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Security/assessmentMetadata</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssessmentsMetadata_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TenantAssessmentMetadataResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="TenantAssessmentMetadataResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="TenantAssessmentMetadataResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<TenantAssessmentMetadataResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<TenantAssessmentMetadataResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _tenantAssessmentMetadataAssessmentsMetadataClientDiagnostics.CreateScope("TenantAssessmentMetadataCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _tenantAssessmentMetadataAssessmentsMetadataRestClient.ListAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new TenantAssessmentMetadataResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<TenantAssessmentMetadataResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _tenantAssessmentMetadataAssessmentsMetadataClientDiagnostics.CreateScope("TenantAssessmentMetadataCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _tenantAssessmentMetadataAssessmentsMetadataRestClient.ListNextPageAsync(nextLink, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new TenantAssessmentMetadataResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _tenantAssessmentMetadataAssessmentsMetadataRestClient.CreateListRequest();
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _tenantAssessmentMetadataAssessmentsMetadataRestClient.CreateListNextPageRequest(nextLink);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new TenantAssessmentMetadataResource(Client, SecurityAssessmentMetadataData.DeserializeSecurityAssessmentMetadataData(e)), _tenantAssessmentMetadataAssessmentsMetadataClientDiagnostics, Pipeline, "TenantAssessmentMetadataCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Get metadata information on all assessment types
-        /// Request Path: /providers/Microsoft.Security/assessmentMetadata
-        /// Operation Id: AssessmentsMetadata_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Security/assessmentMetadata</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssessmentsMetadata_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TenantAssessmentMetadataResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="TenantAssessmentMetadataResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="TenantAssessmentMetadataResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<TenantAssessmentMetadataResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<TenantAssessmentMetadataResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _tenantAssessmentMetadataAssessmentsMetadataClientDiagnostics.CreateScope("TenantAssessmentMetadataCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _tenantAssessmentMetadataAssessmentsMetadataRestClient.List(cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new TenantAssessmentMetadataResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<TenantAssessmentMetadataResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _tenantAssessmentMetadataAssessmentsMetadataClientDiagnostics.CreateScope("TenantAssessmentMetadataCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _tenantAssessmentMetadataAssessmentsMetadataRestClient.ListNextPage(nextLink, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new TenantAssessmentMetadataResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _tenantAssessmentMetadataAssessmentsMetadataRestClient.CreateListRequest();
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _tenantAssessmentMetadataAssessmentsMetadataRestClient.CreateListNextPageRequest(nextLink);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new TenantAssessmentMetadataResource(Client, SecurityAssessmentMetadataData.DeserializeSecurityAssessmentMetadataData(e)), _tenantAssessmentMetadataAssessmentsMetadataClientDiagnostics, Pipeline, "TenantAssessmentMetadataCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /providers/Microsoft.Security/assessmentMetadata/{assessmentMetadataName}
-        /// Operation Id: AssessmentsMetadata_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Security/assessmentMetadata/{assessmentMetadataName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssessmentsMetadata_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TenantAssessmentMetadataResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="assessmentMetadataName"> The Assessment Key - Unique key for the assessment type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -225,8 +247,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /providers/Microsoft.Security/assessmentMetadata/{assessmentMetadataName}
-        /// Operation Id: AssessmentsMetadata_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Security/assessmentMetadata/{assessmentMetadataName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssessmentsMetadata_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TenantAssessmentMetadataResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="assessmentMetadataName"> The Assessment Key - Unique key for the assessment type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -242,6 +280,96 @@ namespace Azure.ResourceManager.SecurityCenter
             {
                 var response = _tenantAssessmentMetadataAssessmentsMetadataRestClient.Get(assessmentMetadataName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Security/assessmentMetadata/{assessmentMetadataName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssessmentsMetadata_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TenantAssessmentMetadataResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="assessmentMetadataName"> The Assessment Key - Unique key for the assessment type. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="assessmentMetadataName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="assessmentMetadataName"/> is null. </exception>
+        public virtual async Task<NullableResponse<TenantAssessmentMetadataResource>> GetIfExistsAsync(string assessmentMetadataName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(assessmentMetadataName, nameof(assessmentMetadataName));
+
+            using var scope = _tenantAssessmentMetadataAssessmentsMetadataClientDiagnostics.CreateScope("TenantAssessmentMetadataCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _tenantAssessmentMetadataAssessmentsMetadataRestClient.GetAsync(assessmentMetadataName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<TenantAssessmentMetadataResource>(response.GetRawResponse());
+                return Response.FromValue(new TenantAssessmentMetadataResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Security/assessmentMetadata/{assessmentMetadataName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssessmentsMetadata_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-06-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TenantAssessmentMetadataResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="assessmentMetadataName"> The Assessment Key - Unique key for the assessment type. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="assessmentMetadataName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="assessmentMetadataName"/> is null. </exception>
+        public virtual NullableResponse<TenantAssessmentMetadataResource> GetIfExists(string assessmentMetadataName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(assessmentMetadataName, nameof(assessmentMetadataName));
+
+            using var scope = _tenantAssessmentMetadataAssessmentsMetadataClientDiagnostics.CreateScope("TenantAssessmentMetadataCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _tenantAssessmentMetadataAssessmentsMetadataRestClient.Get(assessmentMetadataName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<TenantAssessmentMetadataResource>(response.GetRawResponse());
+                return Response.FromValue(new TenantAssessmentMetadataResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

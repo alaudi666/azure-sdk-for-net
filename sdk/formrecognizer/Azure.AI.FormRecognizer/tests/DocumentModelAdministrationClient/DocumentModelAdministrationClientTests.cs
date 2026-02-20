@@ -2,7 +2,6 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Azure.Core;
@@ -36,7 +35,7 @@ namespace Azure.AI.FormRecognizer.DocumentAnalysis.Tests
             var fakeEndpoint = new Uri("http://notreal.azure.com/");
             var fakeCredential = new AzureKeyCredential("fakeKey");
 
-            options ??= new DocumentAnalysisClientOptions(){ Retry = { Delay = TimeSpan.Zero, Mode = RetryMode.Fixed}};
+            options ??= new DocumentAnalysisClientOptions() { Retry = { Delay = TimeSpan.Zero, Mode = RetryMode.Fixed } };
             var client = new DocumentModelAdministrationClient(fakeEndpoint, fakeCredential, options);
 
             return client;
@@ -102,9 +101,7 @@ namespace Azure.AI.FormRecognizer.DocumentAnalysis.Tests
         {
             var client = CreateInstrumentedClient();
 
-            Assert.ThrowsAsync<UriFormatException>(() => client.BuildDocumentModelAsync(WaitUntil.Started, new Uri(string.Empty), DocumentBuildMode.Template));
             Assert.ThrowsAsync<ArgumentNullException>(() => client.BuildDocumentModelAsync(WaitUntil.Started, (Uri)null, DocumentBuildMode.Template));
-            Assert.Throws<UriFormatException>(() => client.BuildDocumentModel(WaitUntil.Started, new Uri(string.Empty), DocumentBuildMode.Template));
             Assert.Throws<ArgumentNullException>(() => client.BuildDocumentModel(WaitUntil.Started, (Uri)null, DocumentBuildMode.Template));
         }
 

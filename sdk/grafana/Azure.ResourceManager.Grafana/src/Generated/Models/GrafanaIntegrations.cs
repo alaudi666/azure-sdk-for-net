@@ -5,28 +5,34 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Grafana;
 
 namespace Azure.ResourceManager.Grafana.Models
 {
     /// <summary> GrafanaIntegrations is a bundled observability experience (e.g. pre-configured data source, tailored Grafana dashboards, alerting defaults) for common monitoring scenarios. </summary>
     internal partial class GrafanaIntegrations
     {
-        /// <summary> Initializes a new instance of GrafanaIntegrations. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="GrafanaIntegrations"/>. </summary>
         public GrafanaIntegrations()
         {
             MonitorWorkspaceIntegrations = new ChangeTrackingList<MonitorWorkspaceIntegration>();
         }
 
-        /// <summary> Initializes a new instance of GrafanaIntegrations. </summary>
+        /// <summary> Initializes a new instance of <see cref="GrafanaIntegrations"/>. </summary>
         /// <param name="monitorWorkspaceIntegrations"></param>
-        internal GrafanaIntegrations(IList<MonitorWorkspaceIntegration> monitorWorkspaceIntegrations)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal GrafanaIntegrations(IList<MonitorWorkspaceIntegration> monitorWorkspaceIntegrations, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             MonitorWorkspaceIntegrations = monitorWorkspaceIntegrations;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets the monitor workspace integrations. </summary>
+        /// <summary> Gets the MonitorWorkspaceIntegrations. </summary>
         public IList<MonitorWorkspaceIntegration> MonitorWorkspaceIntegrations { get; }
     }
 }

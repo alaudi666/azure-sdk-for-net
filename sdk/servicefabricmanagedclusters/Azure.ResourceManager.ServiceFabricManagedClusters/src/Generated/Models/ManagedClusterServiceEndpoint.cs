@@ -8,13 +8,17 @@
 using System;
 using System.Collections.Generic;
 using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> The service endpoint properties. </summary>
     public partial class ManagedClusterServiceEndpoint
     {
-        /// <summary> Initializes a new instance of ManagedClusterServiceEndpoint. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedClusterServiceEndpoint"/>. </summary>
         /// <param name="service"> The type of the endpoint service. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="service"/> is null. </exception>
         public ManagedClusterServiceEndpoint(string service)
@@ -25,18 +29,26 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
             Locations = new ChangeTrackingList<AzureLocation>();
         }
 
-        /// <summary> Initializes a new instance of ManagedClusterServiceEndpoint. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedClusterServiceEndpoint"/>. </summary>
         /// <param name="service"> The type of the endpoint service. </param>
         /// <param name="locations"> A list of locations. </param>
-        internal ManagedClusterServiceEndpoint(string service, IList<AzureLocation> locations)
+        /// <param name="networkIdentifier"> Specifies the resource id of the service endpoint to be used in the cluster. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedClusterServiceEndpoint(string service, IList<AzureLocation> locations, ResourceIdentifier networkIdentifier, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Service = service;
             Locations = locations;
+            NetworkIdentifier = networkIdentifier;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The type of the endpoint service. </summary>
         public string Service { get; set; }
+
         /// <summary> A list of locations. </summary>
         public IList<AzureLocation> Locations { get; }
+
+        /// <summary> Specifies the resource id of the service endpoint to be used in the cluster. </summary>
+        public ResourceIdentifier NetworkIdentifier { get; set; }
     }
 }

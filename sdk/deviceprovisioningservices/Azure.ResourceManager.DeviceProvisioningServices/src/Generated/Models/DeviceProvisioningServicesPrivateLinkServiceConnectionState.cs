@@ -6,14 +6,18 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.DeviceProvisioningServices;
 
 namespace Azure.ResourceManager.DeviceProvisioningServices.Models
 {
     /// <summary> The current state of a private endpoint connection. </summary>
     public partial class DeviceProvisioningServicesPrivateLinkServiceConnectionState
     {
-        /// <summary> Initializes a new instance of DeviceProvisioningServicesPrivateLinkServiceConnectionState. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DeviceProvisioningServicesPrivateLinkServiceConnectionState"/>. </summary>
         /// <param name="status"> The status of a private endpoint connection. </param>
         /// <param name="description"> The description for the current state of a private endpoint connection. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="description"/> is null. </exception>
@@ -25,21 +29,25 @@ namespace Azure.ResourceManager.DeviceProvisioningServices.Models
             Description = description;
         }
 
-        /// <summary> Initializes a new instance of DeviceProvisioningServicesPrivateLinkServiceConnectionState. </summary>
+        /// <summary> Initializes a new instance of <see cref="DeviceProvisioningServicesPrivateLinkServiceConnectionState"/>. </summary>
         /// <param name="status"> The status of a private endpoint connection. </param>
         /// <param name="description"> The description for the current state of a private endpoint connection. </param>
         /// <param name="actionsRequired"> Actions required for a private endpoint connection. </param>
-        internal DeviceProvisioningServicesPrivateLinkServiceConnectionState(DeviceProvisioningServicesPrivateLinkServiceConnectionStatus status, string description, string actionsRequired)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DeviceProvisioningServicesPrivateLinkServiceConnectionState(DeviceProvisioningServicesPrivateLinkServiceConnectionStatus status, string description, string actionsRequired, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Status = status;
             Description = description;
             ActionsRequired = actionsRequired;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The status of a private endpoint connection. </summary>
         public DeviceProvisioningServicesPrivateLinkServiceConnectionStatus Status { get; set; }
+
         /// <summary> The description for the current state of a private endpoint connection. </summary>
         public string Description { get; set; }
+
         /// <summary> Actions required for a private endpoint connection. </summary>
         public string ActionsRequired { get; set; }
     }

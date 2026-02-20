@@ -6,20 +6,20 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Details of the data to be used for exporting data from azure. </summary>
     public partial class DataExportDetails
     {
-        /// <summary> Initializes a new instance of DataExportDetails. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DataExportDetails"/>. </summary>
         /// <param name="transferConfiguration"> Configuration for the data transfer. </param>
-        /// <param name="accountDetails">
-        /// Account details of the data to be transferred
-        /// Please note <see cref="DataAccountDetails"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="ManagedDiskDetails"/> and <see cref="DataBoxStorageAccountDetails"/>.
-        /// </param>
+        /// <param name="accountDetails"> Account details of the data to be transferred. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="transferConfiguration"/> or <paramref name="accountDetails"/> is null. </exception>
         public DataExportDetails(TransferConfiguration transferConfiguration, DataAccountDetails accountDetails)
         {
@@ -30,30 +30,26 @@ namespace Azure.ResourceManager.DataBox.Models
             AccountDetails = accountDetails;
         }
 
-        /// <summary> Initializes a new instance of DataExportDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataExportDetails"/>. </summary>
         /// <param name="transferConfiguration"> Configuration for the data transfer. </param>
         /// <param name="logCollectionLevel"> Level of the logs to be collected. </param>
-        /// <param name="accountDetails">
-        /// Account details of the data to be transferred
-        /// Please note <see cref="DataAccountDetails"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="ManagedDiskDetails"/> and <see cref="DataBoxStorageAccountDetails"/>.
-        /// </param>
-        internal DataExportDetails(TransferConfiguration transferConfiguration, LogCollectionLevel? logCollectionLevel, DataAccountDetails accountDetails)
+        /// <param name="accountDetails"> Account details of the data to be transferred. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DataExportDetails(TransferConfiguration transferConfiguration, LogCollectionLevel? logCollectionLevel, DataAccountDetails accountDetails, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             TransferConfiguration = transferConfiguration;
             LogCollectionLevel = logCollectionLevel;
             AccountDetails = accountDetails;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Configuration for the data transfer. </summary>
         public TransferConfiguration TransferConfiguration { get; set; }
+
         /// <summary> Level of the logs to be collected. </summary>
         public LogCollectionLevel? LogCollectionLevel { get; set; }
-        /// <summary>
-        /// Account details of the data to be transferred
-        /// Please note <see cref="DataAccountDetails"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="ManagedDiskDetails"/> and <see cref="DataBoxStorageAccountDetails"/>.
-        /// </summary>
+
+        /// <summary> Account details of the data to be transferred. </summary>
         public DataAccountDetails AccountDetails { get; set; }
     }
 }

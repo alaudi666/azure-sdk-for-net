@@ -8,6 +8,7 @@
 using System.Xml;
 using System.Xml.Linq;
 using Azure.Core;
+using Azure.Storage.Common;
 
 namespace Azure.Storage.Files.Shares.Models
 {
@@ -16,9 +17,13 @@ namespace Azure.Storage.Files.Shares.Models
         void IXmlSerializable.Write(XmlWriter writer, string nameHint)
         {
             writer.WriteStartElement(nameHint ?? "ProtocolSettings");
-            if (Optional.IsDefined(Smb))
+            if (Common.Optional.IsDefined(Smb))
             {
                 writer.WriteObjectValue(Smb, "SMB");
+            }
+            if (Common.Optional.IsDefined(Nfs))
+            {
+                writer.WriteObjectValue(Nfs, "NFS");
             }
             writer.WriteEndElement();
         }
@@ -26,11 +31,16 @@ namespace Azure.Storage.Files.Shares.Models
         internal static ShareProtocolSettings DeserializeShareProtocolSettings(XElement element)
         {
             ShareSmbSettings smb = default;
+            ShareNfsSettings nfs = default;
             if (element.Element("SMB") is XElement smbElement)
             {
                 smb = ShareSmbSettings.DeserializeShareSmbSettings(smbElement);
             }
-            return new ShareProtocolSettings(smb);
+            if (element.Element("NFS") is XElement nfsElement)
+            {
+                nfs = ShareNfsSettings.DeserializeShareNfsSettings(nfsElement);
+            }
+            return new ShareProtocolSettings(smb, nfs);
         }
     }
 }

@@ -5,18 +5,21 @@
 
 #nullable disable
 
-namespace Azure.ResourceManager.EdgeOrder.Models
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.EdgeOrder.Models;
+
+namespace Azure.ResourceManager.EdgeOrder.Custom.Models
 {
-    /// <summary> The UnknownMeterDetails. </summary>
     internal partial class UnknownMeterDetails : EdgeOrderProductMeterDetails
     {
-        /// <summary> Initializes a new instance of UnknownMeterDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="UnknownMeterDetails"/>. </summary>
         /// <param name="billingType"> Represents billing type. </param>
         /// <param name="multiplier"> Billing unit applicable for Pav2 billing. </param>
         /// <param name="chargingType"> Charging type. </param>
-        internal UnknownMeterDetails(BillingType billingType, double? multiplier, EdgeOrderProductChargingType? chargingType) : base(billingType, multiplier, chargingType)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal UnknownMeterDetails(BillingType billingType, double? multiplier, EdgeOrderProductChargingType? chargingType, IDictionary<string, BinaryData> additionalBinaryDataProperties) : base(billingType != default ? billingType : "unknown", multiplier, chargingType, additionalBinaryDataProperties)
         {
-            BillingType = billingType;
         }
     }
 }

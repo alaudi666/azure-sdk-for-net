@@ -6,28 +6,35 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Image for the product. </summary>
     public partial class EdgeOrderProductImageInformation
     {
-        /// <summary> Initializes a new instance of EdgeOrderProductImageInformation. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderProductImageInformation"/>. </summary>
         internal EdgeOrderProductImageInformation()
         {
         }
 
-        /// <summary> Initializes a new instance of EdgeOrderProductImageInformation. </summary>
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderProductImageInformation"/>. </summary>
         /// <param name="imageType"> Type of the image. </param>
         /// <param name="imageUri"> Url of the image. </param>
-        internal EdgeOrderProductImageInformation(EdgeOrderProductImageType? imageType, Uri imageUri)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EdgeOrderProductImageInformation(EdgeOrderProductImageType? imageType, Uri imageUri, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ImageType = imageType;
             ImageUri = imageUri;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Type of the image. </summary>
         public EdgeOrderProductImageType? ImageType { get; }
+
         /// <summary> Url of the image. </summary>
         public Uri ImageUri { get; }
     }

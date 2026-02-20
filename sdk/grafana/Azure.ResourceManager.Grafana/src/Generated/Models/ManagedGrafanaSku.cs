@@ -6,15 +6,19 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.Grafana;
 
 namespace Azure.ResourceManager.Grafana.Models
 {
-    /// <summary> The ManagedGrafanaSku. </summary>
-    internal partial class ManagedGrafanaSku
+    /// <summary> Represents the SKU of a resource. </summary>
+    public partial class ManagedGrafanaSku
     {
-        /// <summary> Initializes a new instance of ManagedGrafanaSku. </summary>
-        /// <param name="name"></param>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedGrafanaSku"/>. </summary>
+        /// <param name="name"> The name of the SKU. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="name"/> is null. </exception>
         public ManagedGrafanaSku(string name)
         {
@@ -23,7 +27,21 @@ namespace Azure.ResourceManager.Grafana.Models
             Name = name;
         }
 
-        /// <summary> Gets or sets the name. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedGrafanaSku"/>. </summary>
+        /// <param name="name"> The name of the SKU. </param>
+        /// <param name="size"> Specifies the capacity tier of the Grafana instance. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedGrafanaSku(string name, GrafanaSize? size, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Name = name;
+            Size = size;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> The name of the SKU. </summary>
         public string Name { get; set; }
+
+        /// <summary> Specifies the capacity tier of the Grafana instance. </summary>
+        public GrafanaSize? Size { get; set; }
     }
 }

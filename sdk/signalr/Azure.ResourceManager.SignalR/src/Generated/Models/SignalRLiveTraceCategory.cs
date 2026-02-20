@@ -5,19 +5,26 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.SignalR;
+
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Live trace category configuration of a Microsoft.SignalRService resource. </summary>
     public partial class SignalRLiveTraceCategory
     {
-        /// <summary> Initializes a new instance of SignalRLiveTraceCategory. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRLiveTraceCategory"/>. </summary>
         public SignalRLiveTraceCategory()
         {
         }
 
-        /// <summary> Initializes a new instance of SignalRLiveTraceCategory. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRLiveTraceCategory"/>. </summary>
         /// <param name="name">
-        /// Gets or sets the live trace category&apos;s name.
+        /// Gets or sets the live trace category's name.
         /// Available values: ConnectivityLogs, MessagingLogs.
         /// Case insensitive.
         /// </param>
@@ -26,23 +33,28 @@ namespace Azure.ResourceManager.SignalR.Models
         /// Available values: true, false.
         /// Case insensitive.
         /// </param>
-        internal SignalRLiveTraceCategory(string name, string enabled)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRLiveTraceCategory(string name, string enabled, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Name = name;
             Enabled = enabled;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary>
-        /// Gets or sets the live trace category&apos;s name.
+        /// Gets or sets the live trace category's name.
         /// Available values: ConnectivityLogs, MessagingLogs.
         /// Case insensitive.
         /// </summary>
+        [WirePath("name")]
         public string Name { get; set; }
+
         /// <summary>
         /// Indicates whether or the live trace category is enabled.
         /// Available values: true, false.
         /// Case insensitive.
         /// </summary>
+        [WirePath("enabled")]
         public string Enabled { get; set; }
     }
 }

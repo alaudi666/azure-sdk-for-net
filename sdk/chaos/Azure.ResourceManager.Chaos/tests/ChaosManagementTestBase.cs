@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.Chaos.Tests.TestDependencies;
@@ -8,9 +11,6 @@ using Azure.ResourceManager.Chaos.Tests.TestDependencies.Experiments;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
-using System;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace Azure.ResourceManager.Chaos.Tests
 {
@@ -30,9 +30,9 @@ namespace Azure.ResourceManager.Chaos.Tests
 
         public ResourceGroupResource ResourceGroupResource { get; private set; }
 
-        public ExperimentCollection ExperimentCollection { get; private set; }
+        public ChaosExperimentCollection ExperimentCollection { get; private set; }
 
-        public TargetTypeCollection TargetTypeCollection { get; private set; }
+        public ChaosTargetMetadataCollection TargetTypeCollection { get; private set; }
 
         public MockExperimentEntities MockExperimentEntities { get; private set; }
 
@@ -49,6 +49,7 @@ namespace Azure.ResourceManager.Chaos.Tests
         [SetUp]
         public void CreateCommonClient()
         {
+            var options = new ArmClientOptions();
             Client = GetArmClient();
         }
 
@@ -59,10 +60,10 @@ namespace Azure.ResourceManager.Chaos.Tests
             this.VmssName = string.Format(TestConstants.VmssNameFormat, TestEnvironment.Location, this.VmssId);
             this.SubscriptionResource = await this.Client.GetDefaultSubscriptionAsync();
             this.ResourceGroupResource = await this.SubscriptionResource.GetResourceGroupAsync(TestEnvironment.ResourceGroup).ConfigureAwait(false);
-            this.ExperimentCollection = this.ResourceGroupResource.GetExperiments();
+            this.ExperimentCollection = this.ResourceGroupResource.GetChaosExperiments();
             this.ExperimentName = Recording.GenerateAssetName(TestConstants.ExperimentNamePrefix);
             this.MockExperimentEntities = new MockExperimentEntities(TestEnvironment.SubscriptionId, TestEnvironment.ResourceGroup, this.VmssName);
-            this.TargetTypeCollection = this.SubscriptionResource.GetTargetTypes(this.Location.Name);
+            this.TargetTypeCollection = this.SubscriptionResource.GetAllChaosTargetMetadata(this.Location.Name);
         }
 
         /// <summary>
@@ -70,23 +71,7 @@ namespace Azure.ResourceManager.Chaos.Tests
         /// </summary>
         public int CreateVmssId()
         {
-            if (this.Mode == RecordedTestMode.Playback)
-            {
-                return this.IsAsync ? 5 : 4;
-            }
-            var framework = RuntimeInformation.FrameworkDescription;
-            if (framework.IndexOf(TestConstants.DotNetFrameworkName, StringComparison.OrdinalIgnoreCase) != -1)
-            {
-                return this.IsAsync ? 1 : 0;
-            }
-            else if (framework.IndexOf(TestConstants.DotNetCoreName, StringComparison.OrdinalIgnoreCase) != -1)
-            {
-                return this.IsAsync ? 3 : 2;
-            }
-            else
-            {
-                return this.IsAsync ? 5 : 4;
-            }
+            return this.IsAsync ? 1 : 0;
         }
     }
 }

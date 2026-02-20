@@ -3,6 +3,11 @@
 
 using System;
 using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+using System.Threading;
+using System.Threading.Tasks;
+using Azure.Identity;
 using NUnit.Framework;
 
 namespace Azure.Messaging.ServiceBus.Tests.Samples
@@ -10,15 +15,17 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
     public class Sample13_AdvancedConfiguration : ServiceBusLiveTestBase
     {
         [Test]
-        public void ConfigureProxy()
+        public async Task ConfigureProxy()
         {
             #region Snippet:ServiceBusConfigureTransport
 #if SNIPPET
-            string connectionString = "<connection_string>";
+            string fullyQualifiedNamespace = "<fully_qualified_namespace>";
+            DefaultAzureCredential credential = new();
 #else
-            string connectionString = TestEnvironment.ServiceBusConnectionString;
+            string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
+            var credential = TestEnvironment.Credential;
 #endif
-            var client = new ServiceBusClient(connectionString, new ServiceBusClientOptions
+            await using ServiceBusClient client = new(fullyQualifiedNamespace, credential, new ServiceBusClientOptions
             {
                 TransportType = ServiceBusTransportType.AmqpWebSockets,
                 WebProxy = new WebProxy("https://myproxyserver:80")
@@ -29,15 +36,17 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
         }
 
         [Test]
-        public void ConfigureRetryOptions()
+        public async Task ConfigureRetryOptions()
         {
             #region Snippet:ServiceBusConfigureRetryOptions
 #if SNIPPET
-            string connectionString = "<connection_string>";
+            string fullyQualifiedNamespace = "<fully_qualified_namespace>";
+            DefaultAzureCredential credential = new();
 #else
-            string connectionString = TestEnvironment.ServiceBusConnectionString;
+            string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
+            var credential = TestEnvironment.Credential;
 #endif
-            var client = new ServiceBusClient(connectionString, new ServiceBusClientOptions
+            await using ServiceBusClient client = new(fullyQualifiedNamespace, credential, new ServiceBusClientOptions
             {
                 RetryOptions = new ServiceBusRetryOptions
                 {
@@ -50,15 +59,53 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
         }
 
         [Test]
-        public void ConfigurePrefetchReceiver()
+        public async Task ConfigureRemoteCertificateValidationCallback()
+        {
+            #region Snippet:ServiceBusConfigureRemoteCertificateValidationCallback
+#if SNIPPET
+            string fullyQualifiedNamespace = "<fully_qualified_namespace>";
+            DefaultAzureCredential credential = new();
+#else
+            string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
+            var credential = TestEnvironment.Credential;
+#endif
+
+            static bool ValidateServerCertificate(
+                  object sender,
+                  X509Certificate certificate,
+                  X509Chain chain,
+                  SslPolicyErrors sslPolicyErrors)
+            {
+                if ((sslPolicyErrors == SslPolicyErrors.None)
+                    || (certificate.Issuer == "My Company CA"))
+                {
+                    return true;
+                }
+
+                // Do not allow communication with unauthorized servers.
+
+                return false;
+            }
+
+            await using ServiceBusClient client = new(fullyQualifiedNamespace, credential, new ServiceBusClientOptions
+            {
+                CertificateValidationCallback = ValidateServerCertificate
+            });
+            #endregion
+        }
+
+        [Test]
+        public async Task ConfigurePrefetchReceiver()
         {
             #region Snippet:ServiceBusConfigurePrefetchReceiver
 #if SNIPPET
-            string connectionString = "<connection_string>";
+            string fullyQualifiedNamespace = "<fully_qualified_namespace>";
+            DefaultAzureCredential credential = new();
 #else
-            string connectionString = TestEnvironment.ServiceBusConnectionString;
+            string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
+            var credential = TestEnvironment.Credential;
 #endif
-            var client = new ServiceBusClient(connectionString);
+            await using ServiceBusClient client = new(fullyQualifiedNamespace, credential);
             ServiceBusReceiver receiver = client.CreateReceiver("<queue-name>", new ServiceBusReceiverOptions
             {
                 PrefetchCount = 10
@@ -69,15 +116,17 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
         }
 
         [Test]
-        public void ConfigurePrefetchProcessor()
+        public async Task ConfigurePrefetchProcessor()
         {
             #region Snippet:ServiceBusConfigurePrefetchProcessor
 #if SNIPPET
-            string connectionString = "<connection_string>";
+            string fullyQualifiedNamespace = "<fully_qualified_namespace>";
+            DefaultAzureCredential credential = new();
 #else
-            string connectionString = TestEnvironment.ServiceBusConnectionString;
+            string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
+            var credential = TestEnvironment.Credential;
 #endif
-            var client = new ServiceBusClient(connectionString);
+            await using ServiceBusClient client = new(fullyQualifiedNamespace, credential);
             ServiceBusProcessor processor = client.CreateProcessor("<queue-name>", new ServiceBusProcessorOptions
             {
                 PrefetchCount = 10
@@ -85,6 +134,149 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
             #endregion
 
             Assert.AreEqual(10, processor.PrefetchCount);
+        }
+
+        [Test]
+        [Ignore("Only verifying that the code builds")]
+        public async Task ConfigureMessageLockLostHandler()
+        {
+            #region Snippet:ServiceBusProcessorLockLostHandler
+#if SNIPPET
+            string fullyQualifiedNamespace = "<fully_qualified_namespace>";
+            DefaultAzureCredential credential = new();
+#else
+            string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
+            var credential = TestEnvironment.Credential;
+#endif
+            await using ServiceBusClient client = new(fullyQualifiedNamespace, credential);
+
+            // create a processor that we can use to process the messages
+            await using ServiceBusProcessor processor = client.CreateProcessor("<queue-name>");
+
+            // configure the message and error handler to use
+            processor.ProcessMessageAsync += MessageHandler;
+            processor.ProcessErrorAsync += ErrorHandler;
+
+            async Task MessageHandler(ProcessMessageEventArgs args)
+            {
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(args.CancellationToken);
+
+                try
+                {
+                    args.MessageLockLostAsync += MessageLockLostHandler;
+
+                    // We thread our linked token through to our expensive processing so that we can cancel it in the event of a lock lost exception,
+                    // or when the processor is being stopped.
+                    await SomeExpensiveProcessingAsync(args.Message, cts.Token);
+                }
+                finally
+                {
+                    // Finally, we remove the handler to avoid a memory leak.
+                    args.MessageLockLostAsync -= MessageLockLostHandler;
+                }
+
+                Task MessageLockLostHandler(MessageLockLostEventArgs lockLostArgs)
+                {
+                    // We have access to the exception, if any, that triggered the lock lost event.
+                    // If no exception was provided, the lock was considered lost by the client based on the lock expiry time.
+                    Console.WriteLine(lockLostArgs.Exception);
+                    cts.Cancel();
+                    return Task.CompletedTask;
+                }
+            }
+
+            Task ErrorHandler(ProcessErrorEventArgs args)
+            {
+                // the error source tells me at what point in the processing an error occurred
+                Console.WriteLine(args.ErrorSource);
+                // the fully qualified namespace is available
+                Console.WriteLine(args.FullyQualifiedNamespace);
+                // as well as the entity path
+                Console.WriteLine(args.EntityPath);
+                Console.WriteLine(args.Exception.ToString());
+                return Task.CompletedTask;
+            }
+
+            // start processing
+            await processor.StartProcessingAsync();
+
+            // since the processing happens in the background, we add a Console.ReadKey to allow the processing to continue until a key is pressed.
+            Console.ReadKey();
+            #endregion
+        }
+
+        [Test]
+        [Ignore("Only verifying that the code builds")]
+        public async Task ConfigureSessionLockLostHandler()
+        {
+            #region Snippet:ServiceBusSessionProcessorLockLostHandler
+#if SNIPPET
+            string fullyQualifiedNamespace = "<fully_qualified_namespace>";
+            DefaultAzureCredential credential = new();
+#else
+            string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
+            var credential = TestEnvironment.Credential;
+#endif
+            await using var client = new ServiceBusClient(fullyQualifiedNamespace, credential);
+
+            // create a processor that we can use to process the messages
+            await using ServiceBusSessionProcessor processor = client.CreateSessionProcessor("<queue-name>");
+
+            // configure the message and error handler to use
+            processor.ProcessMessageAsync += MessageHandler;
+            processor.ProcessErrorAsync += ErrorHandler;
+
+            async Task MessageHandler(ProcessSessionMessageEventArgs args)
+            {
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(args.CancellationToken);
+
+                try
+                {
+                    args.SessionLockLostAsync += SessionLockLostHandler;
+
+                    // We thread our linked token through to our expensive processing so that we can cancel it in the event of a lock lost exception,
+                    // or when the processor is being stopped.
+                    await SomeExpensiveProcessingAsync(args.Message, cts.Token);
+                }
+                finally
+                {
+                    // Finally, we remove the handler to avoid a memory leak.
+                    args.SessionLockLostAsync -= SessionLockLostHandler;
+                }
+
+                Task SessionLockLostHandler(SessionLockLostEventArgs lockLostArgs)
+                {
+                    // We have access to the exception, if any, that triggered the lock lost event.
+                    // If no exception was provided, the lock was considered lost by the client based on the lock expiry time.
+                    Console.WriteLine(lockLostArgs.Exception);
+                    cts.Cancel();
+                    return Task.CompletedTask;
+                }
+            }
+
+            Task ErrorHandler(ProcessErrorEventArgs args)
+            {
+                // the error source tells me at what point in the processing an error occurred
+                Console.WriteLine(args.ErrorSource);
+                // the fully qualified namespace is available
+                Console.WriteLine(args.FullyQualifiedNamespace);
+                // as well as the entity path
+                Console.WriteLine(args.EntityPath);
+                Console.WriteLine(args.Exception.ToString());
+                return Task.CompletedTask;
+            }
+
+            // start processing
+            await processor.StartProcessingAsync();
+
+            // since the processing happens in the background, we add a Console.ReadKey to allow the processing to continue until a key is pressed.
+            Console.ReadKey();
+            #endregion
+        }
+
+        private Task SomeExpensiveProcessingAsync(ServiceBusReceivedMessage argsMessage, CancellationToken ctsToken)
+        {
+            return Task.CompletedTask;
         }
     }
 }

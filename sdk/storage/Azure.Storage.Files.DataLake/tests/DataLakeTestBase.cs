@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Azure.Core;
-using Azure.Core.Pipeline;
 using Azure.Core.TestFramework;
 using Azure.Storage.Files.DataLake.Models;
 using Azure.Storage.Sas;
@@ -90,11 +89,18 @@ namespace Azure.Storage.Files.DataLake.Tests
             return options;
         }
 
+        public DataLakeClientOptions GetOptionsWithAudience(DataLakeAudience audience)
+        {
+            DataLakeClientOptions options = DataLakeClientBuilder.GetOptions(false);
+            options.Audience = audience;
+            return options;
+        }
+
         public DataLakeServiceClient GetServiceClientFromOauthConfig(TenantConfiguration config)
             => InstrumentClient(
                 new DataLakeServiceClient(
                     (new Uri(config.BlobServiceEndpoint)).ToHttps(),
-                    Tenants.GetOAuthCredential(config),
+                    TestEnvironment.Credential,
                     GetOptions()));
 
         public DataLakeServiceClient GetServiceClient_OAuth()
@@ -104,6 +110,9 @@ namespace Azure.Storage.Files.DataLake.Tests
             => new StorageSharedKeyCredential(
                 TestConfigHierarchicalNamespace.AccountName,
                 TestConfigHierarchicalNamespace.AccountKey);
+
+        public TokenCredential GetOAuthHnsCredential()
+            => TestEnvironment.Credential;
 
         public static void AssertValidStoragePathInfo(PathInfo pathInfo)
         {
@@ -400,6 +409,13 @@ namespace Azure.Storage.Files.DataLake.Tests
             return base.GetCustomAccountSas(permissions, services, resourceType, sharedKeyCredential);
         }
 
+        public Dictionary<string, string> BuildTags()
+            => new Dictionary<string, string>
+            {
+                { "tagKey0", "tagValue0" },
+                { "tagKey1", "tagValue1" }
+            };
+
         public DataLakeSignedIdentifier[] BuildSignedIdentifiers() =>
             new[]
             {
@@ -429,5 +445,17 @@ namespace Azure.Storage.Files.DataLake.Tests
                 "baz/foo/bar",
                 "baz/bar/foo"
             };
+
+        public void AssertSasUserDelegationKey(Uri uri, UserDelegationKey key)
+        {
+            DataLakeSasQueryParameters sas = new DataLakeUriBuilder(uri).Sas;
+            Assert.AreEqual(key.SignedObjectId, sas.KeyObjectId);
+            Assert.AreEqual(key.SignedExpiresOn, sas.KeyExpiresOn);
+            Assert.AreEqual(key.SignedService, sas.KeyService);
+            Assert.AreEqual(key.SignedStartsOn, sas.KeyStartsOn);
+            Assert.AreEqual(key.SignedTenantId, sas.KeyTenantId);
+            Assert.AreEqual(key.SignedDelegatedUserTenantId, sas.KeyDelegatedUserTenantId);
+            //Assert.AreEqual(key.SignedVersion, sas.Version);
         }
+    };
 }

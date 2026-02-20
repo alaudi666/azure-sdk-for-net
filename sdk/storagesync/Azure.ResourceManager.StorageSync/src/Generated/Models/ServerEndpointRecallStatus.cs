@@ -7,34 +7,41 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
     /// <summary> Server endpoint recall status object. </summary>
     public partial class ServerEndpointRecallStatus
     {
-        /// <summary> Initializes a new instance of ServerEndpointRecallStatus. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ServerEndpointRecallStatus"/>. </summary>
         internal ServerEndpointRecallStatus()
         {
             RecallErrors = new ChangeTrackingList<ServerEndpointRecallError>();
         }
 
-        /// <summary> Initializes a new instance of ServerEndpointRecallStatus. </summary>
+        /// <summary> Initializes a new instance of <see cref="ServerEndpointRecallStatus"/>. </summary>
         /// <param name="lastUpdatedOn"> Last updated timestamp. </param>
         /// <param name="totalRecallErrorsCount"> Total count of recall errors. </param>
         /// <param name="recallErrors"> Array of recall errors. </param>
-        internal ServerEndpointRecallStatus(DateTimeOffset? lastUpdatedOn, long? totalRecallErrorsCount, IReadOnlyList<ServerEndpointRecallError> recallErrors)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ServerEndpointRecallStatus(DateTimeOffset? lastUpdatedOn, long? totalRecallErrorsCount, IReadOnlyList<ServerEndpointRecallError> recallErrors, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             LastUpdatedOn = lastUpdatedOn;
             TotalRecallErrorsCount = totalRecallErrorsCount;
             RecallErrors = recallErrors;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Last updated timestamp. </summary>
         public DateTimeOffset? LastUpdatedOn { get; }
+
         /// <summary> Total count of recall errors. </summary>
         public long? TotalRecallErrorsCount { get; }
+
         /// <summary> Array of recall errors. </summary>
         public IReadOnlyList<ServerEndpointRecallError> RecallErrors { get; }
     }

@@ -5,22 +5,24 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    /// <summary> SingletonPartitionScheme. </summary>
+    /// <summary> Describes the partition scheme of a singleton-partitioned, or non-partitioned service. </summary>
     public partial class SingletonPartitionScheme : ManagedServicePartitionScheme
     {
-        /// <summary> Initializes a new instance of SingletonPartitionScheme. </summary>
-        public SingletonPartitionScheme()
+        /// <summary> Initializes a new instance of <see cref="SingletonPartitionScheme"/>. </summary>
+        public SingletonPartitionScheme() : base(PartitionScheme.Singleton)
         {
-            PartitionScheme = PartitionScheme.Singleton;
         }
 
-        /// <summary> Initializes a new instance of SingletonPartitionScheme. </summary>
-        /// <param name="partitionScheme"> Specifies how the service is partitioned. </param>
-        internal SingletonPartitionScheme(PartitionScheme partitionScheme) : base(partitionScheme)
+        /// <summary> Initializes a new instance of <see cref="SingletonPartitionScheme"/>. </summary>
+        /// <param name="partitionScheme"></param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SingletonPartitionScheme(PartitionScheme partitionScheme, IDictionary<string, BinaryData> additionalBinaryDataProperties) : base(partitionScheme, additionalBinaryDataProperties)
         {
-            PartitionScheme = partitionScheme;
         }
     }
 }

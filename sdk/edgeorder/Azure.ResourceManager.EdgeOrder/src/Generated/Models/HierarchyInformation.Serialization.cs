@@ -5,69 +5,187 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
-    public partial class HierarchyInformation : IUtf8JsonSerializable
+    /// <summary> Holds details about product hierarchy information. </summary>
+    public partial class HierarchyInformation : IJsonModel<HierarchyInformation>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual HierarchyInformation PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<HierarchyInformation>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeHierarchyInformation(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(HierarchyInformation)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<HierarchyInformation>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<HierarchyInformation>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(HierarchyInformation)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(ProductFamilyName))
             {
-                writer.WritePropertyName("productFamilyName");
+                writer.WritePropertyName("productFamilyName"u8);
                 writer.WriteStringValue(ProductFamilyName);
             }
             if (Optional.IsDefined(ProductLineName))
             {
-                writer.WritePropertyName("productLineName");
+                writer.WritePropertyName("productLineName"u8);
                 writer.WriteStringValue(ProductLineName);
             }
             if (Optional.IsDefined(ProductName))
             {
-                writer.WritePropertyName("productName");
+                writer.WritePropertyName("productName"u8);
                 writer.WriteStringValue(ProductName);
             }
             if (Optional.IsDefined(ConfigurationName))
             {
-                writer.WritePropertyName("configurationName");
+                writer.WritePropertyName("configurationName"u8);
                 writer.WriteStringValue(ConfigurationName);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static HierarchyInformation DeserializeHierarchyInformation(JsonElement element)
-        {
-            Optional<string> productFamilyName = default;
-            Optional<string> productLineName = default;
-            Optional<string> productName = default;
-            Optional<string> configurationName = default;
-            foreach (var property in element.EnumerateObject())
+            if (Optional.IsDefined(ConfigurationIdDisplayName))
             {
-                if (property.NameEquals("productFamilyName"))
+                writer.WritePropertyName("configurationIdDisplayName"u8);
+                writer.WriteStringValue(ConfigurationIdDisplayName);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    productFamilyName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("productLineName"))
-                {
-                    productLineName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("productName"))
-                {
-                    productName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("configurationName"))
-                {
-                    configurationName = property.Value.GetString();
-                    continue;
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
                 }
             }
-            return new HierarchyInformation(productFamilyName.Value, productLineName.Value, productName.Value, configurationName.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        HierarchyInformation IJsonModel<HierarchyInformation>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual HierarchyInformation JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<HierarchyInformation>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(HierarchyInformation)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeHierarchyInformation(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static HierarchyInformation DeserializeHierarchyInformation(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string productFamilyName = default;
+            string productLineName = default;
+            string productName = default;
+            string configurationName = default;
+            string configurationIdDisplayName = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("productFamilyName"u8))
+                {
+                    productFamilyName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("productLineName"u8))
+                {
+                    productLineName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("productName"u8))
+                {
+                    productName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("configurationName"u8))
+                {
+                    configurationName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("configurationIdDisplayName"u8))
+                {
+                    configurationIdDisplayName = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new HierarchyInformation(
+                productFamilyName,
+                productLineName,
+                productName,
+                configurationName,
+                configurationIdDisplayName,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<HierarchyInformation>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<HierarchyInformation>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerEdgeOrderContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(HierarchyInformation)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        HierarchyInformation IPersistableModel<HierarchyInformation>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<HierarchyInformation>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

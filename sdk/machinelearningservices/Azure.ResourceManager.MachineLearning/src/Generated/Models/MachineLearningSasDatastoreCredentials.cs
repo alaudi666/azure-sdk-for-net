@@ -6,21 +6,15 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// SAS datastore credentials configuration.
-    /// Serialized Name: SasDatastoreCredentials
-    /// </summary>
+    /// <summary> SAS datastore credentials configuration. </summary>
     public partial class MachineLearningSasDatastoreCredentials : MachineLearningDatastoreCredentials
     {
-        /// <summary> Initializes a new instance of MachineLearningSasDatastoreCredentials. </summary>
-        /// <param name="secrets">
-        /// [Required] Storage container secrets.
-        /// Serialized Name: SasDatastoreCredentials.secrets
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningSasDatastoreCredentials"/>. </summary>
+        /// <param name="secrets"> [Required] Storage container secrets. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="secrets"/> is null. </exception>
         public MachineLearningSasDatastoreCredentials(MachineLearningSasDatastoreSecrets secrets)
         {
@@ -30,25 +24,23 @@ namespace Azure.ResourceManager.MachineLearning.Models
             CredentialsType = CredentialsType.Sas;
         }
 
-        /// <summary> Initializes a new instance of MachineLearningSasDatastoreCredentials. </summary>
-        /// <param name="credentialsType">
-        /// [Required] Credential type used to authentication with storage.
-        /// Serialized Name: DatastoreCredentials.credentialsType
-        /// </param>
-        /// <param name="secrets">
-        /// [Required] Storage container secrets.
-        /// Serialized Name: SasDatastoreCredentials.secrets
-        /// </param>
-        internal MachineLearningSasDatastoreCredentials(CredentialsType credentialsType, MachineLearningSasDatastoreSecrets secrets) : base(credentialsType)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningSasDatastoreCredentials"/>. </summary>
+        /// <param name="credentialsType"> [Required] Credential type used to authentication with storage. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="secrets"> [Required] Storage container secrets. </param>
+        internal MachineLearningSasDatastoreCredentials(CredentialsType credentialsType, IDictionary<string, BinaryData> serializedAdditionalRawData, MachineLearningSasDatastoreSecrets secrets) : base(credentialsType, serializedAdditionalRawData)
         {
             Secrets = secrets;
             CredentialsType = credentialsType;
         }
 
-        /// <summary>
-        /// [Required] Storage container secrets.
-        /// Serialized Name: SasDatastoreCredentials.secrets
-        /// </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningSasDatastoreCredentials"/> for deserialization. </summary>
+        internal MachineLearningSasDatastoreCredentials()
+        {
+        }
+
+        /// <summary> [Required] Storage container secrets. </summary>
+        [WirePath("secrets")]
         public MachineLearningSasDatastoreSecrets Secrets { get; set; }
     }
 }

@@ -5,28 +5,34 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.PowerBIDedicated;
 
 namespace Azure.ResourceManager.PowerBIDedicated.Models
 {
     /// <summary> An object that represents enumerating SKUs for existing resources. </summary>
     internal partial class SkuEnumerationForExistingResourceResult
     {
-        /// <summary> Initializes a new instance of SkuEnumerationForExistingResourceResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SkuEnumerationForExistingResourceResult"/>. </summary>
         internal SkuEnumerationForExistingResourceResult()
         {
-            Value = new ChangeTrackingList<SkuDetailsForExistingResource>();
+            Value = new ChangeTrackingList<SkuDetails>();
         }
 
-        /// <summary> Initializes a new instance of SkuEnumerationForExistingResourceResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="SkuEnumerationForExistingResourceResult"/>. </summary>
         /// <param name="value"> The collection of available SKUs for existing resources. </param>
-        internal SkuEnumerationForExistingResourceResult(IReadOnlyList<SkuDetailsForExistingResource> value)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SkuEnumerationForExistingResourceResult(IList<SkuDetails> value, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The collection of available SKUs for existing resources. </summary>
-        public IReadOnlyList<SkuDetailsForExistingResource> Value { get; }
+        public IList<SkuDetails> Value { get; }
     }
 }

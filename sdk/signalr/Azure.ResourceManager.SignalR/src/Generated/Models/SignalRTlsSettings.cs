@@ -5,24 +5,34 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.SignalR;
+
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> TLS settings for the resource. </summary>
     internal partial class SignalRTlsSettings
     {
-        /// <summary> Initializes a new instance of SignalRTlsSettings. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRTlsSettings"/>. </summary>
         public SignalRTlsSettings()
         {
         }
 
-        /// <summary> Initializes a new instance of SignalRTlsSettings. </summary>
-        /// <param name="isClientCertEnabled"> Request client certificate during TLS handshake if enabled. </param>
-        internal SignalRTlsSettings(bool? isClientCertEnabled)
+        /// <summary> Initializes a new instance of <see cref="SignalRTlsSettings"/>. </summary>
+        /// <param name="isClientCertEnabled"> Request client certificate during TLS handshake if enabled. Not supported for free tier. Any input will be ignored for free tier. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRTlsSettings(bool? isClientCertEnabled, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             IsClientCertEnabled = isClientCertEnabled;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Request client certificate during TLS handshake if enabled. </summary>
+        /// <summary> Request client certificate during TLS handshake if enabled. Not supported for free tier. Any input will be ignored for free tier. </summary>
+        [WirePath("clientCertEnabled")]
         public bool? IsClientCertEnabled { get; set; }
     }
 }

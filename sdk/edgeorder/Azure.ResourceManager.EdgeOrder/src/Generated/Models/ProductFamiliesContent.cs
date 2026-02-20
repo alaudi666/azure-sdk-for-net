@@ -7,14 +7,17 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> The filters for showing the product families. </summary>
     public partial class ProductFamiliesContent
     {
-        /// <summary> Initializes a new instance of ProductFamiliesContent. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ProductFamiliesContent"/>. </summary>
         /// <param name="filterableProperties"> Dictionary of filterable properties on product family. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="filterableProperties"/> is null. </exception>
         public ProductFamiliesContent(IDictionary<string, IList<FilterableProperty>> filterableProperties)
@@ -24,8 +27,20 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             FilterableProperties = filterableProperties;
         }
 
+        /// <summary> Initializes a new instance of <see cref="ProductFamiliesContent"/>. </summary>
+        /// <param name="filterableProperties"> Dictionary of filterable properties on product family. </param>
+        /// <param name="customerSubscriptionDetails"> Customer subscription properties. Clients can display available products to unregistered customers by explicitly passing subscription details. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ProductFamiliesContent(IDictionary<string, IList<FilterableProperty>> filterableProperties, CustomerSubscriptionDetails customerSubscriptionDetails, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            FilterableProperties = filterableProperties;
+            CustomerSubscriptionDetails = customerSubscriptionDetails;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> Dictionary of filterable properties on product family. </summary>
         public IDictionary<string, IList<FilterableProperty>> FilterableProperties { get; }
+
         /// <summary> Customer subscription properties. Clients can display available products to unregistered customers by explicitly passing subscription details. </summary>
         public CustomerSubscriptionDetails CustomerSubscriptionDetails { get; set; }
     }

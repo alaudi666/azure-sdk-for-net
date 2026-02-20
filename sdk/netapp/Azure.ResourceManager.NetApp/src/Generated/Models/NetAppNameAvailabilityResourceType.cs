@@ -26,6 +26,8 @@ namespace Azure.ResourceManager.NetApp.Models
         private const string MicrosoftNetAppNetAppAccountsCapacityPoolsValue = "Microsoft.NetApp/netAppAccounts/capacityPools";
         private const string MicrosoftNetAppNetAppAccountsCapacityPoolsVolumesValue = "Microsoft.NetApp/netAppAccounts/capacityPools/volumes";
         private const string MicrosoftNetAppNetAppAccountsCapacityPoolsVolumesSnapshotsValue = "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/snapshots";
+        private const string MicrosoftNetAppNetAppAccountsBackupVaultsBackupsValue = "Microsoft.NetApp/netAppAccounts/backupVaults/backups";
+        private const string MicrosoftNetAppNetAppAccountsCapacityPoolsVolumesBackupsValue = "Microsoft.NetApp/netAppAccounts/capacityPools/volumes/backups";
 
         /// <summary> Microsoft.NetApp/netAppAccounts. </summary>
         public static NetAppNameAvailabilityResourceType MicrosoftNetAppNetAppAccounts { get; } = new NetAppNameAvailabilityResourceType(MicrosoftNetAppNetAppAccountsValue);
@@ -35,11 +37,15 @@ namespace Azure.ResourceManager.NetApp.Models
         public static NetAppNameAvailabilityResourceType MicrosoftNetAppNetAppAccountsCapacityPoolsVolumes { get; } = new NetAppNameAvailabilityResourceType(MicrosoftNetAppNetAppAccountsCapacityPoolsVolumesValue);
         /// <summary> Microsoft.NetApp/netAppAccounts/capacityPools/volumes/snapshots. </summary>
         public static NetAppNameAvailabilityResourceType MicrosoftNetAppNetAppAccountsCapacityPoolsVolumesSnapshots { get; } = new NetAppNameAvailabilityResourceType(MicrosoftNetAppNetAppAccountsCapacityPoolsVolumesSnapshotsValue);
+        /// <summary> ANF Backup under a volume , deprecated, use `Microsoft.NetApp/netAppAccounts/backupVaults/backups` instead. </summary>
+        public static NetAppNameAvailabilityResourceType MicrosoftNetAppNetAppAccountsBackupVaultsBackups { get; } = new NetAppNameAvailabilityResourceType(MicrosoftNetAppNetAppAccountsBackupVaultsBackupsValue);
+        /// <summary> ANF Backup under a Backup Vault. </summary>
+        public static NetAppNameAvailabilityResourceType MicrosoftNetAppNetAppAccountsCapacityPoolsVolumesBackups { get; } = new NetAppNameAvailabilityResourceType(MicrosoftNetAppNetAppAccountsCapacityPoolsVolumesBackupsValue);
         /// <summary> Determines if two <see cref="NetAppNameAvailabilityResourceType"/> values are the same. </summary>
         public static bool operator ==(NetAppNameAvailabilityResourceType left, NetAppNameAvailabilityResourceType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="NetAppNameAvailabilityResourceType"/> values are not the same. </summary>
         public static bool operator !=(NetAppNameAvailabilityResourceType left, NetAppNameAvailabilityResourceType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="NetAppNameAvailabilityResourceType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="NetAppNameAvailabilityResourceType"/>. </summary>
         public static implicit operator NetAppNameAvailabilityResourceType(string value) => new NetAppNameAvailabilityResourceType(value);
 
         /// <inheritdoc />
@@ -50,7 +56,7 @@ namespace Azure.ResourceManager.NetApp.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

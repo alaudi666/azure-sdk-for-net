@@ -5,32 +5,32 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
     /// <summary> NSX DHCP Relay. </summary>
     public partial class WorkloadNetworkDhcpRelay : WorkloadNetworkDhcpEntity
     {
-        /// <summary> Initializes a new instance of WorkloadNetworkDhcpRelay. </summary>
-        public WorkloadNetworkDhcpRelay()
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkDhcpRelay"/>. </summary>
+        public WorkloadNetworkDhcpRelay() : base(DhcpTypeEnum.Relay)
         {
             ServerAddresses = new ChangeTrackingList<string>();
-            DhcpType = DhcpTypeEnum.Relay;
         }
 
-        /// <summary> Initializes a new instance of WorkloadNetworkDhcpRelay. </summary>
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkDhcpRelay"/>. </summary>
         /// <param name="dhcpType"> Type of DHCP: SERVER or RELAY. </param>
         /// <param name="displayName"> Display name of the DHCP entity. </param>
         /// <param name="segments"> NSX Segments consuming DHCP. </param>
         /// <param name="provisioningState"> The provisioning state. </param>
         /// <param name="revision"> NSX revision number. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
         /// <param name="serverAddresses"> DHCP Relay Addresses. Max 3. </param>
-        internal WorkloadNetworkDhcpRelay(DhcpTypeEnum dhcpType, string displayName, IReadOnlyList<string> segments, WorkloadNetworkDhcpProvisioningState? provisioningState, long? revision, IList<string> serverAddresses) : base(dhcpType, displayName, segments, provisioningState, revision)
+        internal WorkloadNetworkDhcpRelay(DhcpTypeEnum dhcpType, string displayName, IReadOnlyList<string> segments, WorkloadNetworkDhcpProvisioningState? provisioningState, long? revision, IDictionary<string, BinaryData> additionalBinaryDataProperties, IList<string> serverAddresses) : base(dhcpType, displayName, segments, provisioningState, revision, additionalBinaryDataProperties)
         {
             ServerAddresses = serverAddresses;
-            DhcpType = dhcpType;
         }
 
         /// <summary> DHCP Relay Addresses. Max 3. </summary>

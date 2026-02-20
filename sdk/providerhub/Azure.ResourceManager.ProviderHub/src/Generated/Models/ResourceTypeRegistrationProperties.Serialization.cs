@@ -5,60 +5,88 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.ProviderHub.Models
 {
-    public partial class ResourceTypeRegistrationProperties : IUtf8JsonSerializable
+    public partial class ResourceTypeRegistrationProperties : IUtf8JsonSerializable, IJsonModel<ResourceTypeRegistrationProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ResourceTypeRegistrationProperties>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ResourceTypeRegistrationProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ResourceTypeRegistrationProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ResourceTypeRegistrationProperties)} does not support writing '{format}' format.");
+            }
+
             if (Optional.IsDefined(RoutingType))
             {
-                writer.WritePropertyName("routingType");
+                writer.WritePropertyName("routingType"u8);
                 writer.WriteStringValue(RoutingType.Value.ToString());
+            }
+            if (Optional.IsDefined(AdditionalOptions))
+            {
+                writer.WritePropertyName("additionalOptions"u8);
+                writer.WriteStringValue(AdditionalOptions.Value.ToString());
+            }
+            if (Optional.IsDefined(CrossTenantTokenValidation))
+            {
+                writer.WritePropertyName("crossTenantTokenValidation"u8);
+                writer.WriteStringValue(CrossTenantTokenValidation.Value.ToString());
             }
             if (Optional.IsDefined(Regionality))
             {
-                writer.WritePropertyName("regionality");
+                writer.WritePropertyName("regionality"u8);
                 writer.WriteStringValue(Regionality.Value.ToString());
             }
             if (Optional.IsCollectionDefined(Endpoints))
             {
-                writer.WritePropertyName("endpoints");
+                writer.WritePropertyName("endpoints"u8);
                 writer.WriteStartArray();
                 foreach (var item in Endpoints)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(ExtensionOptions))
             {
-                writer.WritePropertyName("extensionOptions");
-                writer.WriteObjectValue(ExtensionOptions);
+                writer.WritePropertyName("extensionOptions"u8);
+                writer.WriteObjectValue(ExtensionOptions, options);
             }
             if (Optional.IsDefined(MarketplaceType))
             {
-                writer.WritePropertyName("marketplaceType");
-                writer.WriteStringValue(MarketplaceType.Value.ToString());
+                writer.WritePropertyName("marketplaceType"u8);
+                writer.WriteStringValue(MarketplaceType.Value.ToSerialString());
             }
             if (Optional.IsCollectionDefined(SwaggerSpecifications))
             {
-                writer.WritePropertyName("swaggerSpecifications");
+                writer.WritePropertyName("swaggerSpecifications"u8);
                 writer.WriteStartArray();
                 foreach (var item in SwaggerSpecifications)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(AllowedUnauthorizedActions))
             {
-                writer.WritePropertyName("allowedUnauthorizedActions");
+                writer.WritePropertyName("allowedUnauthorizedActions"u8);
                 writer.WriteStartArray();
                 foreach (var item in AllowedUnauthorizedActions)
                 {
@@ -66,54 +94,64 @@ namespace Azure.ResourceManager.ProviderHub.Models
                 }
                 writer.WriteEndArray();
             }
+            if (Optional.IsCollectionDefined(AllowedUnauthorizedActionsExtensions))
+            {
+                writer.WritePropertyName("allowedUnauthorizedActionsExtensions"u8);
+                writer.WriteStartArray();
+                foreach (var item in AllowedUnauthorizedActionsExtensions)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
             if (Optional.IsCollectionDefined(AuthorizationActionMappings))
             {
-                writer.WritePropertyName("authorizationActionMappings");
+                writer.WritePropertyName("authorizationActionMappings"u8);
                 writer.WriteStartArray();
                 foreach (var item in AuthorizationActionMappings)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(LinkedAccessChecks))
             {
-                writer.WritePropertyName("linkedAccessChecks");
+                writer.WritePropertyName("linkedAccessChecks"u8);
                 writer.WriteStartArray();
                 foreach (var item in LinkedAccessChecks)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(DefaultApiVersion))
             {
-                writer.WritePropertyName("defaultApiVersion");
+                writer.WritePropertyName("defaultApiVersion"u8);
                 writer.WriteStringValue(DefaultApiVersion);
             }
             if (Optional.IsCollectionDefined(LoggingRules))
             {
-                writer.WritePropertyName("loggingRules");
+                writer.WritePropertyName("loggingRules"u8);
                 writer.WriteStartArray();
                 foreach (var item in LoggingRules)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(ThrottlingRules))
             {
-                writer.WritePropertyName("throttlingRules");
+                writer.WritePropertyName("throttlingRules"u8);
                 writer.WriteStartArray();
                 foreach (var item in ThrottlingRules)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(RequiredFeatures))
             {
-                writer.WritePropertyName("requiredFeatures");
+                writer.WritePropertyName("requiredFeatures"u8);
                 writer.WriteStartArray();
                 foreach (var item in RequiredFeatures)
                 {
@@ -123,47 +161,47 @@ namespace Azure.ResourceManager.ProviderHub.Models
             }
             if (Optional.IsDefined(FeaturesRule))
             {
-                writer.WritePropertyName("featuresRule");
-                writer.WriteObjectValue(FeaturesRule);
+                writer.WritePropertyName("featuresRule"u8);
+                writer.WriteObjectValue(FeaturesRule, options);
             }
-            if (Optional.IsDefined(EnableAsyncOperation))
+            if (Optional.IsDefined(IsAsyncOperationEnabled))
             {
-                writer.WritePropertyName("enableAsyncOperation");
-                writer.WriteBooleanValue(EnableAsyncOperation.Value);
+                writer.WritePropertyName("enableAsyncOperation"u8);
+                writer.WriteBooleanValue(IsAsyncOperationEnabled.Value);
             }
-            if (Optional.IsDefined(ProvisioningState))
+            if (options.Format != "W" && Optional.IsDefined(ProvisioningState))
             {
-                writer.WritePropertyName("provisioningState");
+                writer.WritePropertyName("provisioningState"u8);
                 writer.WriteStringValue(ProvisioningState.Value.ToString());
             }
-            if (Optional.IsDefined(EnableThirdPartyS2S))
+            if (Optional.IsDefined(IsThirdPartyS2SEnabled))
             {
-                writer.WritePropertyName("enableThirdPartyS2S");
-                writer.WriteBooleanValue(EnableThirdPartyS2S.Value);
+                writer.WritePropertyName("enableThirdPartyS2S"u8);
+                writer.WriteBooleanValue(IsThirdPartyS2SEnabled.Value);
             }
             if (Optional.IsDefined(SubscriptionLifecycleNotificationSpecifications))
             {
-                writer.WritePropertyName("subscriptionLifecycleNotificationSpecifications");
-                writer.WriteObjectValue(SubscriptionLifecycleNotificationSpecifications);
+                writer.WritePropertyName("subscriptionLifecycleNotificationSpecifications"u8);
+                writer.WriteObjectValue(SubscriptionLifecycleNotificationSpecifications, options);
             }
             if (Optional.IsDefined(IsPureProxy))
             {
-                writer.WritePropertyName("isPureProxy");
+                writer.WritePropertyName("isPureProxy"u8);
                 writer.WriteBooleanValue(IsPureProxy.Value);
             }
             if (Optional.IsDefined(IdentityManagement))
             {
-                writer.WritePropertyName("identityManagement");
-                writer.WriteObjectValue(IdentityManagement);
+                writer.WritePropertyName("identityManagement"u8);
+                writer.WriteObjectValue(IdentityManagement, options);
             }
             if (Optional.IsDefined(CheckNameAvailabilitySpecifications))
             {
-                writer.WritePropertyName("checkNameAvailabilitySpecifications");
-                writer.WriteObjectValue(CheckNameAvailabilitySpecifications);
+                writer.WritePropertyName("checkNameAvailabilitySpecifications"u8);
+                writer.WriteObjectValue(CheckNameAvailabilitySpecifications, options);
             }
             if (Optional.IsCollectionDefined(DisallowedActionVerbs))
             {
-                writer.WritePropertyName("disallowedActionVerbs");
+                writer.WritePropertyName("disallowedActionVerbs"u8);
                 writer.WriteStartArray();
                 foreach (var item in DisallowedActionVerbs)
                 {
@@ -173,195 +211,545 @@ namespace Azure.ResourceManager.ProviderHub.Models
             }
             if (Optional.IsCollectionDefined(ServiceTreeInfos))
             {
-                writer.WritePropertyName("serviceTreeInfos");
+                writer.WritePropertyName("serviceTreeInfos"u8);
                 writer.WriteStartArray();
                 foreach (var item in ServiceTreeInfos)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(RequestHeaderOptions))
             {
-                writer.WritePropertyName("requestHeaderOptions");
-                writer.WriteObjectValue(RequestHeaderOptions);
+                writer.WritePropertyName("requestHeaderOptions"u8);
+                writer.WriteObjectValue(RequestHeaderOptions, options);
             }
             if (Optional.IsCollectionDefined(SubscriptionStateRules))
             {
-                writer.WritePropertyName("subscriptionStateRules");
+                writer.WritePropertyName("subscriptionStateRules"u8);
                 writer.WriteStartArray();
                 foreach (var item in SubscriptionStateRules)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(TemplateDeploymentOptions))
             {
-                writer.WritePropertyName("templateDeploymentOptions");
-                writer.WriteObjectValue(TemplateDeploymentOptions);
+                writer.WritePropertyName("templateDeploymentOptions"u8);
+                writer.WriteObjectValue(TemplateDeploymentOptions, options);
             }
             if (Optional.IsCollectionDefined(ExtendedLocations))
             {
-                writer.WritePropertyName("extendedLocations");
+                writer.WritePropertyName("extendedLocations"u8);
                 writer.WriteStartArray();
                 foreach (var item in ExtendedLocations)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(ResourceMovePolicy))
             {
-                writer.WritePropertyName("resourceMovePolicy");
-                writer.WriteObjectValue(ResourceMovePolicy);
+                writer.WritePropertyName("resourceMovePolicy"u8);
+                writer.WriteObjectValue(ResourceMovePolicy, options);
             }
             if (Optional.IsDefined(ResourceDeletionPolicy))
             {
-                writer.WritePropertyName("resourceDeletionPolicy");
+                writer.WritePropertyName("resourceDeletionPolicy"u8);
                 writer.WriteStringValue(ResourceDeletionPolicy.Value.ToString());
             }
             if (Optional.IsCollectionDefined(ResourceConcurrencyControlOptions))
             {
-                writer.WritePropertyName("resourceConcurrencyControlOptions");
+                writer.WritePropertyName("resourceConcurrencyControlOptions"u8);
                 writer.WriteStartObject();
                 foreach (var item in ResourceConcurrencyControlOptions)
                 {
                     writer.WritePropertyName(item.Key);
-                    writer.WriteObjectValue(item.Value);
+                    writer.WriteObjectValue(item.Value, options);
                 }
                 writer.WriteEndObject();
             }
             if (Optional.IsDefined(ResourceGraphConfiguration))
             {
-                writer.WritePropertyName("resourceGraphConfiguration");
-                writer.WriteObjectValue(ResourceGraphConfiguration);
+                writer.WritePropertyName("resourceGraphConfiguration"u8);
+                writer.WriteObjectValue(ResourceGraphConfiguration, options);
             }
             if (Optional.IsDefined(Management))
             {
-                writer.WritePropertyName("management");
-                writer.WriteObjectValue(Management);
+                writer.WritePropertyName("management"u8);
+                writer.WriteObjectValue(Management, options);
             }
             if (Optional.IsDefined(OpenApiConfiguration))
             {
-                writer.WritePropertyName("openApiConfiguration");
-                writer.WriteObjectValue(OpenApiConfiguration);
+                writer.WritePropertyName("openApiConfiguration"u8);
+                writer.WriteObjectValue(OpenApiConfiguration, options);
             }
-            writer.WriteEndObject();
+            if (Optional.IsDefined(OnBehalfOfTokens))
+            {
+                writer.WritePropertyName("onBehalfOfTokens"u8);
+                writer.WriteObjectValue(OnBehalfOfTokens, options);
+            }
+            if (Optional.IsDefined(Category))
+            {
+                writer.WritePropertyName("category"u8);
+                writer.WriteStringValue(Category.Value.ToString());
+            }
+            if (Optional.IsDefined(ResourceValidation))
+            {
+                writer.WritePropertyName("resourceValidation"u8);
+                writer.WriteStringValue(ResourceValidation.Value.ToString());
+            }
+            if (Optional.IsCollectionDefined(DisallowedEndUserOperations))
+            {
+                writer.WritePropertyName("disallowedEndUserOperations"u8);
+                writer.WriteStartArray();
+                foreach (var item in DisallowedEndUserOperations)
+                {
+                    writer.WriteStringValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(Metadata))
+            {
+                writer.WritePropertyName("metadata"u8);
+                writer.WriteStartObject();
+                foreach (var item in Metadata)
+                {
+                    writer.WritePropertyName(item.Key);
+                    if (item.Value == null)
+                    {
+                        writer.WriteNullValue();
+                        continue;
+                    }
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+                writer.WriteEndObject();
+            }
+            if (Optional.IsDefined(SkuLink))
+            {
+                writer.WritePropertyName("skuLink"u8);
+                writer.WriteStringValue(SkuLink);
+            }
+            if (Optional.IsDefined(QuotaRule))
+            {
+                writer.WritePropertyName("quotaRule"u8);
+                writer.WriteObjectValue(QuotaRule, options);
+            }
+            if (Optional.IsCollectionDefined(Notifications))
+            {
+                writer.WritePropertyName("notifications"u8);
+                writer.WriteStartArray();
+                foreach (var item in Notifications)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(LinkedNotificationRules))
+            {
+                writer.WritePropertyName("linkedNotificationRules"u8);
+                writer.WriteStartArray();
+                foreach (var item in LinkedNotificationRules)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsDefined(ResourceProviderAuthorizationRules))
+            {
+                writer.WritePropertyName("resourceProviderAuthorizationRules"u8);
+                writer.WriteObjectValue(ResourceProviderAuthorizationRules, options);
+            }
+            if (Optional.IsDefined(TokenAuthConfiguration))
+            {
+                writer.WritePropertyName("tokenAuthConfiguration"u8);
+                writer.WriteObjectValue(TokenAuthConfiguration, options);
+            }
+            if (Optional.IsDefined(TemplateDeploymentPolicy))
+            {
+                writer.WritePropertyName("templateDeploymentPolicy"u8);
+                writer.WriteObjectValue(TemplateDeploymentPolicy, options);
+            }
+            if (Optional.IsDefined(IsEmptyRoleAssignmentsAllowed))
+            {
+                writer.WritePropertyName("allowEmptyRoleAssignments"u8);
+                writer.WriteBooleanValue(IsEmptyRoleAssignmentsAllowed.Value);
+            }
+            if (Optional.IsDefined(PolicyExecutionType))
+            {
+                writer.WritePropertyName("policyExecutionType"u8);
+                writer.WriteStringValue(PolicyExecutionType.Value.ToString());
+            }
+            if (Optional.IsDefined(AvailabilityZoneRule))
+            {
+                writer.WritePropertyName("availabilityZoneRule"u8);
+                writer.WriteObjectValue(AvailabilityZoneRule, options);
+            }
+            if (Optional.IsDefined(DstsConfiguration))
+            {
+                writer.WritePropertyName("dstsConfiguration"u8);
+                writer.WriteObjectValue(DstsConfiguration, options);
+            }
+            if (Optional.IsCollectionDefined(AsyncTimeoutRules))
+            {
+                writer.WritePropertyName("asyncTimeoutRules"u8);
+                writer.WriteStartArray();
+                foreach (var item in AsyncTimeoutRules)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(CommonApiVersions))
+            {
+                writer.WritePropertyName("commonApiVersions"u8);
+                writer.WriteStartArray();
+                foreach (var item in CommonApiVersions)
+                {
+                    writer.WriteStringValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(ApiProfiles))
+            {
+                writer.WritePropertyName("apiProfiles"u8);
+                writer.WriteStartArray();
+                foreach (var item in ApiProfiles)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(LinkedOperationRules))
+            {
+                writer.WritePropertyName("linkedOperationRules"u8);
+                writer.WriteStartArray();
+                foreach (var item in LinkedOperationRules)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsDefined(LegacyName))
+            {
+                writer.WritePropertyName("legacyName"u8);
+                writer.WriteStringValue(LegacyName);
+            }
+            if (Optional.IsCollectionDefined(LegacyNames))
+            {
+                writer.WritePropertyName("legacyNames"u8);
+                writer.WriteStartArray();
+                foreach (var item in LegacyNames)
+                {
+                    writer.WriteStringValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(AllowedTemplateDeploymentReferenceActions))
+            {
+                writer.WritePropertyName("allowedTemplateDeploymentReferenceActions"u8);
+                writer.WriteStartArray();
+                foreach (var item in AllowedTemplateDeploymentReferenceActions)
+                {
+                    writer.WriteStringValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsDefined(LegacyPolicy))
+            {
+                writer.WritePropertyName("legacyPolicy"u8);
+                writer.WriteObjectValue(LegacyPolicy, options);
+            }
+            if (Optional.IsDefined(ManifestLink))
+            {
+                writer.WritePropertyName("manifestLink"u8);
+                writer.WriteStringValue(ManifestLink);
+            }
+            if (Optional.IsDefined(CapacityRule))
+            {
+                writer.WritePropertyName("capacityRule"u8);
+                writer.WriteObjectValue(CapacityRule, options);
+            }
+            if (Optional.IsDefined(MarketplaceOptions))
+            {
+                writer.WritePropertyName("marketplaceOptions"u8);
+                writer.WriteObjectValue(MarketplaceOptions, options);
+            }
+            if (Optional.IsCollectionDefined(AllowedResourceNames))
+            {
+                writer.WritePropertyName("allowedResourceNames"u8);
+                writer.WriteStartArray();
+                foreach (var item in AllowedResourceNames)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsDefined(ResourceCache))
+            {
+                writer.WritePropertyName("resourceCache"u8);
+                writer.WriteObjectValue(ResourceCache, options);
+            }
+            if (Optional.IsDefined(ResourceQueryManagement))
+            {
+                writer.WritePropertyName("resourceQueryManagement"u8);
+                writer.WriteObjectValue(ResourceQueryManagement, options);
+            }
+            if (Optional.IsDefined(AreTagsSupported))
+            {
+                writer.WritePropertyName("supportsTags"u8);
+                writer.WriteBooleanValue(AreTagsSupported.Value);
+            }
+            if (Optional.IsDefined(ResourceManagementOptions))
+            {
+                writer.WritePropertyName("resourceManagementOptions"u8);
+                writer.WriteObjectValue(ResourceManagementOptions, options);
+            }
+            if (Optional.IsDefined(GroupingTag))
+            {
+                writer.WritePropertyName("groupingTag"u8);
+                writer.WriteStringValue(GroupingTag);
+            }
+            if (Optional.IsDefined(IsAddResourceListTargetLocationsAllowed))
+            {
+                writer.WritePropertyName("addResourceListTargetLocations"u8);
+                writer.WriteBooleanValue(IsAddResourceListTargetLocationsAllowed.Value);
+            }
+            if (Optional.IsDefined(ResourceTypeCommonAttributeManagement))
+            {
+                writer.WritePropertyName("resourceTypeCommonAttributeManagement"u8);
+                writer.WriteObjectValue(ResourceTypeCommonAttributeManagement, options);
+            }
+            if (Optional.IsDefined(RoutingRule))
+            {
+                writer.WritePropertyName("routingRule"u8);
+                writer.WriteObjectValue(RoutingRule, options);
+            }
+            if (Optional.IsDefined(FrontdoorRequestMode))
+            {
+                writer.WritePropertyName("frontdoorRequestMode"u8);
+                writer.WriteStringValue(FrontdoorRequestMode.Value.ToString());
+            }
+            if (Optional.IsDefined(ResourceSubType))
+            {
+                writer.WritePropertyName("resourceSubType"u8);
+                writer.WriteStringValue(ResourceSubType.Value.ToString());
+            }
+            if (Optional.IsDefined(AsyncOperationResourceTypeName))
+            {
+                writer.WritePropertyName("asyncOperationResourceTypeName"u8);
+                writer.WriteStringValue(AsyncOperationResourceTypeName);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static ResourceTypeRegistrationProperties DeserializeResourceTypeRegistrationProperties(JsonElement element)
+        ResourceTypeRegistrationProperties IJsonModel<ResourceTypeRegistrationProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<RoutingType> routingType = default;
-            Optional<Regionality> regionality = default;
-            Optional<IList<ResourceTypeEndpoint>> endpoints = default;
-            Optional<ResourceTypeRegistrationPropertiesExtensionOptions> extensionOptions = default;
-            Optional<ResourceTypeRegistrationPropertiesMarketplaceType> marketplaceType = default;
-            Optional<IList<SwaggerSpecification>> swaggerSpecifications = default;
-            Optional<IList<string>> allowedUnauthorizedActions = default;
-            Optional<IList<AuthorizationActionMapping>> authorizationActionMappings = default;
-            Optional<IList<LinkedAccessCheck>> linkedAccessChecks = default;
-            Optional<string> defaultApiVersion = default;
-            Optional<IList<LoggingRule>> loggingRules = default;
-            Optional<IList<ThrottlingRule>> throttlingRules = default;
-            Optional<IList<string>> requiredFeatures = default;
-            Optional<ResourceTypeRegistrationPropertiesFeaturesRule> featuresRule = default;
-            Optional<bool> enableAsyncOperation = default;
-            Optional<ProvisioningState> provisioningState = default;
-            Optional<bool> enableThirdPartyS2S = default;
-            Optional<ResourceTypeRegistrationPropertiesSubscriptionLifecycleNotificationSpecifications> subscriptionLifecycleNotificationSpecifications = default;
-            Optional<bool> isPureProxy = default;
-            Optional<ResourceTypeRegistrationPropertiesIdentityManagement> identityManagement = default;
-            Optional<ResourceTypeRegistrationPropertiesCheckNameAvailabilitySpecifications> checkNameAvailabilitySpecifications = default;
-            Optional<IList<string>> disallowedActionVerbs = default;
-            Optional<IList<ServiceTreeInfo>> serviceTreeInfos = default;
-            Optional<ResourceTypeRegistrationPropertiesRequestHeaderOptions> requestHeaderOptions = default;
-            Optional<IList<SubscriptionStateRule>> subscriptionStateRules = default;
-            Optional<ResourceTypeRegistrationPropertiesTemplateDeploymentOptions> templateDeploymentOptions = default;
-            Optional<IList<ExtendedLocationOptions>> extendedLocations = default;
-            Optional<ResourceTypeRegistrationPropertiesResourceMovePolicy> resourceMovePolicy = default;
-            Optional<ResourceDeletionPolicy> resourceDeletionPolicy = default;
-            Optional<IDictionary<string, ResourceConcurrencyControlOption>> resourceConcurrencyControlOptions = default;
-            Optional<ResourceTypeRegistrationPropertiesResourceGraphConfiguration> resourceGraphConfiguration = default;
-            Optional<ResourceTypeRegistrationPropertiesManagement> management = default;
-            Optional<OpenApiConfiguration> openApiConfiguration = default;
+            var format = options.Format == "W" ? ((IPersistableModel<ResourceTypeRegistrationProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ResourceTypeRegistrationProperties)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeResourceTypeRegistrationProperties(document.RootElement, options);
+        }
+
+        internal static ResourceTypeRegistrationProperties DeserializeResourceTypeRegistrationProperties(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ResourceRoutingType? routingType = default;
+            AdditionalOptionResourceTypeRegistration? additionalOptions = default;
+            CrossTenantTokenValidation? crossTenantTokenValidation = default;
+            ResourceTypeRegistrationRegionality? regionality = default;
+            IList<ResourceTypeEndpoint> endpoints = default;
+            ResourceTypeExtensionOptions extensionOptions = default;
+            MarketplaceType? marketplaceType = default;
+            IList<SwaggerSpecification> swaggerSpecifications = default;
+            IList<string> allowedUnauthorizedActions = default;
+            IList<AllowedUnauthorizedActionsExtension> allowedUnauthorizedActionsExtensions = default;
+            IList<AuthorizationActionMapping> authorizationActionMappings = default;
+            IList<LinkedAccessCheck> linkedAccessChecks = default;
+            string defaultApiVersion = default;
+            IList<LoggingRule> loggingRules = default;
+            IList<ThrottlingRule> throttlingRules = default;
+            IList<string> requiredFeatures = default;
+            ProviderFeaturesRule featuresRule = default;
+            bool? enableAsyncOperation = default;
+            ProviderHubProvisioningState? provisioningState = default;
+            bool? enableThirdPartyS2S = default;
+            SubscriptionLifecycleNotificationSpecifications subscriptionLifecycleNotificationSpecifications = default;
+            bool? isPureProxy = default;
+            IdentityManagementProperties identityManagement = default;
+            CheckNameAvailabilitySpecifications checkNameAvailabilitySpecifications = default;
+            IList<string> disallowedActionVerbs = default;
+            IList<ServiceTreeInfo> serviceTreeInfos = default;
+            ProviderRequestHeaderOptions requestHeaderOptions = default;
+            IList<ProviderSubscriptionStateRule> subscriptionStateRules = default;
+            TemplateDeploymentOptions templateDeploymentOptions = default;
+            IList<ProviderHubExtendedLocationOptions> extendedLocations = default;
+            ResourceMovePolicy resourceMovePolicy = default;
+            ResourceDeletionPolicy? resourceDeletionPolicy = default;
+            IDictionary<string, ResourceConcurrencyControlOption> resourceConcurrencyControlOptions = default;
+            ResourceGraphConfiguration resourceGraphConfiguration = default;
+            ResourceProviderManagement management = default;
+            OpenApiConfiguration openApiConfiguration = default;
+            ResourceTypeOnBehalfOfToken onBehalfOfTokens = default;
+            ResourceTypeCategory? category = default;
+            ResourceValidation? resourceValidation = default;
+            IList<string> disallowedEndUserOperations = default;
+            IDictionary<string, BinaryData> metadata = default;
+            string skuLink = default;
+            ProviderQuotaRule quotaRule = default;
+            IList<ProviderNotification> notifications = default;
+            IList<LinkedNotificationRule> linkedNotificationRules = default;
+            ResourceProviderAuthorizationRules resourceProviderAuthorizationRules = default;
+            TokenAuthConfiguration tokenAuthConfiguration = default;
+            TemplateDeploymentPolicy templateDeploymentPolicy = default;
+            bool? allowEmptyRoleAssignments = default;
+            PolicyExecutionType? policyExecutionType = default;
+            ResourceTypeRegistrationAvailabilityZoneRule availabilityZoneRule = default;
+            ProviderDstsConfiguration dstsConfiguration = default;
+            IList<AsyncTimeoutRule> asyncTimeoutRules = default;
+            IList<string> commonApiVersions = default;
+            IList<ResourceTypeRegistrationApiProfile> apiProfiles = default;
+            IList<LinkedOperationRule> linkedOperationRules = default;
+            string legacyName = default;
+            IList<string> legacyNames = default;
+            IList<string> allowedTemplateDeploymentReferenceActions = default;
+            ResourceTypeRegistrationLegacyPolicy legacyPolicy = default;
+            string manifestLink = default;
+            ResourceTypeRegistrationCapacityRule capacityRule = default;
+            ResourceTypeRegistrationMarketplaceOptions marketplaceOptions = default;
+            IList<AllowedResourceName> allowedResourceNames = default;
+            ResourceTypeRegistrationResourceCache resourceCache = default;
+            ProviderResourceQueryManagement resourceQueryManagement = default;
+            bool? supportsTags = default;
+            ResourceTypeRegistrationResourceManagementOptions resourceManagementOptions = default;
+            string groupingTag = default;
+            bool? addResourceListTargetLocations = default;
+            ResourceTypeCommonAttributeManagement resourceTypeCommonAttributeManagement = default;
+            ResourceTypeRegistrationRoutingRule routingRule = default;
+            FrontdoorRequestMode? frontdoorRequestMode = default;
+            ProviderResourceSubType? resourceSubType = default;
+            string asyncOperationResourceTypeName = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("routingType"))
+                if (property.NameEquals("routingType"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    routingType = new RoutingType(property.Value.GetString());
+                    routingType = new ResourceRoutingType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("regionality"))
+                if (property.NameEquals("additionalOptions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    regionality = new Regionality(property.Value.GetString());
+                    additionalOptions = new AdditionalOptionResourceTypeRegistration(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("endpoints"))
+                if (property.NameEquals("crossTenantTokenValidation"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    crossTenantTokenValidation = new CrossTenantTokenValidation(property.Value.GetString());
+                    continue;
+                }
+                if (property.NameEquals("regionality"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    regionality = new ResourceTypeRegistrationRegionality(property.Value.GetString());
+                    continue;
+                }
+                if (property.NameEquals("endpoints"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
                     List<ResourceTypeEndpoint> array = new List<ResourceTypeEndpoint>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ResourceTypeEndpoint.DeserializeResourceTypeEndpoint(item));
+                        array.Add(ResourceTypeEndpoint.DeserializeResourceTypeEndpoint(item, options));
                     }
                     endpoints = array;
                     continue;
                 }
-                if (property.NameEquals("extensionOptions"))
+                if (property.NameEquals("extensionOptions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    extensionOptions = ResourceTypeRegistrationPropertiesExtensionOptions.DeserializeResourceTypeRegistrationPropertiesExtensionOptions(property.Value);
+                    extensionOptions = ResourceTypeExtensionOptions.DeserializeResourceTypeExtensionOptions(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("marketplaceType"))
+                if (property.NameEquals("marketplaceType"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    marketplaceType = new ResourceTypeRegistrationPropertiesMarketplaceType(property.Value.GetString());
+                    marketplaceType = property.Value.GetString().ToMarketplaceType();
                     continue;
                 }
-                if (property.NameEquals("swaggerSpecifications"))
+                if (property.NameEquals("swaggerSpecifications"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<SwaggerSpecification> array = new List<SwaggerSpecification>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(SwaggerSpecification.DeserializeSwaggerSpecification(item));
+                        array.Add(SwaggerSpecification.DeserializeSwaggerSpecification(item, options));
                     }
                     swaggerSpecifications = array;
                     continue;
                 }
-                if (property.NameEquals("allowedUnauthorizedActions"))
+                if (property.NameEquals("allowedUnauthorizedActions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -372,76 +760,85 @@ namespace Azure.ResourceManager.ProviderHub.Models
                     allowedUnauthorizedActions = array;
                     continue;
                 }
-                if (property.NameEquals("authorizationActionMappings"))
+                if (property.NameEquals("allowedUnauthorizedActionsExtensions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    List<AllowedUnauthorizedActionsExtension> array = new List<AllowedUnauthorizedActionsExtension>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(AllowedUnauthorizedActionsExtension.DeserializeAllowedUnauthorizedActionsExtension(item, options));
+                    }
+                    allowedUnauthorizedActionsExtensions = array;
+                    continue;
+                }
+                if (property.NameEquals("authorizationActionMappings"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
                     List<AuthorizationActionMapping> array = new List<AuthorizationActionMapping>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(AuthorizationActionMapping.DeserializeAuthorizationActionMapping(item));
+                        array.Add(AuthorizationActionMapping.DeserializeAuthorizationActionMapping(item, options));
                     }
                     authorizationActionMappings = array;
                     continue;
                 }
-                if (property.NameEquals("linkedAccessChecks"))
+                if (property.NameEquals("linkedAccessChecks"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<LinkedAccessCheck> array = new List<LinkedAccessCheck>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(LinkedAccessCheck.DeserializeLinkedAccessCheck(item));
+                        array.Add(LinkedAccessCheck.DeserializeLinkedAccessCheck(item, options));
                     }
                     linkedAccessChecks = array;
                     continue;
                 }
-                if (property.NameEquals("defaultApiVersion"))
+                if (property.NameEquals("defaultApiVersion"u8))
                 {
                     defaultApiVersion = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("loggingRules"))
+                if (property.NameEquals("loggingRules"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<LoggingRule> array = new List<LoggingRule>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(LoggingRule.DeserializeLoggingRule(item));
+                        array.Add(LoggingRule.DeserializeLoggingRule(item, options));
                     }
                     loggingRules = array;
                     continue;
                 }
-                if (property.NameEquals("throttlingRules"))
+                if (property.NameEquals("throttlingRules"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ThrottlingRule> array = new List<ThrottlingRule>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ThrottlingRule.DeserializeThrottlingRule(item));
+                        array.Add(ThrottlingRule.DeserializeThrottlingRule(item, options));
                     }
                     throttlingRules = array;
                     continue;
                 }
-                if (property.NameEquals("requiredFeatures"))
+                if (property.NameEquals("requiredFeatures"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -452,91 +849,82 @@ namespace Azure.ResourceManager.ProviderHub.Models
                     requiredFeatures = array;
                     continue;
                 }
-                if (property.NameEquals("featuresRule"))
+                if (property.NameEquals("featuresRule"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    featuresRule = ResourceTypeRegistrationPropertiesFeaturesRule.DeserializeResourceTypeRegistrationPropertiesFeaturesRule(property.Value);
+                    featuresRule = ProviderFeaturesRule.DeserializeProviderFeaturesRule(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("enableAsyncOperation"))
+                if (property.NameEquals("enableAsyncOperation"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enableAsyncOperation = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("provisioningState"))
+                if (property.NameEquals("provisioningState"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    provisioningState = new ProvisioningState(property.Value.GetString());
+                    provisioningState = new ProviderHubProvisioningState(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("enableThirdPartyS2S"))
+                if (property.NameEquals("enableThirdPartyS2S"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     enableThirdPartyS2S = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("subscriptionLifecycleNotificationSpecifications"))
+                if (property.NameEquals("subscriptionLifecycleNotificationSpecifications"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    subscriptionLifecycleNotificationSpecifications = ResourceTypeRegistrationPropertiesSubscriptionLifecycleNotificationSpecifications.DeserializeResourceTypeRegistrationPropertiesSubscriptionLifecycleNotificationSpecifications(property.Value);
+                    subscriptionLifecycleNotificationSpecifications = SubscriptionLifecycleNotificationSpecifications.DeserializeSubscriptionLifecycleNotificationSpecifications(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("isPureProxy"))
+                if (property.NameEquals("isPureProxy"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     isPureProxy = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("identityManagement"))
+                if (property.NameEquals("identityManagement"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    identityManagement = ResourceTypeRegistrationPropertiesIdentityManagement.DeserializeResourceTypeRegistrationPropertiesIdentityManagement(property.Value);
+                    identityManagement = IdentityManagementProperties.DeserializeIdentityManagementProperties(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("checkNameAvailabilitySpecifications"))
+                if (property.NameEquals("checkNameAvailabilitySpecifications"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    checkNameAvailabilitySpecifications = ResourceTypeRegistrationPropertiesCheckNameAvailabilitySpecifications.DeserializeResourceTypeRegistrationPropertiesCheckNameAvailabilitySpecifications(property.Value);
+                    checkNameAvailabilitySpecifications = CheckNameAvailabilitySpecifications.DeserializeCheckNameAvailabilitySpecifications(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("disallowedActionVerbs"))
+                if (property.NameEquals("disallowedActionVerbs"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -547,138 +935,632 @@ namespace Azure.ResourceManager.ProviderHub.Models
                     disallowedActionVerbs = array;
                     continue;
                 }
-                if (property.NameEquals("serviceTreeInfos"))
+                if (property.NameEquals("serviceTreeInfos"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ServiceTreeInfo> array = new List<ServiceTreeInfo>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ServiceTreeInfo.DeserializeServiceTreeInfo(item));
+                        array.Add(ServiceTreeInfo.DeserializeServiceTreeInfo(item, options));
                     }
                     serviceTreeInfos = array;
                     continue;
                 }
-                if (property.NameEquals("requestHeaderOptions"))
+                if (property.NameEquals("requestHeaderOptions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    requestHeaderOptions = ResourceTypeRegistrationPropertiesRequestHeaderOptions.DeserializeResourceTypeRegistrationPropertiesRequestHeaderOptions(property.Value);
+                    requestHeaderOptions = ProviderRequestHeaderOptions.DeserializeProviderRequestHeaderOptions(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("subscriptionStateRules"))
+                if (property.NameEquals("subscriptionStateRules"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    List<SubscriptionStateRule> array = new List<SubscriptionStateRule>();
+                    List<ProviderSubscriptionStateRule> array = new List<ProviderSubscriptionStateRule>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(SubscriptionStateRule.DeserializeSubscriptionStateRule(item));
+                        array.Add(ProviderSubscriptionStateRule.DeserializeProviderSubscriptionStateRule(item, options));
                     }
                     subscriptionStateRules = array;
                     continue;
                 }
-                if (property.NameEquals("templateDeploymentOptions"))
+                if (property.NameEquals("templateDeploymentOptions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    templateDeploymentOptions = ResourceTypeRegistrationPropertiesTemplateDeploymentOptions.DeserializeResourceTypeRegistrationPropertiesTemplateDeploymentOptions(property.Value);
+                    templateDeploymentOptions = TemplateDeploymentOptions.DeserializeTemplateDeploymentOptions(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("extendedLocations"))
+                if (property.NameEquals("extendedLocations"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    List<ExtendedLocationOptions> array = new List<ExtendedLocationOptions>();
+                    List<ProviderHubExtendedLocationOptions> array = new List<ProviderHubExtendedLocationOptions>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ExtendedLocationOptions.DeserializeExtendedLocationOptions(item));
+                        array.Add(ProviderHubExtendedLocationOptions.DeserializeProviderHubExtendedLocationOptions(item, options));
                     }
                     extendedLocations = array;
                     continue;
                 }
-                if (property.NameEquals("resourceMovePolicy"))
+                if (property.NameEquals("resourceMovePolicy"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    resourceMovePolicy = ResourceTypeRegistrationPropertiesResourceMovePolicy.DeserializeResourceTypeRegistrationPropertiesResourceMovePolicy(property.Value);
+                    resourceMovePolicy = ResourceMovePolicy.DeserializeResourceMovePolicy(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("resourceDeletionPolicy"))
+                if (property.NameEquals("resourceDeletionPolicy"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     resourceDeletionPolicy = new ResourceDeletionPolicy(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("resourceConcurrencyControlOptions"))
+                if (property.NameEquals("resourceConcurrencyControlOptions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     Dictionary<string, ResourceConcurrencyControlOption> dictionary = new Dictionary<string, ResourceConcurrencyControlOption>();
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        dictionary.Add(property0.Name, ResourceConcurrencyControlOption.DeserializeResourceConcurrencyControlOption(property0.Value));
+                        dictionary.Add(property0.Name, ResourceConcurrencyControlOption.DeserializeResourceConcurrencyControlOption(property0.Value, options));
                     }
                     resourceConcurrencyControlOptions = dictionary;
                     continue;
                 }
-                if (property.NameEquals("resourceGraphConfiguration"))
+                if (property.NameEquals("resourceGraphConfiguration"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    resourceGraphConfiguration = ResourceTypeRegistrationPropertiesResourceGraphConfiguration.DeserializeResourceTypeRegistrationPropertiesResourceGraphConfiguration(property.Value);
+                    resourceGraphConfiguration = ResourceGraphConfiguration.DeserializeResourceGraphConfiguration(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("management"))
+                if (property.NameEquals("management"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    management = ResourceTypeRegistrationPropertiesManagement.DeserializeResourceTypeRegistrationPropertiesManagement(property.Value);
+                    management = ResourceProviderManagement.DeserializeResourceProviderManagement(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("openApiConfiguration"))
+                if (property.NameEquals("openApiConfiguration"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    openApiConfiguration = OpenApiConfiguration.DeserializeOpenApiConfiguration(property.Value);
+                    openApiConfiguration = OpenApiConfiguration.DeserializeOpenApiConfiguration(property.Value, options);
                     continue;
+                }
+                if (property.NameEquals("onBehalfOfTokens"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    onBehalfOfTokens = ResourceTypeOnBehalfOfToken.DeserializeResourceTypeOnBehalfOfToken(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("category"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    category = new ResourceTypeCategory(property.Value.GetString());
+                    continue;
+                }
+                if (property.NameEquals("resourceValidation"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    resourceValidation = new ResourceValidation(property.Value.GetString());
+                    continue;
+                }
+                if (property.NameEquals("disallowedEndUserOperations"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<string> array = new List<string>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(item.GetString());
+                    }
+                    disallowedEndUserOperations = array;
+                    continue;
+                }
+                if (property.NameEquals("metadata"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    Dictionary<string, BinaryData> dictionary = new Dictionary<string, BinaryData>();
+                    foreach (var property0 in property.Value.EnumerateObject())
+                    {
+                        if (property0.Value.ValueKind == JsonValueKind.Null)
+                        {
+                            dictionary.Add(property0.Name, null);
+                        }
+                        else
+                        {
+                            dictionary.Add(property0.Name, BinaryData.FromString(property0.Value.GetRawText()));
+                        }
+                    }
+                    metadata = dictionary;
+                    continue;
+                }
+                if (property.NameEquals("skuLink"u8))
+                {
+                    skuLink = property.Value.GetString();
+                    continue;
+                }
+                if (property.NameEquals("quotaRule"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    quotaRule = ProviderQuotaRule.DeserializeProviderQuotaRule(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("notifications"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<ProviderNotification> array = new List<ProviderNotification>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(ProviderNotification.DeserializeProviderNotification(item, options));
+                    }
+                    notifications = array;
+                    continue;
+                }
+                if (property.NameEquals("linkedNotificationRules"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<LinkedNotificationRule> array = new List<LinkedNotificationRule>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(LinkedNotificationRule.DeserializeLinkedNotificationRule(item, options));
+                    }
+                    linkedNotificationRules = array;
+                    continue;
+                }
+                if (property.NameEquals("resourceProviderAuthorizationRules"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    resourceProviderAuthorizationRules = ResourceProviderAuthorizationRules.DeserializeResourceProviderAuthorizationRules(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("tokenAuthConfiguration"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    tokenAuthConfiguration = TokenAuthConfiguration.DeserializeTokenAuthConfiguration(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("templateDeploymentPolicy"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    templateDeploymentPolicy = TemplateDeploymentPolicy.DeserializeTemplateDeploymentPolicy(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("allowEmptyRoleAssignments"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    allowEmptyRoleAssignments = property.Value.GetBoolean();
+                    continue;
+                }
+                if (property.NameEquals("policyExecutionType"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    policyExecutionType = new PolicyExecutionType(property.Value.GetString());
+                    continue;
+                }
+                if (property.NameEquals("availabilityZoneRule"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    availabilityZoneRule = ResourceTypeRegistrationAvailabilityZoneRule.DeserializeResourceTypeRegistrationAvailabilityZoneRule(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("dstsConfiguration"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    dstsConfiguration = ProviderDstsConfiguration.DeserializeProviderDstsConfiguration(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("asyncTimeoutRules"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<AsyncTimeoutRule> array = new List<AsyncTimeoutRule>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(AsyncTimeoutRule.DeserializeAsyncTimeoutRule(item, options));
+                    }
+                    asyncTimeoutRules = array;
+                    continue;
+                }
+                if (property.NameEquals("commonApiVersions"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<string> array = new List<string>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(item.GetString());
+                    }
+                    commonApiVersions = array;
+                    continue;
+                }
+                if (property.NameEquals("apiProfiles"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<ResourceTypeRegistrationApiProfile> array = new List<ResourceTypeRegistrationApiProfile>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(ResourceTypeRegistrationApiProfile.DeserializeResourceTypeRegistrationApiProfile(item, options));
+                    }
+                    apiProfiles = array;
+                    continue;
+                }
+                if (property.NameEquals("linkedOperationRules"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<LinkedOperationRule> array = new List<LinkedOperationRule>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(LinkedOperationRule.DeserializeLinkedOperationRule(item, options));
+                    }
+                    linkedOperationRules = array;
+                    continue;
+                }
+                if (property.NameEquals("legacyName"u8))
+                {
+                    legacyName = property.Value.GetString();
+                    continue;
+                }
+                if (property.NameEquals("legacyNames"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<string> array = new List<string>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(item.GetString());
+                    }
+                    legacyNames = array;
+                    continue;
+                }
+                if (property.NameEquals("allowedTemplateDeploymentReferenceActions"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<string> array = new List<string>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(item.GetString());
+                    }
+                    allowedTemplateDeploymentReferenceActions = array;
+                    continue;
+                }
+                if (property.NameEquals("legacyPolicy"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    legacyPolicy = ResourceTypeRegistrationLegacyPolicy.DeserializeResourceTypeRegistrationLegacyPolicy(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("manifestLink"u8))
+                {
+                    manifestLink = property.Value.GetString();
+                    continue;
+                }
+                if (property.NameEquals("capacityRule"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    capacityRule = ResourceTypeRegistrationCapacityRule.DeserializeResourceTypeRegistrationCapacityRule(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("marketplaceOptions"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    marketplaceOptions = ResourceTypeRegistrationMarketplaceOptions.DeserializeResourceTypeRegistrationMarketplaceOptions(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("allowedResourceNames"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<AllowedResourceName> array = new List<AllowedResourceName>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(AllowedResourceName.DeserializeAllowedResourceName(item, options));
+                    }
+                    allowedResourceNames = array;
+                    continue;
+                }
+                if (property.NameEquals("resourceCache"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    resourceCache = ResourceTypeRegistrationResourceCache.DeserializeResourceTypeRegistrationResourceCache(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("resourceQueryManagement"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    resourceQueryManagement = ProviderResourceQueryManagement.DeserializeProviderResourceQueryManagement(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("supportsTags"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    supportsTags = property.Value.GetBoolean();
+                    continue;
+                }
+                if (property.NameEquals("resourceManagementOptions"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    resourceManagementOptions = ResourceTypeRegistrationResourceManagementOptions.DeserializeResourceTypeRegistrationResourceManagementOptions(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("groupingTag"u8))
+                {
+                    groupingTag = property.Value.GetString();
+                    continue;
+                }
+                if (property.NameEquals("addResourceListTargetLocations"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    addResourceListTargetLocations = property.Value.GetBoolean();
+                    continue;
+                }
+                if (property.NameEquals("resourceTypeCommonAttributeManagement"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    resourceTypeCommonAttributeManagement = ResourceTypeCommonAttributeManagement.DeserializeResourceTypeCommonAttributeManagement(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("routingRule"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    routingRule = ResourceTypeRegistrationRoutingRule.DeserializeResourceTypeRegistrationRoutingRule(property.Value, options);
+                    continue;
+                }
+                if (property.NameEquals("frontdoorRequestMode"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    frontdoorRequestMode = new FrontdoorRequestMode(property.Value.GetString());
+                    continue;
+                }
+                if (property.NameEquals("resourceSubType"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    resourceSubType = new ProviderResourceSubType(property.Value.GetString());
+                    continue;
+                }
+                if (property.NameEquals("asyncOperationResourceTypeName"u8))
+                {
+                    asyncOperationResourceTypeName = property.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
                 }
             }
-            return new ResourceTypeRegistrationProperties(Optional.ToNullable(routingType), Optional.ToNullable(regionality), Optional.ToList(endpoints), extensionOptions.Value, Optional.ToNullable(marketplaceType), Optional.ToList(swaggerSpecifications), Optional.ToList(allowedUnauthorizedActions), Optional.ToList(authorizationActionMappings), Optional.ToList(linkedAccessChecks), defaultApiVersion.Value, Optional.ToList(loggingRules), Optional.ToList(throttlingRules), Optional.ToList(requiredFeatures), featuresRule.Value, Optional.ToNullable(enableAsyncOperation), Optional.ToNullable(provisioningState), Optional.ToNullable(enableThirdPartyS2S), subscriptionLifecycleNotificationSpecifications.Value, Optional.ToNullable(isPureProxy), identityManagement.Value, checkNameAvailabilitySpecifications.Value, Optional.ToList(disallowedActionVerbs), Optional.ToList(serviceTreeInfos), requestHeaderOptions.Value, Optional.ToList(subscriptionStateRules), templateDeploymentOptions.Value, Optional.ToList(extendedLocations), resourceMovePolicy.Value, Optional.ToNullable(resourceDeletionPolicy), Optional.ToDictionary(resourceConcurrencyControlOptions), resourceGraphConfiguration.Value, management.Value, openApiConfiguration.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ResourceTypeRegistrationProperties(
+                routingType,
+                additionalOptions,
+                crossTenantTokenValidation,
+                regionality,
+                endpoints ?? new ChangeTrackingList<ResourceTypeEndpoint>(),
+                extensionOptions,
+                marketplaceType,
+                swaggerSpecifications ?? new ChangeTrackingList<SwaggerSpecification>(),
+                allowedUnauthorizedActions ?? new ChangeTrackingList<string>(),
+                allowedUnauthorizedActionsExtensions ?? new ChangeTrackingList<AllowedUnauthorizedActionsExtension>(),
+                authorizationActionMappings ?? new ChangeTrackingList<AuthorizationActionMapping>(),
+                linkedAccessChecks ?? new ChangeTrackingList<LinkedAccessCheck>(),
+                defaultApiVersion,
+                loggingRules ?? new ChangeTrackingList<LoggingRule>(),
+                throttlingRules ?? new ChangeTrackingList<ThrottlingRule>(),
+                requiredFeatures ?? new ChangeTrackingList<string>(),
+                featuresRule,
+                enableAsyncOperation,
+                provisioningState,
+                enableThirdPartyS2S,
+                subscriptionLifecycleNotificationSpecifications,
+                isPureProxy,
+                identityManagement,
+                checkNameAvailabilitySpecifications,
+                disallowedActionVerbs ?? new ChangeTrackingList<string>(),
+                serviceTreeInfos ?? new ChangeTrackingList<ServiceTreeInfo>(),
+                requestHeaderOptions,
+                subscriptionStateRules ?? new ChangeTrackingList<ProviderSubscriptionStateRule>(),
+                templateDeploymentOptions,
+                extendedLocations ?? new ChangeTrackingList<ProviderHubExtendedLocationOptions>(),
+                resourceMovePolicy,
+                resourceDeletionPolicy,
+                resourceConcurrencyControlOptions ?? new ChangeTrackingDictionary<string, ResourceConcurrencyControlOption>(),
+                resourceGraphConfiguration,
+                management,
+                openApiConfiguration,
+                onBehalfOfTokens,
+                category,
+                resourceValidation,
+                disallowedEndUserOperations ?? new ChangeTrackingList<string>(),
+                metadata ?? new ChangeTrackingDictionary<string, BinaryData>(),
+                skuLink,
+                quotaRule,
+                notifications ?? new ChangeTrackingList<ProviderNotification>(),
+                linkedNotificationRules ?? new ChangeTrackingList<LinkedNotificationRule>(),
+                resourceProviderAuthorizationRules,
+                tokenAuthConfiguration,
+                templateDeploymentPolicy,
+                allowEmptyRoleAssignments,
+                policyExecutionType,
+                availabilityZoneRule,
+                dstsConfiguration,
+                asyncTimeoutRules ?? new ChangeTrackingList<AsyncTimeoutRule>(),
+                commonApiVersions ?? new ChangeTrackingList<string>(),
+                apiProfiles ?? new ChangeTrackingList<ResourceTypeRegistrationApiProfile>(),
+                linkedOperationRules ?? new ChangeTrackingList<LinkedOperationRule>(),
+                legacyName,
+                legacyNames ?? new ChangeTrackingList<string>(),
+                allowedTemplateDeploymentReferenceActions ?? new ChangeTrackingList<string>(),
+                legacyPolicy,
+                manifestLink,
+                capacityRule,
+                marketplaceOptions,
+                allowedResourceNames ?? new ChangeTrackingList<AllowedResourceName>(),
+                resourceCache,
+                resourceQueryManagement,
+                supportsTags,
+                resourceManagementOptions,
+                groupingTag,
+                addResourceListTargetLocations,
+                resourceTypeCommonAttributeManagement,
+                routingRule,
+                frontdoorRequestMode,
+                resourceSubType,
+                asyncOperationResourceTypeName,
+                serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<ResourceTypeRegistrationProperties>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ResourceTypeRegistrationProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerProviderHubContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ResourceTypeRegistrationProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ResourceTypeRegistrationProperties IPersistableModel<ResourceTypeRegistrationProperties>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ResourceTypeRegistrationProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeResourceTypeRegistrationProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ResourceTypeRegistrationProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ResourceTypeRegistrationProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

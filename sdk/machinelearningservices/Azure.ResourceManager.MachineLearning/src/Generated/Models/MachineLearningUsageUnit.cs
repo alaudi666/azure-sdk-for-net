@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// An enum describing the unit of usage measurement.
-    /// Serialized Name: UsageUnit
-    /// </summary>
+    /// <summary> An enum describing the unit of usage measurement. </summary>
     public readonly partial struct MachineLearningUsageUnit : IEquatable<MachineLearningUsageUnit>
     {
         private readonly string _value;
@@ -27,16 +24,13 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         private const string CountValue = "Count";
 
-        /// <summary>
-        /// Count
-        /// Serialized Name: UsageUnit.Count
-        /// </summary>
+        /// <summary> Count. </summary>
         public static MachineLearningUsageUnit Count { get; } = new MachineLearningUsageUnit(CountValue);
         /// <summary> Determines if two <see cref="MachineLearningUsageUnit"/> values are the same. </summary>
         public static bool operator ==(MachineLearningUsageUnit left, MachineLearningUsageUnit right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningUsageUnit"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningUsageUnit left, MachineLearningUsageUnit right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningUsageUnit"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningUsageUnit"/>. </summary>
         public static implicit operator MachineLearningUsageUnit(string value) => new MachineLearningUsageUnit(value);
 
         /// <inheritdoc />
@@ -47,7 +41,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

@@ -5,24 +5,31 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.RecoveryServices.Models
 {
     /// <summary> Replication usages of a vault. </summary>
     public partial class ReplicationUsage
     {
-        /// <summary> Initializes a new instance of ReplicationUsage. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ReplicationUsage"/>. </summary>
         internal ReplicationUsage()
         {
         }
 
-        /// <summary> Initializes a new instance of ReplicationUsage. </summary>
+        /// <summary> Initializes a new instance of <see cref="ReplicationUsage"/>. </summary>
         /// <param name="monitoringSummary"> Summary of the replication monitoring data for this vault. </param>
         /// <param name="jobsSummary"> Summary of the replication jobs data for this vault. </param>
         /// <param name="protectedItemCount"> Number of replication protected items for this vault. </param>
         /// <param name="recoveryPlanCount"> Number of replication recovery plans for this vault. </param>
         /// <param name="registeredServersCount"> Number of servers registered to this vault. </param>
         /// <param name="recoveryServicesProviderAuthType"> The authentication type of recovery service providers in the vault. </param>
-        internal ReplicationUsage(MonitoringSummary monitoringSummary, JobsSummary jobsSummary, int? protectedItemCount, int? recoveryPlanCount, int? registeredServersCount, int? recoveryServicesProviderAuthType)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ReplicationUsage(VaultMonitoringSummary monitoringSummary, ReplicationJobSummary jobsSummary, int? protectedItemCount, int? recoveryPlanCount, int? registeredServersCount, int? recoveryServicesProviderAuthType, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             MonitoringSummary = monitoringSummary;
             JobsSummary = jobsSummary;
@@ -30,18 +37,24 @@ namespace Azure.ResourceManager.RecoveryServices.Models
             RecoveryPlanCount = recoveryPlanCount;
             RegisteredServersCount = registeredServersCount;
             RecoveryServicesProviderAuthType = recoveryServicesProviderAuthType;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Summary of the replication monitoring data for this vault. </summary>
-        public MonitoringSummary MonitoringSummary { get; }
+        public VaultMonitoringSummary MonitoringSummary { get; }
+
         /// <summary> Summary of the replication jobs data for this vault. </summary>
-        public JobsSummary JobsSummary { get; }
+        public ReplicationJobSummary JobsSummary { get; }
+
         /// <summary> Number of replication protected items for this vault. </summary>
         public int? ProtectedItemCount { get; }
+
         /// <summary> Number of replication recovery plans for this vault. </summary>
         public int? RecoveryPlanCount { get; }
+
         /// <summary> Number of servers registered to this vault. </summary>
         public int? RegisteredServersCount { get; }
+
         /// <summary> The authentication type of recovery service providers in the vault. </summary>
         public int? RecoveryServicesProviderAuthType { get; }
     }

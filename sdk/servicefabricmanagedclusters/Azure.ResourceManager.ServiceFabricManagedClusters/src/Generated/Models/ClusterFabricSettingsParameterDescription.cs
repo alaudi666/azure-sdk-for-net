@@ -6,14 +6,18 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Describes a parameter in fabric settings of the cluster. </summary>
     public partial class ClusterFabricSettingsParameterDescription
     {
-        /// <summary> Initializes a new instance of ClusterFabricSettingsParameterDescription. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ClusterFabricSettingsParameterDescription"/>. </summary>
         /// <param name="name"> The parameter name of fabric setting. </param>
         /// <param name="value"> The parameter value of fabric setting. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="name"/> or <paramref name="value"/> is null. </exception>
@@ -26,8 +30,20 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
             Value = value;
         }
 
+        /// <summary> Initializes a new instance of <see cref="ClusterFabricSettingsParameterDescription"/>. </summary>
+        /// <param name="name"> The parameter name of fabric setting. </param>
+        /// <param name="value"> The parameter value of fabric setting. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ClusterFabricSettingsParameterDescription(string name, string value, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Name = name;
+            Value = value;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> The parameter name of fabric setting. </summary>
         public string Name { get; set; }
+
         /// <summary> The parameter value of fabric setting. </summary>
         public string Value { get; set; }
     }

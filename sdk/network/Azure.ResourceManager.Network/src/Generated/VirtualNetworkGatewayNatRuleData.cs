@@ -5,27 +5,31 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the VirtualNetworkGatewayNatRule data model. </summary>
+    /// <summary>
+    /// A class representing the VirtualNetworkGatewayNatRule data model.
+    /// VirtualNetworkGatewayNatRule Resource.
+    /// </summary>
     public partial class VirtualNetworkGatewayNatRuleData : NetworkResourceData
     {
-        /// <summary> Initializes a new instance of VirtualNetworkGatewayNatRuleData. </summary>
+        /// <summary> Initializes a new instance of <see cref="VirtualNetworkGatewayNatRuleData"/>. </summary>
         public VirtualNetworkGatewayNatRuleData()
         {
             InternalMappings = new ChangeTrackingList<VpnNatRuleMapping>();
             ExternalMappings = new ChangeTrackingList<VpnNatRuleMapping>();
         }
 
-        /// <summary> Initializes a new instance of VirtualNetworkGatewayNatRuleData. </summary>
+        /// <summary> Initializes a new instance of <see cref="VirtualNetworkGatewayNatRuleData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="provisioningState"> The provisioning state of the NAT Rule resource. </param>
         /// <param name="vpnNatRuleType"> The type of NAT rule for VPN NAT. </param>
@@ -33,7 +37,7 @@ namespace Azure.ResourceManager.Network
         /// <param name="internalMappings"> The private IP address internal mapping for NAT. </param>
         /// <param name="externalMappings"> The private IP address external mapping for NAT. </param>
         /// <param name="ipConfigurationId"> The IP Configuration ID this NAT rule applies to. </param>
-        internal VirtualNetworkGatewayNatRuleData(ResourceIdentifier id, string name, ResourceType? resourceType, ETag? etag, NetworkProvisioningState? provisioningState, VpnNatRuleType? vpnNatRuleType, VpnNatRuleMode? mode, IList<VpnNatRuleMapping> internalMappings, IList<VpnNatRuleMapping> externalMappings, string ipConfigurationId) : base(id, name, resourceType)
+        internal VirtualNetworkGatewayNatRuleData(ResourceIdentifier id, string name, ResourceType? resourceType, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, NetworkProvisioningState? provisioningState, VpnNatRuleType? vpnNatRuleType, VpnNatRuleMode? mode, IList<VpnNatRuleMapping> internalMappings, IList<VpnNatRuleMapping> externalMappings, string ipConfigurationId) : base(id, name, resourceType, serializedAdditionalRawData)
         {
             ETag = etag;
             ProvisioningState = provisioningState;
@@ -45,18 +49,25 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> The provisioning state of the NAT Rule resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
         /// <summary> The type of NAT rule for VPN NAT. </summary>
+        [WirePath("properties.type")]
         public VpnNatRuleType? VpnNatRuleType { get; set; }
         /// <summary> The Source NAT direction of a VPN NAT. </summary>
+        [WirePath("properties.mode")]
         public VpnNatRuleMode? Mode { get; set; }
         /// <summary> The private IP address internal mapping for NAT. </summary>
+        [WirePath("properties.internalMappings")]
         public IList<VpnNatRuleMapping> InternalMappings { get; }
         /// <summary> The private IP address external mapping for NAT. </summary>
+        [WirePath("properties.externalMappings")]
         public IList<VpnNatRuleMapping> ExternalMappings { get; }
         /// <summary> The IP Configuration ID this NAT rule applies to. </summary>
+        [WirePath("properties.ipConfigurationId")]
         public string IPConfigurationId { get; set; }
     }
 }

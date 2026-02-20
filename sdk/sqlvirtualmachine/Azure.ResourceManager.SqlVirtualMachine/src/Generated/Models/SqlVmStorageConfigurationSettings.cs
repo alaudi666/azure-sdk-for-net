@@ -5,24 +5,32 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
     /// <summary> Storage Configurations for SQL Data, Log and TempDb. </summary>
     public partial class SqlVmStorageConfigurationSettings
     {
-        /// <summary> Initializes a new instance of SqlVmStorageConfigurationSettings. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SqlVmStorageConfigurationSettings"/>. </summary>
         public SqlVmStorageConfigurationSettings()
         {
         }
 
-        /// <summary> Initializes a new instance of SqlVmStorageConfigurationSettings. </summary>
+        /// <summary> Initializes a new instance of <see cref="SqlVmStorageConfigurationSettings"/>. </summary>
         /// <param name="sqlDataSettings"> SQL Server Data Storage Settings. </param>
         /// <param name="sqlLogSettings"> SQL Server Log Storage Settings. </param>
         /// <param name="sqlTempDBSettings"> SQL Server TempDb Storage Settings. </param>
         /// <param name="isSqlSystemDBOnDataDisk"> SQL Server SystemDb Storage on DataPool if true. </param>
         /// <param name="diskConfigurationType"> Disk configuration to apply to SQL Server. </param>
         /// <param name="storageWorkloadType"> Storage workload type. </param>
-        internal SqlVmStorageConfigurationSettings(SqlStorageSettings sqlDataSettings, SqlStorageSettings sqlLogSettings, SqlTempDBSettings sqlTempDBSettings, bool? isSqlSystemDBOnDataDisk, SqlVmDiskConfigurationType? diskConfigurationType, SqlVmStorageWorkloadType? storageWorkloadType)
+        /// <param name="enableStorageConfigBlade"> Enable SQL IaaS Agent storage configuration blade in Azure Portal. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SqlVmStorageConfigurationSettings(SqlStorageSettings sqlDataSettings, SqlStorageSettings sqlLogSettings, SqlTempDBSettings sqlTempDBSettings, bool? isSqlSystemDBOnDataDisk, SqlVmDiskConfigurationType? diskConfigurationType, SqlVmStorageWorkloadType? storageWorkloadType, bool? enableStorageConfigBlade, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             SqlDataSettings = sqlDataSettings;
             SqlLogSettings = sqlLogSettings;
@@ -30,19 +38,29 @@ namespace Azure.ResourceManager.SqlVirtualMachine.Models
             IsSqlSystemDBOnDataDisk = isSqlSystemDBOnDataDisk;
             DiskConfigurationType = diskConfigurationType;
             StorageWorkloadType = storageWorkloadType;
+            EnableStorageConfigBlade = enableStorageConfigBlade;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> SQL Server Data Storage Settings. </summary>
         public SqlStorageSettings SqlDataSettings { get; set; }
+
         /// <summary> SQL Server Log Storage Settings. </summary>
         public SqlStorageSettings SqlLogSettings { get; set; }
+
         /// <summary> SQL Server TempDb Storage Settings. </summary>
         public SqlTempDBSettings SqlTempDBSettings { get; set; }
+
         /// <summary> SQL Server SystemDb Storage on DataPool if true. </summary>
         public bool? IsSqlSystemDBOnDataDisk { get; set; }
+
         /// <summary> Disk configuration to apply to SQL Server. </summary>
         public SqlVmDiskConfigurationType? DiskConfigurationType { get; set; }
+
         /// <summary> Storage workload type. </summary>
         public SqlVmStorageWorkloadType? StorageWorkloadType { get; set; }
+
+        /// <summary> Enable SQL IaaS Agent storage configuration blade in Azure Portal. </summary>
+        public bool? EnableStorageConfigBlade { get; set; }
     }
 }

@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.StreamAnalytics
 {
     /// <summary>
-    /// A class representing a collection of <see cref="StreamingJobFunctionResource" /> and their operations.
-    /// Each <see cref="StreamingJobFunctionResource" /> in the collection will belong to the same instance of <see cref="StreamingJobResource" />.
-    /// To get a <see cref="StreamingJobFunctionCollection" /> instance call the GetStreamingJobFunctions method from an instance of <see cref="StreamingJobResource" />.
+    /// A class representing a collection of <see cref="StreamingJobFunctionResource"/> and their operations.
+    /// Each <see cref="StreamingJobFunctionResource"/> in the collection will belong to the same instance of <see cref="StreamingJobResource"/>.
+    /// To get a <see cref="StreamingJobFunctionCollection"/> instance call the GetStreamingJobFunctions method from an instance of <see cref="StreamingJobResource"/>.
     /// </summary>
     public partial class StreamingJobFunctionCollection : ArmCollection, IEnumerable<StreamingJobFunctionResource>, IAsyncEnumerable<StreamingJobFunctionResource>
     {
@@ -55,14 +53,30 @@ namespace Azure.ResourceManager.StreamAnalytics
 
         /// <summary>
         /// Creates a function or replaces an already existing function under an existing streaming job.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}
-        /// Operation Id: Functions_CreateOrReplace
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Functions_CreateOrReplace</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-10-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StreamingJobFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="functionName"> The name of the function. </param>
         /// <param name="data"> The definition of the function that will be used to create a new function or replace the existing one under the streaming job. </param>
         /// <param name="ifMatch"> The ETag of the function. Omit this value to always overwrite the current function. Specify the last-seen ETag value to prevent accidentally overwriting concurrent changes. </param>
-        /// <param name="ifNoneMatch"> Set to &apos;*&apos; to allow a new function to be created, but to prevent updating an existing function. Other values will result in a 412 Pre-condition Failed response. </param>
+        /// <param name="ifNoneMatch"> Set to '*' to allow a new function to be created, but to prevent updating an existing function. Other values will result in a 412 Pre-condition Failed response. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="functionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="functionName"/> or <paramref name="data"/> is null. </exception>
@@ -76,7 +90,9 @@ namespace Azure.ResourceManager.StreamAnalytics
             try
             {
                 var response = await _streamingJobFunctionFunctionsRestClient.CreateOrReplaceAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, functionName, data, ifMatch, ifNoneMatch, cancellationToken).ConfigureAwait(false);
-                var operation = new StreamAnalyticsArmOperation<StreamingJobFunctionResource>(Response.FromValue(new StreamingJobFunctionResource(Client, response), response.GetRawResponse()));
+                var uri = _streamingJobFunctionFunctionsRestClient.CreateCreateOrReplaceRequestUri(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, functionName, data, ifMatch, ifNoneMatch);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new StreamAnalyticsArmOperation<StreamingJobFunctionResource>(Response.FromValue(new StreamingJobFunctionResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -90,14 +106,30 @@ namespace Azure.ResourceManager.StreamAnalytics
 
         /// <summary>
         /// Creates a function or replaces an already existing function under an existing streaming job.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}
-        /// Operation Id: Functions_CreateOrReplace
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Functions_CreateOrReplace</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-10-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StreamingJobFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="functionName"> The name of the function. </param>
         /// <param name="data"> The definition of the function that will be used to create a new function or replace the existing one under the streaming job. </param>
         /// <param name="ifMatch"> The ETag of the function. Omit this value to always overwrite the current function. Specify the last-seen ETag value to prevent accidentally overwriting concurrent changes. </param>
-        /// <param name="ifNoneMatch"> Set to &apos;*&apos; to allow a new function to be created, but to prevent updating an existing function. Other values will result in a 412 Pre-condition Failed response. </param>
+        /// <param name="ifNoneMatch"> Set to '*' to allow a new function to be created, but to prevent updating an existing function. Other values will result in a 412 Pre-condition Failed response. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentException"> <paramref name="functionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="functionName"/> or <paramref name="data"/> is null. </exception>
@@ -111,7 +143,9 @@ namespace Azure.ResourceManager.StreamAnalytics
             try
             {
                 var response = _streamingJobFunctionFunctionsRestClient.CreateOrReplace(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, functionName, data, ifMatch, ifNoneMatch, cancellationToken);
-                var operation = new StreamAnalyticsArmOperation<StreamingJobFunctionResource>(Response.FromValue(new StreamingJobFunctionResource(Client, response), response.GetRawResponse()));
+                var uri = _streamingJobFunctionFunctionsRestClient.CreateCreateOrReplaceRequestUri(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, functionName, data, ifMatch, ifNoneMatch);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new StreamAnalyticsArmOperation<StreamingJobFunctionResource>(Response.FromValue(new StreamingJobFunctionResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -125,8 +159,24 @@ namespace Azure.ResourceManager.StreamAnalytics
 
         /// <summary>
         /// Gets details about the specified function.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}
-        /// Operation Id: Functions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Functions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-10-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StreamingJobFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="functionName"> The name of the function. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -154,8 +204,24 @@ namespace Azure.ResourceManager.StreamAnalytics
 
         /// <summary>
         /// Gets details about the specified function.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}
-        /// Operation Id: Functions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Functions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-10-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StreamingJobFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="functionName"> The name of the function. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -183,94 +249,86 @@ namespace Azure.ResourceManager.StreamAnalytics
 
         /// <summary>
         /// Lists all of the functions under the specified streaming job.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions
-        /// Operation Id: Functions_ListByStreamingJob
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Functions_ListByStreamingJob</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-10-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StreamingJobFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="select"> The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or &quot;*&quot; to include all properties. By default, all properties are returned except diagnostics. Currently only accepts &apos;*&apos; as a valid value. </param>
+        /// <param name="select"> The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or "*" to include all properties. By default, all properties are returned except diagnostics. Currently only accepts '*' as a valid value. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="StreamingJobFunctionResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="StreamingJobFunctionResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<StreamingJobFunctionResource> GetAllAsync(string select = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<StreamingJobFunctionResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _streamingJobFunctionFunctionsClientDiagnostics.CreateScope("StreamingJobFunctionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _streamingJobFunctionFunctionsRestClient.ListByStreamingJobAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, select, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new StreamingJobFunctionResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<StreamingJobFunctionResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _streamingJobFunctionFunctionsClientDiagnostics.CreateScope("StreamingJobFunctionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _streamingJobFunctionFunctionsRestClient.ListByStreamingJobNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, select, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new StreamingJobFunctionResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _streamingJobFunctionFunctionsRestClient.CreateListByStreamingJobRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, select);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _streamingJobFunctionFunctionsRestClient.CreateListByStreamingJobNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, select);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new StreamingJobFunctionResource(Client, StreamingJobFunctionData.DeserializeStreamingJobFunctionData(e)), _streamingJobFunctionFunctionsClientDiagnostics, Pipeline, "StreamingJobFunctionCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Lists all of the functions under the specified streaming job.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions
-        /// Operation Id: Functions_ListByStreamingJob
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Functions_ListByStreamingJob</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-10-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StreamingJobFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="select"> The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or &quot;*&quot; to include all properties. By default, all properties are returned except diagnostics. Currently only accepts &apos;*&apos; as a valid value. </param>
+        /// <param name="select"> The $select OData query parameter. This is a comma-separated list of structural properties to include in the response, or "*" to include all properties. By default, all properties are returned except diagnostics. Currently only accepts '*' as a valid value. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="StreamingJobFunctionResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="StreamingJobFunctionResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<StreamingJobFunctionResource> GetAll(string select = null, CancellationToken cancellationToken = default)
         {
-            Page<StreamingJobFunctionResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _streamingJobFunctionFunctionsClientDiagnostics.CreateScope("StreamingJobFunctionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _streamingJobFunctionFunctionsRestClient.ListByStreamingJob(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, select, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new StreamingJobFunctionResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<StreamingJobFunctionResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _streamingJobFunctionFunctionsClientDiagnostics.CreateScope("StreamingJobFunctionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _streamingJobFunctionFunctionsRestClient.ListByStreamingJobNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, select, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new StreamingJobFunctionResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _streamingJobFunctionFunctionsRestClient.CreateListByStreamingJobRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, select);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _streamingJobFunctionFunctionsRestClient.CreateListByStreamingJobNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, select);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new StreamingJobFunctionResource(Client, StreamingJobFunctionData.DeserializeStreamingJobFunctionData(e)), _streamingJobFunctionFunctionsClientDiagnostics, Pipeline, "StreamingJobFunctionCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}
-        /// Operation Id: Functions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Functions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-10-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StreamingJobFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="functionName"> The name of the function. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -296,8 +354,24 @@ namespace Azure.ResourceManager.StreamAnalytics
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}
-        /// Operation Id: Functions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Functions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-10-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StreamingJobFunctionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="functionName"> The name of the function. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -313,6 +387,96 @@ namespace Azure.ResourceManager.StreamAnalytics
             {
                 var response = _streamingJobFunctionFunctionsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, functionName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Functions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-10-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StreamingJobFunctionResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="functionName"> The name of the function. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="functionName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="functionName"/> is null. </exception>
+        public virtual async Task<NullableResponse<StreamingJobFunctionResource>> GetIfExistsAsync(string functionName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(functionName, nameof(functionName));
+
+            using var scope = _streamingJobFunctionFunctionsClientDiagnostics.CreateScope("StreamingJobFunctionCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _streamingJobFunctionFunctionsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, functionName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<StreamingJobFunctionResource>(response.GetRawResponse());
+                return Response.FromValue(new StreamingJobFunctionResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/Microsoft.StreamAnalytics/streamingjobs/{jobName}/functions/{functionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Functions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-10-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="StreamingJobFunctionResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="functionName"> The name of the function. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="functionName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="functionName"/> is null. </exception>
+        public virtual NullableResponse<StreamingJobFunctionResource> GetIfExists(string functionName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(functionName, nameof(functionName));
+
+            using var scope = _streamingJobFunctionFunctionsClientDiagnostics.CreateScope("StreamingJobFunctionCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _streamingJobFunctionFunctionsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, functionName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<StreamingJobFunctionResource>(response.GetRawResponse());
+                return Response.FromValue(new StreamingJobFunctionResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

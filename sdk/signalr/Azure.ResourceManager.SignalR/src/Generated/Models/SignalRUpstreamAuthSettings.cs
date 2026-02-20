@@ -5,40 +5,59 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.SignalR;
+
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Upstream auth settings. If not set, no auth is used for upstream messages. </summary>
     public partial class SignalRUpstreamAuthSettings
     {
-        /// <summary> Initializes a new instance of SignalRUpstreamAuthSettings. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRUpstreamAuthSettings"/>. </summary>
         public SignalRUpstreamAuthSettings()
         {
         }
 
-        /// <summary> Initializes a new instance of SignalRUpstreamAuthSettings. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRUpstreamAuthSettings"/>. </summary>
         /// <param name="authType"> Upstream auth type enum. </param>
         /// <param name="managedIdentity"> Managed identity settings for upstream. </param>
-        internal SignalRUpstreamAuthSettings(SignalRUpstreamAuthType? authType, ManagedIdentitySettings managedIdentity)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRUpstreamAuthSettings(SignalRUpstreamAuthType? authType, ManagedIdentitySettings managedIdentity, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             AuthType = authType;
             ManagedIdentity = managedIdentity;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Upstream auth type enum. </summary>
+        [WirePath("type")]
         public SignalRUpstreamAuthType? AuthType { get; set; }
+
         /// <summary> Managed identity settings for upstream. </summary>
+        [WirePath("managedIdentity")]
         internal ManagedIdentitySettings ManagedIdentity { get; set; }
+
         /// <summary>
         /// The Resource indicating the App ID URI of the target resource.
         /// It also appears in the aud (audience) claim of the issued token.
         /// </summary>
+        [WirePath("managedIdentity.resource")]
         public string ManagedIdentityResource
         {
-            get => ManagedIdentity is null ? default : ManagedIdentity.Resource;
+            get
+            {
+                return ManagedIdentity is null ? default : ManagedIdentity.Resource;
+            }
             set
             {
                 if (ManagedIdentity is null)
+                {
                     ManagedIdentity = new ManagedIdentitySettings();
+                }
                 ManagedIdentity.Resource = value;
             }
         }

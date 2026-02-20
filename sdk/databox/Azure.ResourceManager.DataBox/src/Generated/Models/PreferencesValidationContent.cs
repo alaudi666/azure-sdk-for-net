@@ -5,22 +5,41 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Request to validate preference of transport and data center. </summary>
     public partial class PreferencesValidationContent : DataBoxValidationInputContent
     {
-        /// <summary> Initializes a new instance of PreferencesValidationContent. </summary>
+        /// <summary> Initializes a new instance of <see cref="PreferencesValidationContent"/>. </summary>
         /// <param name="deviceType"> Device type to be used for the job. </param>
-        public PreferencesValidationContent(DataBoxSkuName deviceType)
+        public PreferencesValidationContent(DataBoxSkuName deviceType) : base(DataBoxValidationInputDiscriminator.ValidatePreferences)
         {
             DeviceType = deviceType;
-            ValidationType = DataBoxValidationInputDiscriminator.ValidatePreferences;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="PreferencesValidationContent"/>. </summary>
+        /// <param name="validationType"> Identifies the type of validation request. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="preference"> Preference of transport and data center. </param>
+        /// <param name="deviceType"> Device type to be used for the job. </param>
+        /// <param name="model"> The customer friendly name of the combination of version and capacity of the device. This field is necessary only at the time of ordering the newer generation device i.e. AzureDataBox120 and AzureDataBox525 as of Feb/2025. </param>
+        internal PreferencesValidationContent(DataBoxValidationInputDiscriminator validationType, IDictionary<string, BinaryData> additionalBinaryDataProperties, DataBoxOrderPreferences preference, DataBoxSkuName deviceType, DeviceModelName? model) : base(validationType, additionalBinaryDataProperties)
+        {
+            Preference = preference;
+            DeviceType = deviceType;
+            Model = model;
         }
 
         /// <summary> Preference of transport and data center. </summary>
         public DataBoxOrderPreferences Preference { get; set; }
+
         /// <summary> Device type to be used for the job. </summary>
         public DataBoxSkuName DeviceType { get; }
+
+        /// <summary> The customer friendly name of the combination of version and capacity of the device. This field is necessary only at the time of ordering the newer generation device i.e. AzureDataBox120 and AzureDataBox525 as of Feb/2025. </summary>
+        public DeviceModelName? Model { get; set; }
     }
 }

@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#nullable disable // TODO: remove and fix errors
-
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -13,6 +10,7 @@ using Azure.Monitor.OpenTelemetry.Exporter.Tests.CommonTestFramework;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Xunit;
 using Xunit.Abstractions;
@@ -26,6 +24,14 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests.E2ETelemetryItemValidation
     public class TracesTests
     {
         internal readonly TelemetryItemOutputHelper telemetryOutput;
+
+        internal readonly Dictionary<string, object> testResourceAttributes = new()
+        {
+            { "service.instance.id", "testInstance" },
+            { "service.name", "testName" },
+            { "service.namespace", "testNamespace" },
+            { "service.version", "testVersion" },
+        };
 
         public TracesTests(ITestOutputHelper output)
         {
@@ -45,17 +51,21 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests.E2ETelemetryItemValidation
             using var activitySource = new ActivitySource(activitySourceName);
 
             var tracerProvider = Sdk.CreateTracerProviderBuilder()
+                .ConfigureResource(x => x.AddAttributes(testResourceAttributes))
                 .AddSource(activitySourceName)
-                .AddAzureMonitorTraceExporterForTest(out ConcurrentBag<TelemetryItem> telemetryItems)
+                .AddAzureMonitorTraceExporterForTest(out List<TelemetryItem> telemetryItems)
                 .Build();
 
             // ACT
             string spanId, traceId;
             using (var activity = activitySource.StartActivity(name: "SayHello", kind: activityKind ))
             {
+                Assert.NotNull(activity);
                 traceId = activity.TraceId.ToHexString();
                 spanId = activity.SpanId.ToHexString();
 
+                activity.SetTag("enduser.id", "TestUser"); //authenticated user
+                activity.SetTag("enduser.pseudo.id", "TestPseudoUser"); // anonymous/pseudo user id
                 activity.SetTag("integer", 1);
                 activity.SetTag("message", "Hello World!");
                 activity.SetTag("intArray", new int[] { 1, 2, 3 });
@@ -63,18 +73,20 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests.E2ETelemetryItemValidation
             }
 
             // CLEANUP
-            tracerProvider.Dispose();
+            tracerProvider?.Dispose();
 
             // ASSERT
             Assert.True(telemetryItems.Any(), "Unit test failed to collect telemetry.");
             this.telemetryOutput.Write(telemetryItems);
-            var telemetryItem = telemetryItems.First(); // TODO: Change to Single(). Still investigating random duplicate export which only repros on build server.
+            var telemetryItem = telemetryItems.Where(x => x.Name == "RemoteDependency").First()!;
 
             TelemetryItemValidationHelper.AssertActivity_As_DependencyTelemetry(
                 telemetryItem: telemetryItem,
                 expectedName: "SayHello",
                 expectedTraceId: traceId,
                 expectedSpanId: spanId,
+                expectedAuthUserId: "TestUser",
+                expectedUserId: "TestPseudoUser",
                 expectedProperties: new Dictionary<string, string> { { "integer", "1" }, { "message", "Hello World!" }, { "intArray", "1,2,3" } });
         }
 
@@ -90,17 +102,21 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests.E2ETelemetryItemValidation
             using var activitySource = new ActivitySource(activitySourceName);
 
             var tracerProvider = Sdk.CreateTracerProviderBuilder()
+                .ConfigureResource(x => x.AddAttributes(testResourceAttributes))
                 .AddSource(activitySourceName)
-                .AddAzureMonitorTraceExporterForTest(out ConcurrentBag<TelemetryItem> telemetryItems)
+                .AddAzureMonitorTraceExporterForTest(out List<TelemetryItem> telemetryItems)
                 .Build();
 
             // ACT
             string spanId, traceId;
             using (var activity = activitySource.StartActivity(name: "SayHello", kind: activityKind))
             {
+                Assert.NotNull(activity);
                 traceId = activity.TraceId.ToHexString();
                 spanId = activity.SpanId.ToHexString();
 
+                activity.SetTag("enduser.id", "TestUser"); //authenticated user
+                activity.SetTag("enduser.pseudo.id", "TestPseudoUser"); // anonymous/pseudo user id
                 activity.SetTag("integer", 1);
                 activity.SetTag("message", "Hello World!");
                 activity.SetTag("intArray", new int[] { 1, 2, 3 });
@@ -108,12 +124,12 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests.E2ETelemetryItemValidation
             }
 
             // CLEANUP
-            tracerProvider.Dispose();
+            tracerProvider?.Dispose();
 
             // ASSERT
             Assert.True(telemetryItems.Any(), "Unit test failed to collect telemetry.");
             this.telemetryOutput.Write(telemetryItems);
-            var telemetryItem = telemetryItems.First(); // TODO: Change to Single(). Still investigating random duplicate export which only repros on build server.
+            var telemetryItem = telemetryItems.Where(x => x.Name =="Request").First()!;
 
             TelemetryItemValidationHelper.AssertActivity_As_RequestTelemetry(
                 telemetryItem: telemetryItem,
@@ -121,6 +137,8 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests.E2ETelemetryItemValidation
                 expectedName: "SayHello",
                 expectedTraceId: traceId,
                 expectedSpanId: spanId,
+                expectedAuthUserId: "TestUser",
+                expectedUserId: "TestPseudoUser",
                 expectedProperties: new Dictionary<string, string> { { "integer", "1" }, { "message", "Hello World!" }, { "intArray", "1,2,3" } });
         }
 
@@ -134,17 +152,22 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests.E2ETelemetryItemValidation
             using var activitySource = new ActivitySource(activitySourceName);
 
             var tracerProvider = Sdk.CreateTracerProviderBuilder()
+                .ConfigureResource(x => x.AddAttributes(testResourceAttributes))
                 .AddSource(activitySourceName)
-                .AddAzureMonitorTraceExporterForTest(out ConcurrentBag<TelemetryItem> telemetryItems)
+                .AddAzureMonitorTraceExporterForTest(out List<TelemetryItem> telemetryItems)
                 .Build();
 
             // ACT
-            string spanId = null, traceId = null;
+            string? spanId, traceId;
 
             using (var activity = activitySource.StartActivity(name: "ActivityWithException"))
             {
+                Assert.NotNull(activity);
                 traceId = activity.TraceId.ToHexString();
                 spanId = activity.SpanId.ToHexString();
+
+                activity.SetTag("enduser.id", "TestUser"); //authenticated user
+                activity.SetTag("enduser.pseudo.id", "TestPseudoUser"); // anonymous/pseudo user id
 
                 try
                 {
@@ -153,23 +176,28 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests.E2ETelemetryItemValidation
                 catch (Exception ex)
                 {
                     activity?.SetStatus(ActivityStatusCode.Error);
-                    activity?.RecordException(ex);
+                    activity?.AddException(ex, new TagList
+                    {
+                        { "someKey", "someValue" },
+                    });
                 }
             }
 
             // CLEANUP
-            tracerProvider.Dispose();
+            tracerProvider?.Dispose();
 
             // ASSERT
             Assert.True(telemetryItems.Any(), "Unit test failed to collect telemetry.");
             this.telemetryOutput.Write(telemetryItems);
-            var activityTelemetryItem = telemetryItems.First(x => x.Name == "RemoteDependency"); // TODO: Change to Single(). Still investigating random duplicate export which only repros on build server.
+            var activityTelemetryItem = telemetryItems.First(x => x.Name == "RemoteDependency");
 
             TelemetryItemValidationHelper.AssertActivity_As_DependencyTelemetry(
                 telemetryItem: activityTelemetryItem,
                 expectedName: "ActivityWithException",
                 expectedTraceId: traceId,
                 expectedSpanId: spanId,
+                expectedAuthUserId: "TestUser",
+                expectedUserId: "TestPseudoUser",
                 expectedProperties: null,
                 expectedSuccess: false);
 
@@ -180,7 +208,14 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests.E2ETelemetryItemValidation
                 expectedExceptionMessage: "Test exception",
                 expectedExceptionTypeName: "System.Exception",
                 expectedTraceId: traceId,
-                expectedSpanId: spanId);
+                expectedSpanId: spanId,
+                expectedProperties: new Dictionary<string, string> { { "someKey", "someValue" } },
+                additionalChecks: data =>
+                {
+                    Assert.False(data.Properties.ContainsKey("exception.type"));
+                    Assert.False(data.Properties.ContainsKey("exception.message"));
+                    Assert.False(data.Properties.ContainsKey("exception.stacktrace"));
+                });
         }
 
         [Theory]
@@ -200,11 +235,12 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests.E2ETelemetryItemValidation
 
             var logCategoryName = $"logCategoryName{uniqueTestId}"; ;
 
-            ConcurrentBag<TelemetryItem> logTelemetryItems = null;
+            List<TelemetryItem>? logTelemetryItems = null;
 
             var tracerProvider = Sdk.CreateTracerProviderBuilder()
+                .ConfigureResource(x => x.AddAttributes(testResourceAttributes))
                 .AddSource(activitySourceName)
-                .AddAzureMonitorTraceExporterForTest(out ConcurrentBag<TelemetryItem> activityTelemetryItems)
+                .AddAzureMonitorTraceExporterForTest(out List<TelemetryItem> activityTelemetryItems)
                 .Build();
 
             var loggerFactory = LoggerFactory.Create(builder =>
@@ -213,6 +249,7 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests.E2ETelemetryItemValidation
                     .AddFilter<OpenTelemetryLoggerProvider>(logCategoryName, logLevel)
                     .AddOpenTelemetry(options =>
                     {
+                        options.SetResourceBuilder(ResourceBuilder.CreateDefault().AddAttributes(testResourceAttributes));
                         options.AddAzureMonitorLogExporterForTest(out logTelemetryItems);
                     });
             });
@@ -223,44 +260,104 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests.E2ETelemetryItemValidation
 
             using (var activity = activitySource.StartActivity(name: activityName))
             {
+                Assert.NotNull(activity);
                 spanId = activity.SpanId.ToHexString();
                 traceId = activity.TraceId.ToHexString();
+
+                activity.SetTag("enduser.id", "TestUser"); //authenticated user
+                activity.SetTag("enduser.pseudo.id", "TestPseudoUser"); // anonymous/pseudo user id
 
                 var logger = loggerFactory.CreateLogger(logCategoryName);
 
                 logger.Log(
                     logLevel: logLevel,
-                    eventId: 0,
+                    eventId: 1,
                     exception: null,
                     message: "Hello {name}.",
                     args: new object[] { "World" });
             }
 
             // CLEANUP
-            tracerProvider.Dispose();
+            tracerProvider?.Dispose();
             loggerFactory.Dispose();
 
             // ASSERT
             Assert.True(activityTelemetryItems.Any(), "Unit test failed to collect telemetry.");
             this.telemetryOutput.Write(activityTelemetryItems);
-            var activityTelemetryItem = activityTelemetryItems.First(); // TODO: Change to Single(). Still investigating random duplicate export which only repros on build server.
+            var activityTelemetryItem = activityTelemetryItems.Where(x => x.Name == "RemoteDependency").First()!;
 
             TelemetryItemValidationHelper.AssertActivity_As_DependencyTelemetry(
                 telemetryItem: activityTelemetryItem,
                 expectedName: activityName,
                 expectedTraceId: traceId,
                 expectedSpanId: spanId,
+                expectedAuthUserId: "TestUser",
+                expectedUserId: "TestPseudoUser",
                 expectedProperties: null);
 
-            Assert.True(logTelemetryItems.Any(), "Unit test failed to collect telemetry.");
-            this.telemetryOutput.Write(logTelemetryItems);
-            var logTelemetryItem = logTelemetryItems.Single();
+            Assert.True(logTelemetryItems?.Any(), "Unit test failed to collect telemetry.");
+            this.telemetryOutput.Write(logTelemetryItems!);
+            var logTelemetryItem = logTelemetryItems?.Where(x => x.Name == "Message").First()!;
 
-            TelemetryItemValidationHelper.AssertLog_As_MessageTelemetry(
-                telemetryItem: logTelemetryItem,
+            TelemetryItemValidationHelper.AssertMessageTelemetry(
+                telemetryItem: logTelemetryItem!,
                 expectedSeverityLevel: expectedSeverityLevel,
                 expectedMessage: "Hello {name}.",
-                expectedMeessageProperties: new Dictionary<string, string> { { "name", "World" } },
+                expectedMessageProperties: new Dictionary<string, string> { {"EventId", "1" }, { "name", "World" } },
+                expectedSpanId: spanId,
+                expectedTraceId: traceId);
+        }
+
+        [Fact]
+        public void TestActivityEvents()
+        {
+            // SETUP
+            var uniqueTestId = Guid.NewGuid();
+
+            var activitySourceName = $"activitySourceName{uniqueTestId}";
+            using var activitySource = new ActivitySource(activitySourceName);
+
+            var tracerProvider = Sdk.CreateTracerProviderBuilder()
+                .ConfigureResource(x => x.AddAttributes(testResourceAttributes))
+                .AddSource(activitySourceName)
+                .AddAzureMonitorTraceExporterForTest(out List<TelemetryItem> telemetryItems)
+                .Build();
+
+            // ACT
+            string? spanId, traceId;
+
+            using (var activity = activitySource.StartActivity(name: "ActivityWithException"))
+            {
+                Assert.NotNull(activity);
+                traceId = activity.TraceId.ToHexString();
+                spanId = activity.SpanId.ToHexString();
+
+                var eventTags = new Dictionary<string, object?>
+                {
+                    { "integer", 1 },
+                    { "string", "Hello, World!" },
+                    { "intArray", new int[] { 1, 2, 3 } }
+                };
+                activity?.AddEvent(new("Gonna try it!", DateTimeOffset.Now, new(eventTags)));
+            }
+
+            // CLEANUP
+            tracerProvider?.Dispose();
+
+            // ASSERT
+            Assert.True(telemetryItems.Any(), "Unit test failed to collect telemetry.");
+            this.telemetryOutput.Write(telemetryItems);
+
+            var messageTelemetryItem = telemetryItems.First(x => x.Name == "Message");
+
+            TelemetryItemValidationHelper.AssertMessageTelemetry(
+                telemetryItem: messageTelemetryItem,
+                expectedSeverityLevel: null,
+                expectedMessage: "Gonna try it!",
+                expectedMessageProperties: new Dictionary<string, string> {
+                    { "integer", "1" },
+                    { "string", "Hello, World!" },
+                    { "intArray", "1,2,3" } },
                 expectedSpanId: spanId,
                 expectedTraceId: traceId);
         }

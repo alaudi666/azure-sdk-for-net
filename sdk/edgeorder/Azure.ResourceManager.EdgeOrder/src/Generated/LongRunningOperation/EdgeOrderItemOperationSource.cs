@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.EdgeOrder
 {
-    internal class EdgeOrderItemOperationSource : IOperationSource<EdgeOrderItemResource>
+    /// <summary></summary>
+    internal partial class EdgeOrderItemOperationSource : IOperationSource<EdgeOrderItemResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal EdgeOrderItemOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         EdgeOrderItemResource IOperationSource<EdgeOrderItemResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = EdgeOrderItemData.DeserializeEdgeOrderItemData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            EdgeOrderItemData data = EdgeOrderItemData.DeserializeEdgeOrderItemData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new EdgeOrderItemResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<EdgeOrderItemResource> IOperationSource<EdgeOrderItemResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = EdgeOrderItemData.DeserializeEdgeOrderItemData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            EdgeOrderItemData data = EdgeOrderItemData.DeserializeEdgeOrderItemData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new EdgeOrderItemResource(_client, data);
         }
     }

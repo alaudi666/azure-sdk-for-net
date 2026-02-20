@@ -11,203 +11,139 @@ using Azure.Core;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Command job definition.
-    /// Serialized Name: CommandJob
-    /// </summary>
+    /// <summary> Command job definition. </summary>
     public partial class MachineLearningCommandJob : MachineLearningJobProperties
     {
-        /// <summary> Initializes a new instance of MachineLearningCommandJob. </summary>
-        /// <param name="command">
-        /// [Required] The command to execute on startup of the job. eg. &quot;python train.py&quot;
-        /// Serialized Name: CommandJob.command
-        /// </param>
-        /// <param name="environmentId">
-        /// [Required] The ARM resource ID of the Environment specification for the job.
-        /// Serialized Name: CommandJob.environmentId
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningCommandJob"/>. </summary>
+        /// <param name="command"> [Required] The command to execute on startup of the job. eg. "python train.py". </param>
+        /// <param name="environmentId"> [Required] The ARM resource ID of the Environment specification for the job. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="command"/> or <paramref name="environmentId"/> is null. </exception>
-        public MachineLearningCommandJob(string command, string environmentId)
+        public MachineLearningCommandJob(string command, ResourceIdentifier environmentId)
         {
             Argument.AssertNotNull(command, nameof(command));
             Argument.AssertNotNull(environmentId, nameof(environmentId));
 
             Command = command;
             EnvironmentId = environmentId;
-            EnvironmentVariables = new ChangeTrackingDictionary<string, string>();
             Inputs = new ChangeTrackingDictionary<string, MachineLearningJobInput>();
             Outputs = new ChangeTrackingDictionary<string, MachineLearningJobOutput>();
+            EnvironmentVariables = new ChangeTrackingDictionary<string, string>();
             JobType = JobType.Command;
         }
 
-        /// <summary> Initializes a new instance of MachineLearningCommandJob. </summary>
-        /// <param name="description">
-        /// The asset description text.
-        /// Serialized Name: ResourceBase.description
-        /// </param>
-        /// <param name="properties">
-        /// The asset property dictionary.
-        /// Serialized Name: ResourceBase.properties
-        /// </param>
-        /// <param name="tags">
-        /// Tag dictionary. Tags can be added, removed, and updated.
-        /// Serialized Name: ResourceBase.tags
-        /// </param>
-        /// <param name="componentId">
-        /// ARM resource ID of the component resource.
-        /// Serialized Name: JobBase.componentId
-        /// </param>
-        /// <param name="computeId">
-        /// ARM resource ID of the compute resource.
-        /// Serialized Name: JobBase.computeId
-        /// </param>
-        /// <param name="displayName">
-        /// Display name of job.
-        /// Serialized Name: JobBase.displayName
-        /// </param>
-        /// <param name="experimentName">
-        /// The name of the experiment the job belongs to. If not set, the job is placed in the &quot;Default&quot; experiment.
-        /// Serialized Name: JobBase.experimentName
-        /// </param>
-        /// <param name="identity">
-        /// Identity configuration. If set, this should be one of AmlToken, ManagedIdentity, UserIdentity or null.
-        /// Defaults to AmlToken if null.
-        /// Serialized Name: JobBase.identity
-        /// Please note <see cref="MachineLearningIdentityConfiguration"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AmlToken"/>, <see cref="MachineLearningManagedIdentity"/> and <see cref="MachineLearningUserIdentity"/>.
-        /// </param>
-        /// <param name="isArchived">
-        /// Is the asset archived?
-        /// Serialized Name: JobBase.isArchived
-        /// </param>
-        /// <param name="jobType">
-        /// [Required] Specifies the type of job.
-        /// Serialized Name: JobBase.jobType
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningCommandJob"/>. </summary>
+        /// <param name="description"> The asset description text. </param>
+        /// <param name="tags"> Tag dictionary. Tags can be added, removed, and updated. </param>
+        /// <param name="properties"> The asset property dictionary. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="jobType"> [Required] Specifies the type of job. </param>
+        /// <param name="displayName"> Display name of job. </param>
+        /// <param name="status"> Status of the job. </param>
+        /// <param name="experimentName"> The name of the experiment the job belongs to. If not set, the job is placed in the "Default" experiment. </param>
         /// <param name="services">
         /// List of JobEndpoints.
         /// For local jobs, a job endpoint will have an endpoint value of FileStreamObject.
-        /// Serialized Name: JobBase.services
         /// </param>
-        /// <param name="status">
-        /// Status of the job.
-        /// Serialized Name: JobBase.status
+        /// <param name="computeId"> ARM resource ID of the compute resource. </param>
+        /// <param name="isArchived"> Is the asset archived?. </param>
+        /// <param name="identity">
+        /// Identity configuration. If set, this should be one of AmlToken, ManagedIdentity, UserIdentity or null.
+        /// Defaults to AmlToken if null.
+        /// Please note <see cref="MachineLearningIdentityConfiguration"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="AmlToken"/>, <see cref="MachineLearningManagedIdentity"/> and <see cref="MachineLearningUserIdentity"/>.
         /// </param>
-        /// <param name="codeId">
-        /// ARM resource ID of the code asset.
-        /// Serialized Name: CommandJob.codeId
-        /// </param>
-        /// <param name="command">
-        /// [Required] The command to execute on startup of the job. eg. &quot;python train.py&quot;
-        /// Serialized Name: CommandJob.command
-        /// </param>
-        /// <param name="distribution">
-        /// Distribution configuration of the job. If set, this should be one of Mpi, Tensorflow, PyTorch, or null.
-        /// Serialized Name: CommandJob.distribution
-        /// Please note <see cref="MachineLearningDistributionConfiguration"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="MpiDistributionConfiguration"/>, <see cref="PyTorchDistributionConfiguration"/> and <see cref="TensorFlowDistributionConfiguration"/>.
-        /// </param>
-        /// <param name="environmentId">
-        /// [Required] The ARM resource ID of the Environment specification for the job.
-        /// Serialized Name: CommandJob.environmentId
-        /// </param>
-        /// <param name="environmentVariables">
-        /// Environment variables included in the job.
-        /// Serialized Name: CommandJob.environmentVariables
-        /// </param>
+        /// <param name="componentId"> ARM resource ID of the component resource. </param>
+        /// <param name="notificationSetting"> Notification setting for the job. </param>
+        /// <param name="resources"> Compute Resource configuration for the job. </param>
+        /// <param name="codeId"> ARM resource ID of the code asset. </param>
+        /// <param name="command"> [Required] The command to execute on startup of the job. eg. "python train.py". </param>
+        /// <param name="environmentId"> [Required] The ARM resource ID of the Environment specification for the job. </param>
         /// <param name="inputs">
         /// Mapping of input data bindings used in the job.
-        /// Serialized Name: CommandJob.inputs
         /// Please note <see cref="MachineLearningJobInput"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
         /// The available derived classes include <see cref="MachineLearningCustomModelJobInput"/>, <see cref="MachineLearningLiteralJobInput"/>, <see cref="MachineLearningFlowModelJobInput"/>, <see cref="MachineLearningTableJobInput"/>, <see cref="MachineLearningTritonModelJobInput"/>, <see cref="MachineLearningUriFileJobInput"/> and <see cref="MachineLearningUriFolderJobInput"/>.
-        /// </param>
-        /// <param name="limits">
-        /// Command Job limit.
-        /// Serialized Name: CommandJob.limits
         /// </param>
         /// <param name="outputs">
         /// Mapping of output data bindings used in the job.
-        /// Serialized Name: CommandJob.outputs
         /// Please note <see cref="MachineLearningJobOutput"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
         /// The available derived classes include <see cref="MachineLearningCustomModelJobOutput"/>, <see cref="MachineLearningFlowModelJobOutput"/>, <see cref="MachineLearningTableJobOutput"/>, <see cref="MachineLearningTritonModelJobOutput"/>, <see cref="MachineLearningUriFileJobOutput"/> and <see cref="MachineLearningUriFolderJobOutput"/>.
         /// </param>
-        /// <param name="parameters">
-        /// Input parameters.
-        /// Serialized Name: CommandJob.parameters
+        /// <param name="distribution">
+        /// Distribution configuration of the job. If set, this should be one of Mpi, Tensorflow, PyTorch, or null.
+        /// Please note <see cref="MachineLearningDistributionConfiguration"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="MpiDistributionConfiguration"/>, <see cref="PyTorchDistributionConfiguration"/> and <see cref="TensorFlowDistributionConfiguration"/>.
         /// </param>
-        /// <param name="resources">
-        /// Compute Resource configuration for the job.
-        /// Serialized Name: CommandJob.resources
-        /// </param>
-        internal MachineLearningCommandJob(string description, IDictionary<string, string> properties, IDictionary<string, string> tags, string componentId, string computeId, string displayName, string experimentName, MachineLearningIdentityConfiguration identity, bool? isArchived, JobType jobType, IDictionary<string, MachineLearningJobService> services, MachineLearningJobStatus? status, string codeId, string command, MachineLearningDistributionConfiguration distribution, string environmentId, IDictionary<string, string> environmentVariables, IDictionary<string, MachineLearningJobInput> inputs, MachineLearningCommandJobLimits limits, IDictionary<string, MachineLearningJobOutput> outputs, BinaryData parameters, MachineLearningJobResourceConfiguration resources) : base(description, properties, tags, componentId, computeId, displayName, experimentName, identity, isArchived, jobType, services, status)
+        /// <param name="limits"> Command Job limit. </param>
+        /// <param name="environmentVariables"> Environment variables included in the job. </param>
+        /// <param name="parameters"> Input parameters. </param>
+        /// <param name="queueSettings"> Queue settings for the job. </param>
+        internal MachineLearningCommandJob(string description, IDictionary<string, string> tags, IDictionary<string, string> properties, IDictionary<string, BinaryData> serializedAdditionalRawData, JobType jobType, string displayName, MachineLearningJobStatus? status, string experimentName, IDictionary<string, MachineLearningJobService> services, ResourceIdentifier computeId, bool? isArchived, MachineLearningIdentityConfiguration identity, ResourceIdentifier componentId, NotificationSetting notificationSetting, MachineLearningJobResourceConfiguration resources, ResourceIdentifier codeId, string command, ResourceIdentifier environmentId, IDictionary<string, MachineLearningJobInput> inputs, IDictionary<string, MachineLearningJobOutput> outputs, MachineLearningDistributionConfiguration distribution, MachineLearningCommandJobLimits limits, IDictionary<string, string> environmentVariables, BinaryData parameters, JobQueueSettings queueSettings) : base(description, tags, properties, serializedAdditionalRawData, jobType, displayName, status, experimentName, services, computeId, isArchived, identity, componentId, notificationSetting)
         {
+            Resources = resources;
             CodeId = codeId;
             Command = command;
-            Distribution = distribution;
             EnvironmentId = environmentId;
-            EnvironmentVariables = environmentVariables;
             Inputs = inputs;
-            Limits = limits;
             Outputs = outputs;
+            Distribution = distribution;
+            Limits = limits;
+            EnvironmentVariables = environmentVariables;
             Parameters = parameters;
-            Resources = resources;
+            QueueSettings = queueSettings;
             JobType = jobType;
         }
 
-        /// <summary>
-        /// ARM resource ID of the code asset.
-        /// Serialized Name: CommandJob.codeId
-        /// </summary>
-        public string CodeId { get; set; }
-        /// <summary>
-        /// [Required] The command to execute on startup of the job. eg. &quot;python train.py&quot;
-        /// Serialized Name: CommandJob.command
-        /// </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningCommandJob"/> for deserialization. </summary>
+        internal MachineLearningCommandJob()
+        {
+        }
+
+        /// <summary> Compute Resource configuration for the job. </summary>
+        [WirePath("resources")]
+        public MachineLearningJobResourceConfiguration Resources { get; set; }
+        /// <summary> ARM resource ID of the code asset. </summary>
+        [WirePath("codeId")]
+        public ResourceIdentifier CodeId { get; set; }
+        /// <summary> [Required] The command to execute on startup of the job. eg. "python train.py". </summary>
+        [WirePath("command")]
         public string Command { get; set; }
-        /// <summary>
-        /// Distribution configuration of the job. If set, this should be one of Mpi, Tensorflow, PyTorch, or null.
-        /// Serialized Name: CommandJob.distribution
-        /// Please note <see cref="MachineLearningDistributionConfiguration"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="MpiDistributionConfiguration"/>, <see cref="PyTorchDistributionConfiguration"/> and <see cref="TensorFlowDistributionConfiguration"/>.
-        /// </summary>
-        public MachineLearningDistributionConfiguration Distribution { get; set; }
-        /// <summary>
-        /// [Required] The ARM resource ID of the Environment specification for the job.
-        /// Serialized Name: CommandJob.environmentId
-        /// </summary>
-        public string EnvironmentId { get; set; }
-        /// <summary>
-        /// Environment variables included in the job.
-        /// Serialized Name: CommandJob.environmentVariables
-        /// </summary>
-        public IDictionary<string, string> EnvironmentVariables { get; set; }
+        /// <summary> [Required] The ARM resource ID of the Environment specification for the job. </summary>
+        [WirePath("environmentId")]
+        public ResourceIdentifier EnvironmentId { get; set; }
         /// <summary>
         /// Mapping of input data bindings used in the job.
-        /// Serialized Name: CommandJob.inputs
         /// Please note <see cref="MachineLearningJobInput"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
         /// The available derived classes include <see cref="MachineLearningCustomModelJobInput"/>, <see cref="MachineLearningLiteralJobInput"/>, <see cref="MachineLearningFlowModelJobInput"/>, <see cref="MachineLearningTableJobInput"/>, <see cref="MachineLearningTritonModelJobInput"/>, <see cref="MachineLearningUriFileJobInput"/> and <see cref="MachineLearningUriFolderJobInput"/>.
         /// </summary>
+        [WirePath("inputs")]
         public IDictionary<string, MachineLearningJobInput> Inputs { get; set; }
         /// <summary>
-        /// Command Job limit.
-        /// Serialized Name: CommandJob.limits
-        /// </summary>
-        public MachineLearningCommandJobLimits Limits { get; set; }
-        /// <summary>
         /// Mapping of output data bindings used in the job.
-        /// Serialized Name: CommandJob.outputs
         /// Please note <see cref="MachineLearningJobOutput"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
         /// The available derived classes include <see cref="MachineLearningCustomModelJobOutput"/>, <see cref="MachineLearningFlowModelJobOutput"/>, <see cref="MachineLearningTableJobOutput"/>, <see cref="MachineLearningTritonModelJobOutput"/>, <see cref="MachineLearningUriFileJobOutput"/> and <see cref="MachineLearningUriFolderJobOutput"/>.
         /// </summary>
+        [WirePath("outputs")]
         public IDictionary<string, MachineLearningJobOutput> Outputs { get; set; }
         /// <summary>
+        /// Distribution configuration of the job. If set, this should be one of Mpi, Tensorflow, PyTorch, or null.
+        /// Please note <see cref="MachineLearningDistributionConfiguration"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="MpiDistributionConfiguration"/>, <see cref="PyTorchDistributionConfiguration"/> and <see cref="TensorFlowDistributionConfiguration"/>.
+        /// </summary>
+        [WirePath("distribution")]
+        public MachineLearningDistributionConfiguration Distribution { get; set; }
+        /// <summary> Command Job limit. </summary>
+        [WirePath("limits")]
+        public MachineLearningCommandJobLimits Limits { get; set; }
+        /// <summary> Environment variables included in the job. </summary>
+        [WirePath("environmentVariables")]
+        public IDictionary<string, string> EnvironmentVariables { get; set; }
+        /// <summary>
         /// Input parameters.
-        /// Serialized Name: CommandJob.parameters
         /// <para>
         /// To assign an object to this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
         /// </para>
         /// <para>
-        /// To assign an already formated json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
         /// </para>
         /// <para>
         /// Examples:
@@ -231,11 +167,21 @@ namespace Azure.ResourceManager.MachineLearning.Models
         /// </list>
         /// </para>
         /// </summary>
+        [WirePath("parameters")]
         public BinaryData Parameters { get; }
-        /// <summary>
-        /// Compute Resource configuration for the job.
-        /// Serialized Name: CommandJob.resources
-        /// </summary>
-        public MachineLearningJobResourceConfiguration Resources { get; set; }
+        /// <summary> Queue settings for the job. </summary>
+        internal JobQueueSettings QueueSettings { get; set; }
+        /// <summary> Controls the compute job tier. </summary>
+        [WirePath("queueSettings.jobTier")]
+        public JobTier? QueueJobTier
+        {
+            get => QueueSettings is null ? default : QueueSettings.JobTier;
+            set
+            {
+                if (QueueSettings is null)
+                    QueueSettings = new JobQueueSettings();
+                QueueSettings.JobTier = value;
+            }
+        }
     }
 }

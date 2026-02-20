@@ -5,6 +5,8 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
@@ -12,34 +14,43 @@ namespace Azure.ResourceManager.SqlVirtualMachine.Models
     /// <summary> Availability group replica configuration. </summary>
     public partial class AvailabilityGroupReplica
     {
-        /// <summary> Initializes a new instance of AvailabilityGroupReplica. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AvailabilityGroupReplica"/>. </summary>
         public AvailabilityGroupReplica()
         {
         }
 
-        /// <summary> Initializes a new instance of AvailabilityGroupReplica. </summary>
+        /// <summary> Initializes a new instance of <see cref="AvailabilityGroupReplica"/>. </summary>
         /// <param name="sqlVmInstanceId"> Sql VirtualMachine Instance Id. </param>
         /// <param name="role"> Replica Role in availability group. </param>
         /// <param name="commit"> Replica commit mode in availability group. </param>
         /// <param name="failover"> Replica failover mode in availability group. </param>
         /// <param name="readableSecondary"> Replica readable secondary mode in availability group. </param>
-        internal AvailabilityGroupReplica(ResourceIdentifier sqlVmInstanceId, AvailabilityGroupReplicaRole? role, AvailabilityGroupReplicaCommitMode? commit, AvailabilityGroupReplicaFailoverMode? failover, ReadableSecondaryMode? readableSecondary)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal AvailabilityGroupReplica(ResourceIdentifier sqlVmInstanceId, AvailabilityGroupReplicaRole? role, AvailabilityGroupReplicaCommitMode? commit, AvailabilityGroupReplicaFailoverMode? failover, ReadableSecondaryMode? readableSecondary, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             SqlVmInstanceId = sqlVmInstanceId;
             Role = role;
             Commit = commit;
             Failover = failover;
             ReadableSecondary = readableSecondary;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Sql VirtualMachine Instance Id. </summary>
         public ResourceIdentifier SqlVmInstanceId { get; set; }
+
         /// <summary> Replica Role in availability group. </summary>
         public AvailabilityGroupReplicaRole? Role { get; set; }
+
         /// <summary> Replica commit mode in availability group. </summary>
         public AvailabilityGroupReplicaCommitMode? Commit { get; set; }
+
         /// <summary> Replica failover mode in availability group. </summary>
         public AvailabilityGroupReplicaFailoverMode? Failover { get; set; }
+
         /// <summary> Replica readable secondary mode in availability group. </summary>
         public ReadableSecondaryMode? ReadableSecondary { get; set; }
     }

@@ -8,26 +8,31 @@
 using System;
 using System.Collections.Generic;
 using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> Properties of the deleted managed HSM. </summary>
     public partial class DeletedManagedHsmProperties
     {
-        /// <summary> Initializes a new instance of DeletedManagedHsmProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DeletedManagedHsmProperties"/>. </summary>
         internal DeletedManagedHsmProperties()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
-        /// <summary> Initializes a new instance of DeletedManagedHsmProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="DeletedManagedHsmProperties"/>. </summary>
         /// <param name="managedHsmId"> The resource id of the original managed HSM. </param>
         /// <param name="location"> The location of the original managed HSM. </param>
         /// <param name="deletedOn"> The deleted date. </param>
         /// <param name="scheduledPurgeOn"> The scheduled purged date. </param>
         /// <param name="purgeProtectionEnabled"> Purge protection status of the original managed HSM. </param>
         /// <param name="tags"> Tags of the original managed HSM. </param>
-        internal DeletedManagedHsmProperties(ResourceIdentifier managedHsmId, AzureLocation? location, DateTimeOffset? deletedOn, DateTimeOffset? scheduledPurgeOn, bool? purgeProtectionEnabled, IReadOnlyDictionary<string, string> tags)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DeletedManagedHsmProperties(ResourceIdentifier managedHsmId, AzureLocation? location, DateTimeOffset? deletedOn, DateTimeOffset? scheduledPurgeOn, bool? purgeProtectionEnabled, IReadOnlyDictionary<string, string> tags, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ManagedHsmId = managedHsmId;
             Location = location;
@@ -35,19 +40,31 @@ namespace Azure.ResourceManager.KeyVault.Models
             ScheduledPurgeOn = scheduledPurgeOn;
             PurgeProtectionEnabled = purgeProtectionEnabled;
             Tags = tags;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The resource id of the original managed HSM. </summary>
+        [WirePath("mhsmId")]
         public ResourceIdentifier ManagedHsmId { get; }
+
         /// <summary> The location of the original managed HSM. </summary>
+        [WirePath("location")]
         public AzureLocation? Location { get; }
+
         /// <summary> The deleted date. </summary>
+        [WirePath("deletionDate")]
         public DateTimeOffset? DeletedOn { get; }
+
         /// <summary> The scheduled purged date. </summary>
+        [WirePath("scheduledPurgeDate")]
         public DateTimeOffset? ScheduledPurgeOn { get; }
+
         /// <summary> Purge protection status of the original managed HSM. </summary>
+        [WirePath("purgeProtectionEnabled")]
         public bool? PurgeProtectionEnabled { get; }
+
         /// <summary> Tags of the original managed HSM. </summary>
+        [WirePath("tags")]
         public IReadOnlyDictionary<string, string> Tags { get; }
     }
 }

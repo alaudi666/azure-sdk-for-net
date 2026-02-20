@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Avs
 {
-    internal class WorkloadNetworkPortMirroringProfileOperationSource : IOperationSource<WorkloadNetworkPortMirroringProfileResource>
+    /// <summary></summary>
+    internal partial class WorkloadNetworkPortMirroringProfileOperationSource : IOperationSource<WorkloadNetworkPortMirroringProfileResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal WorkloadNetworkPortMirroringProfileOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         WorkloadNetworkPortMirroringProfileResource IOperationSource<WorkloadNetworkPortMirroringProfileResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = WorkloadNetworkPortMirroringProfileData.DeserializeWorkloadNetworkPortMirroringProfileData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            WorkloadNetworkPortMirroringProfileData data = WorkloadNetworkPortMirroringProfileData.DeserializeWorkloadNetworkPortMirroringProfileData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new WorkloadNetworkPortMirroringProfileResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<WorkloadNetworkPortMirroringProfileResource> IOperationSource<WorkloadNetworkPortMirroringProfileResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = WorkloadNetworkPortMirroringProfileData.DeserializeWorkloadNetworkPortMirroringProfileData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            WorkloadNetworkPortMirroringProfileData data = WorkloadNetworkPortMirroringProfileData.DeserializeWorkloadNetworkPortMirroringProfileData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new WorkloadNetworkPortMirroringProfileResource(_client, data);
         }
     }

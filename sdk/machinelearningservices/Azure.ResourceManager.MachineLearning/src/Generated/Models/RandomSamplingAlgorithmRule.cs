@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The specific type of random algorithm
-    /// Serialized Name: RandomSamplingAlgorithmRule
-    /// </summary>
+    /// <summary> The specific type of random algorithm. </summary>
     public readonly partial struct RandomSamplingAlgorithmRule : IEquatable<RandomSamplingAlgorithmRule>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string RandomValue = "Random";
         private const string SobolValue = "Sobol";
 
-        /// <summary>
-        /// Random
-        /// Serialized Name: RandomSamplingAlgorithmRule.Random
-        /// </summary>
+        /// <summary> Random. </summary>
         public static RandomSamplingAlgorithmRule Random { get; } = new RandomSamplingAlgorithmRule(RandomValue);
-        /// <summary>
-        /// Sobol
-        /// Serialized Name: RandomSamplingAlgorithmRule.Sobol
-        /// </summary>
+        /// <summary> Sobol. </summary>
         public static RandomSamplingAlgorithmRule Sobol { get; } = new RandomSamplingAlgorithmRule(SobolValue);
         /// <summary> Determines if two <see cref="RandomSamplingAlgorithmRule"/> values are the same. </summary>
         public static bool operator ==(RandomSamplingAlgorithmRule left, RandomSamplingAlgorithmRule right) => left.Equals(right);
         /// <summary> Determines if two <see cref="RandomSamplingAlgorithmRule"/> values are not the same. </summary>
         public static bool operator !=(RandomSamplingAlgorithmRule left, RandomSamplingAlgorithmRule right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="RandomSamplingAlgorithmRule"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="RandomSamplingAlgorithmRule"/>. </summary>
         public static implicit operator RandomSamplingAlgorithmRule(string value) => new RandomSamplingAlgorithmRule(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

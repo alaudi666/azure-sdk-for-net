@@ -1,14 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Numerics;
+using Azure.Core;
 using Azure.ResourceManager.CognitiveServices.Models;
 using Azure.ResourceManager.Models;
 using Azure.ResourceManager.Resources.Models;
 using NUnit.Framework;
-using Azure.Core;
-using System;
-using System.Numerics;
 
 namespace Azure.ResourceManager.CognitiveServices.Tests.Helpers
 {
@@ -98,6 +98,7 @@ namespace Azure.ResourceManager.CognitiveServices.Tests.Helpers
         {
             var data = new CognitiveServicesAccountDeploymentData()
             {
+                Sku = new CognitiveServicesSku("Standard", null, null, null, 1, null),
                 Properties = new CognitiveServicesAccountDeploymentProperties
                 {
                     Model = new CognitiveServicesAccountDeploymentModel()
@@ -105,10 +106,6 @@ namespace Azure.ResourceManager.CognitiveServices.Tests.Helpers
                         Name = "text-ada-001",
                         Format = "OpenAI",
                         Version = "1"
-                    },
-                    ScaleSettings = new CognitiveServicesAccountDeploymentScaleSettings()
-                    {
-                         ScaleType = CognitiveServicesAccountDeploymentScaleType.Standard,
                     }
                 }
             };

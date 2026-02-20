@@ -15,21 +15,44 @@ namespace Azure.Communication.CallAutomation
         void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("incomingCallContext");
+            writer.WritePropertyName("incomingCallContext"u8);
             writer.WriteStringValue(IncomingCallContext);
-            writer.WritePropertyName("callbackUri");
+            writer.WritePropertyName("callbackUri"u8);
             writer.WriteStringValue(CallbackUri);
-            if (Optional.IsDefined(MediaStreamingConfiguration))
+            if (Optional.IsDefined(OperationContext))
             {
-                writer.WritePropertyName("mediaStreamingConfiguration");
-                writer.WriteObjectValue(MediaStreamingConfiguration);
+                writer.WritePropertyName("operationContext"u8);
+                writer.WriteStringValue(OperationContext);
             }
-            if (Optional.IsDefined(AzureCognitiveServicesEndpointUrl))
+            if (Optional.IsDefined(CallIntelligenceOptions))
             {
-                writer.WritePropertyName("azureCognitiveServicesEndpointUrl");
-                writer.WriteStringValue(AzureCognitiveServicesEndpointUrl);
+                writer.WritePropertyName("callIntelligenceOptions"u8);
+                writer.WriteObjectValue(CallIntelligenceOptions);
+            }
+            if (Optional.IsDefined(AnsweredBy))
+            {
+                writer.WritePropertyName("answeredBy"u8);
+                writer.WriteObjectValue(AnsweredBy);
+            }
+            if (Optional.IsDefined(MediaStreamingOptions))
+            {
+                writer.WritePropertyName("mediaStreamingOptions"u8);
+                writer.WriteObjectValue(MediaStreamingOptions);
+            }
+            if (Optional.IsDefined(TranscriptionOptions))
+            {
+                writer.WritePropertyName("transcriptionOptions"u8);
+                writer.WriteObjectValue(TranscriptionOptions);
             }
             writer.WriteEndObject();
+        }
+
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
+        internal virtual RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue(this);
+            return content;
         }
     }
 }

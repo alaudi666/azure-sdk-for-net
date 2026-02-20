@@ -5,8 +5,8 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
@@ -14,20 +14,30 @@ namespace Azure.ResourceManager.StorageSync.Models
     /// <summary> Array of StorageSyncServices. </summary>
     internal partial class StorageSyncServiceArray
     {
-        /// <summary> Initializes a new instance of StorageSyncServiceArray. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="StorageSyncServiceArray"/>. </summary>
         internal StorageSyncServiceArray()
         {
             Value = new ChangeTrackingList<StorageSyncServiceData>();
         }
 
-        /// <summary> Initializes a new instance of StorageSyncServiceArray. </summary>
+        /// <summary> Initializes a new instance of <see cref="StorageSyncServiceArray"/>. </summary>
         /// <param name="value"> Collection of StorageSyncServices. </param>
-        internal StorageSyncServiceArray(IReadOnlyList<StorageSyncServiceData> value)
+        /// <param name="nextLink"> The URL to get the next set of results. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal StorageSyncServiceArray(IList<StorageSyncServiceData> value, string nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
+            NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Collection of StorageSyncServices. </summary>
-        public IReadOnlyList<StorageSyncServiceData> Value { get; }
+        public IList<StorageSyncServiceData> Value { get; }
+
+        /// <summary> The URL to get the next set of results. </summary>
+        public string NextLink { get; }
     }
 }

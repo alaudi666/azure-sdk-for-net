@@ -4,10 +4,10 @@
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.TestFramework;
+using Azure.ResourceManager.Batch.Tests.Helpers;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.Storage;
 using Azure.ResourceManager.TestFramework;
-using Azure.ResourceManager.Batch.Tests.Helpers;
 using NUnit.Framework;
 
 namespace Azure.ResourceManager.Batch.Tests
@@ -17,7 +17,7 @@ namespace Azure.ResourceManager.Batch.Tests
         protected ArmClient Client { get; private set; }
         protected ResourceGroupResource ResourceGroup { get; private set; }
         protected ResourceIdentifier StorageAccountIdentifier { get; private set; }
-        protected AzureLocation DefaultLocation => AzureLocation.WestUS;
+        protected AzureLocation DefaultLocation => AzureLocation.EastUS;
 
         private ResourceIdentifier _resourceGroupIdentifier;
 
@@ -53,7 +53,7 @@ namespace Azure.ResourceManager.Batch.Tests
                 using (SessionRecording.DisableRecording())
                 {
                     var subscription = await GlobalClient.GetDefaultSubscriptionAsync();
-                    var rgLro = await subscription.GetResourceGroups().CreateOrUpdateAsync(WaitUntil.Completed, rgName, new ResourceGroupData(AzureLocation.WestUS2));
+                    var rgLro = await subscription.GetResourceGroups().CreateOrUpdateAsync(WaitUntil.Completed, rgName, new ResourceGroupData(AzureLocation.EastUS));
                     var storage = await CreateStorageAccount(rgLro.Value, storageAccountName);
                     _resourceGroupIdentifier = rgLro.Value.Data.Id;
                     StorageAccountIdentifier = storage.Id;

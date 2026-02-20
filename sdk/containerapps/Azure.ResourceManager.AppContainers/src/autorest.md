@@ -1,4 +1,4 @@
-# Generated code configuration
+﻿# Generated code configuration
 
 Run `dotnet build /t:GenerateCode` to generate code.
 
@@ -7,12 +7,21 @@ azure-arm: true
 csharp: true
 library-name: AppContainers
 namespace: Azure.ResourceManager.AppContainers
-require: https://github.com/Azure/azure-rest-api-specs/blob/e812b54127fad6c9bc2407b33980b0fe385b7717/specification/app/resource-manager/readme.md
+require: https://github.com/Azure/azure-rest-api-specs/blob/33a2135c8115465b292b71a521ea50c1cc336c8c/specification/app/resource-manager/Microsoft.App/ContainerApps/readme.md
+#tag: package-2025-07-01
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
+sample-gen:
+  output-folder: $(this-folder)/../tests/Generated
+  clear-output-folder: true
 skip-csproj: true
 modelerfour:
   flatten-payloads: false
+use-model-reader-writer: true
+enable-bicep-serialization: true
+
+#mgmt-debug:
+#  show-serialized-names: true
 
 format-by-name-rules:
   'tenantId': 'uuid'
@@ -21,7 +30,7 @@ format-by-name-rules:
   '*Uri': 'Uri'
   '*Uris': 'Uri'
 
-rename-rules:
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS
@@ -43,73 +52,84 @@ rename-rules:
   URI: Uri
   Etag: ETag|etag
   Github: GitHub
+  LTS: Lts
 
 rename-mapping:
-  ContainerAppProbeHttpGet: ContainerAppHttpRequestInfo
-  ContainerAppProbeTcpSocket: ContainerAppTcpSocketRequestInfo
-  AuthConfig: ContainerAppAuthConfig
-  Certificate: ContainerAppCertificate
-  DaprComponent: ContainerAppDaprComponent
-  ConnectedEnvironment: ContainerAppConnectedEnvironment
-  ManagedEnvironment: ContainerAppManagedEnvironment
-  ConnectedEnvironmentStorage: ContainerAppConnectedEnvironmentStorage
-  ManagedEnvironmentStorage: ContainerAppManagedEnvironmentStorage
-  Diagnostics: ContainerAppDiagnostic
-  SourceControl: ContainerAppSourceControl
   AccessMode: ContainerAppAccessMode
   Action: ContainerAppIPRuleAction
   ActiveRevisionsMode: ContainerAppActiveRevisionsMode
   AllowedPrincipals: ContainerAppAllowedPrincipals
-  IdentityProviders: ContainerAppIdentityProvidersConfiguration
-  AzureActiveDirectory: ContainerAppAzureActiveDirectoryConfiguration
-  Facebook: ContainerAppFacebookConfiguration
-  GitHub: ContainerAppGitHubConfiguration
-  Google: ContainerAppGoogleConfiguration
-  Twitter: ContainerAppTwitterConfiguration
-  Apple: ContainerAppAppleConfiguration
-  AzureStaticWebApps: ContainerAppAzureStaticWebAppsConfiguration
-  CustomOpenIdConnectProvider: ContainerAppCustomOpenIdConnectProviderConfiguration
-  AppleRegistration: ContainerAppAppleRegistrationConfiguration
-  AvailableWorkloadProfileProperties: ContainerAppAvailableWorkloadProfileProperties
   Applicability: ContainerAppAvailableWorkloadProfileApplicability
+  Apple: ContainerAppAppleConfiguration
+  AppleRegistration: ContainerAppAppleRegistrationConfiguration
+  AppLogsConfiguration: ContainerAppLogsConfiguration
+  AppProtocol: ContainerAppProtocol
+  AppRegistration: ContainerAppRegistration
+  AuthConfig: ContainerAppAuthConfig
   AuthPlatform: ContainerAppAuthPlatform
   AvailableWorkloadProfile: ContainerAppAvailableWorkloadProfile
+  AvailableWorkloadProfileProperties: ContainerAppAvailableWorkloadProfileProperties
+  AvailableWorkloadProfileProperties.memoryGiB: MemoryInGiB
+  AzureActiveDirectory: ContainerAppAzureActiveDirectoryConfiguration
   AzureActiveDirectoryLogin: ContainerAppAzureActiveDirectoryLoginConfiguration
+  AzureActiveDirectoryLogin.disableWWWAuthenticate: IsWwwAuthenticationDisabled
   AzureActiveDirectoryRegistration: ContainerAppAzureActiveDirectoryRegistrationConfiguration
   AzureActiveDirectoryValidation: ContainerAppAzureActiveDirectoryValidationConfiguration
   AzureCredentials: ContainerAppCredentials
   AzureFileProperties: ContainerAppAzureFileProperties
+  AzureStaticWebApps: ContainerAppAzureStaticWebAppsConfiguration
   BaseContainer: ContainerAppBaseContainer
   BillingMeter: ContainerAppBillingMeter
   BillingMeterProperties: ContainerAppBillingMeterProperties
+  BillingMeterProperties.category: WorkloadProfileCategory
   BindingType: ContainerAppCustomDomainBindingType
-  Category: ContainerAppBillingMeterCategory
+  Certificate: ContainerAppCertificate
+  CertificateKeyVaultProperties: ContainerAppCertificateKeyVaultProperties
   CertificatePatch: ContainerAppCertificatePatch
   CertificateProperties: ContainerAppCertificateProperties
+  CertificateProperties.valid: IsValid
   CertificateProvisioningState: ContainerAppCertificateProvisioningState
-  AppLogsConfiguration: ContainerAppLogsConfiguration
-  AppProtocol: ContainerAppProtocol
-  AppRegistration: ContainerAppRegistration
   CheckNameAvailabilityReason: ContainerAppNameUnavailableReason
   CheckNameAvailabilityRequest: ContainerAppNameAvailabilityContent
+  CheckNameAvailabilityRequest.type: ResourceType|resource-type
   CheckNameAvailabilityResponse: ContainerAppNameAvailabilityResult
-  OpenIdConnectClientCredential: ContainerAppOpenIdConnectClientCredential
+  CheckNameAvailabilityResponse.nameAvailable: IsNameAvailable
   ClientCredentialMethod: ContainerAppOpenIdConnectClientCredentialMethod
   ClientRegistration: ContainerAppClientRegistration
+  Configuration: ContainerAppConfiguration
+  ConnectedEnvironment: ContainerAppConnectedEnvironment
+  ConnectedEnvironment.properties.staticIp: -|ip-address
   ConnectedEnvironmentProvisioningState: ContainerAppConnectedEnvironmentProvisioningState
+  ConnectedEnvironmentStorage: ContainerAppConnectedEnvironmentStorage
+  Container: ContainerAppContainer
+  ContainerApp.properties.environmentId: -|arm-id
+  ContainerApp.properties.eventStreamEndpoint: -|uri
+  ContainerApp.properties.managedEnvironmentId: -|arm-id
+  ContainerApp.properties.outboundIpAddresses: OutboundIPAddressList|ip-address
+  ContainerAppAuthToken.properties.expires: ExpireOn
+  ContainerAppProbe.type: ProbeType
+  ContainerAppProbeHttpGet: ContainerAppHttpRequestInfo
+  ContainerAppProbeHttpGetHttpHeadersItem: ContainerAppHttpHeaderInfo
+  ContainerAppProbeTcpSocket: ContainerAppTcpSocketRequestInfo
   ContainerResources: AppContainerResources
   CookieExpiration: ContainerAppCookieExpiration
   CookieExpirationConvention: ContainerAppCookieExpirationConvention
   CorsPolicy: ContainerAppCorsPolicy
   CustomDomain: ContainerAppCustomDomain
+  CustomDomain.certificateId: -|arm-id
   CustomDomainConfiguration: ContainerAppCustomDomainConfiguration
   CustomHostnameAnalysisResult: ContainerAppCustomHostnameAnalysisResult
   CustomHostnameAnalysisResultCustomDomainVerificationFailureInfo: ContainerAppCustomDomainVerificationFailureInfo
   CustomHostnameAnalysisResultCustomDomainVerificationFailureInfoDetailsItem: ContainerAppCustomDomainVerificationFailureInfoDetailsItem
+  CustomOpenIdConnectProvider: ContainerAppCustomOpenIdConnectProviderConfiguration
   CustomScaleRule: ContainerAppCustomScaleRule
+  DaprComponent: ContainerAppDaprComponent
   DaprMetadata: ContainerAppDaprMetadata
   DaprSecret: ContainerAppDaprSecret
+  Dapr: ContainerAppDaprConfiguration
+  Dapr.enableApiLogging: IsApiLoggingEnabled
   DefaultAuthorizationPolicy: ContainerAppDefaultAuthorizationPolicy
+  Diagnostics: ContainerAppDiagnostic
   DiagnosticDataProviderMetadata: ContainerAppDiagnosticDataProviderMetadata
   DiagnosticDataProviderMetadataPropertyBagItem: ContainerAppDiagnosticDataProviderMetadataPropertyBagItem
   DiagnosticDataTableResponseColumn: ContainerAppDiagnosticDataColumn
@@ -122,81 +142,137 @@ rename-mapping:
   DiagnosticSupportTopic: ContainerAppDiagnosticSupportTopic
   DnsVerificationTestResult: ContainerAppDnsVerificationTestResult
   EnvironmentAuthToken: ContainerAppEnvironmentAuthToken
+  EnvironmentAuthToken.properties.expires: ExpireOn
   EnvironmentProvisioningState: ContainerAppEnvironmentProvisioningState
   EnvironmentVar: ContainerAppEnvironmentVariable
+  ErrorEntity: WorkflowErrorEntity
   ExtendedLocation: ContainerAppExtendedLocation
   ExtendedLocationTypes: ContainerAppExtendedLocationType
+  Facebook: ContainerAppFacebookConfiguration
   ForwardProxy: ContainerAppForwardProxy
   ForwardProxyConvention: ContainerAppForwardProxyConvention
+  GitHub: ContainerAppGitHubConfiguration
   GithubActionConfiguration: ContainerAppGitHubActionConfiguration
   GlobalValidation: ContainerAppGlobalValidation
+  Google: ContainerAppGoogleConfiguration
+  HttpRoute: ContainerAppHttpRoute
+  HttpRouteConfig: ContainerAppHttpRouteConfig
+  HttpRouteConfigProperties: ContainerAppHttpRouteConfigProperties
+  HttpRouteMatch: ContainerAppHttpRouteMatch
+  HttpRouteMatch.caseSensitive: IsCaseSensitive
+  HttpRouteProvisioningErrors: ContainerAppHttpRouteProvisioningErrors
+  HttpRouteProvisioningErrors.timestamp: ErrorOccurredOn
+  HttpRouteProvisioningState: ContainerAppHttpRouteProvisioningState
+  HttpRouteRule: ContainerAppHttpRouteRule
+  HttpRouteTarget: ContainerAppHttpRouteTarget
   HttpScaleRule: ContainerAppHttpScaleRule
   HttpSettings: ContainerAppHttpSettings
+  IdentityProviders: ContainerAppIdentityProvidersConfiguration
+  IdentitySettings: ContainerAppIdentitySettings
+  IdentitySettingsLifeCycle: ContainerAppIdentitySettingsLifeCycle 
+  Ingress: ContainerAppIngressConfiguration
   IngressClientCertificateMode: ContainerAppIngressClientCertificateMode
+  IngressConfiguration: ManagedEnvironmentIngressConfiguration
   IngressTransportMethod: ContainerAppIngressTransportMethod
   InitContainer: ContainerAppInitContainer
   IpSecurityRestrictionRule: ContainerAppIPSecurityRestrictionRule
+  Job: ContainerAppJob
+  JobConfiguration: ContainerAppJobConfiguration
+  JobConfigurationEventTriggerConfig: EventTriggerConfiguration
+  JobExecution: ContainerAppJobExecution
+  JobExecutionBase: ContainerAppJobExecutionBase
+  JobExecutionTemplate: ContainerAppJobExecutionTemplate
+  JobPatchPropertiesProperties: ContainerAppJobPatchProperties
+  JobProvisioningState: ContainerAppJobProvisioningState
+  JobScale: ContainerAppJobScale
+  JobScale.pollingInterval: PollingIntervalInSeconds
+  JobScaleRule: ContainerAppJobScaleRule
+  JobsCollection: ContainerAppJobsCollection
+  JobTemplate: ContainerAppJobTemplate
   JwtClaimChecks: ContainerAppJwtClaimChecks
+  Kind: ContainerAppKind
+  LifecycleConfiguration: SessionPoolLifecycleConfiguration
+  LifecycleType: SessionPoolLifecycleType
   LogAnalyticsConfiguration: ContainerAppLogAnalyticsConfiguration
   Login: ContainerAppLogin
-  Nonce: ContainerAppLoginNonce
   LogLevel: ContainerAppDaprLogLevel
-  ManagedEnvironmentOutboundSettings: ContainerAppManagedEnvironmentOutboundSettings
-  ManagedEnvironmentOutBoundType: ContainerAppManagedEnvironmentOutBoundType
+  MaintenanceConfigurationResource: ContainerAppMaintenanceConfiguration
+  ManagedCertificate: ContainerAppManagedCertificate
+  ManagedEnvironment: ContainerAppManagedEnvironment
+  ManagedEnvironment.properties.staticIp: -|ip-address
+  ManagedEnvironment.properties.zoneRedundant: IsZoneRedundant
+  ManagedEnvironmentStorage: ContainerAppManagedEnvironmentStorage
+  ManagedIdentitySetting: SessionPoolManagedIdentitySetting
+  Mtls.enabled: IsMtlsEnabled
+  NfsAzureFileProperties: ContainerAppNfsAzureFileProperties
+  Nonce: ContainerAppLoginNonce
+  OpenIdConnectClientCredential: ContainerAppOpenIdConnectClientCredential
   OpenIdConnectConfig: ContainerAppOpenIdConnectConfig
   OpenIdConnectLogin: ContainerAppOpenIdConnectLogin
   OpenIdConnectRegistration: ContainerAppOpenIdConnectRegistration
+  PrivateEndpointConnection: ContainerAppPrivateEndpointConnection
+  PrivateEndpointConnectionListResult: ContainerAppPrivateEndpointConnectionListResult
+  PrivateEndpointConnectionProvisioningState: ContainerAppPrivateEndpointConnectionProvisioningState
+  PrivateEndpointServiceConnectionStatus: ContainerAppPrivateEndpointServiceConnectionStatus
+  PrivateLinkResource: ContainerAppPrivateLink
+  PrivateLinkResourceListResult: ContainerAppPrivateLinkListResult
+  PrivateLinkServiceConnectionState: ContainerAppPrivateLinkServiceConnectionState
+  PublicNetworkAccess: ContainerAppPublicNetworkAccess
   QueueScaleRule: ContainerAppQueueScaleRule
   RegistryCredentials: ContainerAppRegistryCredentials
   RegistryInfo: ContainerAppRegistryInfo
+  RegistryInfo.registryUrl: RegistryServer
+  Replica: ContainerAppReplica
   ReplicaContainer: ContainerAppReplicaContainer
+  ReplicaContainer.ready: IsReady
+  ReplicaContainer.started: IsStarted
+  ResourceTags: ContainerAppResourceTags
+  Revision: ContainerAppRevision
+  Revision.properties.active: IsActive
   RevisionHealthState: ContainerAppRevisionHealthState
   RevisionProvisioningState: ContainerAppRevisionProvisioningState
+  Scale: ContainerAppScale
+  ScaleConfiguration: SessionPoolScaleConfiguration
+  ScaleRule: ContainerAppScaleRule
+  ScaleRuleAuth: ContainerAppScaleRuleAuth
+  Scheme: ContainerAppHttpScheme
+  ScheduledEntry: ManagedEnvironmentScheduledEntry
+  Secret: ContainerAppWritableSecret
+  SecretKeyVaultProperties: ContainerAppSecretKeyVaultProperties
+  ServiceBind: ContainerAppServiceBind
+  SourceControl: ContainerAppSourceControl
   SourceControlOperationState: ContainerAppSourceControlOperationState
   StorageType: ContainerAppStorageType
   TcpScaleRule: ContainerAppTcpScaleRule
-  TrafficWeight: ContainerAppRevisionTrafficWeight
-  TwitterRegistration: ContainerAppTwitterRegistration
-  UnauthenticatedClientActionV2: ContainerAppUnauthenticatedClientActionV2
-  VnetConfiguration: ContainerAppVnetConfiguration
-  WorkloadProfile: ContainerAppWorkloadProfile
-  WorkloadProfileStates: ContainerAppWorkloadProfileState
-  WorkloadProfileStatesProperties: ContainerAppWorkloadProfileStateProperties
-  Revision: ContainerAppRevision
-  Replica: ContainerAppReplica
-  Configuration: ContainerAppConfiguration
-  Dapr: ContainerAppDaprConfiguration
-  Dapr.enableApiLogging: IsApiLoggingEnabled
-  Ingress: ContainerAppIngressConfiguration
-  Container: ContainerAppContainer
-  Scale: ContainerAppScale
-  ScaleRule: ContainerAppScaleRule
-  ScaleRuleAuth: ContainerAppScaleRuleAuth
-  Secret: ContainerAppWritableSecret
   Template: ContainerAppTemplate
-  Volume: ContainerAppVolume
-  VolumeMount: ContainerAppVolumeMount
-  ContainerApp.properties.environmentId: -|arm-id
-  ContainerApp.properties.managedEnvironmentId: -|arm-id
-  Revision.properties.active: IsActive
-  ManagedEnvironment.properties.zoneRedundant: IsZoneRedundant
-  AvailableWorkloadProfileProperties.memoryGiB: MemoryInGiB
-  AzureActiveDirectoryLogin.disableWWWAuthenticate: IsWwwAuthenticationDisabled
-  CertificateProperties.valid: IsValid
-  CheckNameAvailabilityRequest.type: ResourceType|resource-type
-  CheckNameAvailabilityResponse.nameAvailable: IsNameAvailable
-  ContainerAppAuthToken.properties.expires: ExpireOn
-  EnvironmentAuthToken.properties.expires: ExpireOn
-  CustomDomain.certificateId: -|arm-id
-  ManagedEnvironmentOutboundSettings.virtualNetworkApplianceIp: -|ip-address
-  ConnectedEnvironment.properties.staticIp: -|ip-address
-  ManagedEnvironment.properties.staticIp: -|ip-address
-  ReplicaContainer.ready: IsReady
-  ReplicaContainer.started: IsStarted
+  TokenStore: ContainerAppTokenStore
+  TrafficWeight: ContainerAppRevisionTrafficWeight
   TrafficWeight.latestRevision: IsLatestRevision
+  TriggerType: ContainerAppJobTriggerType
+  Twitter: ContainerAppTwitterConfiguration
+  TwitterRegistration: ContainerAppTwitterRegistration
+  Type: ContainerAppProbeType
+  UnauthenticatedClientActionV2: ContainerAppUnauthenticatedClientActionV2
+  Usage: ContainerAppUsage
+  UsageName: ContainerAppUsageName
+  UsageUnit: ContainerAppUsageUnit
+  VnetConfiguration: ContainerAppVnetConfiguration
   VnetConfiguration.infrastructureSubnetId: -|arm-id
   VnetConfiguration.internal: IsInternal
-  ContainerApp.properties.eventStreamEndpoint: -|uri
+  Volume: ContainerAppVolume
+  VolumeMount: ContainerAppVolumeMount
+  WeekDay:  ManagedEnvironmentWeekDay
+  WorkflowEnvelope: LogicAppWorkflowEnvelope
+  WorkflowEnvelopeProperties: LogicAppWorkflowEnvelopeProperties
+  WorkflowHealth: LogicAppWorkflowHealth
+  WorkflowHealthState: LogicAppWorkflowHealthState
+  WorkflowKind: LogicAppWorkflowKind
+  WorkflowState: LogicAppWorkflowState
+  WorkloadProfile: ContainerAppWorkloadProfile
+  WorkloadProfile.maximumCount: MaximumNodeCount
+  WorkloadProfile.minimumCount: MinimumNodeCount
+  WorkloadProfileStates: ContainerAppWorkloadProfileState
+  WorkloadProfileStatesProperties: ContainerAppWorkloadProfileStateProperties
 
 request-path-to-resource-name:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/connectedEnvironments/{connectedEnvironmentName}/certificates/{certificateName}: ContainerAppConnectedEnvironmentCertificate
@@ -206,26 +282,21 @@ request-path-to-resource-name:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/daprComponents/{componentName}: ContainerAppManagedEnvironmentDaprComponent
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/detectors/{detectorName}: ContainerAppManagedEnvironmentDetector
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/detectorProperties/rootApi: ContainerAppManagedEnvironmentDetectorResourceProperty
+  /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/jobs/{jobName}: ContainerAppJob
+  /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/jobs/{jobName}/detectors/{detectorName}: ContainerAppJobDetector
+  /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/jobs/{jobName}/detectorProperties/{apiName}: ContainerAppJobDetectorProperty
 
 override-operation-name:
     Namespaces_CheckNameAvailability: CheckContainerAppNameAvailability
 
 directive:
-  - from: CommonDefinitions.json
-    where: $.definitions
-    transform: >
-      $.ContainerAppProbe.properties.type['x-ms-enum']['name'] = 'ContainerAppProbeType';
-      $.ContainerAppProbe.properties.httpGet.properties.scheme['x-ms-enum']['name'] = 'ContainerAppHttpScheme';
-      $.ContainerAppProbe.properties.httpGet.properties.httpHeaders.items['x-ms-client-name'] = 'ContainerAppHttpHeaderInfo';
-      $.DefaultErrorResponse.properties.error.properties.innererror['x-ms-client-name'] = 'InnerError';
   - from: swagger-document
     where: $.definitions..enabled
     transform: >
       if ($['type'] === 'boolean')
         $['x-ms-client-name'] = 'IsEnabled'
-  - from: ContainerApps.json
-    where: $.definitions.ContainerApp
-    transform: >
-      $.properties.properties.properties.outboundIpAddresses['x-ms-client-name'] = 'outboundIpAddressList';
-      $.properties.properties.properties.outboundIpAddresses.items['x-ms-format'] = 'ip-address';
+  # Change type to ResourceIdentifier
+  - from: CommonDefinitions.json
+    where: $.definitions.ServiceBind.properties.serviceId
+    transform: $['x-ms-format'] = 'arm-id'
 ```

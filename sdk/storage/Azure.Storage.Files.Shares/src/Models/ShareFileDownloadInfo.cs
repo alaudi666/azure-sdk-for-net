@@ -39,6 +39,12 @@ namespace Azure.Storage.Files.Shares.Models
 #pragma warning restore CA1819 // Properties should not return arrays
 
         /// <summary>
+        /// When requested using <see cref="DownloadTransferValidationOptions"/>, this value contains the CRC for the download blob range.
+        /// This value may only become populated once the network stream is fully consumed.
+        /// </summary>
+        public byte[] ContentCrc { get; internal set; }
+
+        /// <summary>
         /// Details returned when downloading a file
         /// </summary>
         public ShareFileDownloadDetails Details { get; internal set; }
@@ -122,7 +128,7 @@ namespace Azure.Storage.Files.Shares.Models
                     IsServerEncrypted = isServerEncrypted,
                     SmbProperties = new FileSmbProperties
                     {
-                        FileAttributes = ShareExtensions.ToFileAttributes(fileAttributes),
+                        FileAttributes = ShareModelExtensions.ToFileAttributes(fileAttributes),
                         FilePermissionKey = filePermissionKey,
                         FileCreatedOn = fileCreationTime,
                         FileLastWrittenOn = fileLastWriteTime,

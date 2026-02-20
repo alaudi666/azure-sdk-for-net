@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Blueprint
 {
     /// <summary>
-    /// A class representing a collection of <see cref="AssignmentOperationResource" /> and their operations.
-    /// Each <see cref="AssignmentOperationResource" /> in the collection will belong to the same instance of <see cref="AssignmentResource" />.
-    /// To get an <see cref="AssignmentOperationCollection" /> instance call the GetAssignmentOperations method from an instance of <see cref="AssignmentResource" />.
+    /// A class representing a collection of <see cref="AssignmentOperationResource"/> and their operations.
+    /// Each <see cref="AssignmentOperationResource"/> in the collection will belong to the same instance of <see cref="AssignmentResource"/>.
+    /// To get an <see cref="AssignmentOperationCollection"/> instance call the GetAssignmentOperations method from an instance of <see cref="AssignmentResource"/>.
     /// </summary>
     public partial class AssignmentOperationCollection : ArmCollection, IEnumerable<AssignmentOperationResource>, IAsyncEnumerable<AssignmentOperationResource>
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary>
         /// Get a blueprint assignment operation.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations/{assignmentOperationName}
-        /// Operation Id: AssignmentOperations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations/{assignmentOperationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssignmentOperations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AssignmentOperationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="assignmentOperationName"> Name of the blueprint assignment operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -84,8 +98,24 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary>
         /// Get a blueprint assignment operation.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations/{assignmentOperationName}
-        /// Operation Id: AssignmentOperations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations/{assignmentOperationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssignmentOperations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AssignmentOperationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="assignmentOperationName"> Name of the blueprint assignment operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -113,92 +143,84 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary>
         /// List operations for given blueprint assignment within a subscription or a management group.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations
-        /// Operation Id: AssignmentOperations_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssignmentOperations_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AssignmentOperationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="AssignmentOperationResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="AssignmentOperationResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<AssignmentOperationResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<AssignmentOperationResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _assignmentOperationClientDiagnostics.CreateScope("AssignmentOperationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _assignmentOperationRestClient.ListAsync(Id.Parent, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new AssignmentOperationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<AssignmentOperationResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _assignmentOperationClientDiagnostics.CreateScope("AssignmentOperationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _assignmentOperationRestClient.ListNextPageAsync(nextLink, Id.Parent, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new AssignmentOperationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _assignmentOperationRestClient.CreateListRequest(Id.Parent, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _assignmentOperationRestClient.CreateListNextPageRequest(nextLink, Id.Parent, Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new AssignmentOperationResource(Client, AssignmentOperationData.DeserializeAssignmentOperationData(e)), _assignmentOperationClientDiagnostics, Pipeline, "AssignmentOperationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// List operations for given blueprint assignment within a subscription or a management group.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations
-        /// Operation Id: AssignmentOperations_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssignmentOperations_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AssignmentOperationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="AssignmentOperationResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="AssignmentOperationResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<AssignmentOperationResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<AssignmentOperationResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _assignmentOperationClientDiagnostics.CreateScope("AssignmentOperationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _assignmentOperationRestClient.List(Id.Parent, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new AssignmentOperationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<AssignmentOperationResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _assignmentOperationClientDiagnostics.CreateScope("AssignmentOperationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _assignmentOperationRestClient.ListNextPage(nextLink, Id.Parent, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new AssignmentOperationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _assignmentOperationRestClient.CreateListRequest(Id.Parent, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _assignmentOperationRestClient.CreateListNextPageRequest(nextLink, Id.Parent, Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new AssignmentOperationResource(Client, AssignmentOperationData.DeserializeAssignmentOperationData(e)), _assignmentOperationClientDiagnostics, Pipeline, "AssignmentOperationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations/{assignmentOperationName}
-        /// Operation Id: AssignmentOperations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations/{assignmentOperationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssignmentOperations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AssignmentOperationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="assignmentOperationName"> Name of the blueprint assignment operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -224,8 +246,24 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations/{assignmentOperationName}
-        /// Operation Id: AssignmentOperations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations/{assignmentOperationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssignmentOperations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AssignmentOperationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="assignmentOperationName"> Name of the blueprint assignment operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -241,6 +279,96 @@ namespace Azure.ResourceManager.Blueprint
             {
                 var response = _assignmentOperationRestClient.Get(Id.Parent, Id.Name, assignmentOperationName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations/{assignmentOperationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssignmentOperations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AssignmentOperationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="assignmentOperationName"> Name of the blueprint assignment operation. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="assignmentOperationName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="assignmentOperationName"/> is null. </exception>
+        public virtual async Task<NullableResponse<AssignmentOperationResource>> GetIfExistsAsync(string assignmentOperationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(assignmentOperationName, nameof(assignmentOperationName));
+
+            using var scope = _assignmentOperationClientDiagnostics.CreateScope("AssignmentOperationCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _assignmentOperationRestClient.GetAsync(Id.Parent, Id.Name, assignmentOperationName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<AssignmentOperationResource>(response.GetRawResponse());
+                return Response.FromValue(new AssignmentOperationResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/{resourceScope}/providers/Microsoft.Blueprint/blueprintAssignments/{assignmentName}/assignmentOperations/{assignmentOperationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AssignmentOperations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2018-11-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AssignmentOperationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="assignmentOperationName"> Name of the blueprint assignment operation. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="assignmentOperationName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="assignmentOperationName"/> is null. </exception>
+        public virtual NullableResponse<AssignmentOperationResource> GetIfExists(string assignmentOperationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(assignmentOperationName, nameof(assignmentOperationName));
+
+            using var scope = _assignmentOperationClientDiagnostics.CreateScope("AssignmentOperationCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _assignmentOperationRestClient.Get(Id.Parent, Id.Name, assignmentOperationName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<AssignmentOperationResource>(response.GetRawResponse());
+                return Response.FromValue(new AssignmentOperationResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

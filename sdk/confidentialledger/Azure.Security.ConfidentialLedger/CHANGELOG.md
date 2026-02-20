@@ -1,6 +1,45 @@
 # Release History
 
-## 1.2.0-beta.1 (Unreleased)
+## 1.4.1-beta.4 (Unreleased)
+
+### Features Added
+
+### Breaking Changes
+
+### Bugs Fixed
+
+### Other Changes
+
+## 1.4.1-beta.3 (2026-02-17)
+
+### Features Added
+
+- Added `ConfidentialLedgerRedirectPolicy` to automatically follow HTTP 307/308 redirects while preserving the Authorization header. Previously, the SDK did not follow redirects by default, and even when redirects were enabled, the Authorization header was stripped on cross-domain redirects between ACL nodes, causing write operations to fail when routed to non-primary nodes.
+
+## 1.4.1-beta.2 (2025-04-23)
+
+### Features Added
+- Added user defined functions feature.
+- Added tags parameter for CreateLedgerEntry endpoint.
+
+## 1.4.1-beta.1 (2025-01-27)
+
+### Features Added
+- Added the ability to list users and roles.
+
+## 1.3.0 (2023-12-05)
+
+### Features Added
+
+- Added `VerifyConnection` property to `ConfidentialLedgerClientOptions` to allow the option to have a client connection without validating the service certificate.
+
+## 1.2.0 (2023-09-12)
+
+### Bugs Fixed
+
+- Service calls that result in a `HttpStatusCode.NotFound` status will now be retried by default. This is to handle scenarios where there is an unexpected loss of session stickiness when the connected node changes and transactions have not been fully replicated.
+
+## 1.2.0-beta.1 (2022-11-09)
 
 ### Features Added
 

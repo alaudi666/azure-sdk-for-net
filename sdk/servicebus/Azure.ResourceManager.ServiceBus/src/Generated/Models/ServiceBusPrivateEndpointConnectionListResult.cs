@@ -5,33 +5,76 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
-using Azure.ResourceManager.ServiceBus;
+using System.Linq;
 
 namespace Azure.ResourceManager.ServiceBus.Models
 {
-    /// <summary> Result of the list of all private endpoint connections operation. </summary>
+    /// <summary> The response of a PrivateEndpointConnection list operation. </summary>
     internal partial class ServiceBusPrivateEndpointConnectionListResult
     {
-        /// <summary> Initializes a new instance of ServiceBusPrivateEndpointConnectionListResult. </summary>
-        internal ServiceBusPrivateEndpointConnectionListResult()
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="ServiceBusPrivateEndpointConnectionListResult"/>. </summary>
+        /// <param name="value"> The PrivateEndpointConnection items on this page. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
+        internal ServiceBusPrivateEndpointConnectionListResult(IEnumerable<ServiceBusPrivateEndpointConnectionData> value)
         {
-            Value = new ChangeTrackingList<ServiceBusPrivateEndpointConnectionData>();
+            Argument.AssertNotNull(value, nameof(value));
+
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of ServiceBusPrivateEndpointConnectionListResult. </summary>
-        /// <param name="value"> A collection of private endpoint connection resources. </param>
-        /// <param name="nextLink"> A link for the next page of private endpoint connection resources. </param>
-        internal ServiceBusPrivateEndpointConnectionListResult(IReadOnlyList<ServiceBusPrivateEndpointConnectionData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ServiceBusPrivateEndpointConnectionListResult"/>. </summary>
+        /// <param name="value"> The PrivateEndpointConnection items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal ServiceBusPrivateEndpointConnectionListResult(IReadOnlyList<ServiceBusPrivateEndpointConnectionData> value, Uri nextLink, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Value = value;
             NextLink = nextLink;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary> A collection of private endpoint connection resources. </summary>
+        /// <summary> Initializes a new instance of <see cref="ServiceBusPrivateEndpointConnectionListResult"/> for deserialization. </summary>
+        internal ServiceBusPrivateEndpointConnectionListResult()
+        {
+        }
+
+        /// <summary> The PrivateEndpointConnection items on this page. </summary>
         public IReadOnlyList<ServiceBusPrivateEndpointConnectionData> Value { get; }
-        /// <summary> A link for the next page of private endpoint connection resources. </summary>
-        public string NextLink { get; }
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

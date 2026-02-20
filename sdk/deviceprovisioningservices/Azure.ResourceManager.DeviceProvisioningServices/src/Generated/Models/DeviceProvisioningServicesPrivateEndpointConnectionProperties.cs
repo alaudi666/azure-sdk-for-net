@@ -6,15 +6,19 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
-using Azure.ResourceManager.Resources.Models;
+using Azure.ResourceManager.DeviceProvisioningServices;
 
 namespace Azure.ResourceManager.DeviceProvisioningServices.Models
 {
     /// <summary> The properties of a private endpoint connection. </summary>
     public partial class DeviceProvisioningServicesPrivateEndpointConnectionProperties
     {
-        /// <summary> Initializes a new instance of DeviceProvisioningServicesPrivateEndpointConnectionProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DeviceProvisioningServicesPrivateEndpointConnectionProperties"/>. </summary>
         /// <param name="connectionState"> The current state of a private endpoint connection. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="connectionState"/> is null. </exception>
         public DeviceProvisioningServicesPrivateEndpointConnectionProperties(DeviceProvisioningServicesPrivateLinkServiceConnectionState connectionState)
@@ -24,24 +28,30 @@ namespace Azure.ResourceManager.DeviceProvisioningServices.Models
             ConnectionState = connectionState;
         }
 
-        /// <summary> Initializes a new instance of DeviceProvisioningServicesPrivateEndpointConnectionProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="DeviceProvisioningServicesPrivateEndpointConnectionProperties"/>. </summary>
         /// <param name="privateEndpoint"> The private endpoint property of a private endpoint connection. </param>
         /// <param name="connectionState"> The current state of a private endpoint connection. </param>
-        internal DeviceProvisioningServicesPrivateEndpointConnectionProperties(SubResource privateEndpoint, DeviceProvisioningServicesPrivateLinkServiceConnectionState connectionState)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DeviceProvisioningServicesPrivateEndpointConnectionProperties(DeviceProvisioningServicesPrivateEndpoint privateEndpoint, DeviceProvisioningServicesPrivateLinkServiceConnectionState connectionState, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             PrivateEndpoint = privateEndpoint;
             ConnectionState = connectionState;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The private endpoint property of a private endpoint connection. </summary>
-        internal SubResource PrivateEndpoint { get; set; }
-        /// <summary> Gets Id. </summary>
-        public ResourceIdentifier PrivateEndpointId
-        {
-            get => PrivateEndpoint is null ? default : PrivateEndpoint.Id;
-        }
+        internal DeviceProvisioningServicesPrivateEndpoint PrivateEndpoint { get; set; }
 
         /// <summary> The current state of a private endpoint connection. </summary>
         public DeviceProvisioningServicesPrivateLinkServiceConnectionState ConnectionState { get; set; }
+
+        /// <summary> The resource identifier. </summary>
+        public ResourceIdentifier PrivateEndpointId
+        {
+            get
+            {
+                return PrivateEndpoint is null ? default : PrivateEndpoint.Id;
+            }
+        }
     }
 }

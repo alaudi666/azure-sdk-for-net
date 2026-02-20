@@ -19,7 +19,7 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
             #region Snippet:ServiceBusAdministrationClientConnectionString
             // Create a ServiceBusAdministrationClient that will authenticate using a connection string
             string connectionString = "<connection_string>";
-            ServiceBusAdministrationClient client = new ServiceBusAdministrationClient(connectionString);
+            ServiceBusAdministrationClient client = new(connectionString);
             #endregion
         }
 
@@ -31,7 +31,11 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
             #region Snippet:ServiceBusAdministrationClientAAD
             // Create a ServiceBusAdministrationClient that will authenticate using default credentials
             string fullyQualifiedNamespace = "yournamespace.servicebus.windows.net";
-            ServiceBusAdministrationClient client = new ServiceBusAdministrationClient(fullyQualifiedNamespace, new DefaultAzureCredential());
+#if SNIPPET
+            ServiceBusAdministrationClient client = new(fullyQualifiedNamespace, new DefaultAzureCredential());
+#else
+            ServiceBusAdministrationClient client = new(fullyQualifiedNamespace, TestEnvironment.Credential);
+#endif
             #endregion
         }
 
@@ -39,19 +43,20 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
         public async Task CreateQueue()
         {
             string adminQueueName = Guid.NewGuid().ToString("D").Substring(0, 8);
-            string adminConnectionString = TestEnvironment.ServiceBusConnectionString;
+            string adminFullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
 
             try
             {
                 #region Snippet:CreateQueue
 #if SNIPPET
-                string connectionString = "<connection_string>";
+                string fullyQualifiedNamespace = "<fully_qualified_namespace>";
                 string queueName = "<queue_name>";
+                var client = new ServiceBusAdministrationClient(fullyQualifiedNamespace, new DefaultAzureCredential());
 #else
                 string queueName = adminQueueName;
-                string connectionString = adminConnectionString;
+                string fullyQualifiedNamespace = adminFullyQualifiedNamespace;
+                var client = new ServiceBusAdministrationClient(fullyQualifiedNamespace, TestEnvironment.Credential);
 #endif
-                var client = new ServiceBusAdministrationClient(connectionString);
                 var options = new CreateQueueOptions(queueName)
                 {
                     AutoDeleteOnIdle = TimeSpan.FromDays(7),
@@ -76,11 +81,11 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
 
                 QueueProperties createdQueue = await client.CreateQueueAsync(options);
                 #endregion
-                Assert.AreEqual(options, new CreateQueueOptions(createdQueue) { MaxMessageSizeInKilobytes = options.MaxMessageSizeInKilobytes});
+                Assert.AreEqual(options, new CreateQueueOptions(createdQueue) { MaxMessageSizeInKilobytes = options.MaxMessageSizeInKilobytes });
             }
             finally
             {
-                await new ServiceBusAdministrationClient(adminConnectionString).DeleteQueueAsync(adminQueueName);
+                await new ServiceBusAdministrationClient(adminFullyQualifiedNamespace, TestEnvironment.Credential).DeleteQueueAsync(adminQueueName);
             }
         }
 
@@ -88,9 +93,9 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
         public async Task GetUpdateDeleteQueue()
         {
             string queueName = Guid.NewGuid().ToString("D").Substring(0, 8);
-            string connectionString = TestEnvironment.ServiceBusConnectionString;
-            var client = new ServiceBusAdministrationClient(connectionString);
-            var qd = new CreateQueueOptions(queueName);
+            string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
+            ServiceBusAdministrationClient client = new(fullyQualifiedNamespace, TestEnvironment.Credential);
+            CreateQueueOptions qd = new(queueName);
             await client.CreateQueueAsync(qd);
 
             #region Snippet:GetQueue
@@ -115,19 +120,20 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
         {
             string adminTopicName = Guid.NewGuid().ToString("D").Substring(0, 8);
             string adminSubscriptionName = Guid.NewGuid().ToString("D").Substring(0, 8);
-            string adminConnectionString = TestEnvironment.ServiceBusConnectionString;
+            string adminFullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
 
             try
             {
                 #region Snippet:CreateTopicAndSubscription
 #if SNIPPET
-                string connectionString = "<connection_string>";
+                string fullyQualifiedNamespace = "<fully_qualified_namespace>";
                 string topicName = "<topic_name>";
+                var client = new ServiceBusAdministrationClient(fullyQualifiedNamespace, new DefaultAzureCredential());
 #else
-                string connectionString = adminConnectionString;
+                string fullyQualifiedNamespace = adminFullyQualifiedNamespace;
                 string topicName = adminTopicName;
+                var client = new ServiceBusAdministrationClient(fullyQualifiedNamespace, TestEnvironment.Credential);
 #endif
-                var client = new ServiceBusAdministrationClient(connectionString);
                 var topicOptions = new CreateTopicOptions(topicName)
                 {
                     AutoDeleteOnIdle = TimeSpan.FromDays(7),
@@ -160,12 +166,12 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
                 };
                 SubscriptionProperties createdSubscription = await client.CreateSubscriptionAsync(subscriptionOptions);
                 #endregion
-                Assert.AreEqual(topicOptions, new CreateTopicOptions(createdTopic) { MaxMessageSizeInKilobytes = topicOptions.MaxMessageSizeInKilobytes});
+                Assert.AreEqual(topicOptions, new CreateTopicOptions(createdTopic) { MaxMessageSizeInKilobytes = topicOptions.MaxMessageSizeInKilobytes });
                 Assert.AreEqual(subscriptionOptions, new CreateSubscriptionOptions(createdSubscription));
             }
             finally
             {
-                await new ServiceBusAdministrationClient(adminConnectionString).DeleteTopicAsync(adminTopicName);
+                await new ServiceBusAdministrationClient(adminFullyQualifiedNamespace, TestEnvironment.Credential).DeleteTopicAsync(adminTopicName);
             }
         }
 
@@ -174,10 +180,10 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
         {
             string topicName = Guid.NewGuid().ToString("D").Substring(0, 8);
             string subscriptionName = Guid.NewGuid().ToString("D").Substring(0, 8);
-            string connectionString = TestEnvironment.ServiceBusConnectionString;
-            var client = new ServiceBusAdministrationClient(connectionString);
-            var topicOptions = new CreateTopicOptions(topicName);
-            var subscriptionOptions = new CreateSubscriptionOptions(topicName, subscriptionName);
+            string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
+            ServiceBusAdministrationClient client = new(fullyQualifiedNamespace, TestEnvironment.Credential);
+            CreateTopicOptions topicOptions = new(topicName);
+            CreateSubscriptionOptions subscriptionOptions = new(topicName, subscriptionName);
             await client.CreateTopicAsync(topicOptions);
             await client.CreateSubscriptionAsync(subscriptionOptions);
             #region Snippet:GetTopic

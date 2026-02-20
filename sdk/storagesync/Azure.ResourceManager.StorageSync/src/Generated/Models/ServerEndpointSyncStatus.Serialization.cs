@@ -6,151 +6,318 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
-    public partial class ServerEndpointSyncStatus
+    /// <summary> Server Endpoint sync status. </summary>
+    public partial class ServerEndpointSyncStatus : IJsonModel<ServerEndpointSyncStatus>
     {
-        internal static ServerEndpointSyncStatus DeserializeServerEndpointSyncStatus(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServerEndpointSyncStatus PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<ServerEndpointHealthState> downloadHealth = default;
-            Optional<ServerEndpointHealthState> uploadHealth = default;
-            Optional<ServerEndpointHealthState> combinedHealth = default;
-            Optional<ServerEndpointSyncActivityState> syncActivity = default;
-            Optional<long> totalPersistentFilesNotSyncingCount = default;
-            Optional<DateTimeOffset> lastUpdatedTimestamp = default;
-            Optional<ServerEndpointSyncSessionStatus> uploadStatus = default;
-            Optional<ServerEndpointSyncSessionStatus> downloadStatus = default;
-            Optional<ServerEndpointSyncActivityStatus> uploadActivity = default;
-            Optional<ServerEndpointSyncActivityStatus> downloadActivity = default;
-            Optional<ServerEndpointOfflineDataTransferState> offlineDataTransferStatus = default;
-            Optional<ServerEndpointBackgroundDataDownloadActivity> backgroundDataDownloadActivity = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointSyncStatus>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("downloadHealth"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeServerEndpointSyncStatus(document.RootElement, options);
                     }
-                    downloadHealth = new ServerEndpointHealthState(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("uploadHealth"))
+                default:
+                    throw new FormatException($"The model {nameof(ServerEndpointSyncStatus)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ServerEndpointSyncStatus>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointSyncStatus>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServerEndpointSyncStatus)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(DownloadHealth))
+            {
+                writer.WritePropertyName("downloadHealth"u8);
+                writer.WriteStringValue(DownloadHealth.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(UploadHealth))
+            {
+                writer.WritePropertyName("uploadHealth"u8);
+                writer.WriteStringValue(UploadHealth.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(CombinedHealth))
+            {
+                writer.WritePropertyName("combinedHealth"u8);
+                writer.WriteStringValue(CombinedHealth.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(SyncActivity))
+            {
+                writer.WritePropertyName("syncActivity"u8);
+                writer.WriteStringValue(SyncActivity.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(TotalPersistentFilesNotSyncingCount))
+            {
+                writer.WritePropertyName("totalPersistentFilesNotSyncingCount"u8);
+                writer.WriteNumberValue(TotalPersistentFilesNotSyncingCount.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(LastUpdatedOn))
+            {
+                writer.WritePropertyName("lastUpdatedTimestamp"u8);
+                writer.WriteStringValue(LastUpdatedOn.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(UploadStatus))
+            {
+                writer.WritePropertyName("uploadStatus"u8);
+                writer.WriteObjectValue(UploadStatus, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(DownloadStatus))
+            {
+                writer.WritePropertyName("downloadStatus"u8);
+                writer.WriteObjectValue(DownloadStatus, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(UploadActivity))
+            {
+                writer.WritePropertyName("uploadActivity"u8);
+                writer.WriteObjectValue(UploadActivity, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(DownloadActivity))
+            {
+                writer.WritePropertyName("downloadActivity"u8);
+                writer.WriteObjectValue(DownloadActivity, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(OfflineDataTransferStatus))
+            {
+                writer.WritePropertyName("offlineDataTransferStatus"u8);
+                writer.WriteStringValue(OfflineDataTransferStatus.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(BackgroundDataDownloadActivity))
+            {
+                writer.WritePropertyName("backgroundDataDownloadActivity"u8);
+                writer.WriteObjectValue(BackgroundDataDownloadActivity, options);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    uploadHealth = new ServerEndpointHealthState(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("combinedHealth"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    combinedHealth = new ServerEndpointHealthState(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("syncActivity"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    syncActivity = new ServerEndpointSyncActivityState(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("totalPersistentFilesNotSyncingCount"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    totalPersistentFilesNotSyncingCount = property.Value.GetInt64();
-                    continue;
-                }
-                if (property.NameEquals("lastUpdatedTimestamp"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    lastUpdatedTimestamp = property.Value.GetDateTimeOffset("O");
-                    continue;
-                }
-                if (property.NameEquals("uploadStatus"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    uploadStatus = ServerEndpointSyncSessionStatus.DeserializeServerEndpointSyncSessionStatus(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("downloadStatus"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    downloadStatus = ServerEndpointSyncSessionStatus.DeserializeServerEndpointSyncSessionStatus(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("uploadActivity"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    uploadActivity = ServerEndpointSyncActivityStatus.DeserializeServerEndpointSyncActivityStatus(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("downloadActivity"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    downloadActivity = ServerEndpointSyncActivityStatus.DeserializeServerEndpointSyncActivityStatus(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("offlineDataTransferStatus"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    offlineDataTransferStatus = new ServerEndpointOfflineDataTransferState(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("backgroundDataDownloadActivity"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    backgroundDataDownloadActivity = ServerEndpointBackgroundDataDownloadActivity.DeserializeServerEndpointBackgroundDataDownloadActivity(property.Value);
-                    continue;
+#endif
                 }
             }
-            return new ServerEndpointSyncStatus(Optional.ToNullable(downloadHealth), Optional.ToNullable(uploadHealth), Optional.ToNullable(combinedHealth), Optional.ToNullable(syncActivity), Optional.ToNullable(totalPersistentFilesNotSyncingCount), Optional.ToNullable(lastUpdatedTimestamp), uploadStatus.Value, downloadStatus.Value, uploadActivity.Value, downloadActivity.Value, Optional.ToNullable(offlineDataTransferStatus), backgroundDataDownloadActivity.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServerEndpointSyncStatus IJsonModel<ServerEndpointSyncStatus>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServerEndpointSyncStatus JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointSyncStatus>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServerEndpointSyncStatus)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeServerEndpointSyncStatus(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ServerEndpointSyncStatus DeserializeServerEndpointSyncStatus(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ServerEndpointHealthState? downloadHealth = default;
+            ServerEndpointHealthState? uploadHealth = default;
+            ServerEndpointHealthState? combinedHealth = default;
+            ServerEndpointSyncActivityState? syncActivity = default;
+            long? totalPersistentFilesNotSyncingCount = default;
+            DateTimeOffset? lastUpdatedOn = default;
+            ServerEndpointSyncSessionStatus uploadStatus = default;
+            ServerEndpointSyncSessionStatus downloadStatus = default;
+            ServerEndpointSyncActivityStatus uploadActivity = default;
+            ServerEndpointSyncActivityStatus downloadActivity = default;
+            ServerEndpointOfflineDataTransferState? offlineDataTransferStatus = default;
+            ServerEndpointBackgroundDataDownloadActivity backgroundDataDownloadActivity = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("downloadHealth"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    downloadHealth = new ServerEndpointHealthState(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("uploadHealth"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    uploadHealth = new ServerEndpointHealthState(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("combinedHealth"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    combinedHealth = new ServerEndpointHealthState(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("syncActivity"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    syncActivity = new ServerEndpointSyncActivityState(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("totalPersistentFilesNotSyncingCount"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    totalPersistentFilesNotSyncingCount = prop.Value.GetInt64();
+                    continue;
+                }
+                if (prop.NameEquals("lastUpdatedTimestamp"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    lastUpdatedOn = prop.Value.GetDateTimeOffset("O");
+                    continue;
+                }
+                if (prop.NameEquals("uploadStatus"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    uploadStatus = ServerEndpointSyncSessionStatus.DeserializeServerEndpointSyncSessionStatus(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("downloadStatus"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    downloadStatus = ServerEndpointSyncSessionStatus.DeserializeServerEndpointSyncSessionStatus(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("uploadActivity"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    uploadActivity = ServerEndpointSyncActivityStatus.DeserializeServerEndpointSyncActivityStatus(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("downloadActivity"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    downloadActivity = ServerEndpointSyncActivityStatus.DeserializeServerEndpointSyncActivityStatus(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("offlineDataTransferStatus"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    offlineDataTransferStatus = new ServerEndpointOfflineDataTransferState(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("backgroundDataDownloadActivity"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    backgroundDataDownloadActivity = ServerEndpointBackgroundDataDownloadActivity.DeserializeServerEndpointBackgroundDataDownloadActivity(prop.Value, options);
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new ServerEndpointSyncStatus(
+                downloadHealth,
+                uploadHealth,
+                combinedHealth,
+                syncActivity,
+                totalPersistentFilesNotSyncingCount,
+                lastUpdatedOn,
+                uploadStatus,
+                downloadStatus,
+                uploadActivity,
+                downloadActivity,
+                offlineDataTransferStatus,
+                backgroundDataDownloadActivity,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ServerEndpointSyncStatus>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointSyncStatus>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerStorageSyncContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ServerEndpointSyncStatus)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServerEndpointSyncStatus IPersistableModel<ServerEndpointSyncStatus>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ServerEndpointSyncStatus>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

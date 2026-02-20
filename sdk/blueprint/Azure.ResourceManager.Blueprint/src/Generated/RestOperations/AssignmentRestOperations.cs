@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Blueprint.Models;
@@ -37,6 +36,19 @@ namespace Azure.ResourceManager.Blueprint
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
+        internal RequestUriBuilder CreateListRequestUri(string resourceScope, string assignmentName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceScope, false);
+            uri.AppendPath("/providers/Microsoft.Blueprint/blueprintAssignments/", false);
+            uri.AppendPath(assignmentName, true);
+            uri.AppendPath("/assignmentOperations", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
         internal HttpMessage CreateListRequest(string resourceScope, string assignmentName)
         {
             var message = _pipeline.CreateMessage();
@@ -57,7 +69,7 @@ namespace Azure.ResourceManager.Blueprint
         }
 
         /// <summary> List operations for given blueprint assignment within a subscription or a management group. </summary>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="assignmentName"> Name of the blueprint assignment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="resourceScope"/> or <paramref name="assignmentName"/> is null. </exception>
@@ -74,7 +86,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         AssignmentOperationList value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AssignmentOperationList.DeserializeAssignmentOperationList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -84,7 +96,7 @@ namespace Azure.ResourceManager.Blueprint
         }
 
         /// <summary> List operations for given blueprint assignment within a subscription or a management group. </summary>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="assignmentName"> Name of the blueprint assignment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="resourceScope"/> or <paramref name="assignmentName"/> is null. </exception>
@@ -101,13 +113,27 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         AssignmentOperationList value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AssignmentOperationList.DeserializeAssignmentOperationList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetRequestUri(string resourceScope, string assignmentName, string assignmentOperationName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceScope, false);
+            uri.AppendPath("/providers/Microsoft.Blueprint/blueprintAssignments/", false);
+            uri.AppendPath(assignmentName, true);
+            uri.AppendPath("/assignmentOperations/", false);
+            uri.AppendPath(assignmentOperationName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetRequest(string resourceScope, string assignmentName, string assignmentOperationName)
@@ -131,7 +157,7 @@ namespace Azure.ResourceManager.Blueprint
         }
 
         /// <summary> Get a blueprint assignment operation. </summary>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="assignmentName"> Name of the blueprint assignment. </param>
         /// <param name="assignmentOperationName"> Name of the blueprint assignment operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -150,7 +176,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         AssignmentOperationData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AssignmentOperationData.DeserializeAssignmentOperationData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -162,7 +188,7 @@ namespace Azure.ResourceManager.Blueprint
         }
 
         /// <summary> Get a blueprint assignment operation. </summary>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="assignmentName"> Name of the blueprint assignment. </param>
         /// <param name="assignmentOperationName"> Name of the blueprint assignment operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -181,7 +207,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         AssignmentOperationData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AssignmentOperationData.DeserializeAssignmentOperationData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -190,6 +216,14 @@ namespace Azure.ResourceManager.Blueprint
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListNextPageRequestUri(string nextLink, string resourceScope, string assignmentName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListNextPageRequest(string nextLink, string resourceScope, string assignmentName)
@@ -208,7 +242,7 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary> List operations for given blueprint assignment within a subscription or a management group. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="assignmentName"> Name of the blueprint assignment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="resourceScope"/> or <paramref name="assignmentName"/> is null. </exception>
@@ -226,7 +260,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         AssignmentOperationList value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AssignmentOperationList.DeserializeAssignmentOperationList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -237,7 +271,7 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary> List operations for given blueprint assignment within a subscription or a management group. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="assignmentName"> Name of the blueprint assignment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="resourceScope"/> or <paramref name="assignmentName"/> is null. </exception>
@@ -255,7 +289,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         AssignmentOperationList value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AssignmentOperationList.DeserializeAssignmentOperationList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.SignalR
 {
-    internal class SignalRCustomDomainOperationSource : IOperationSource<SignalRCustomDomainResource>
+    /// <summary></summary>
+    internal partial class SignalRCustomDomainOperationSource : IOperationSource<SignalRCustomDomainResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal SignalRCustomDomainOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         SignalRCustomDomainResource IOperationSource<SignalRCustomDomainResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = SignalRCustomDomainData.DeserializeSignalRCustomDomainData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            SignalRCustomDomainData data = SignalRCustomDomainData.DeserializeSignalRCustomDomainData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new SignalRCustomDomainResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<SignalRCustomDomainResource> IOperationSource<SignalRCustomDomainResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = SignalRCustomDomainData.DeserializeSignalRCustomDomainData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            SignalRCustomDomainData data = SignalRCustomDomainData.DeserializeSignalRCustomDomainData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new SignalRCustomDomainResource(_client, data);
         }
     }

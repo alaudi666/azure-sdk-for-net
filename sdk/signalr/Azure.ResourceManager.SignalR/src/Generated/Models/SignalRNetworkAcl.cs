@@ -5,33 +5,42 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.SignalR;
 
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Network ACL. </summary>
     public partial class SignalRNetworkAcl
     {
-        /// <summary> Initializes a new instance of SignalRNetworkAcl. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRNetworkAcl"/>. </summary>
         public SignalRNetworkAcl()
         {
             Allow = new ChangeTrackingList<SignalRRequestType>();
             Deny = new ChangeTrackingList<SignalRRequestType>();
         }
 
-        /// <summary> Initializes a new instance of SignalRNetworkAcl. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRNetworkAcl"/>. </summary>
         /// <param name="allow"> Allowed request types. The value can be one or more of: ClientConnection, ServerConnection, RESTAPI. </param>
         /// <param name="deny"> Denied request types. The value can be one or more of: ClientConnection, ServerConnection, RESTAPI. </param>
-        internal SignalRNetworkAcl(IList<SignalRRequestType> allow, IList<SignalRRequestType> deny)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRNetworkAcl(IList<SignalRRequestType> allow, IList<SignalRRequestType> deny, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Allow = allow;
             Deny = deny;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Allowed request types. The value can be one or more of: ClientConnection, ServerConnection, RESTAPI. </summary>
+        [WirePath("allow")]
         public IList<SignalRRequestType> Allow { get; }
+
         /// <summary> Denied request types. The value can be one or more of: ClientConnection, ServerConnection, RESTAPI. </summary>
+        [WirePath("deny")]
         public IList<SignalRRequestType> Deny { get; }
     }
 }

@@ -8,25 +8,47 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The MachineLearningRecurrenceSchedule.
-    /// Serialized Name: RecurrenceSchedule
-    /// </summary>
+    /// <summary> The MachineLearningRecurrenceSchedule. </summary>
     public partial class MachineLearningRecurrenceSchedule
     {
-        /// <summary> Initializes a new instance of MachineLearningRecurrenceSchedule. </summary>
-        /// <param name="hours">
-        /// [Required] List of hours for the schedule.
-        /// Serialized Name: RecurrenceSchedule.hours
-        /// </param>
-        /// <param name="minutes">
-        /// [Required] List of minutes for the schedule.
-        /// Serialized Name: RecurrenceSchedule.minutes
-        /// </param>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="MachineLearningRecurrenceSchedule"/>. </summary>
+        /// <param name="hours"> [Required] List of hours for the schedule. </param>
+        /// <param name="minutes"> [Required] List of minutes for the schedule. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="hours"/> or <paramref name="minutes"/> is null. </exception>
         public MachineLearningRecurrenceSchedule(IEnumerable<int> hours, IEnumerable<int> minutes)
         {
@@ -35,54 +57,41 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
             Hours = hours.ToList();
             Minutes = minutes.ToList();
+            WeekDays = new ChangeTrackingList<MachineLearningDayOfWeek>();
             MonthDays = new ChangeTrackingList<int>();
-            WeekDays = new ChangeTrackingList<MachineLearningWeekday>();
         }
 
-        /// <summary> Initializes a new instance of MachineLearningRecurrenceSchedule. </summary>
-        /// <param name="hours">
-        /// [Required] List of hours for the schedule.
-        /// Serialized Name: RecurrenceSchedule.hours
-        /// </param>
-        /// <param name="minutes">
-        /// [Required] List of minutes for the schedule.
-        /// Serialized Name: RecurrenceSchedule.minutes
-        /// </param>
-        /// <param name="monthDays">
-        /// List of month days for the schedule
-        /// Serialized Name: RecurrenceSchedule.monthDays
-        /// </param>
-        /// <param name="weekDays">
-        /// List of days for the schedule.
-        /// Serialized Name: RecurrenceSchedule.weekDays
-        /// </param>
-        internal MachineLearningRecurrenceSchedule(IList<int> hours, IList<int> minutes, IList<int> monthDays, IList<MachineLearningWeekday> weekDays)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningRecurrenceSchedule"/>. </summary>
+        /// <param name="hours"> [Required] List of hours for the schedule. </param>
+        /// <param name="minutes"> [Required] List of minutes for the schedule. </param>
+        /// <param name="weekDays"> List of days for the schedule. </param>
+        /// <param name="monthDays"> List of month days for the schedule. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal MachineLearningRecurrenceSchedule(IList<int> hours, IList<int> minutes, IList<MachineLearningDayOfWeek> weekDays, IList<int> monthDays, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Hours = hours;
             Minutes = minutes;
-            MonthDays = monthDays;
             WeekDays = weekDays;
+            MonthDays = monthDays;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary>
-        /// [Required] List of hours for the schedule.
-        /// Serialized Name: RecurrenceSchedule.hours
-        /// </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningRecurrenceSchedule"/> for deserialization. </summary>
+        internal MachineLearningRecurrenceSchedule()
+        {
+        }
+
+        /// <summary> [Required] List of hours for the schedule. </summary>
+        [WirePath("hours")]
         public IList<int> Hours { get; }
-        /// <summary>
-        /// [Required] List of minutes for the schedule.
-        /// Serialized Name: RecurrenceSchedule.minutes
-        /// </summary>
+        /// <summary> [Required] List of minutes for the schedule. </summary>
+        [WirePath("minutes")]
         public IList<int> Minutes { get; }
-        /// <summary>
-        /// List of month days for the schedule
-        /// Serialized Name: RecurrenceSchedule.monthDays
-        /// </summary>
+        /// <summary> List of days for the schedule. </summary>
+        [WirePath("weekDays")]
+        public IList<MachineLearningDayOfWeek> WeekDays { get; set; }
+        /// <summary> List of month days for the schedule. </summary>
+        [WirePath("monthDays")]
         public IList<int> MonthDays { get; set; }
-        /// <summary>
-        /// List of days for the schedule.
-        /// Serialized Name: RecurrenceSchedule.weekDays
-        /// </summary>
-        public IList<MachineLearningWeekday> WeekDays { get; set; }
     }
 }

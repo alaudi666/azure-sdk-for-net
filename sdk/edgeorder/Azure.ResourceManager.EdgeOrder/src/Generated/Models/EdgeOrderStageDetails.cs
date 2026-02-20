@@ -6,36 +6,45 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Resource stage details. </summary>
     public partial class EdgeOrderStageDetails
     {
-        /// <summary> Initializes a new instance of EdgeOrderStageDetails. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderStageDetails"/>. </summary>
         internal EdgeOrderStageDetails()
         {
         }
 
-        /// <summary> Initializes a new instance of EdgeOrderStageDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderStageDetails"/>. </summary>
         /// <param name="stageStatus"> Stage status. </param>
         /// <param name="stageName"> Stage name. </param>
         /// <param name="displayName"> Display name of the resource stage. </param>
         /// <param name="startOn"> Stage start time. </param>
-        internal EdgeOrderStageDetails(EdgeOrderStageStatus? stageStatus, EdgeOrderStageName? stageName, string displayName, DateTimeOffset? startOn)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EdgeOrderStageDetails(EdgeOrderStageStatus? stageStatus, EdgeOrderStageName? stageName, string displayName, DateTimeOffset? startOn, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             StageStatus = stageStatus;
             StageName = stageName;
             DisplayName = displayName;
             StartOn = startOn;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Stage status. </summary>
         public EdgeOrderStageStatus? StageStatus { get; }
+
         /// <summary> Stage name. </summary>
         public EdgeOrderStageName? StageName { get; }
+
         /// <summary> Display name of the resource stage. </summary>
         public string DisplayName { get; }
+
         /// <summary> Stage start time. </summary>
         public DateTimeOffset? StartOn { get; }
     }

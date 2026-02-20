@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.EdgeOrder.Models;
@@ -12,36 +13,70 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.EdgeOrder
 {
-    /// <summary> A class representing the EdgeOrder data model. </summary>
+    /// <summary> Specifies the properties or parameters for an order. Order is a grouping of one or more order items. </summary>
     public partial class EdgeOrderData : ResourceData
     {
-        /// <summary> Initializes a new instance of EdgeOrderData. </summary>
-        public EdgeOrderData()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> Order properties. </param>
+        internal EdgeOrderData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, OrderProperties properties) : base(id, name, resourceType, systemData)
         {
-            OrderItemIds = new ChangeTrackingList<ResourceIdentifier>();
-            OrderStageHistory = new ChangeTrackingList<EdgeOrderStageDetails>();
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
 
-        /// <summary> Initializes a new instance of EdgeOrderData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="orderItemIds"> List of order item ARM Ids which are part of an order. </param>
-        /// <param name="currentStage"> Order current status. </param>
-        /// <param name="orderStageHistory"> Order status history. </param>
-        internal EdgeOrderData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IReadOnlyList<ResourceIdentifier> orderItemIds, EdgeOrderStageDetails currentStage, IReadOnlyList<EdgeOrderStageDetails> orderStageHistory) : base(id, name, resourceType, systemData)
-        {
-            OrderItemIds = orderItemIds;
-            CurrentStage = currentStage;
-            OrderStageHistory = orderStageHistory;
-        }
+        /// <summary> Order properties. </summary>
+        internal OrderProperties Properties { get; set; }
 
         /// <summary> List of order item ARM Ids which are part of an order. </summary>
-        public IReadOnlyList<ResourceIdentifier> OrderItemIds { get; }
+        public IReadOnlyList<ResourceIdentifier> OrderItemIds
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new OrderProperties();
+                }
+                return Properties.OrderItemIds;
+            }
+        }
+
         /// <summary> Order current status. </summary>
-        public EdgeOrderStageDetails CurrentStage { get; }
+        public EdgeOrderStageDetails CurrentStage
+        {
+            get
+            {
+                return Properties is null ? default : Properties.CurrentStage;
+            }
+        }
+
         /// <summary> Order status history. </summary>
-        public IReadOnlyList<EdgeOrderStageDetails> OrderStageHistory { get; }
+        public IReadOnlyList<EdgeOrderStageDetails> OrderStageHistory
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new OrderProperties();
+                }
+                return Properties.OrderStageHistory;
+            }
+        }
+
+        /// <summary> Order mode. </summary>
+        public EdgeOrderOrderMode? OrderMode
+        {
+            get
+            {
+                return Properties is null ? default : Properties.OrderMode;
+            }
+        }
     }
 }

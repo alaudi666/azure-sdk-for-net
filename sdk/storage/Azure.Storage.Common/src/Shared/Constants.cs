@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Azure.Storage
 {
@@ -25,7 +26,7 @@ namespace Azure.Storage
         /// Gets the default service version to use when building shared access
         /// signatures.
         /// </summary>
-        public const string DefaultSasVersion = "2021-12-02";
+        public const string DefaultSasVersion = "2026-04-06";
 
         /// <summary>
         /// Max download range size while requesting a transactional hash.
@@ -65,6 +66,9 @@ namespace Azure.Storage
         /// </summary>
         public const int DefaultDownloadCopyBufferSize = 16384;
 
+        public const int StorageCrc64SizeInBytes = 8;
+        public const int MD5SizeInBytes = 16;
+
         /// <summary>
         /// Backwards compatible default value for trimming slashes on object name.
         /// </summary>
@@ -102,7 +106,10 @@ namespace Azure.Storage
         public const string TrueName = "true";
 
         public const string ErrorCode = "Code";
+        public const string ErrorCodeLower = "code";
         public const string ErrorMessage = "Message";
+        public const string ErrorMessageLower = "message";
+        public const string HeaderName = "HeaderName";
 
         public const string CommaString = ",";
         public const char CommaChar = ',';
@@ -120,7 +127,21 @@ namespace Azure.Storage
         public const string DisableRequestConditionsValidationSwitchName = "Azure.Storage.DisableRequestConditionsValidation";
         public const string DisableRequestConditionsValidationEnvVar = "AZURE_STORAGE_DISABLE_REQUEST_CONDITIONS_VALIDATION";
 
+        public const string DisableExpectContinueHeaderSwitchName = "Azure.Storage.DisableExpectContinueHeader";
+        public const string DisableExpectContinueHeaderEnvVar = "AZURE_STORAGE_DISABLE_EXPECT_CONTINUE_HEADER";
+
+        public const string UseLegacyDefaultConcurrencySwitchName = "Azure.Storage.UseLegacyDefaultConcurrency";
+        public const string UseLegacyDefaultConcurrencyEnvVar = "AZURE_STORAGE_USE_LEGACY_DEFAULT_CONCURRENCY";
+
         public const string DefaultScope = "/.default";
+
+        /// <summary>
+        /// Error string constant values.
+        /// </summary>
+        internal static class Errors
+        {
+            public const string InvalidVersionHeaderMessage = "The provided service version is not enabled on this storage account.  Please see https://learn.microsoft.com/rest/api/storageservices/versioning-for-the-azure-storage-services for additional information.\n";
+        }
 
         /// <summary>
         /// Storage Connection String constant values.
@@ -187,8 +208,11 @@ namespace Azure.Storage
             public const string ContentRange = "Content-Range";
             public const string VersionId = "x-ms-version-id";
             public const string LeaseTime = "x-ms-lease-time";
+            public const string LeaseId = "x-ms-lease-id";
             public const string LastModified = "Last-Modified";
             public const string ETag = "ETag";
+            public const string CopySourceErrorCode = "x-ms-copy-source-error-code";
+            public const string Version = "x-ms-version";
         }
 
         internal static class ErrorCodes
@@ -198,6 +222,7 @@ namespace Azure.Storage
             public const string ServerBusy = "ServerBusy";
             public const string ContainerAlreadyExists = "ContainerAlreadyExists";
             public const string BlobAlreadyExists = "BlobAlreadyExists";
+            public const string InvalidHeaderValue = "InvalidHeaderValue";
         }
 
         /// <summary>
@@ -213,13 +238,16 @@ namespace Azure.Storage
 
             internal static class Append
             {
-                public const int MaxAppendBlockBytes = 4 * Constants.MB; // 4MB
+                public const int Pre_2022_11_02_MaxAppendBlockBytes = 4 * Constants.MB; // 4MB
+                public const int MaxAppendBlockBytes = 100 * Constants.MB; // 100MB
                 public const int MaxBlocks = 50000;
             }
 
             internal static class Block
             {
-                public const int DefaultConcurrentTransfersCount = 5;
+                [EditorBrowsable(EditorBrowsableState.Never)]
+                public const int DefaultConcurrentTransfersCount = LegacyDefaultConcurrentTransfersCount;
+                public const int LegacyDefaultConcurrentTransfersCount = 5;
                 public const int DefaultInitalDownloadRangeSize = 256 * Constants.MB; // 256 MB
                 public const int Pre_2019_12_12_MaxUploadBytes = 256 * Constants.MB; // 256 MB
                 public const long MaxUploadBytes = 5000L * Constants.MB; // 5000MB
@@ -356,7 +384,13 @@ namespace Azure.Storage
             /// <summary>
             /// Default concurrent transfers count.
             /// </summary>
-            public const int DefaultConcurrentTransfersCount = 5;
+            [EditorBrowsable(EditorBrowsableState.Never)]
+            public const int DefaultConcurrentTransfersCount = LegacyDefaultConcurrentTransfersCount;
+
+            /// <summary>
+            /// Legacy default concurrent transfers count.
+            /// </summary>
+            public const int LegacyDefaultConcurrentTransfersCount = 5;
 
             /// <summary>
             /// Max upload bytes for less than Service Version 2019-12-12.
@@ -378,6 +412,16 @@ namespace Azure.Storage
             public const string DeletionId = "deletionid";
 
             public const string DirectoryResourceType = "directory";
+
+            public const string EncryptionContextHeaderName = "x-ms-encryption-context";
+
+            public const string OwnerHeaderName = "x-ms-owner";
+
+            public const string GroupHeaderName = "x-ms-group";
+
+            public const string PermissionsHeaderName = "x-ms-permissions";
+
+            public const string AclHeaderName = "x-ms-acl";
         }
 
         /// <summary>
@@ -403,6 +447,8 @@ namespace Azure.Storage
             public const string UriSubDomain = "queue";
 
             public const string QueueTraitsMetadata = "metadata";
+
+            public const string Name = "Queue";
         }
 
         /// <summary>
@@ -507,6 +553,10 @@ namespace Azure.Storage
         /// </summary>
         internal static class Sas
         {
+            public const string ObjectId = "oid";
+
+            public const string TenantId = "tid";
+
             internal static class Permissions
             {
                 public const char Read = 'r';
@@ -564,6 +614,8 @@ namespace Azure.Storage
                 public const string KeyServiceUpper = "SKS";
                 public const string KeyVersion = "skv";
                 public const string KeyVersionUpper = "SKV";
+                public const string KeyDelegatedUserTenantId = "skdutid";
+                public const string KeyDelegatedUserTenantIdUpper = "SKDUTID";
                 public const string CacheControl = "rscc";
                 public const string CacheControlUpper = "RSCC";
                 public const string ContentDisposition = "rscd";
@@ -584,6 +636,12 @@ namespace Azure.Storage
                 public const string DirectoryDepthUpper = "SDD";
                 public const string EncryptionScope = "ses";
                 public const string EncryptionScopeUpper = "SES";
+                public const string DelegatedUserObjectId = "sduoid";
+                public const string DelegatedUserObjectIdUpper = "SDUOID";
+                public const string RequestHeaders = "srh";
+                public const string RequestHeadersUpper = "SRH";
+                public const string RequestQueryParameters = "srq";
+                public const string RequestQueryParametersUpper = "SRQ";
             }
 
             internal static class Resource
@@ -595,6 +653,7 @@ namespace Azure.Storage
                 public const string File = "f";
                 public const string Share = "s";
                 public const string Directory = "d";
+                public const string Queue = "q";
             }
 
             internal static class AccountServices
@@ -638,8 +697,20 @@ namespace Azure.Storage
             internal static readonly int[] PathStylePorts = { 10000, 10001, 10002, 10003, 10004, 10100, 10101, 10102, 10103, 10104, 11000, 11001, 11002, 11003, 11004, 11100, 11101, 11102, 11103, 11104 };
         }
 
+        internal static class StructuredMessage
+        {
+            public const string StructuredMessageHeader = "x-ms-structured-body";
+            public const string StructuredContentLength = "x-ms-structured-content-length";
+            public const string CrcStructuredMessage = "XSM/1.0; properties=crc64";
+            public const int DefaultSegmentContentLength = 4 * MB;
+            public const int MaxDownloadCrcWithHeader = 4 * MB;
+        }
+
         internal static class ClientSideEncryption
         {
+            public const string HttpMessagePropertyKeyV1 = "Azure.Storage.StorageTelemetryPolicy.ClientSideEncryption.V1";
+            public const string HttpMessagePropertyKeyV2 = "Azure.Storage.StorageTelemetryPolicy.ClientSideEncryption.V2";
+
             public const string AgentMetadataKey = "EncryptionLibrary";
 
             public const string AesCbcPkcs5Padding = "AES/CBC/PKCS5Padding";
@@ -700,6 +771,12 @@ namespace Azure.Storage
         {
             internal const string HttpMessagePropertyKey = "Azure.Storage.StorageServerTimeoutPolicy.Timeout";
             internal const string QueryParameterKey = "timeout";
+        }
+
+        internal static class CopyHttpAuthorization
+        {
+            internal static readonly string[] Scopes = { "https://storage.azure.com/.default" };
+            internal const string BearerScheme = "Bearer";
         }
     }
 }

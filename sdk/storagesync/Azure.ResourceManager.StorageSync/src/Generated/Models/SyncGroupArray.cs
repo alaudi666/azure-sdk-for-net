@@ -5,8 +5,8 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
@@ -14,20 +14,30 @@ namespace Azure.ResourceManager.StorageSync.Models
     /// <summary> Array of SyncGroup. </summary>
     internal partial class SyncGroupArray
     {
-        /// <summary> Initializes a new instance of SyncGroupArray. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SyncGroupArray"/>. </summary>
         internal SyncGroupArray()
         {
             Value = new ChangeTrackingList<StorageSyncGroupData>();
         }
 
-        /// <summary> Initializes a new instance of SyncGroupArray. </summary>
+        /// <summary> Initializes a new instance of <see cref="SyncGroupArray"/>. </summary>
         /// <param name="value"> Collection of SyncGroup. </param>
-        internal SyncGroupArray(IReadOnlyList<StorageSyncGroupData> value)
+        /// <param name="nextLink"> The URL to get the next set of results. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SyncGroupArray(IList<StorageSyncGroupData> value, string nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
+            NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Collection of SyncGroup. </summary>
-        public IReadOnlyList<StorageSyncGroupData> Value { get; }
+        public IList<StorageSyncGroupData> Value { get; }
+
+        /// <summary> The URL to get the next set of results. </summary>
+        public string NextLink { get; }
     }
 }

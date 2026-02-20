@@ -5,33 +5,43 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
-    /// <summary> List of managed HSM Pools. </summary>
+    /// <summary> The response of a ManagedHsm list operation. </summary>
     internal partial class ManagedHsmListResult
     {
-        /// <summary> Initializes a new instance of ManagedHsmListResult. </summary>
-        internal ManagedHsmListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmListResult"/>. </summary>
+        /// <param name="value"> The ManagedHsm items on this page. </param>
+        internal ManagedHsmListResult(IEnumerable<ManagedHsmData> value)
         {
-            Value = new ChangeTrackingList<ManagedHsmData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of ManagedHsmListResult. </summary>
-        /// <param name="value"> The list of managed HSM Pools. </param>
-        /// <param name="nextLink"> The URL to get the next set of managed HSM Pools. </param>
-        internal ManagedHsmListResult(IReadOnlyList<ManagedHsmData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmListResult"/>. </summary>
+        /// <param name="value"> The ManagedHsm items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedHsmListResult(IList<ManagedHsmData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The list of managed HSM Pools. </summary>
-        public IReadOnlyList<ManagedHsmData> Value { get; }
-        /// <summary> The URL to get the next set of managed HSM Pools. </summary>
-        public string NextLink { get; }
+        /// <summary> The ManagedHsm items on this page. </summary>
+        [WirePath("value")]
+        public IList<ManagedHsmData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        [WirePath("nextLink")]
+        public Uri NextLink { get; }
     }
 }

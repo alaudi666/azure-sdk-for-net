@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The MachineLearningUnderlyingResourceAction.
-    /// Serialized Name: UnderlyingResourceAction
-    /// </summary>
+    /// <summary> The MachineLearningUnderlyingResourceAction. </summary>
     public readonly partial struct MachineLearningUnderlyingResourceAction : IEquatable<MachineLearningUnderlyingResourceAction>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string DeleteValue = "Delete";
         private const string DetachValue = "Detach";
 
-        /// <summary>
-        /// Delete
-        /// Serialized Name: UnderlyingResourceAction.Delete
-        /// </summary>
+        /// <summary> Delete. </summary>
         public static MachineLearningUnderlyingResourceAction Delete { get; } = new MachineLearningUnderlyingResourceAction(DeleteValue);
-        /// <summary>
-        /// Detach
-        /// Serialized Name: UnderlyingResourceAction.Detach
-        /// </summary>
+        /// <summary> Detach. </summary>
         public static MachineLearningUnderlyingResourceAction Detach { get; } = new MachineLearningUnderlyingResourceAction(DetachValue);
         /// <summary> Determines if two <see cref="MachineLearningUnderlyingResourceAction"/> values are the same. </summary>
         public static bool operator ==(MachineLearningUnderlyingResourceAction left, MachineLearningUnderlyingResourceAction right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningUnderlyingResourceAction"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningUnderlyingResourceAction left, MachineLearningUnderlyingResourceAction right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningUnderlyingResourceAction"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningUnderlyingResourceAction"/>. </summary>
         public static implicit operator MachineLearningUnderlyingResourceAction(string value) => new MachineLearningUnderlyingResourceAction(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

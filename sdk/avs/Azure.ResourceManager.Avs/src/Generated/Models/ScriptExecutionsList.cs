@@ -5,33 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> Pageable list of script executions. </summary>
+    /// <summary> The response of a ScriptExecution list operation. </summary>
     internal partial class ScriptExecutionsList
     {
-        /// <summary> Initializes a new instance of ScriptExecutionsList. </summary>
-        internal ScriptExecutionsList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ScriptExecutionsList"/>. </summary>
+        /// <param name="value"> The ScriptExecution items on this page. </param>
+        internal ScriptExecutionsList(IEnumerable<ScriptExecutionData> value)
         {
-            Value = new ChangeTrackingList<ScriptExecutionData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of ScriptExecutionsList. </summary>
-        /// <param name="value"> List of scripts. </param>
-        /// <param name="nextLink"> URL to get the next page if any. </param>
-        internal ScriptExecutionsList(IReadOnlyList<ScriptExecutionData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ScriptExecutionsList"/>. </summary>
+        /// <param name="value"> The ScriptExecution items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ScriptExecutionsList(IList<ScriptExecutionData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of scripts. </summary>
-        public IReadOnlyList<ScriptExecutionData> Value { get; }
-        /// <summary> URL to get the next page if any. </summary>
-        public string NextLink { get; }
+        /// <summary> The ScriptExecution items on this page. </summary>
+        public IList<ScriptExecutionData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

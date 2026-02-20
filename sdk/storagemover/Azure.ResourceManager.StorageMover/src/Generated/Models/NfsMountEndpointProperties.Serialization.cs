@@ -5,87 +5,177 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.StorageMover;
 
 namespace Azure.ResourceManager.StorageMover.Models
 {
-    public partial class NfsMountEndpointProperties : IUtf8JsonSerializable
+    /// <summary> The properties of NFS share endpoint. </summary>
+    public partial class NfsMountEndpointProperties : EndpointBaseProperties, IJsonModel<NfsMountEndpointProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="NfsMountEndpointProperties"/> for deserialization. </summary>
+        internal NfsMountEndpointProperties()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override EndpointBaseProperties PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<NfsMountEndpointProperties>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeNfsMountEndpointProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(NfsMountEndpointProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<NfsMountEndpointProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("host");
-            writer.WriteStringValue(Host);
-            if (Optional.IsDefined(NfsVersion))
-            {
-                writer.WritePropertyName("nfsVersion");
-                writer.WriteStringValue(NfsVersion.Value.ToString());
-            }
-            writer.WritePropertyName("export");
-            writer.WriteStringValue(Export);
-            writer.WritePropertyName("endpointType");
-            writer.WriteStringValue(EndpointType.ToString());
-            if (Optional.IsDefined(Description))
-            {
-                writer.WritePropertyName("description");
-                writer.WriteStringValue(Description);
-            }
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static NfsMountEndpointProperties DeserializeNfsMountEndpointProperties(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            string host = default;
-            Optional<NfsVersion> nfsVersion = default;
-            string export = default;
-            EndpointType endpointType = default;
-            Optional<string> description = default;
-            Optional<StorageMoverProvisioningState> provisioningState = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<NfsMountEndpointProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("host"))
+                throw new FormatException($"The model {nameof(NfsMountEndpointProperties)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
+            writer.WritePropertyName("host"u8);
+            writer.WriteStringValue(Host);
+            if (Optional.IsDefined(NfsVersion))
+            {
+                writer.WritePropertyName("nfsVersion"u8);
+                writer.WriteStringValue(NfsVersion.Value.ToString());
+            }
+            writer.WritePropertyName("export"u8);
+            writer.WriteStringValue(Export);
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        NfsMountEndpointProperties IJsonModel<NfsMountEndpointProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (NfsMountEndpointProperties)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override EndpointBaseProperties JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<NfsMountEndpointProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NfsMountEndpointProperties)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeNfsMountEndpointProperties(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static NfsMountEndpointProperties DeserializeNfsMountEndpointProperties(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            EndpointType endpointType = default;
+            string description = default;
+            StorageMoverProvisioningState? provisioningState = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            string host = default;
+            NfsVersion? nfsVersion = default;
+            string export = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("endpointType"u8))
                 {
-                    host = property.Value.GetString();
+                    endpointType = new EndpointType(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("nfsVersion"))
+                if (prop.NameEquals("description"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    description = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("provisioningState"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    nfsVersion = new NfsVersion(property.Value.GetString());
+                    provisioningState = new StorageMoverProvisioningState(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("export"))
+                if (prop.NameEquals("host"u8))
                 {
-                    export = property.Value.GetString();
+                    host = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("endpointType"))
+                if (prop.NameEquals("nfsVersion"u8))
                 {
-                    endpointType = new EndpointType(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("description"))
-                {
-                    description = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("provisioningState"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    provisioningState = new StorageMoverProvisioningState(property.Value.GetString());
+                    nfsVersion = new NfsVersion(prop.Value.GetString());
                     continue;
+                }
+                if (prop.NameEquals("export"u8))
+                {
+                    export = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new NfsMountEndpointProperties(endpointType, description.Value, Optional.ToNullable(provisioningState), host, Optional.ToNullable(nfsVersion), export);
+            return new NfsMountEndpointProperties(
+                endpointType,
+                description,
+                provisioningState,
+                additionalBinaryDataProperties,
+                host,
+                nfsVersion,
+                export);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<NfsMountEndpointProperties>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<NfsMountEndpointProperties>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerStorageMoverContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(NfsMountEndpointProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        NfsMountEndpointProperties IPersistableModel<NfsMountEndpointProperties>.Create(BinaryData data, ModelReaderWriterOptions options) => (NfsMountEndpointProperties)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<NfsMountEndpointProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -5,79 +5,260 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class ExpressRouteLinkMacSecConfig : IUtf8JsonSerializable
+    public partial class ExpressRouteLinkMacSecConfig : IUtf8JsonSerializable, IJsonModel<ExpressRouteLinkMacSecConfig>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ExpressRouteLinkMacSecConfig>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ExpressRouteLinkMacSecConfig>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ExpressRouteLinkMacSecConfig>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ExpressRouteLinkMacSecConfig)} does not support writing '{format}' format.");
+            }
+
             if (Optional.IsDefined(CknSecretIdentifier))
             {
-                writer.WritePropertyName("cknSecretIdentifier");
+                writer.WritePropertyName("cknSecretIdentifier"u8);
                 writer.WriteStringValue(CknSecretIdentifier);
             }
             if (Optional.IsDefined(CakSecretIdentifier))
             {
-                writer.WritePropertyName("cakSecretIdentifier");
+                writer.WritePropertyName("cakSecretIdentifier"u8);
                 writer.WriteStringValue(CakSecretIdentifier);
             }
             if (Optional.IsDefined(Cipher))
             {
-                writer.WritePropertyName("cipher");
+                writer.WritePropertyName("cipher"u8);
                 writer.WriteStringValue(Cipher.Value.ToString());
             }
             if (Optional.IsDefined(SciState))
             {
-                writer.WritePropertyName("sciState");
+                writer.WritePropertyName("sciState"u8);
                 writer.WriteStringValue(SciState.Value.ToString());
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static ExpressRouteLinkMacSecConfig DeserializeExpressRouteLinkMacSecConfig(JsonElement element)
+        ExpressRouteLinkMacSecConfig IJsonModel<ExpressRouteLinkMacSecConfig>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> cknSecretIdentifier = default;
-            Optional<string> cakSecretIdentifier = default;
-            Optional<ExpressRouteLinkMacSecCipher> cipher = default;
-            Optional<ExpressRouteLinkMacSecSciState> sciState = default;
+            var format = options.Format == "W" ? ((IPersistableModel<ExpressRouteLinkMacSecConfig>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ExpressRouteLinkMacSecConfig)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeExpressRouteLinkMacSecConfig(document.RootElement, options);
+        }
+
+        internal static ExpressRouteLinkMacSecConfig DeserializeExpressRouteLinkMacSecConfig(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string cknSecretIdentifier = default;
+            string cakSecretIdentifier = default;
+            ExpressRouteLinkMacSecCipher? cipher = default;
+            ExpressRouteLinkMacSecSciState? sciState = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("cknSecretIdentifier"))
+                if (property.NameEquals("cknSecretIdentifier"u8))
                 {
                     cknSecretIdentifier = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("cakSecretIdentifier"))
+                if (property.NameEquals("cakSecretIdentifier"u8))
                 {
                     cakSecretIdentifier = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("cipher"))
+                if (property.NameEquals("cipher"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     cipher = new ExpressRouteLinkMacSecCipher(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("sciState"))
+                if (property.NameEquals("sciState"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     sciState = new ExpressRouteLinkMacSecSciState(property.Value.GetString());
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ExpressRouteLinkMacSecConfig(cknSecretIdentifier.Value, cakSecretIdentifier.Value, Optional.ToNullable(cipher), Optional.ToNullable(sciState));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ExpressRouteLinkMacSecConfig(cknSecretIdentifier, cakSecretIdentifier, cipher, sciState, serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(CknSecretIdentifier), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  cknSecretIdentifier: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(CknSecretIdentifier))
+                {
+                    builder.Append("  cknSecretIdentifier: ");
+                    if (CknSecretIdentifier.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{CknSecretIdentifier}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{CknSecretIdentifier}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(CakSecretIdentifier), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  cakSecretIdentifier: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(CakSecretIdentifier))
+                {
+                    builder.Append("  cakSecretIdentifier: ");
+                    if (CakSecretIdentifier.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{CakSecretIdentifier}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{CakSecretIdentifier}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Cipher), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  cipher: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Cipher))
+                {
+                    builder.Append("  cipher: ");
+                    builder.AppendLine($"'{Cipher.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SciState), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  sciState: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(SciState))
+                {
+                    builder.Append("  sciState: ");
+                    builder.AppendLine($"'{SciState.Value.ToString()}'");
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<ExpressRouteLinkMacSecConfig>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ExpressRouteLinkMacSecConfig>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(ExpressRouteLinkMacSecConfig)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ExpressRouteLinkMacSecConfig IPersistableModel<ExpressRouteLinkMacSecConfig>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ExpressRouteLinkMacSecConfig>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeExpressRouteLinkMacSecConfig(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ExpressRouteLinkMacSecConfig)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ExpressRouteLinkMacSecConfig>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

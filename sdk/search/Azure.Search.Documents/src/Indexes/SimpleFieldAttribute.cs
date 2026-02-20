@@ -58,6 +58,16 @@ namespace Azure.Search.Documents.Indexes
         /// <value>String values from <see cref="LexicalNormalizerName.Values">LexicalAnalyzerName</see>.</value>
         public string NormalizerName { get; set; }
 
+        /// <summary> A value indicating whether the field should be used as a permission filter. </summary>
+        /// <value>String values from <see cref="PermissionFilter.Values">PermissionFilter</see>.</value>
+        public string PermissionFilter { get; set; }
+
+        /// <summary>
+        /// A value indicating whether the field should be used for sensitivity label filtering.
+        /// This enables document-level filtering based on Microsoft Purview sensitivity labels.
+        /// </summary>
+        public bool? SensitivityLabel { get; set; }
+
         /// <inheritdoc/>
         void ISearchFieldAttribute.SetField(SearchField field) => SetField(field);
 
@@ -80,6 +90,16 @@ namespace Azure.Search.Documents.Indexes
             if (NormalizerName != null)
             {
                 field.NormalizerName = NormalizerName;
+            }
+
+            if (PermissionFilter != null)
+            {
+                field.PermissionFilter = PermissionFilter;
+            }
+
+            if (SensitivityLabel.HasValue)
+            {
+                field.SensitivityLabel = SensitivityLabel;
             }
         }
     }

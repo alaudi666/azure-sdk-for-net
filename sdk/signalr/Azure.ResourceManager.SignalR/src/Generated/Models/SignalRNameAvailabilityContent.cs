@@ -6,16 +6,21 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
+using Azure.ResourceManager.SignalR;
 
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Data POST-ed to the nameAvailability action. </summary>
     public partial class SignalRNameAvailabilityContent
     {
-        /// <summary> Initializes a new instance of SignalRNameAvailabilityContent. </summary>
-        /// <param name="resourceType"> The resource type. Can be &quot;Microsoft.SignalRService/SignalR&quot; or &quot;Microsoft.SignalRService/webPubSub&quot;. </param>
-        /// <param name="name"> The resource name to validate. e.g.&quot;my-resource-name&quot;. </param>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRNameAvailabilityContent"/>. </summary>
+        /// <param name="resourceType"> The resource type. Can be "Microsoft.SignalRService/SignalR", "Microsoft.SignalRService/WebPubSub", "Microsoft.SignalRService/SignalR/replicas" or "Microsoft.SignalRService/WebPubSub/replicas". </param>
+        /// <param name="name"> The resource name to validate. e.g."my-resource-name". </param>
         /// <exception cref="ArgumentNullException"> <paramref name="name"/> is null. </exception>
         public SignalRNameAvailabilityContent(ResourceType resourceType, string name)
         {
@@ -25,9 +30,23 @@ namespace Azure.ResourceManager.SignalR.Models
             Name = name;
         }
 
-        /// <summary> The resource type. Can be &quot;Microsoft.SignalRService/SignalR&quot; or &quot;Microsoft.SignalRService/webPubSub&quot;. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRNameAvailabilityContent"/>. </summary>
+        /// <param name="resourceType"> The resource type. Can be "Microsoft.SignalRService/SignalR", "Microsoft.SignalRService/WebPubSub", "Microsoft.SignalRService/SignalR/replicas" or "Microsoft.SignalRService/WebPubSub/replicas". </param>
+        /// <param name="name"> The resource name to validate. e.g."my-resource-name". </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRNameAvailabilityContent(ResourceType resourceType, string name, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            ResourceType = resourceType;
+            Name = name;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> The resource type. Can be "Microsoft.SignalRService/SignalR", "Microsoft.SignalRService/WebPubSub", "Microsoft.SignalRService/SignalR/replicas" or "Microsoft.SignalRService/WebPubSub/replicas". </summary>
+        [WirePath("type")]
         public ResourceType ResourceType { get; }
-        /// <summary> The resource name to validate. e.g.&quot;my-resource-name&quot;. </summary>
+
+        /// <summary> The resource name to validate. e.g."my-resource-name". </summary>
+        [WirePath("name")]
         public string Name { get; }
     }
 }

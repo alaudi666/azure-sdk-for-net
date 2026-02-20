@@ -5,32 +5,39 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> The list of product families. </summary>
     internal partial class ProductFamilies
     {
-        /// <summary> Initializes a new instance of ProductFamilies. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ProductFamilies"/>. </summary>
         internal ProductFamilies()
         {
             Value = new ChangeTrackingList<ProductFamily>();
         }
 
-        /// <summary> Initializes a new instance of ProductFamilies. </summary>
-        /// <param name="value"> List of product families. </param>
-        /// <param name="nextLink"> Link for the next set of product families. </param>
-        internal ProductFamilies(IReadOnlyList<ProductFamily> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ProductFamilies"/>. </summary>
+        /// <param name="value"> The ProductFamily items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ProductFamilies(IReadOnlyList<ProductFamily> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of product families. </summary>
+        /// <summary> The ProductFamily items on this page. </summary>
         public IReadOnlyList<ProductFamily> Value { get; }
-        /// <summary> Link for the next set of product families. </summary>
-        public string NextLink { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

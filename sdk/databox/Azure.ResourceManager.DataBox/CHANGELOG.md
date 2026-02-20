@@ -1,6 +1,6 @@
 # Release History
 
-## 1.1.0-beta.1 (Unreleased)
+## 1.2.0-beta.1 (Unreleased)
 
 ### Features Added
 
@@ -9,6 +9,52 @@
 ### Bugs Fixed
 
 ### Other Changes
+
+## 1.1.0 (2025-03-27)
+
+### Features Added
+
+- Upgraded api-version tag from 'package-2022-12' to 'package-2025-02'. Tag detail available at https://github.com/Azure/azure-rest-api-specs/blob/535377f6ef91e9d847bbee77d55871eb8b37b7b2/specification/databox/resource-manager/readme.md.
+
+## 1.0.4 (2025-03-11)
+
+### Features Added
+
+- Enable the new model serialization by using the System.ClientModel, refer this [document](https://aka.ms/azsdk/net/mrw) for more details.
+- Exposed `JsonModelWriteCore` for model serialization procedure.
+
+## 1.0.3 (2023-11-27)
+
+### Features Added
+
+- Enable mocking for extension methods, refer this [document](https://aka.ms/azsdk/net/mocking) for more details.
+
+### Other Changes
+
+- Upgraded dependent `Azure.ResourceManager` to 1.9.0.
+
+## 1.0.2 (2023-05-29)
+
+### Features Added
+
+- Enable the model factory feature for model mocking, more information can be found [here](https://azure.github.io/azure-sdk/dotnet_introduction.html#dotnet-mocking-factory-builder).
+- Added support for service version 2022-12-01.
+- Added changes to support reverse shipping address updates, hardware encryption and customer resolution flows
+
+### Other Changes
+
+- Added `ReverseShippingDetails` property tp `DataBoxBasicJobDetails`
+- Added `DataBoxDiskGranularCopyLogDetails` property to `DataBoxDiskCopyProgress`
+- Added `SerialNumberCustomerResolutionMap` property to `MitigateJobContent` which replaces `CustomerResolutionCode`
+- Upgraded dependent Azure.Core to 1.32.0.
+- Upgraded dependent Azure.ResourceManager to 1.6.0.
+
+## 1.0.1 (2023-02-16)
+
+### Other Changes
+
+- Upgraded dependent `Azure.Core` to `1.28.0`.
+- Upgraded dependent `Azure.ResourceManager` to `1.4.0`.
 
 ## 1.0.0 (2022-09-13)
 
@@ -21,7 +67,7 @@ Polishing since last public beta release:
 - Corrected the format of all `Guid` type properties / parameters.
 - Corrected the format of all `ResourceIdentifier` type properties / parameters.
 - Corrected the format of all `AzureLocation` type properties / parameters.
-- Corrected all acronyms that not follow [.Net Naming Guidelines](https://docs.microsoft.com/dotnet/standard/design-guidelines/naming-guidelines).
+- Corrected all acronyms that not follow [.Net Naming Guidelines](https://learn.microsoft.com/dotnet/standard/design-guidelines/naming-guidelines).
 - Corrected the suffix of `DateTimeOffset` properties / parameters.
 - Optimized the name of some models and functions.
 
@@ -52,4 +98,4 @@ This package follows the [new Azure SDK guidelines](https://azure.github.io/azur
 
 This package is a Public Preview version, so expect incompatible changes in subsequent releases as we improve the product. To provide feedback, submit an issue in our [Azure SDK for .NET GitHub repo](https://github.com/Azure/azure-sdk-for-net/issues).
 
-> NOTE: For more information about unified authentication, please refer to [Microsoft Azure Identity documentation for .NET](https://docs.microsoft.com//dotnet/api/overview/azure/identity-readme?view=azure-dotnet).
+> NOTE: For more information about unified authentication, please refer to [Microsoft Azure Identity documentation for .NET](https://learn.microsoft.com/dotnet/api/overview/azure/identity-readme?view=azure-dotnet).

@@ -29,12 +29,27 @@ namespace Azure.Core
 
             if (s_ecCopyWithPrivateKeyMethod is null)
             {
+                // CopyWithPrivateKey was added in .NET Framework 4.7.2. We must otherwise throw without it.
                 s_ecCopyWithPrivateKeyMethod = typeof(ECDsaCertificateExtensions).GetMethod("CopyWithPrivateKey", BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(X509Certificate2), typeof(ECDsa) }, null)
                     ?? throw new PlatformNotSupportedException("The current platform does not support reading an ECDsa private key from a PEM file");
             }
 
             // Create the certificate without the private key to pass to our PKCS8 decoder if needed to copy the prime curve.
-            using X509Certificate2 certificateWithoutPrivateKey = new X509Certificate2(cer, (string)null, keyStorageFlags);
+            X509Certificate2 certificateWithoutPrivateKey;
+
+#if NET9_0_OR_GREATER
+            switch (X509Certificate2.GetCertContentType(cer))
+            {
+                case X509ContentType.Pkcs12:
+                    certificateWithoutPrivateKey = X509CertificateLoader.LoadPkcs12(cer, (string)null, keyStorageFlags);
+                    break;
+                default:
+                    certificateWithoutPrivateKey = X509CertificateLoader.LoadCertificate(cer);
+                    break;
+            }
+#else
+            certificateWithoutPrivateKey = new X509Certificate2(cer, (string)null, keyStorageFlags);
+#endif
 
             ECDsa privateKey = null;
             try
@@ -61,6 +76,7 @@ namespace Azure.Core
                 }
 
                 certificate = (X509Certificate2)s_ecCopyWithPrivateKeyMethod.Invoke(null, new object[] { certificateWithoutPrivateKey, privateKey });
+                certificateWithoutPrivateKey.Dispose();
 
                 // Make sure the private key doesn't get disposed now that it's used.
                 privateKey = null;

@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.SecurityDevOps
 {
     /// <summary>
-    /// A class representing a collection of <see cref="AzureDevOpsOrgResource" /> and their operations.
-    /// Each <see cref="AzureDevOpsOrgResource" /> in the collection will belong to the same instance of <see cref="AzureDevOpsConnectorResource" />.
-    /// To get an <see cref="AzureDevOpsOrgCollection" /> instance call the GetAzureDevOpsOrgs method from an instance of <see cref="AzureDevOpsConnectorResource" />.
+    /// A class representing a collection of <see cref="AzureDevOpsOrgResource"/> and their operations.
+    /// Each <see cref="AzureDevOpsOrgResource"/> in the collection will belong to the same instance of <see cref="AzureDevOpsConnectorResource"/>.
+    /// To get an <see cref="AzureDevOpsOrgCollection"/> instance call the GetAzureDevOpsOrgs method from an instance of <see cref="AzureDevOpsConnectorResource"/>.
     /// </summary>
     public partial class AzureDevOpsOrgCollection : ArmCollection, IEnumerable<AzureDevOpsOrgResource>, IAsyncEnumerable<AzureDevOpsOrgResource>
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.SecurityDevOps
 
         /// <summary>
         /// Creates or updates an Azure DevOps Org.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}
-        /// Operation Id: AzureDevOpsOrg_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureDevOpsOrg_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-09-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureDevOpsOrgResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="azureDevOpsOrgName"> Name of the AzureDevOps Org. </param>
@@ -88,8 +102,24 @@ namespace Azure.ResourceManager.SecurityDevOps
 
         /// <summary>
         /// Creates or updates an Azure DevOps Org.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}
-        /// Operation Id: AzureDevOpsOrg_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureDevOpsOrg_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-09-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureDevOpsOrgResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="azureDevOpsOrgName"> Name of the AzureDevOps Org. </param>
@@ -121,8 +151,24 @@ namespace Azure.ResourceManager.SecurityDevOps
 
         /// <summary>
         /// Returns a monitored AzureDevOps Org resource for a given ID.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}
-        /// Operation Id: AzureDevOpsOrg_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureDevOpsOrg_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-09-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureDevOpsOrgResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="azureDevOpsOrgName"> Name of the AzureDevOps Org. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -150,8 +196,24 @@ namespace Azure.ResourceManager.SecurityDevOps
 
         /// <summary>
         /// Returns a monitored AzureDevOps Org resource for a given ID.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}
-        /// Operation Id: AzureDevOpsOrg_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureDevOpsOrg_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-09-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureDevOpsOrgResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="azureDevOpsOrgName"> Name of the AzureDevOps Org. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -178,91 +240,83 @@ namespace Azure.ResourceManager.SecurityDevOps
         }
 
         /// <summary>
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs
-        /// Operation Id: AzureDevOpsOrg_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureDevOpsOrg_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-09-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureDevOpsOrgResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="AzureDevOpsOrgResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="AzureDevOpsOrgResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<AzureDevOpsOrgResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<AzureDevOpsOrgResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _azureDevOpsOrgClientDiagnostics.CreateScope("AzureDevOpsOrgCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _azureDevOpsOrgRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new AzureDevOpsOrgResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<AzureDevOpsOrgResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _azureDevOpsOrgClientDiagnostics.CreateScope("AzureDevOpsOrgCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _azureDevOpsOrgRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new AzureDevOpsOrgResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _azureDevOpsOrgRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _azureDevOpsOrgRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new AzureDevOpsOrgResource(Client, AzureDevOpsOrgData.DeserializeAzureDevOpsOrgData(e)), _azureDevOpsOrgClientDiagnostics, Pipeline, "AzureDevOpsOrgCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs
-        /// Operation Id: AzureDevOpsOrg_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureDevOpsOrg_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-09-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureDevOpsOrgResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="AzureDevOpsOrgResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="AzureDevOpsOrgResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<AzureDevOpsOrgResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<AzureDevOpsOrgResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _azureDevOpsOrgClientDiagnostics.CreateScope("AzureDevOpsOrgCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _azureDevOpsOrgRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new AzureDevOpsOrgResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<AzureDevOpsOrgResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _azureDevOpsOrgClientDiagnostics.CreateScope("AzureDevOpsOrgCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _azureDevOpsOrgRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new AzureDevOpsOrgResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _azureDevOpsOrgRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _azureDevOpsOrgRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new AzureDevOpsOrgResource(Client, AzureDevOpsOrgData.DeserializeAzureDevOpsOrgData(e)), _azureDevOpsOrgClientDiagnostics, Pipeline, "AzureDevOpsOrgCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}
-        /// Operation Id: AzureDevOpsOrg_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureDevOpsOrg_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-09-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureDevOpsOrgResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="azureDevOpsOrgName"> Name of the AzureDevOps Org. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -288,8 +342,24 @@ namespace Azure.ResourceManager.SecurityDevOps
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}
-        /// Operation Id: AzureDevOpsOrg_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureDevOpsOrg_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-09-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureDevOpsOrgResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="azureDevOpsOrgName"> Name of the AzureDevOps Org. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -305,6 +375,96 @@ namespace Azure.ResourceManager.SecurityDevOps
             {
                 var response = _azureDevOpsOrgRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, azureDevOpsOrgName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureDevOpsOrg_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-09-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureDevOpsOrgResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="azureDevOpsOrgName"> Name of the AzureDevOps Org. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="azureDevOpsOrgName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="azureDevOpsOrgName"/> is null. </exception>
+        public virtual async Task<NullableResponse<AzureDevOpsOrgResource>> GetIfExistsAsync(string azureDevOpsOrgName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(azureDevOpsOrgName, nameof(azureDevOpsOrgName));
+
+            using var scope = _azureDevOpsOrgClientDiagnostics.CreateScope("AzureDevOpsOrgCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _azureDevOpsOrgRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, azureDevOpsOrgName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<AzureDevOpsOrgResource>(response.GetRawResponse());
+                return Response.FromValue(new AzureDevOpsOrgResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.SecurityDevOps/azureDevOpsConnectors/{azureDevOpsConnectorName}/orgs/{azureDevOpsOrgName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AzureDevOpsOrg_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-09-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AzureDevOpsOrgResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="azureDevOpsOrgName"> Name of the AzureDevOps Org. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="azureDevOpsOrgName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="azureDevOpsOrgName"/> is null. </exception>
+        public virtual NullableResponse<AzureDevOpsOrgResource> GetIfExists(string azureDevOpsOrgName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(azureDevOpsOrgName, nameof(azureDevOpsOrgName));
+
+            using var scope = _azureDevOpsOrgClientDiagnostics.CreateScope("AzureDevOpsOrgCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _azureDevOpsOrgRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, azureDevOpsOrgName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<AzureDevOpsOrgResource>(response.GetRawResponse());
+                return Response.FromValue(new AzureDevOpsOrgResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

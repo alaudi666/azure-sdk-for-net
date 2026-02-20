@@ -5,8 +5,8 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
@@ -14,20 +14,30 @@ namespace Azure.ResourceManager.StorageSync.Models
     /// <summary> Array of RegisteredServer. </summary>
     internal partial class RegisteredServerArray
     {
-        /// <summary> Initializes a new instance of RegisteredServerArray. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="RegisteredServerArray"/>. </summary>
         internal RegisteredServerArray()
         {
             Value = new ChangeTrackingList<StorageSyncRegisteredServerData>();
         }
 
-        /// <summary> Initializes a new instance of RegisteredServerArray. </summary>
+        /// <summary> Initializes a new instance of <see cref="RegisteredServerArray"/>. </summary>
         /// <param name="value"> Collection of Registered Server. </param>
-        internal RegisteredServerArray(IReadOnlyList<StorageSyncRegisteredServerData> value)
+        /// <param name="nextLink"> The URL to get the next set of results. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal RegisteredServerArray(IList<StorageSyncRegisteredServerData> value, string nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
+            NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Collection of Registered Server. </summary>
-        public IReadOnlyList<StorageSyncRegisteredServerData> Value { get; }
+        public IList<StorageSyncRegisteredServerData> Value { get; }
+
+        /// <summary> The URL to get the next set of results. </summary>
+        public string NextLink { get; }
     }
 }

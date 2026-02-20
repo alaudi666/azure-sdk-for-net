@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Caching type of Data Disk.
-    /// Serialized Name: Caching
-    /// </summary>
+    /// <summary> Caching type of Data Disk. </summary>
     public readonly partial struct MachineLearningCachingType : IEquatable<MachineLearningCachingType>
     {
         private readonly string _value;
@@ -29,26 +26,17 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string ReadOnlyValue = "ReadOnly";
         private const string ReadWriteValue = "ReadWrite";
 
-        /// <summary>
-        /// None
-        /// Serialized Name: Caching.None
-        /// </summary>
+        /// <summary> None. </summary>
         public static MachineLearningCachingType None { get; } = new MachineLearningCachingType(NoneValue);
-        /// <summary>
-        /// ReadOnly
-        /// Serialized Name: Caching.ReadOnly
-        /// </summary>
+        /// <summary> ReadOnly. </summary>
         public static MachineLearningCachingType ReadOnly { get; } = new MachineLearningCachingType(ReadOnlyValue);
-        /// <summary>
-        /// ReadWrite
-        /// Serialized Name: Caching.ReadWrite
-        /// </summary>
+        /// <summary> ReadWrite. </summary>
         public static MachineLearningCachingType ReadWrite { get; } = new MachineLearningCachingType(ReadWriteValue);
         /// <summary> Determines if two <see cref="MachineLearningCachingType"/> values are the same. </summary>
         public static bool operator ==(MachineLearningCachingType left, MachineLearningCachingType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningCachingType"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningCachingType left, MachineLearningCachingType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningCachingType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningCachingType"/>. </summary>
         public static implicit operator MachineLearningCachingType(string value) => new MachineLearningCachingType(value);
 
         /// <inheritdoc />
@@ -59,7 +47,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

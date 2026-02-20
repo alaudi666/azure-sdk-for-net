@@ -6,27 +6,47 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> The parameters used to check the availability of the vault name. </summary>
     public partial class KeyVaultNameAvailabilityContent
     {
-        /// <summary> Initializes a new instance of KeyVaultNameAvailabilityContent. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="KeyVaultNameAvailabilityContent"/>. </summary>
         /// <param name="name"> The vault name. </param>
+        /// <param name="resourceType"> The type of resource, Microsoft.KeyVault/vaults. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="name"/> is null. </exception>
-        public KeyVaultNameAvailabilityContent(string name)
+        public KeyVaultNameAvailabilityContent(string name, ResourceType resourceType)
         {
             Argument.AssertNotNull(name, nameof(name));
 
             Name = name;
-            ResourceType = "Microsoft.KeyVault/vaults";
+            ResourceType = resourceType;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="KeyVaultNameAvailabilityContent"/>. </summary>
+        /// <param name="name"> The vault name. </param>
+        /// <param name="resourceType"> The type of resource, Microsoft.KeyVault/vaults. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal KeyVaultNameAvailabilityContent(string name, ResourceType resourceType, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Name = name;
+            ResourceType = resourceType;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The vault name. </summary>
+        [WirePath("name")]
         public string Name { get; }
+
         /// <summary> The type of resource, Microsoft.KeyVault/vaults. </summary>
+        [WirePath("type")]
         public ResourceType ResourceType { get; }
     }
 }

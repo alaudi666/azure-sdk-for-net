@@ -5,52 +5,141 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    public partial class AddonVrProperties : IUtf8JsonSerializable
+    /// <summary> The properties of a vSphere Replication (VR) addon. </summary>
+    public partial class AddonVrProperties : AvsPrivateCloudAddonProperties, IJsonModel<AddonVrProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="AddonVrProperties"/> for deserialization. </summary>
+        internal AddonVrProperties()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override AvsPrivateCloudAddonProperties PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AddonVrProperties>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeAddonVrProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AddonVrProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<AddonVrProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("vrsCount");
-            writer.WriteNumberValue(VrsCount);
-            writer.WritePropertyName("addonType");
-            writer.WriteStringValue(AddonType.ToString());
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static AddonVrProperties DeserializeAddonVrProperties(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            int vrsCount = default;
-            AddonType addonType = default;
-            Optional<AddonProvisioningState> provisioningState = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<AddonVrProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("vrsCount"))
+                throw new FormatException($"The model {nameof(AddonVrProperties)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
+            writer.WritePropertyName("vrsCount"u8);
+            writer.WriteNumberValue(VrsCount);
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AddonVrProperties IJsonModel<AddonVrProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (AddonVrProperties)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override AvsPrivateCloudAddonProperties JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AddonVrProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AddonVrProperties)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAddonVrProperties(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static AddonVrProperties DeserializeAddonVrProperties(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            AddonType addonType = default;
+            AddonProvisioningState? provisioningState = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            int vrsCount = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("addonType"u8))
                 {
-                    vrsCount = property.Value.GetInt32();
+                    addonType = new AddonType(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("addonType"))
+                if (prop.NameEquals("provisioningState"u8))
                 {
-                    addonType = new AddonType(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("provisioningState"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    provisioningState = new AddonProvisioningState(property.Value.GetString());
+                    provisioningState = new AddonProvisioningState(prop.Value.GetString());
                     continue;
                 }
+                if (prop.NameEquals("vrsCount"u8))
+                {
+                    vrsCount = prop.Value.GetInt32();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
             }
-            return new AddonVrProperties(addonType, Optional.ToNullable(provisioningState), vrsCount);
+            return new AddonVrProperties(addonType, provisioningState, additionalBinaryDataProperties, vrsCount);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<AddonVrProperties>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AddonVrProperties>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerAvsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(AddonVrProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AddonVrProperties IPersistableModel<AddonVrProperties>.Create(BinaryData data, ModelReaderWriterOptions options) => (AddonVrProperties)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<AddonVrProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

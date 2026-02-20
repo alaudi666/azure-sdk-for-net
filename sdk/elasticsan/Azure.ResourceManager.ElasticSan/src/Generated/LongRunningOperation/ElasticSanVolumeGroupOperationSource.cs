@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.ElasticSan
 {
-    internal class ElasticSanVolumeGroupOperationSource : IOperationSource<ElasticSanVolumeGroupResource>
+    /// <summary></summary>
+    internal partial class ElasticSanVolumeGroupOperationSource : IOperationSource<ElasticSanVolumeGroupResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal ElasticSanVolumeGroupOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         ElasticSanVolumeGroupResource IOperationSource<ElasticSanVolumeGroupResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = ElasticSanVolumeGroupData.DeserializeElasticSanVolumeGroupData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            ElasticSanVolumeGroupData data = ElasticSanVolumeGroupData.DeserializeElasticSanVolumeGroupData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new ElasticSanVolumeGroupResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<ElasticSanVolumeGroupResource> IOperationSource<ElasticSanVolumeGroupResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = ElasticSanVolumeGroupData.DeserializeElasticSanVolumeGroupData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            ElasticSanVolumeGroupData data = ElasticSanVolumeGroupData.DeserializeElasticSanVolumeGroupData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new ElasticSanVolumeGroupResource(_client, data);
         }
     }

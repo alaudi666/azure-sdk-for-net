@@ -5,27 +5,36 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Avs.Models
 {
     /// <summary> Subscription trial availability. </summary>
     public partial class AvsSubscriptionTrialAvailabilityResult
     {
-        /// <summary> Initializes a new instance of AvsSubscriptionTrialAvailabilityResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AvsSubscriptionTrialAvailabilityResult"/>. </summary>
         internal AvsSubscriptionTrialAvailabilityResult()
         {
         }
 
-        /// <summary> Initializes a new instance of AvsSubscriptionTrialAvailabilityResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="AvsSubscriptionTrialAvailabilityResult"/>. </summary>
         /// <param name="status"> Trial status. </param>
         /// <param name="availableHosts"> Number of trial hosts available. </param>
-        internal AvsSubscriptionTrialAvailabilityResult(AvsSubscriptionTrialStatus? status, int? availableHosts)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal AvsSubscriptionTrialAvailabilityResult(AvsSubscriptionTrialStatus? status, int? availableHosts, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Status = status;
             AvailableHosts = availableHosts;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Trial status. </summary>
         public AvsSubscriptionTrialStatus? Status { get; }
+
         /// <summary> Number of trial hosts available. </summary>
         public int? AvailableHosts { get; }
     }

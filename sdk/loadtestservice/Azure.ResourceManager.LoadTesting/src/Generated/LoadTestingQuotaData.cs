@@ -5,40 +5,82 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.LoadTesting.Models;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.LoadTesting
 {
-    /// <summary> A class representing the LoadTestingQuota data model. </summary>
+    /// <summary> Quota bucket details object. </summary>
     public partial class LoadTestingQuotaData : ResourceData
     {
-        /// <summary> Initializes a new instance of LoadTestingQuotaData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="LoadTestingQuotaData"/>. </summary>
         public LoadTestingQuotaData()
         {
         }
 
-        /// <summary> Initializes a new instance of LoadTestingQuotaData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="limit"> Current quota limit of the quota bucket. </param>
-        /// <param name="usage"> Current quota usage of the quota bucket. </param>
-        /// <param name="provisioningState"> Resource provisioning state. </param>
-        internal LoadTestingQuotaData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, int? limit, int? usage, LoadTestingProvisioningState? provisioningState) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="LoadTestingQuotaData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> The resource-specific properties for this resource. </param>
+        internal LoadTestingQuotaData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, QuotaResourceProperties properties) : base(id, name, resourceType, systemData)
         {
-            Limit = limit;
-            Usage = usage;
-            ProvisioningState = provisioningState;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
 
+        /// <summary> The resource-specific properties for this resource. </summary>
+        internal QuotaResourceProperties Properties { get; set; }
+
         /// <summary> Current quota limit of the quota bucket. </summary>
-        public int? Limit { get; set; }
+        public int? Limit
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Limit;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new QuotaResourceProperties();
+                }
+                Properties.Limit = value.Value;
+            }
+        }
+
         /// <summary> Current quota usage of the quota bucket. </summary>
-        public int? Usage { get; set; }
+        public int? Usage
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Usage;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new QuotaResourceProperties();
+                }
+                Properties.Usage = value.Value;
+            }
+        }
+
         /// <summary> Resource provisioning state. </summary>
-        public LoadTestingProvisioningState? ProvisioningState { get; }
+        public LoadTestingProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+        }
     }
 }

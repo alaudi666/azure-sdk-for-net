@@ -31,7 +31,6 @@ namespace Azure.ResourceManager.KeyVault.Tests
 
         // The MHSM is very expensive and only allow to have 5 MHSM instance per retion.
         // So before running live / record please make sure the test region have the capacity for create a new one.
-        [PlaybackOnly("Live test for MHSM is not necessary")]
         [RecordedTest]
         public async Task ManagedHsmFull()
         {
@@ -146,7 +145,7 @@ namespace Azure.ResourceManager.KeyVault.Tests
             {
                 Response<DeletedManagedHsmResource> deletedMhsm = await Subscription.GetDeletedManagedHsmAsync(Location, MHSMName);
                 Assert.NotNull(deletedMhsm.Value);
-                Assert.NotNull(deletedMhsm.Value.Data.Properties.DeletionOn);
+                Assert.NotNull(deletedMhsm.Value.Data.Properties.DeletedOn);
                 await deletedMhsm.Value.PurgeDeletedAsync(WaitUntil.Completed);
             }
             catch (Exception)
@@ -154,9 +153,8 @@ namespace Azure.ResourceManager.KeyVault.Tests
             }
         }
 
-        [Ignore("Recover is not working, add back when it's verified")]
-        [PlaybackOnly("One location only support one MHSM")]
         [RecordedTest]
+        [Ignore("Recover is not working, add back when it's verified")]
         public async Task ManagedHsmRecoverDeletedVault()
         {
             ManagedHsmData parameters = new ManagedHsmData(Location)
@@ -217,7 +215,7 @@ namespace Azure.ResourceManager.KeyVault.Tests
 
             Assert.AreEqual(expectedResourceId, managedHsmData.Id.ToString());
             Assert.AreEqual(expectedLocation.ToString(), managedHsmData.Location.ToString());
-            Assert.AreEqual(expectedTenantId, managedHsmData.Properties.TenantId);
+            Assert.AreEqual(Mode == RecordedTestMode.Live ? expectedTenantId : Guid.Empty, managedHsmData.Properties.TenantId);
             Assert.AreEqual(expectedVaultName, managedHsmData.Name);
             Assert.AreEqual(expectedSkuFamily, managedHsmData.Sku.Family);
             Assert.AreEqual(expectedSkuName, managedHsmData.Sku.Name);

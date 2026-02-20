@@ -5,17 +5,19 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> The UnknownScriptExecutionParameter. </summary>
     internal partial class UnknownScriptExecutionParameter : ScriptExecutionParameterDetails
     {
-        /// <summary> Initializes a new instance of UnknownScriptExecutionParameter. </summary>
+        /// <summary> Initializes a new instance of <see cref="UnknownScriptExecutionParameter"/>. </summary>
+        /// <param name="type"> script execution parameter type. </param>
         /// <param name="name"> The parameter name. </param>
-        /// <param name="parameterType"> The type of execution parameter. </param>
-        internal UnknownScriptExecutionParameter(string name, ScriptExecutionParameterType parameterType) : base(name, parameterType)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal UnknownScriptExecutionParameter(ScriptExecutionParameterType @type, string name, IDictionary<string, BinaryData> additionalBinaryDataProperties) : base(@type != default ? @type : "unknown", name, additionalBinaryDataProperties)
         {
-            ParameterType = parameterType;
         }
     }
 }

@@ -2,11 +2,15 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Buffers;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Azure.Core.Serialization;
 using NUnit.Framework;
 
 namespace Azure.Core.Tests
@@ -96,6 +100,346 @@ namespace Azure.Core.Tests
             content.WriteTo(destination, default);
 
             CollectionAssert.AreEqual(expected, destination.ToArray());
+        }
+
+        [Test]
+        public void IntArrayContent()
+        {
+            var intArray = new int[] { 1, 2, 3 };
+            var expected = "[1,2,3]";
+            var destination = new MemoryStream();
+            var content = RequestContent.Create(intArray);
+
+            content.WriteTo(destination, default);
+            destination.Position = 0;
+            using var reader = new StreamReader(destination);
+
+            Assert.AreEqual(expected, reader.ReadToEnd());
+        }
+
+        [Test]
+        public void DictionaryContent()
+        {
+            var dictionary = new Dictionary<string, object> { { "keyInt", 1 }, { "keyString", "2" }, { "keyFloat", 3.1f } };
+
+#if NETCOREAPP
+            var expected = "{\"keyInt\":1,\"keyString\":\"2\",\"keyFloat\":3.1}";
+#else
+            var expected = "{\"keyInt\":1,\"keyString\":\"2\",\"keyFloat\":3.0999999}";
+#endif
+            var destination = new MemoryStream();
+            var content = RequestContent.Create(dictionary);
+
+            content.WriteTo(destination, default);
+            destination.Position = 0;
+            using var reader = new StreamReader(destination);
+
+            Assert.AreEqual(expected, reader.ReadToEnd());
+        }
+
+        [Test]
+        public void DynamicDataContent()
+        {
+            ReadOnlySpan<byte> utf8Json = """
+                {
+                    "foo" : {
+                       "bar" : 1
+                    }
+                }
+                """u8;
+            ReadOnlyMemory<byte> json = new ReadOnlyMemory<byte>(utf8Json.ToArray());
+
+            using JsonDocument doc = JsonDocument.Parse(json);
+            using MemoryStream expected = new();
+            using Utf8JsonWriter writer = new(expected);
+            doc.WriteTo(writer);
+            writer.Flush();
+            expected.Position = 0;
+
+            using dynamic source = new BinaryData(json).ToDynamicFromJson();
+            using RequestContent content = RequestContent.Create(source);
+            using MemoryStream destination = new();
+
+            content.WriteTo(destination, default);
+
+            CollectionAssert.AreEqual(expected.ToArray(), destination.ToArray());
+        }
+
+        [Test]
+        public void CamelCaseContent()
+        {
+            ReadOnlySpan<byte> utf8Json = """
+                {
+                    "foo" : {
+                       "bar" : 1
+                    }
+                }
+                """u8;
+            ReadOnlyMemory<byte> json = new ReadOnlyMemory<byte>(utf8Json.ToArray());
+
+            using JsonDocument doc = JsonDocument.Parse(json);
+            using MemoryStream expected = new();
+            using Utf8JsonWriter writer = new(expected);
+            doc.WriteTo(writer);
+            writer.Flush();
+            expected.Position = 0;
+
+            var anon = new
+            {
+                Foo = new
+                {
+                    Bar = 1
+                }
+            };
+
+            using RequestContent content = RequestContent.Create(anon, JsonPropertyNames.CamelCase);
+            using MemoryStream destination = new();
+            content.WriteTo(destination, default);
+
+            CollectionAssert.AreEqual(expected.ToArray(), destination.ToArray());
+        }
+
+        [Test]
+        public void JsonModelContent()
+        {
+            var model = new TestJsonModel { Name = "test", Value = 42 };
+            var content = RequestContent.Create(model);
+
+            var stream = new MemoryStream();
+            content.WriteTo(stream, default);
+            stream.Position = 0;
+
+            var document = JsonDocument.Parse(stream);
+            Assert.AreEqual("test", document.RootElement.GetProperty("name").GetString());
+            Assert.AreEqual(42, document.RootElement.GetProperty("value").GetInt32());
+        }
+
+        [Test]
+        public async Task JsonModelContentAsync()
+        {
+            var model = new TestJsonModel { Name = "test", Value = 42 };
+            var content = RequestContent.Create(model);
+
+            var stream = new MemoryStream();
+            await content.WriteToAsync(stream, default);
+            stream.Position = 0;
+
+            var document = JsonDocument.Parse(stream);
+            Assert.AreEqual("test", document.RootElement.GetProperty("name").GetString());
+            Assert.AreEqual(42, document.RootElement.GetProperty("value").GetInt32());
+        }
+
+        [Test]
+        public void JsonModelContentComputeLength()
+        {
+            var model = new TestJsonModel { Name = "test", Value = 42 };
+            var content = RequestContent.Create(model);
+
+            Assert.IsTrue(content.TryComputeLength(out long length));
+            Assert.Greater(length, 0);
+        }
+
+        [Test]
+        public void JsonModelContentDispose()
+        {
+            var model = new TestJsonModel { Name = "test", Value = 42 };
+            var content = RequestContent.Create(model);
+
+            // Should not throw
+            content.Dispose();
+        }
+
+        [Test]
+        public void PersistableModelContent()
+        {
+            var model = new TestPersistableModel { Name = "persistable", Value = 123 };
+            var content = RequestContent.Create(model);
+
+            var stream = new MemoryStream();
+            content.WriteTo(stream, default);
+            stream.Position = 0;
+
+            var document = JsonDocument.Parse(stream);
+            Assert.AreEqual("persistable", document.RootElement.GetProperty("name").GetString());
+            Assert.AreEqual(123, document.RootElement.GetProperty("value").GetInt32());
+        }
+
+        [Test]
+        public async Task PersistableModelContentAsync()
+        {
+            var model = new TestPersistableModel { Name = "persistable", Value = 123 };
+            var content = RequestContent.Create(model);
+
+            var stream = new MemoryStream();
+            await content.WriteToAsync(stream, default);
+            stream.Position = 0;
+
+            var document = JsonDocument.Parse(stream);
+            Assert.AreEqual("persistable", document.RootElement.GetProperty("name").GetString());
+            Assert.AreEqual(123, document.RootElement.GetProperty("value").GetInt32());
+        }
+
+        [Test]
+        public void MixedFormatModelContentJson()
+        {
+            var model = new TestMixedFormatModel { Name = "mixed", Value = 456 };
+            var options = new ModelReaderWriterOptions("J"); // JSON format
+            var content = RequestContent.Create(model, options);
+
+            var stream = new MemoryStream();
+            content.WriteTo(stream, default);
+            stream.Position = 0;
+
+            var document = JsonDocument.Parse(stream);
+            Assert.AreEqual("mixed", document.RootElement.GetProperty("name").GetString());
+            Assert.AreEqual(456, document.RootElement.GetProperty("value").GetInt32());
+        }
+
+        [Test]
+        public void MixedFormatModelContentXml()
+        {
+            var model = new TestMixedFormatModel { Name = "mixed", Value = 456 };
+            var options = new ModelReaderWriterOptions("X"); // XML format
+            var content = RequestContent.Create(model, options);
+
+            var stream = new MemoryStream();
+            content.WriteTo(stream, default);
+            stream.Position = 0;
+
+            var streamReader = new StreamReader(stream);
+            var xmlContent = streamReader.ReadToEnd();
+
+            // Verify XML structure
+            Assert.That(xmlContent, Contains.Substring("<TestMixedFormatModel>"));
+            Assert.That(xmlContent, Contains.Substring("<name>mixed</name>"));
+            Assert.That(xmlContent, Contains.Substring("<value>456</value>"));
+            Assert.That(xmlContent, Contains.Substring("</TestMixedFormatModel>"));
+        }
+
+        [Test]
+        public async Task MixedFormatModelContentXmlAsync()
+        {
+            var model = new TestMixedFormatModel { Name = "mixed", Value = 456 };
+            var options = new ModelReaderWriterOptions("X"); // XML format
+            var content = RequestContent.Create(model, options);
+
+            var stream = new MemoryStream();
+            await content.WriteToAsync(stream, default);
+            stream.Position = 0;
+
+            var streamReader = new StreamReader(stream);
+            var xmlContent = streamReader.ReadToEnd();
+
+            // Verify XML structure
+            Assert.That(xmlContent, Contains.Substring("<TestMixedFormatModel>"));
+            Assert.That(xmlContent, Contains.Substring("<name>mixed</name>"));
+            Assert.That(xmlContent, Contains.Substring("<value>456</value>"));
+            Assert.That(xmlContent, Contains.Substring("</TestMixedFormatModel>"));
+        }
+
+        [Test]
+        public void StringContentIdempotentDispose()
+        {
+            const string testString = "sample content for disposal test";
+            var content = RequestContent.Create(testString);
+
+            // Dispose multiple times - should not throw or cause issues
+            content.Dispose();
+            content.Dispose();
+            content.Dispose();
+
+            // Should not throw
+            Assert.Pass();
+        }
+
+        [Test]
+        public void StreamContentIdempotentDispose()
+        {
+            var stream = new MemoryStream(new byte[100]);
+            var content = RequestContent.Create(stream);
+
+            // Dispose multiple times - should not throw
+            content.Dispose();
+            content.Dispose();
+
+            // Should not throw
+            Assert.Pass();
+        }
+
+        [Test]
+        public void DynamicDataContentIdempotentDispose()
+        {
+            ReadOnlySpan<byte> utf8Json = """
+                {
+                    "test" : "value"
+                }
+                """u8;
+            ReadOnlyMemory<byte> json = new ReadOnlyMemory<byte>(utf8Json.ToArray());
+
+            dynamic source = new BinaryData(json).ToDynamicFromJson();
+            RequestContent content = RequestContent.Create(source);
+
+            // Dispose multiple times - should not throw
+            content.Dispose();
+            content.Dispose();
+
+            // Should not throw
+            Assert.Pass();
+        }
+
+        [Test]
+        public void PersistableModelContentIdempotentDispose()
+        {
+            var model = new TestPersistableModel { Name = "test", Value = 42 };
+            var content = RequestContent.Create(model);
+
+            // Dispose multiple times - should not throw
+            content.Dispose();
+            content.Dispose();
+
+            // Should not throw
+            Assert.Pass();
+        }
+
+        [Test]
+        public void StringContentDisposeDoesNotReturnBufferTwice()
+        {
+            const string testString = "test content for array pool";
+            var content = RequestContent.Create(testString);
+
+            // Dispose twice
+            content.Dispose();
+            content.Dispose();
+
+            // Now rent multiple arrays and ensure we don't get duplicates
+            var pool = ArrayPool<byte>.Shared;
+            var rentedArrays = new List<byte[]>(100);
+            try
+            {
+                for (int i = 0; i < 100; i++)
+                {
+                    byte[] rented = pool.Rent(1024);
+
+                    // Check for duplicates using reference equality
+                    foreach (var existing in rentedArrays)
+                    {
+                        if (ReferenceEquals(existing, rented))
+                        {
+                            Assert.Fail("Array pool returned the same array instance twice.");
+                        }
+                    }
+
+                    rentedArrays.Add(rented);
+                }
+            }
+            finally
+            {
+                // Clean up
+                foreach (var array in rentedArrays)
+                {
+                    pool.Return(array);
+                }
+            }
         }
     }
 }

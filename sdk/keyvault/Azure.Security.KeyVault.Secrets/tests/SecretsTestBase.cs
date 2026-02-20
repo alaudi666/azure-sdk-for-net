@@ -14,7 +14,10 @@ using NUnit.Framework;
 namespace Azure.Security.KeyVault.Secrets.Tests
 {
     [ClientTestFixture(
-        SecretClientOptions.ServiceVersion.V7_4_Preview_1,
+        SecretClientOptions.ServiceVersion.V2025_07_01,
+        SecretClientOptions.ServiceVersion.V7_6,
+        SecretClientOptions.ServiceVersion.V7_5,
+        SecretClientOptions.ServiceVersion.V7_4,
         SecretClientOptions.ServiceVersion.V7_3,
         SecretClientOptions.ServiceVersion.V7_2,
         SecretClientOptions.ServiceVersion.V7_1,
@@ -170,6 +173,7 @@ namespace Azure.Security.KeyVault.Secrets.Tests
             Assert.AreEqual(exp.ContentType, act.ContentType);
             Assert.AreEqual(exp.KeyId, act.KeyId);
             Assert.AreEqual(exp.Managed, act.Managed);
+            Assert.AreEqual(exp.PreviousVersion, act.PreviousVersion);
 
             Assert.AreEqual(exp.Enabled, act.Enabled);
             Assert.AreEqual(exp.ExpiresOn, act.ExpiresOn);
@@ -266,16 +270,22 @@ namespace Azure.Security.KeyVault.Secrets.Tests
                 return new MockCredential();
             }
 
-            return new ClientSecretCredential(
-                tenantId ?? TestEnvironment.TenantId,
-                TestEnvironment.ClientId,
-                TestEnvironment.ClientSecret,
-                new ClientSecretCredentialOptions()
-                {
-                    AuthorityHost = new Uri(TestEnvironment.AuthorityHostUrl),
-                    AdditionallyAllowedTenants = { TestEnvironment.TenantId },
-                }
-            );
+            return string.IsNullOrEmpty(TestEnvironment.ClientSecret)
+                ? new AzurePowerShellCredential(
+                    new AzurePowerShellCredentialOptions()
+                    {
+                        AuthorityHost = new Uri(TestEnvironment.AuthorityHostUrl),
+                        AdditionallyAllowedTenants = { TestEnvironment.TenantId },
+                    })
+                : new ClientSecretCredential(
+                    tenantId ?? TestEnvironment.TenantId,
+                    TestEnvironment.ClientId,
+                    TestEnvironment.ClientSecret,
+                    new ClientSecretCredentialOptions()
+                    {
+                        AuthorityHost = new Uri(TestEnvironment.AuthorityHostUrl),
+                        AdditionallyAllowedTenants = { TestEnvironment.TenantId },
+                    });
         }
     }
 }

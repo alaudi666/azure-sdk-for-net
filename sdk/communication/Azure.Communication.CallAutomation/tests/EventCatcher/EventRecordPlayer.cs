@@ -25,7 +25,7 @@ namespace Azure.Communication.CallAutomation.Tests.EventCatcher
         public bool IsRecording { get; private set; }
         public IEnumerable<RecordedServiceBusReceivedMessage> Entries => _recording.Entries;
 
-        public List<string> KeysToSanitize { get; } = new List<string>() { "rawId", "id" };
+        public List<string> KeysToSanitize { get; } = new List<string>() { "rawId", "id", "botAppId", "ivrContext", "callerDisplayName", "incomingCallContext" };
 
         public EventRecordPlayer(string sessionFilePath)
         {
@@ -82,7 +82,7 @@ namespace Azure.Communication.CallAutomation.Tests.EventCatcher
             }
 
             InitializeDirectory(sessionFilePath);
-            using var fileStream =  File.Create(sessionFilePath);
+            using var fileStream = File.Create(sessionFilePath);
             fileStream.Dispose();
         }
 
@@ -112,7 +112,7 @@ namespace Azure.Communication.CallAutomation.Tests.EventCatcher
                         entry.Body = SanitizeRecordedEvent(entry.Body);
                         scrubbedRecording.Add(entry);
                     });
-                await JsonSerializer.SerializeAsync(recorderFileStream, new PersistedEventRecording(){ Entries = scrubbedRecording }, JsonSerializerOptions);
+                await JsonSerializer.SerializeAsync(recorderFileStream, new PersistedEventRecording() { Entries = scrubbedRecording }, JsonSerializerOptions);
                 recorderFileStream.Dispose();
                 _semaphore?.Dispose();
             }
@@ -151,7 +151,14 @@ namespace Azure.Communication.CallAutomation.Tests.EventCatcher
                     var result = new Dictionary<string, object?>();
                     while (objEnumerator.MoveNext())
                     {
-                        result.Add(objEnumerator.Current.Name, Scrub(objEnumerator.Current.Value, 0, MaxDepth));
+                        if (KeysToSanitize.Contains(objEnumerator.Current.Name))
+                        {
+                            result.Add(objEnumerator.Current.Name, "Sanitized");
+                        }
+                        else
+                        {
+                            result.Add(objEnumerator.Current.Name, Scrub(objEnumerator.Current.Value, 0, MaxDepth));
+                        }
                     }
 
                     var resultAsString = JsonSerializer.Serialize(result);

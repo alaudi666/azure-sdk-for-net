@@ -11,12 +11,13 @@ using OSPlatform = System.Runtime.InteropServices.OSPlatform;
 
 namespace Azure.Core.TestFramework
 {
-    [AttributeUsage(AttributeTargets.Method|AttributeTargets.Class|AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = false, Inherited = false)]
     public class RunOnlyOnPlatformsAttribute : NUnitAttribute, IApplyToTest
     {
         public bool Linux { get; set; }
         public bool OSX { get; set; }
         public bool Windows { get; set; }
+        public bool SelfHostedAgent { get; set; }
         public string[] ContainerNames { get; set; }
         public string Reason { get; set; }
 
@@ -33,6 +34,7 @@ namespace Azure.Core.TestFramework
             Linux && RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ||
             OSX && RuntimeInformation.IsOSPlatform(OSPlatform.OSX) ||
             Windows && RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ||
+            SelfHostedAgent && Environment.GetEnvironmentVariable("SYSTEM_TEAMPROJECTID") == null ||
             ContainerNames != default && ContainerNames.Contains(Environment.GetEnvironmentVariable("DOCKER_CONTAINER_NAME"));
     }
 }

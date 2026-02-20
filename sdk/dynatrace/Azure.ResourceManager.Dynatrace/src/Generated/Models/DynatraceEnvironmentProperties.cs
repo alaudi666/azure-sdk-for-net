@@ -5,35 +5,46 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Dynatrace.Models
 {
     /// <summary> Properties of the Dynatrace environment. </summary>
     public partial class DynatraceEnvironmentProperties
     {
-        /// <summary> Initializes a new instance of DynatraceEnvironmentProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DynatraceEnvironmentProperties"/>. </summary>
         public DynatraceEnvironmentProperties()
         {
         }
 
-        /// <summary> Initializes a new instance of DynatraceEnvironmentProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynatraceEnvironmentProperties"/>. </summary>
         /// <param name="userId"> User id. </param>
         /// <param name="accountInfo"> Dynatrace Account Information. </param>
         /// <param name="environmentInfo"> Dynatrace Environment Information. </param>
         /// <param name="singleSignOnProperties"> The details of a Dynatrace single sign-on. </param>
-        internal DynatraceEnvironmentProperties(string userId, DynatraceAccountInfo accountInfo, DynatraceEnvironmentInfo environmentInfo, DynatraceSingleSignOnProperties singleSignOnProperties)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DynatraceEnvironmentProperties(string userId, DynatraceAccountInfo accountInfo, DynatraceEnvironmentInfo environmentInfo, DynatraceSingleSignOnProperties singleSignOnProperties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             UserId = userId;
             AccountInfo = accountInfo;
             EnvironmentInfo = environmentInfo;
             SingleSignOnProperties = singleSignOnProperties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> User id. </summary>
         public string UserId { get; set; }
+
         /// <summary> Dynatrace Account Information. </summary>
         public DynatraceAccountInfo AccountInfo { get; set; }
+
         /// <summary> Dynatrace Environment Information. </summary>
         public DynatraceEnvironmentInfo EnvironmentInfo { get; set; }
+
         /// <summary> The details of a Dynatrace single sign-on. </summary>
         public DynatraceSingleSignOnProperties SingleSignOnProperties { get; set; }
     }

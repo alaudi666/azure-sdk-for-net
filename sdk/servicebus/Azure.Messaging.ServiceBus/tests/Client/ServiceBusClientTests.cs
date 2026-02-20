@@ -26,7 +26,6 @@ namespace Azure.Messaging.ServiceBus.Tests.Client
             yield return new object[] { null, credential.Object };
             yield return new object[] { "", credential.Object };
             yield return new object[] { "FakeNamespace", null };
-            yield return new object[] { "sb://fakenamspace.com", credential.Object };
         }
 
         /// <summary>
@@ -40,7 +39,6 @@ namespace Azure.Messaging.ServiceBus.Tests.Client
             yield return new object[] { null, credential };
             yield return new object[] { "", credential };
             yield return new object[] { "FakeNamespace", null };
-            yield return new object[] { "sb://fakenamspace.com", credential };
         }
 
         /// <summary>
@@ -54,7 +52,6 @@ namespace Azure.Messaging.ServiceBus.Tests.Client
             yield return new object[] { null, credential };
             yield return new object[] { "", credential };
             yield return new object[] { "FakeNamespace", null };
-            yield return new object[] { "sb://fakenamspace.com", credential };
         }
 
         /// <summary>
@@ -244,11 +241,11 @@ namespace Azure.Messaging.ServiceBus.Tests.Client
             var defaultOptions = new ServiceBusClientOptions();
             ServiceBusClientOptions options = client.Options;
 
-            Assert.That(options, Is.Not.Null, $"The { constructorDescription } constructor should have set default options.");
-            Assert.That(options, Is.Not.SameAs(defaultOptions), $"The { constructorDescription } constructor should not have the same options instance.");
+            Assert.That(options, Is.Not.Null, $"The {constructorDescription} constructor should have set default options.");
+            Assert.That(options, Is.Not.SameAs(defaultOptions), $"The {constructorDescription} constructor should not have the same options instance.");
             Assert.That(client.Identifier, Is.Not.Null, $"The {constructorDescription} constructor should have set the Identifier.");
-            Assert.That(options.TransportType, Is.EqualTo(defaultOptions.TransportType), $"The { constructorDescription } constructor should have the correct connection type.");
-            Assert.That(options.WebProxy, Is.EqualTo(defaultOptions.WebProxy), $"The { constructorDescription } constructor should have the correct proxy.");
+            Assert.That(options.TransportType, Is.EqualTo(defaultOptions.TransportType), $"The {constructorDescription} constructor should have the correct connection type.");
+            Assert.That(options.WebProxy, Is.EqualTo(defaultOptions.WebProxy), $"The {constructorDescription} constructor should have the correct proxy.");
             Assert.That(options.CustomEndpointAddress, Is.EqualTo(defaultOptions.CustomEndpointAddress), $"The {constructorDescription} constructor should have the correct custom endpoint.");
         }
 
@@ -265,11 +262,11 @@ namespace Azure.Messaging.ServiceBus.Tests.Client
         {
             ServiceBusClientOptions options = client.Options;
 
-            Assert.That(options, Is.Not.Null, $"The { constructorDescription } constructor should have set the options.");
-            Assert.That(options, Is.Not.SameAs(constructorOptions), $"The { constructorDescription } constructor should have cloned the options.");
+            Assert.That(options, Is.Not.Null, $"The {constructorDescription} constructor should have set the options.");
+            Assert.That(options, Is.Not.SameAs(constructorOptions), $"The {constructorDescription} constructor should have cloned the options.");
             Assert.That(options.Identifier, Is.EqualTo(constructorOptions.Identifier), $"The {constructorDescription} constructor should have the correct Identifier.");
-            Assert.That(options.TransportType, Is.EqualTo(constructorOptions.TransportType), $"The { constructorDescription } constructor should have the correct connection type.");
-            Assert.That(options.WebProxy, Is.EqualTo(constructorOptions.WebProxy), $"The { constructorDescription } constructor should have the correct proxy.");
+            Assert.That(options.TransportType, Is.EqualTo(constructorOptions.TransportType), $"The {constructorDescription} constructor should have the correct connection type.");
+            Assert.That(options.WebProxy, Is.EqualTo(constructorOptions.WebProxy), $"The {constructorDescription} constructor should have the correct proxy.");
             Assert.That(options.CustomEndpointAddress, Is.EqualTo(constructorOptions.CustomEndpointAddress), $"The {constructorDescription} constructor should have the correct custom endpoint.");
         }
 
@@ -409,6 +406,55 @@ namespace Azure.Messaging.ServiceBus.Tests.Client
 
         /// <summary>
         ///    Verifies functionality of the <see cref="ServiceBusClient" />
+        ///    constructor.
+        /// </summary>
+        ///
+        [Test]
+        public void ConstructorWithTokenCredentialParsesNamespaceFromUri()
+        {
+            var token = Mock.Of<TokenCredential>();
+            var host = "mynamespace.servicebus.windows.net";
+            var namespaceUri = $"sb://{host}";
+            var client = new ServiceBusClient(namespaceUri, token);
+
+            Assert.That(client.FullyQualifiedNamespace, Is.EqualTo(host), "The constructor should parse the namespace from the URI");
+        }
+
+        /// <summary>
+        ///    Verifies functionality of the <see cref="ServiceBusClient" />
+        ///    constructor.
+        /// </summary>
+        ///
+        [Test]
+        public void ConstructorWithSharedKeyCredentialParsesNamespaceFromUri()
+        {
+            var token = new AzureNamedKeyCredential("key", "value");
+            var host = "mynamespace.servicebus.windows.net";
+            var namespaceUri = $"sb://{host}";
+            var client = new ServiceBusClient(namespaceUri, token);
+
+            Assert.That(client.FullyQualifiedNamespace, Is.EqualTo(host), "The constructor should parse the namespace from the URI");
+        }
+
+        /// <summary>
+        ///    Verifies functionality of the <see cref="ServiceBusClient" />
+        ///    constructor.
+        /// </summary>
+        ///
+        [Test]
+        public void ConstructorWithSasCredentialParsesNamespaceFromUri()
+        {
+            var signature = new SharedAccessSignature("sb://fake.thing.com", "fakeKey", "fakeValue");
+            var token = new AzureSasCredential(signature.Value);
+            var host = "mynamespace.servicebus.windows.net";
+            var namespaceUri = $"sb://{host}";
+            var client = new ServiceBusClient(namespaceUri, token);
+
+            Assert.That(client.FullyQualifiedNamespace, Is.EqualTo(host), "The constructor should parse the namespace from the URI");
+        }
+
+        /// <summary>
+        ///    Verifies functionality of the <see cref="ServiceBusClient" />
         /// </summary>
         ///
         [Test]
@@ -427,7 +473,7 @@ namespace Azure.Messaging.ServiceBus.Tests.Client
         public void CreateSenderAllowsIfEntityNamesAreEqual()
         {
             var entityName = "myQueue";
-            var fakeConnection = $"Endpoint=sb://not-real.servicebus.windows.net/;SharedAccessKeyName=DummyKey;SharedAccessKey=[not_real];EntityPath={ entityName }";
+            var fakeConnection = $"Endpoint=sb://not-real.servicebus.windows.net/;SharedAccessKeyName=DummyKey;SharedAccessKey=[not_real];EntityPath={entityName}";
             ServiceBusClient client = new ServiceBusClient(fakeConnection);
 
             Assert.That(() => client.CreateSender(entityName), Throws.Nothing, "Get sender should allow the same entity name in multiple places");
@@ -441,7 +487,7 @@ namespace Azure.Messaging.ServiceBus.Tests.Client
         public void ValidateClientProperties()
         {
             var entityName = "myQueue";
-            var fakeConnection = $"Endpoint=sb://not-real.servicebus.windows.net/;SharedAccessKeyName=DummyKey;SharedAccessKey=[not_real];EntityPath={ entityName }";
+            var fakeConnection = $"Endpoint=sb://not-real.servicebus.windows.net/;SharedAccessKeyName=DummyKey;SharedAccessKey=[not_real];EntityPath={entityName}";
             ServiceBusClient client = new ServiceBusClient(fakeConnection);
             Assert.AreEqual("not-real.servicebus.windows.net", client.FullyQualifiedNamespace);
             Assert.IsNotNull(client.Identifier);

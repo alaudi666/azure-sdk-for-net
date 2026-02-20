@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Core;
 using Azure.ResourceManager;
+using Azure.ResourceManager.LoadTesting.Mocking;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.LoadTesting
@@ -18,169 +19,207 @@ namespace Azure.ResourceManager.LoadTesting
     /// <summary> A class to add extension methods to Azure.ResourceManager.LoadTesting. </summary>
     public static partial class LoadTestingExtensions
     {
-        private static SubscriptionResourceExtensionClient GetExtensionClient(SubscriptionResource subscriptionResource)
+        /// <param name="client"></param>
+        private static MockableLoadTestingArmClient GetMockableLoadTestingArmClient(ArmClient client)
         {
-            return subscriptionResource.GetCachedClient((client) =>
-            {
-                return new SubscriptionResourceExtensionClient(client, subscriptionResource.Id);
-            }
-            );
+            return client.GetCachedClient(client0 => new MockableLoadTestingArmClient(client0, ResourceIdentifier.Root));
         }
 
-        /// <summary> Gets a collection of LoadTestingQuotaResources in the SubscriptionResource. </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="location"> The name of Azure region. </param>
-        /// <returns> An object representing collection of LoadTestingQuotaResources and their operations over a LoadTestingQuotaResource. </returns>
-        public static LoadTestingQuotaCollection GetAllLoadTestingQuota(this SubscriptionResource subscriptionResource, AzureLocation location)
+        /// <param name="resourceGroupResource"></param>
+        private static MockableLoadTestingResourceGroupResource GetMockableLoadTestingResourceGroupResource(ResourceGroupResource resourceGroupResource)
         {
-            return GetExtensionClient(subscriptionResource).GetAllLoadTestingQuota(location);
+            return resourceGroupResource.GetCachedClient(client => new MockableLoadTestingResourceGroupResource(client, resourceGroupResource.Id));
         }
 
-        /// <summary>
-        /// Get the available quota for a quota bucket per region per subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas/{quotaBucketName}
-        /// Operation Id: Quotas_Get
-        /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="location"> The name of Azure region. </param>
-        /// <param name="quotaBucketName"> Quota Bucket name. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="quotaBucketName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="quotaBucketName"/> is null. </exception>
-        [ForwardsClientCalls]
-        public static async Task<Response<LoadTestingQuotaResource>> GetLoadTestingQuotaAsync(this SubscriptionResource subscriptionResource, AzureLocation location, string quotaBucketName, CancellationToken cancellationToken = default)
+        /// <param name="subscriptionResource"></param>
+        private static MockableLoadTestingSubscriptionResource GetMockableLoadTestingSubscriptionResource(SubscriptionResource subscriptionResource)
         {
-            return await subscriptionResource.GetAllLoadTestingQuota(location).GetAsync(quotaBucketName, cancellationToken).ConfigureAwait(false);
+            return subscriptionResource.GetCachedClient(client => new MockableLoadTestingSubscriptionResource(client, subscriptionResource.Id));
         }
 
         /// <summary>
-        /// Get the available quota for a quota bucket per region per subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas/{quotaBucketName}
-        /// Operation Id: Quotas_Get
+        /// Gets an object representing a <see cref="LoadTestingResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableLoadTestingArmClient.GetLoadTestingResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="location"> The name of Azure region. </param>
-        /// <param name="quotaBucketName"> Quota Bucket name. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="quotaBucketName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="quotaBucketName"/> is null. </exception>
-        [ForwardsClientCalls]
-        public static Response<LoadTestingQuotaResource> GetLoadTestingQuota(this SubscriptionResource subscriptionResource, AzureLocation location, string quotaBucketName, CancellationToken cancellationToken = default)
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="LoadTestingResource"/> object. </returns>
+        public static LoadTestingResource GetLoadTestingResource(this ArmClient client, ResourceIdentifier id)
         {
-            return subscriptionResource.GetAllLoadTestingQuota(location).Get(quotaBucketName, cancellationToken);
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableLoadTestingArmClient(client).GetLoadTestingResource(id);
         }
 
         /// <summary>
-        /// Lists loadtests resources in a subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/loadTests
-        /// Operation Id: LoadTests_ListBySubscription
+        /// Gets an object representing a <see cref="LoadTestingQuotaResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableLoadTestingArmClient.GetLoadTestingQuotaResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="LoadTestingResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<LoadTestingResource> GetLoadTestingResourcesAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="LoadTestingQuotaResource"/> object. </returns>
+        public static LoadTestingQuotaResource GetLoadTestingQuotaResource(this ArmClient client, ResourceIdentifier id)
         {
-            return GetExtensionClient(subscriptionResource).GetLoadTestingResourcesAsync(cancellationToken);
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableLoadTestingArmClient(client).GetLoadTestingQuotaResource(id);
         }
 
         /// <summary>
-        /// Lists loadtests resources in a subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/loadTests
-        /// Operation Id: LoadTests_ListBySubscription
+        /// Gets a collection of LoadTestingResources in the <see cref="ResourceGroupResource"/>
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableLoadTestingResourceGroupResource.GetLoadTestingResources()"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="LoadTestingResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<LoadTestingResource> GetLoadTestingResources(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
-        {
-            return GetExtensionClient(subscriptionResource).GetLoadTestingResources(cancellationToken);
-        }
-
-        private static ResourceGroupResourceExtensionClient GetExtensionClient(ResourceGroupResource resourceGroupResource)
-        {
-            return resourceGroupResource.GetCachedClient((client) =>
-            {
-                return new ResourceGroupResourceExtensionClient(client, resourceGroupResource.Id);
-            }
-            );
-        }
-
-        /// <summary> Gets a collection of LoadTestingResources in the ResourceGroupResource. </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
         /// <returns> An object representing collection of LoadTestingResources and their operations over a LoadTestingResource. </returns>
         public static LoadTestingResourceCollection GetLoadTestingResources(this ResourceGroupResource resourceGroupResource)
         {
-            return GetExtensionClient(resourceGroupResource).GetLoadTestingResources();
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableLoadTestingResourceGroupResource(resourceGroupResource).GetLoadTestingResources();
         }
 
         /// <summary>
-        /// Get a LoadTest resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.LoadTestService/loadTests/{loadTestName}
-        /// Operation Id: LoadTests_Get
+        /// Get a LoadTestResource
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableLoadTestingResourceGroupResource.GetLoadTestingResourceAsync(string, CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
         /// <param name="loadTestName"> Load Test name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="loadTestName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="loadTestName"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
         [ForwardsClientCalls]
         public static async Task<Response<LoadTestingResource>> GetLoadTestingResourceAsync(this ResourceGroupResource resourceGroupResource, string loadTestName, CancellationToken cancellationToken = default)
         {
-            return await resourceGroupResource.GetLoadTestingResources().GetAsync(loadTestName, cancellationToken).ConfigureAwait(false);
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return await GetMockableLoadTestingResourceGroupResource(resourceGroupResource).GetLoadTestingResourceAsync(loadTestName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Get a LoadTest resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.LoadTestService/loadTests/{loadTestName}
-        /// Operation Id: LoadTests_Get
+        /// Get a LoadTestResource
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableLoadTestingResourceGroupResource.GetLoadTestingResource(string, CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
         /// <param name="loadTestName"> Load Test name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="loadTestName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="loadTestName"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
         [ForwardsClientCalls]
         public static Response<LoadTestingResource> GetLoadTestingResource(this ResourceGroupResource resourceGroupResource, string loadTestName, CancellationToken cancellationToken = default)
         {
-            return resourceGroupResource.GetLoadTestingResources().Get(loadTestName, cancellationToken);
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableLoadTestingResourceGroupResource(resourceGroupResource).GetLoadTestingResource(loadTestName, cancellationToken);
         }
 
-        #region LoadTestingQuotaResource
         /// <summary>
-        /// Gets an object representing a <see cref="LoadTestingQuotaResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="LoadTestingQuotaResource.CreateResourceIdentifier" /> to create a <see cref="LoadTestingQuotaResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// Gets a collection of LoadTestingQuota in the <see cref="SubscriptionResource"/>
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableLoadTestingSubscriptionResource.GetAllLoadTestingQuota(AzureLocation)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="LoadTestingQuotaResource" /> object. </returns>
-        public static LoadTestingQuotaResource GetLoadTestingQuotaResource(this ArmClient client, ResourceIdentifier id)
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="location"> The location for the resource. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> An object representing collection of LoadTestingQuota and their operations over a LoadTestingQuotaResource. </returns>
+        public static LoadTestingQuotaCollection GetAllLoadTestingQuota(this SubscriptionResource subscriptionResource, AzureLocation location)
         {
-            return client.GetResourceClient(() =>
-            {
-                LoadTestingQuotaResource.ValidateResourceId(id);
-                return new LoadTestingQuotaResource(client, id);
-            }
-            );
-        }
-        #endregion
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
 
-        #region LoadTestingResource
-        /// <summary>
-        /// Gets an object representing a <see cref="LoadTestingResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="LoadTestingResource.CreateResourceIdentifier" /> to create a <see cref="LoadTestingResource" /> <see cref="ResourceIdentifier" /> from its components.
-        /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="LoadTestingResource" /> object. </returns>
-        public static LoadTestingResource GetLoadTestingResource(this ArmClient client, ResourceIdentifier id)
-        {
-            return client.GetResourceClient(() =>
-            {
-                LoadTestingResource.ValidateResourceId(id);
-                return new LoadTestingResource(client, id);
-            }
-            );
+            return GetMockableLoadTestingSubscriptionResource(subscriptionResource).GetAllLoadTestingQuota(location);
         }
-        #endregion
+
+        /// <summary>
+        /// Get the available quota for a quota bucket per region per subscription.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableLoadTestingSubscriptionResource.GetLoadTestingQuotaAsync(AzureLocation, string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="location"> The location for the resource. </param>
+        /// <param name="quotaBucketName"> The quota name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static async Task<Response<LoadTestingQuotaResource>> GetLoadTestingQuotaAsync(this SubscriptionResource subscriptionResource, AzureLocation location, string quotaBucketName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return await GetMockableLoadTestingSubscriptionResource(subscriptionResource).GetLoadTestingQuotaAsync(location, quotaBucketName, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get the available quota for a quota bucket per region per subscription.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableLoadTestingSubscriptionResource.GetLoadTestingQuota(AzureLocation, string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="location"> The location for the resource. </param>
+        /// <param name="quotaBucketName"> The quota name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static Response<LoadTestingQuotaResource> GetLoadTestingQuota(this SubscriptionResource subscriptionResource, AzureLocation location, string quotaBucketName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableLoadTestingSubscriptionResource(subscriptionResource).GetLoadTestingQuota(location, quotaBucketName, cancellationToken);
+        }
+
+        /// <summary>
+        /// List LoadTestResource resources by subscription ID
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableLoadTestingSubscriptionResource.GetLoadTestingResourcesAsync(CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="LoadTestingResource"/> that may take multiple service requests to iterate over. </returns>
+        public static AsyncPageable<LoadTestingResource> GetLoadTestingResourcesAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableLoadTestingSubscriptionResource(subscriptionResource).GetLoadTestingResourcesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// List LoadTestResource resources by subscription ID
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableLoadTestingSubscriptionResource.GetLoadTestingResources(CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="LoadTestingResource"/> that may take multiple service requests to iterate over. </returns>
+        public static Pageable<LoadTestingResource> GetLoadTestingResources(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableLoadTestingSubscriptionResource(subscriptionResource).GetLoadTestingResources(cancellationToken);
+        }
     }
 }

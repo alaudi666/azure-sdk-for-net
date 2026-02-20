@@ -5,6 +5,8 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
 
@@ -13,28 +15,28 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
     /// <summary> Describes a VM Sizes. </summary>
     public partial class ServiceFabricManagedUnsupportedVmSize : ResourceData
     {
-        /// <summary> Initializes a new instance of ServiceFabricManagedUnsupportedVmSize. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedUnsupportedVmSize"/>. </summary>
         internal ServiceFabricManagedUnsupportedVmSize()
         {
         }
 
-        /// <summary> Initializes a new instance of ServiceFabricManagedUnsupportedVmSize. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedUnsupportedVmSize"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
         /// <param name="properties"> VM Size properties. </param>
-        internal ServiceFabricManagedUnsupportedVmSize(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, VmSize properties) : base(id, name, resourceType, systemData)
+        /// <param name="name"> VM Size name. </param>
+        internal ServiceFabricManagedUnsupportedVmSize(ResourceIdentifier id, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, ServiceFabricManagedVmSizeProperties properties, string name) : base(id, name, resourceType, systemData)
         {
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
             Properties = properties;
         }
 
         /// <summary> VM Size properties. </summary>
-        internal VmSize Properties { get; }
-        /// <summary> VM Size name. </summary>
-        public string VmSize
-        {
-            get => Properties?.Size;
-        }
+        internal ServiceFabricManagedVmSizeProperties Properties { get; }
     }
 }

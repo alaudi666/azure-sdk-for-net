@@ -9,22 +9,23 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.DataBoxEdge
 {
     /// <summary>
     /// A Class representing a DiagnosticRemoteSupportSetting along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="DiagnosticRemoteSupportSettingResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetDiagnosticRemoteSupportSettingResource method.
-    /// Otherwise you can get one from its parent resource <see cref="DataBoxEdgeDeviceResource" /> using the GetDiagnosticRemoteSupportSetting method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="DiagnosticRemoteSupportSettingResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetDiagnosticRemoteSupportSettingResource method.
+    /// Otherwise you can get one from its parent resource <see cref="DataBoxEdgeDeviceResource"/> using the GetDiagnosticRemoteSupportSetting method.
     /// </summary>
     public partial class DiagnosticRemoteSupportSettingResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="DiagnosticRemoteSupportSettingResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="resourceGroupName"> The resourceGroupName. </param>
+        /// <param name="deviceName"> The deviceName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string resourceGroupName, string deviceName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/{deviceName}/diagnosticRemoteSupportSettings/default";
@@ -35,12 +36,15 @@ namespace Azure.ResourceManager.DataBoxEdge
         private readonly DiagnosticSettingsRestOperations _diagnosticRemoteSupportSettingDiagnosticSettingsRestClient;
         private readonly DiagnosticRemoteSupportSettingData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.DataBoxEdge/dataBoxEdgeDevices/diagnosticRemoteSupportSettings";
+
         /// <summary> Initializes a new instance of the <see cref="DiagnosticRemoteSupportSettingResource"/> class for mocking. </summary>
         protected DiagnosticRemoteSupportSettingResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "DiagnosticRemoteSupportSettingResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="DiagnosticRemoteSupportSettingResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal DiagnosticRemoteSupportSettingResource(ArmClient client, DiagnosticRemoteSupportSettingData data) : this(client, data.Id)
@@ -61,9 +65,6 @@ namespace Azure.ResourceManager.DataBoxEdge
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.DataBoxEdge/dataBoxEdgeDevices/diagnosticRemoteSupportSettings";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -88,8 +89,24 @@ namespace Azure.ResourceManager.DataBoxEdge
 
         /// <summary>
         /// Gets the diagnostic remote support settings of the specified Data Box Edge/Data Box Gateway device.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/{deviceName}/diagnosticRemoteSupportSettings/default
-        /// Operation Id: DiagnosticSettings_GetDiagnosticRemoteSupportSettings
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/{deviceName}/diagnosticRemoteSupportSettings/default</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DiagnosticSettings_GetDiagnosticRemoteSupportSettings</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiagnosticRemoteSupportSettingResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<DiagnosticRemoteSupportSettingResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -112,8 +129,24 @@ namespace Azure.ResourceManager.DataBoxEdge
 
         /// <summary>
         /// Gets the diagnostic remote support settings of the specified Data Box Edge/Data Box Gateway device.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/{deviceName}/diagnosticRemoteSupportSettings/default
-        /// Operation Id: DiagnosticSettings_GetDiagnosticRemoteSupportSettings
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/{deviceName}/diagnosticRemoteSupportSettings/default</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DiagnosticSettings_GetDiagnosticRemoteSupportSettings</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiagnosticRemoteSupportSettingResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<DiagnosticRemoteSupportSettingResource> Get(CancellationToken cancellationToken = default)
@@ -136,8 +169,24 @@ namespace Azure.ResourceManager.DataBoxEdge
 
         /// <summary>
         /// Updates the diagnostic remote support settings on a Data Box Edge/Data Box Gateway device.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/{deviceName}/diagnosticRemoteSupportSettings/default
-        /// Operation Id: DiagnosticSettings_UpdateDiagnosticRemoteSupportSettings
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/{deviceName}/diagnosticRemoteSupportSettings/default</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DiagnosticSettings_UpdateDiagnosticRemoteSupportSettings</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiagnosticRemoteSupportSettingResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="data"> The diagnostic remote support settings. </param>
@@ -166,8 +215,24 @@ namespace Azure.ResourceManager.DataBoxEdge
 
         /// <summary>
         /// Updates the diagnostic remote support settings on a Data Box Edge/Data Box Gateway device.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/{deviceName}/diagnosticRemoteSupportSettings/default
-        /// Operation Id: DiagnosticSettings_UpdateDiagnosticRemoteSupportSettings
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.DataBoxEdge/dataBoxEdgeDevices/{deviceName}/diagnosticRemoteSupportSettings/default</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>DiagnosticSettings_UpdateDiagnosticRemoteSupportSettings</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiagnosticRemoteSupportSettingResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="data"> The diagnostic remote support settings. </param>

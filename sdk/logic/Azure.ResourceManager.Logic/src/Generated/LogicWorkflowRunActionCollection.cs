@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Logic
 {
     /// <summary>
-    /// A class representing a collection of <see cref="LogicWorkflowRunActionResource" /> and their operations.
-    /// Each <see cref="LogicWorkflowRunActionResource" /> in the collection will belong to the same instance of <see cref="LogicWorkflowRunResource" />.
-    /// To get a <see cref="LogicWorkflowRunActionCollection" /> instance call the GetLogicWorkflowRunActions method from an instance of <see cref="LogicWorkflowRunResource" />.
+    /// A class representing a collection of <see cref="LogicWorkflowRunActionResource"/> and their operations.
+    /// Each <see cref="LogicWorkflowRunActionResource"/> in the collection will belong to the same instance of <see cref="LogicWorkflowRunResource"/>.
+    /// To get a <see cref="LogicWorkflowRunActionCollection"/> instance call the GetLogicWorkflowRunActions method from an instance of <see cref="LogicWorkflowRunResource"/>.
     /// </summary>
     public partial class LogicWorkflowRunActionCollection : ArmCollection, IEnumerable<LogicWorkflowRunActionResource>, IAsyncEnumerable<LogicWorkflowRunActionResource>
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets a workflow run action.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions/{actionName}
-        /// Operation Id: WorkflowRunActions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions/{actionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowRunActions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowRunActionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="actionName"> The workflow action name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -84,8 +98,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets a workflow run action.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions/{actionName}
-        /// Operation Id: WorkflowRunActions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions/{actionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowRunActions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowRunActionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="actionName"> The workflow action name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -113,96 +143,88 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Gets a list of workflow run actions.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions
-        /// Operation Id: WorkflowRunActions_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowRunActions_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowRunActionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="top"> The number of items to be included in the result. </param>
         /// <param name="filter"> The filter to apply on the operation. Options for filters include: Status. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="LogicWorkflowRunActionResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="LogicWorkflowRunActionResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<LogicWorkflowRunActionResource> GetAllAsync(int? top = null, string filter = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<LogicWorkflowRunActionResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _logicWorkflowRunActionWorkflowRunActionsClientDiagnostics.CreateScope("LogicWorkflowRunActionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _logicWorkflowRunActionWorkflowRunActionsRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new LogicWorkflowRunActionResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<LogicWorkflowRunActionResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _logicWorkflowRunActionWorkflowRunActionsClientDiagnostics.CreateScope("LogicWorkflowRunActionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _logicWorkflowRunActionWorkflowRunActionsRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new LogicWorkflowRunActionResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _logicWorkflowRunActionWorkflowRunActionsRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _logicWorkflowRunActionWorkflowRunActionsRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new LogicWorkflowRunActionResource(Client, LogicWorkflowRunActionData.DeserializeLogicWorkflowRunActionData(e)), _logicWorkflowRunActionWorkflowRunActionsClientDiagnostics, Pipeline, "LogicWorkflowRunActionCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Gets a list of workflow run actions.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions
-        /// Operation Id: WorkflowRunActions_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowRunActions_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowRunActionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="top"> The number of items to be included in the result. </param>
         /// <param name="filter"> The filter to apply on the operation. Options for filters include: Status. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="LogicWorkflowRunActionResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="LogicWorkflowRunActionResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<LogicWorkflowRunActionResource> GetAll(int? top = null, string filter = null, CancellationToken cancellationToken = default)
         {
-            Page<LogicWorkflowRunActionResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _logicWorkflowRunActionWorkflowRunActionsClientDiagnostics.CreateScope("LogicWorkflowRunActionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _logicWorkflowRunActionWorkflowRunActionsRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new LogicWorkflowRunActionResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<LogicWorkflowRunActionResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _logicWorkflowRunActionWorkflowRunActionsClientDiagnostics.CreateScope("LogicWorkflowRunActionCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _logicWorkflowRunActionWorkflowRunActionsRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new LogicWorkflowRunActionResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _logicWorkflowRunActionWorkflowRunActionsRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _logicWorkflowRunActionWorkflowRunActionsRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, top, filter);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new LogicWorkflowRunActionResource(Client, LogicWorkflowRunActionData.DeserializeLogicWorkflowRunActionData(e)), _logicWorkflowRunActionWorkflowRunActionsClientDiagnostics, Pipeline, "LogicWorkflowRunActionCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions/{actionName}
-        /// Operation Id: WorkflowRunActions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions/{actionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowRunActions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowRunActionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="actionName"> The workflow action name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -228,8 +250,24 @@ namespace Azure.ResourceManager.Logic
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions/{actionName}
-        /// Operation Id: WorkflowRunActions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions/{actionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowRunActions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowRunActionResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="actionName"> The workflow action name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -245,6 +283,96 @@ namespace Azure.ResourceManager.Logic
             {
                 var response = _logicWorkflowRunActionWorkflowRunActionsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, actionName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions/{actionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowRunActions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowRunActionResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="actionName"> The workflow action name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="actionName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="actionName"/> is null. </exception>
+        public virtual async Task<NullableResponse<LogicWorkflowRunActionResource>> GetIfExistsAsync(string actionName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(actionName, nameof(actionName));
+
+            using var scope = _logicWorkflowRunActionWorkflowRunActionsClientDiagnostics.CreateScope("LogicWorkflowRunActionCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _logicWorkflowRunActionWorkflowRunActionsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, actionName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<LogicWorkflowRunActionResource>(response.GetRawResponse());
+                return Response.FromValue(new LogicWorkflowRunActionResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Logic/workflows/{workflowName}/runs/{runName}/actions/{actionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WorkflowRunActions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2019-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LogicWorkflowRunActionResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="actionName"> The workflow action name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="actionName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="actionName"/> is null. </exception>
+        public virtual NullableResponse<LogicWorkflowRunActionResource> GetIfExists(string actionName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(actionName, nameof(actionName));
+
+            using var scope = _logicWorkflowRunActionWorkflowRunActionsClientDiagnostics.CreateScope("LogicWorkflowRunActionCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _logicWorkflowRunActionWorkflowRunActionsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.Name, Id.Name, actionName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<LogicWorkflowRunActionResource>(response.GetRawResponse());
+                return Response.FromValue(new LogicWorkflowRunActionResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

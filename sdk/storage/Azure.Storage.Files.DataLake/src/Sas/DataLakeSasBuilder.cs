@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using Azure.Core;
 using Azure.Storage.Files.DataLake;
 using Azure.Storage.Files.DataLake.Models;
 
@@ -198,6 +200,25 @@ namespace Azure.Storage.Sas
         public string EncryptionScope { get; set; }
 
         /// <summary>
+        /// Optional. Beginning in version 2025-07-05, this value  specifies the Entra ID of the user would is authorized to
+        /// use the resulting SAS URL.  The resulting SAS URL must be used in conjunction with an Entra ID token that has been
+        /// issued to the user specified in this value.
+        /// </summary>
+        public string DelegatedUserObjectId { get; set; }
+
+        /// <summary>
+        /// Optional. Custom Request Headers to include in the SAS. Any usage of the SAS must
+        /// include these headers and values in the request.
+        /// </summary>
+        public Dictionary<string, string> RequestHeaders { get; set; }
+
+        /// <summary>
+        /// Optional. Custom Request Query Parameters to include in the SAS. Any usage of the SAS must
+        /// include these query parameters and values in the request.
+        /// </summary>
+        public Dictionary<string, string> RequestQueryParameters { get; set; }
+
+        /// <summary>
         /// Optional. Required when <see cref="Resource"/> is set to d to indicate the
         /// depth of the directory specified in the canonicalizedresource field of the
         /// string-to-sign to indicate the depth of the directory specified in the
@@ -354,33 +375,33 @@ namespace Azure.Storage.Sas
         /// The <see cref="DataLakeSasQueryParameters"/> used for authenticating
         /// requests.
         /// </returns>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-datalake")]
         public DataLakeSasQueryParameters ToSasQueryParameters(StorageSharedKeyCredential sharedKeyCredential)
+            => ToSasQueryParameters(sharedKeyCredential, out _);
+
+        /// <summary>
+        /// Use an account's <see cref="StorageSharedKeyCredential"/> to sign this
+        /// shared access signature values to produce the proper SAS query
+        /// parameters for authenticating requests.
+        /// </summary>
+        /// <param name="sharedKeyCredential">
+        /// The storage account's <see cref="StorageSharedKeyCredential"/>.
+        /// </param>
+        /// <param name="stringToSign">
+        /// For debugging purposes only.  The string to sign that was used to generate the <see cref="DataLakeSasQueryParameters"/>.
+        /// </param>
+        /// <returns>
+        /// The <see cref="DataLakeSasQueryParameters"/> used for authenticating
+        /// requests.
+        /// </returns>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-datalake")]
+        public DataLakeSasQueryParameters ToSasQueryParameters(StorageSharedKeyCredential sharedKeyCredential, out string stringToSign)
         {
             sharedKeyCredential = sharedKeyCredential ?? throw Errors.ArgumentNull(nameof(sharedKeyCredential));
 
             EnsureState();
 
-            string startTime = SasExtensions.FormatTimesForSasSigning(StartsOn);
-            string expiryTime = SasExtensions.FormatTimesForSasSigning(ExpiresOn);
-
-            // See http://msdn.microsoft.com/en-us/library/azure/dn140255.aspx
-            string stringToSign = string.Join("\n",
-                    Permissions,
-                    startTime,
-                    expiryTime,
-                    GetCanonicalName(sharedKeyCredential.AccountName, FileSystemName ?? string.Empty, Path ?? string.Empty),
-                    Identifier,
-                    IPRange.ToString(),
-                    SasExtensions.ToProtocolString(Protocol),
-                    Version,
-                    Resource,
-                    null, // snapshot
-                    EncryptionScope,
-                    CacheControl,
-                    ContentDisposition,
-                    ContentEncoding,
-                    ContentLanguage,
-                    ContentType);
+            stringToSign = ToStringToSign(sharedKeyCredential);
 
             string signature = StorageSharedKeyCredentialInternals.ComputeSasSignature(sharedKeyCredential, stringToSign);
 
@@ -406,6 +427,31 @@ namespace Azure.Storage.Sas
             return p;
         }
 
+        private string ToStringToSign(StorageSharedKeyCredential sharedKeyCredential)
+        {
+            string startTime = SasExtensions.FormatTimesForSasSigning(StartsOn);
+            string expiryTime = SasExtensions.FormatTimesForSasSigning(ExpiresOn);
+
+            // See http://msdn.microsoft.com/en-us/library/azure/dn140255.aspx
+            return string.Join("\n",
+                    Permissions,
+                    startTime,
+                    expiryTime,
+                    GetCanonicalName(sharedKeyCredential.AccountName, FileSystemName ?? string.Empty, Path ?? string.Empty),
+                    Identifier,
+                    IPRange.ToString(),
+                    SasExtensions.ToProtocolString(Protocol),
+                    Version,
+                    Resource,
+                    null, // snapshot
+                    EncryptionScope,
+                    CacheControl,
+                    ContentDisposition,
+                    ContentEncoding,
+                    ContentLanguage,
+                    ContentType);
+        }
+
         /// <summary>
         /// Use an account's <see cref="UserDelegationKey"/> to sign this
         /// shared access signature values to produce the proper SAS query
@@ -413,49 +459,40 @@ namespace Azure.Storage.Sas
         /// </summary>
         /// <param name="userDelegationKey">
         /// A <see cref="UserDelegationKey"/> returned from
-        /// <see cref="DataLakeServiceClient.GetUserDelegationKeyAsync"/>.
+        /// <see cref="DataLakeServiceClient.GetUserDelegationKeyAsync(DataLakeGetUserDelegationKeyOptions, CancellationToken)"/>.
         /// </param>
         /// <param name="accountName">The name of the storage account.</param>
         /// <returns>
         /// The <see cref="DataLakeSasQueryParameters"/> used for authenticating requests.
         /// </returns>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-datalake")]
         public DataLakeSasQueryParameters ToSasQueryParameters(UserDelegationKey userDelegationKey, string accountName)
+            => ToSasQueryParameters(userDelegationKey, accountName, out _);
+
+        /// <summary>
+        /// Use an account's <see cref="UserDelegationKey"/> to sign this
+        /// shared access signature values to produce the proper SAS query
+        /// parameters for authenticating requests.
+        /// </summary>
+        /// <param name="userDelegationKey">
+        /// A <see cref="UserDelegationKey"/> returned from
+        /// <see cref="DataLakeServiceClient.GetUserDelegationKeyAsync(DataLakeGetUserDelegationKeyOptions, CancellationToken)"/>.
+        /// </param>
+        /// <param name="accountName">The name of the storage account.</param>
+        /// <param name="stringToSign">
+        /// For debugging purposes only.  This string will be overwritten with the string to sign that was used to generate the <see cref="DataLakeSasQueryParameters"/>.
+        /// </param>
+        /// <returns>
+        /// The <see cref="DataLakeSasQueryParameters"/> used for authenticating requests.
+        /// </returns>
+        [CallerShouldAudit("https://aka.ms/azsdk/callershouldaudit/storage-files-datalake")]
+        public DataLakeSasQueryParameters ToSasQueryParameters(UserDelegationKey userDelegationKey, string accountName, out string stringToSign)
         {
             userDelegationKey = userDelegationKey ?? throw Errors.ArgumentNull(nameof(userDelegationKey));
 
             EnsureState();
 
-            string startTime = SasExtensions.FormatTimesForSasSigning(StartsOn);
-            string expiryTime = SasExtensions.FormatTimesForSasSigning(ExpiresOn);
-            string signedStart = SasExtensions.FormatTimesForSasSigning(userDelegationKey.SignedStartsOn);
-            string signedExpiry = SasExtensions.FormatTimesForSasSigning(userDelegationKey.SignedExpiresOn);
-
-            // See http://msdn.microsoft.com/en-us/library/azure/dn140255.aspx
-            string stringToSign = string.Join("\n",
-                Permissions,
-                startTime,
-                expiryTime,
-                GetCanonicalName(accountName, FileSystemName ?? string.Empty, Path ?? string.Empty),
-                userDelegationKey.SignedObjectId,
-                userDelegationKey.SignedTenantId,
-                signedStart,
-                signedExpiry,
-                userDelegationKey.SignedService,
-                userDelegationKey.SignedVersion,
-                PreauthorizedAgentObjectId,
-                AgentObjectId,
-                CorrelationId,
-                IPRange.ToString(),
-                SasExtensions.ToProtocolString(Protocol),
-                Version,
-                Resource,
-                null, // snapshot
-                EncryptionScope,
-                CacheControl,
-                ContentDisposition,
-                ContentEncoding,
-                ContentLanguage,
-                ContentType);
+            stringToSign = ToStringToSign(userDelegationKey, accountName);
 
             string signature = ComputeHMACSHA256(userDelegationKey.Value, stringToSign);
 
@@ -486,8 +523,53 @@ namespace Azure.Storage.Sas
                 unauthorizedAadObjectId: AgentObjectId,
                 correlationId: CorrelationId,
                 directoryDepth: _directoryDepth,
-                encryptionScope: EncryptionScope);
+                encryptionScope: EncryptionScope,
+                delegatedUserObjectId: DelegatedUserObjectId,
+                keyDelegatedUserTenantId: userDelegationKey.SignedDelegatedUserTenantId,
+                requestHeaders: SasExtensions.ConvertRequestDictToKeyList(RequestHeaders),
+                requestQueryParameters: SasExtensions.ConvertRequestDictToKeyList(RequestQueryParameters));
             return p;
+        }
+
+        private string ToStringToSign(UserDelegationKey userDelegationKey, string accountName)
+        {
+            string startTime = SasExtensions.FormatTimesForSasSigning(StartsOn);
+            string expiryTime = SasExtensions.FormatTimesForSasSigning(ExpiresOn);
+            string signedStart = SasExtensions.FormatTimesForSasSigning(userDelegationKey.SignedStartsOn);
+            string signedExpiry = SasExtensions.FormatTimesForSasSigning(userDelegationKey.SignedExpiresOn);
+            string canonicalizedSignedRequestHeaders = SasExtensions.FormatRequestHeadersForSasSigning(RequestHeaders);
+            string canonicalizedSignedRequestQueryParameters = SasExtensions.FormatRequestQueryParametersForSasSigning(RequestQueryParameters);
+
+            // See http://msdn.microsoft.com/en-us/library/azure/dn140255.aspx
+            return string.Join("\n",
+                Permissions,
+                startTime,
+                expiryTime,
+                GetCanonicalName(accountName, FileSystemName ?? string.Empty, Path ?? string.Empty),
+                userDelegationKey.SignedObjectId,
+                userDelegationKey.SignedTenantId,
+                signedStart,
+                signedExpiry,
+                userDelegationKey.SignedService,
+                userDelegationKey.SignedVersion,
+                PreauthorizedAgentObjectId,
+                AgentObjectId,
+                CorrelationId,
+                userDelegationKey.SignedDelegatedUserTenantId,
+                DelegatedUserObjectId,
+                IPRange.ToString(),
+                SasExtensions.ToProtocolString(Protocol),
+                Version,
+                Resource,
+                null, // snapshot
+                EncryptionScope,
+                canonicalizedSignedRequestHeaders,
+                canonicalizedSignedRequestQueryParameters,
+                CacheControl,
+                ContentDisposition,
+                ContentEncoding,
+                ContentLanguage,
+                ContentType);
         }
 
         /// <summary>

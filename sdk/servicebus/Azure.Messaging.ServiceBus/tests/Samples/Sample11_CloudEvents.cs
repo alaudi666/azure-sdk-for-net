@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Azure.Identity;
 using NUnit.Framework;
 
 namespace Azure.Messaging.ServiceBus.Tests.Samples
@@ -16,15 +17,17 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
             {
                 #region Snippet:ServiceBusCloudEvents
 #if SNIPPET
-                string connectionString = "<connection_string>";
+                string fullyQualifiedNamespace = "<fully_qualified_namespace>";
                 string queueName = "<queue_name>";
+                DefaultAzureCredential credential = new();
 #else
-                string connectionString = TestEnvironment.ServiceBusConnectionString;
+                string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
                 string queueName = scope.QueueName;
+                var credential = TestEnvironment.Credential;
 #endif
 
                 // since ServiceBusClient implements IAsyncDisposable we create it with "await using"
-                await using var client = new ServiceBusClient(connectionString);
+                await using ServiceBusClient client = new(fullyQualifiedNamespace, credential);
 
                 // create the sender
                 ServiceBusSender sender = client.CreateSender(queueName);
@@ -67,7 +70,9 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
                 Assert.AreEqual("Homer", receivedEmployee.Name);
                 Assert.AreEqual("application/cloudevents+json", receivedMessage.ContentType);
                 Assert.AreEqual(39, receivedEmployee.Age);
-                Assert.IsNull(await CreateNoRetryClient().CreateReceiver(queueName).ReceiveMessageAsync());
+                await using var noRetryClient = CreateNoRetryClient();
+                await using var receiver2 = noRetryClient.CreateReceiver(queueName);
+                Assert.IsNull(await receiver2.ReceiveMessageAsync());
             }
         }
 

@@ -5,33 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    /// <summary> Node type list results. </summary>
+    /// <summary> The response of a NodeType list operation. </summary>
     internal partial class NodeTypeListResult
     {
-        /// <summary> Initializes a new instance of NodeTypeListResult. </summary>
-        internal NodeTypeListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NodeTypeListResult"/>. </summary>
+        /// <param name="value"> The NodeType items on this page. </param>
+        internal NodeTypeListResult(IEnumerable<ServiceFabricManagedNodeTypeData> value)
         {
-            Value = new ChangeTrackingList<ServiceFabricManagedNodeTypeData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of NodeTypeListResult. </summary>
-        /// <param name="value"> The list of node types. </param>
-        /// <param name="nextLink"> The URL to use for getting the next set of results. </param>
-        internal NodeTypeListResult(IReadOnlyList<ServiceFabricManagedNodeTypeData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="NodeTypeListResult"/>. </summary>
+        /// <param name="value"> The NodeType items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NodeTypeListResult(IList<ServiceFabricManagedNodeTypeData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The list of node types. </summary>
-        public IReadOnlyList<ServiceFabricManagedNodeTypeData> Value { get; }
-        /// <summary> The URL to use for getting the next set of results. </summary>
-        public string NextLink { get; }
+        /// <summary> The NodeType items on this page. </summary>
+        public IList<ServiceFabricManagedNodeTypeData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

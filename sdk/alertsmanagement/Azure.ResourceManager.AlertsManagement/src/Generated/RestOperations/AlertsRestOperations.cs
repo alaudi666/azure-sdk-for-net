@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.AlertsManagement.Models;
@@ -35,6 +34,16 @@ namespace Azure.ResourceManager.AlertsManagement
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
             _apiVersion = apiVersion ?? "2019-05-05-preview";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
+        }
+
+        internal RequestUriBuilder CreateMetaDataRequestUri(RetrievedInformationIdentifier identifier)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/providers/Microsoft.AlertsManagement/alertsMetaData", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            uri.AppendQuery("identifier", identifier.ToString(), true);
+            return uri;
         }
 
         internal HttpMessage CreateMetaDataRequest(RetrievedInformationIdentifier identifier)
@@ -65,7 +74,7 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertMetadata value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ServiceAlertMetadata.DeserializeServiceAlertMetadata(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -86,13 +95,92 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertMetadata value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ServiceAlertMetadata.DeserializeServiceAlertMetadata(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetAllRequestUri(string subscriptionId, string targetResource, string targetResourceType, string targetResourceGroup, MonitorServiceSourceForAlert? monitorService, MonitorCondition? monitorCondition, ServiceAlertSeverity? severity, ServiceAlertState? alertState, string alertRule, string smartGroupId, bool? includeContext, bool? includeEgressConfig, long? pageCount, ListServiceAlertsSortByField? sortBy, AlertsManagementQuerySortOrder? sortOrder, string select, TimeRangeFilter? timeRange, string customTimeRange)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.AlertsManagement/alerts", false);
+            if (targetResource != null)
+            {
+                uri.AppendQuery("targetResource", targetResource, true);
+            }
+            if (targetResourceType != null)
+            {
+                uri.AppendQuery("targetResourceType", targetResourceType, true);
+            }
+            if (targetResourceGroup != null)
+            {
+                uri.AppendQuery("targetResourceGroup", targetResourceGroup, true);
+            }
+            if (monitorService != null)
+            {
+                uri.AppendQuery("monitorService", monitorService.Value.ToString(), true);
+            }
+            if (monitorCondition != null)
+            {
+                uri.AppendQuery("monitorCondition", monitorCondition.Value.ToString(), true);
+            }
+            if (severity != null)
+            {
+                uri.AppendQuery("severity", severity.Value.ToString(), true);
+            }
+            if (alertState != null)
+            {
+                uri.AppendQuery("alertState", alertState.Value.ToString(), true);
+            }
+            if (alertRule != null)
+            {
+                uri.AppendQuery("alertRule", alertRule, true);
+            }
+            if (smartGroupId != null)
+            {
+                uri.AppendQuery("smartGroupId", smartGroupId, true);
+            }
+            if (includeContext != null)
+            {
+                uri.AppendQuery("includeContext", includeContext.Value, true);
+            }
+            if (includeEgressConfig != null)
+            {
+                uri.AppendQuery("includeEgressConfig", includeEgressConfig.Value, true);
+            }
+            if (pageCount != null)
+            {
+                uri.AppendQuery("pageCount", pageCount.Value, true);
+            }
+            if (sortBy != null)
+            {
+                uri.AppendQuery("sortBy", sortBy.Value.ToString(), true);
+            }
+            if (sortOrder != null)
+            {
+                uri.AppendQuery("sortOrder", sortOrder.Value.ToString(), true);
+            }
+            if (select != null)
+            {
+                uri.AppendQuery("select", select, true);
+            }
+            if (timeRange != null)
+            {
+                uri.AppendQuery("timeRange", timeRange.Value.ToString(), true);
+            }
+            if (customTimeRange != null)
+            {
+                uri.AppendQuery("customTimeRange", customTimeRange, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetAllRequest(string subscriptionId, string targetResource, string targetResourceType, string targetResourceGroup, MonitorServiceSourceForAlert? monitorService, MonitorCondition? monitorCondition, ServiceAlertSeverity? severity, ServiceAlertState? alertState, string alertRule, string smartGroupId, bool? includeContext, bool? includeEgressConfig, long? pageCount, ListServiceAlertsSortByField? sortBy, AlertsManagementQuerySortOrder? sortOrder, string select, TimeRangeFilter? timeRange, string customTimeRange)
@@ -186,19 +274,19 @@ namespace Azure.ResourceManager.AlertsManagement
         /// <param name="targetResourceType"> Filter by target resource type. Default value is select all. </param>
         /// <param name="targetResourceGroup"> Filter by target resource group name. Default value is select all. </param>
         /// <param name="monitorService"> Filter by monitor service which generates the alert instance. Default value is select all. </param>
-        /// <param name="monitorCondition"> Filter by monitor condition which is either &apos;Fired&apos; or &apos;Resolved&apos;. Default value is to select all. </param>
+        /// <param name="monitorCondition"> Filter by monitor condition which is either 'Fired' or 'Resolved'. Default value is to select all. </param>
         /// <param name="severity"> Filter by severity.  Default value is select all. </param>
         /// <param name="alertState"> Filter by state of the alert instance. Default value is to select all. </param>
         /// <param name="alertRule"> Filter by specific alert rule.  Default value is to select all. </param>
         /// <param name="smartGroupId"> Filter the alerts list by the Smart Group Id. Default value is none. </param>
-        /// <param name="includeContext"> Include context which has contextual data specific to the monitor service. Default value is false&apos;. </param>
-        /// <param name="includeEgressConfig"> Include egress config which would be used for displaying the content in portal.  Default value is &apos;false&apos;. </param>
-        /// <param name="pageCount"> Determines number of alerts returned per page in response. Permissible value is between 1 to 250. When the &quot;includeContent&quot;  filter is selected, maximum value allowed is 25. Default value is 25. </param>
-        /// <param name="sortBy"> Sort the query results by input field,  Default value is &apos;lastModifiedDateTime&apos;. </param>
-        /// <param name="sortOrder"> Sort the query results order in either ascending or descending.  Default value is &apos;desc&apos; for time fields and &apos;asc&apos; for others. </param>
+        /// <param name="includeContext"> Include context which has contextual data specific to the monitor service. Default value is false'. </param>
+        /// <param name="includeEgressConfig"> Include egress config which would be used for displaying the content in portal.  Default value is 'false'. </param>
+        /// <param name="pageCount"> Determines number of alerts returned per page in response. Permissible value is between 1 to 250. When the "includeContent"  filter is selected, maximum value allowed is 25. Default value is 25. </param>
+        /// <param name="sortBy"> Sort the query results by input field,  Default value is 'lastModifiedDateTime'. </param>
+        /// <param name="sortOrder"> Sort the query results order in either ascending or descending.  Default value is 'desc' for time fields and 'asc' for others. </param>
         /// <param name="select"> This filter allows to selection of the fields(comma separated) which would  be part of the essential section. This would allow to project only the  required fields rather than getting entire content.  Default is to fetch all the fields in the essentials section. </param>
         /// <param name="timeRange"> Filter by time range by below listed values. Default value is 1 day. </param>
-        /// <param name="customTimeRange"> Filter by custom time range in the format &lt;start-time&gt;/&lt;end-time&gt;  where time is in (ISO-8601 format)&apos;. Permissible values is within 30 days from  query time. Either timeRange or customTimeRange could be used but not both. Default is none. </param>
+        /// <param name="customTimeRange"> Filter by custom time range in the format &lt;start-time&gt;/&lt;end-time&gt;  where time is in (ISO-8601 format)'. Permissible values is within 30 days from  query time. Either timeRange or customTimeRange could be used but not both. Default is none. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -213,7 +301,7 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ServiceAlertListResult.DeserializeServiceAlertListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -228,19 +316,19 @@ namespace Azure.ResourceManager.AlertsManagement
         /// <param name="targetResourceType"> Filter by target resource type. Default value is select all. </param>
         /// <param name="targetResourceGroup"> Filter by target resource group name. Default value is select all. </param>
         /// <param name="monitorService"> Filter by monitor service which generates the alert instance. Default value is select all. </param>
-        /// <param name="monitorCondition"> Filter by monitor condition which is either &apos;Fired&apos; or &apos;Resolved&apos;. Default value is to select all. </param>
+        /// <param name="monitorCondition"> Filter by monitor condition which is either 'Fired' or 'Resolved'. Default value is to select all. </param>
         /// <param name="severity"> Filter by severity.  Default value is select all. </param>
         /// <param name="alertState"> Filter by state of the alert instance. Default value is to select all. </param>
         /// <param name="alertRule"> Filter by specific alert rule.  Default value is to select all. </param>
         /// <param name="smartGroupId"> Filter the alerts list by the Smart Group Id. Default value is none. </param>
-        /// <param name="includeContext"> Include context which has contextual data specific to the monitor service. Default value is false&apos;. </param>
-        /// <param name="includeEgressConfig"> Include egress config which would be used for displaying the content in portal.  Default value is &apos;false&apos;. </param>
-        /// <param name="pageCount"> Determines number of alerts returned per page in response. Permissible value is between 1 to 250. When the &quot;includeContent&quot;  filter is selected, maximum value allowed is 25. Default value is 25. </param>
-        /// <param name="sortBy"> Sort the query results by input field,  Default value is &apos;lastModifiedDateTime&apos;. </param>
-        /// <param name="sortOrder"> Sort the query results order in either ascending or descending.  Default value is &apos;desc&apos; for time fields and &apos;asc&apos; for others. </param>
+        /// <param name="includeContext"> Include context which has contextual data specific to the monitor service. Default value is false'. </param>
+        /// <param name="includeEgressConfig"> Include egress config which would be used for displaying the content in portal.  Default value is 'false'. </param>
+        /// <param name="pageCount"> Determines number of alerts returned per page in response. Permissible value is between 1 to 250. When the "includeContent"  filter is selected, maximum value allowed is 25. Default value is 25. </param>
+        /// <param name="sortBy"> Sort the query results by input field,  Default value is 'lastModifiedDateTime'. </param>
+        /// <param name="sortOrder"> Sort the query results order in either ascending or descending.  Default value is 'desc' for time fields and 'asc' for others. </param>
         /// <param name="select"> This filter allows to selection of the fields(comma separated) which would  be part of the essential section. This would allow to project only the  required fields rather than getting entire content.  Default is to fetch all the fields in the essentials section. </param>
         /// <param name="timeRange"> Filter by time range by below listed values. Default value is 1 day. </param>
-        /// <param name="customTimeRange"> Filter by custom time range in the format &lt;start-time&gt;/&lt;end-time&gt;  where time is in (ISO-8601 format)&apos;. Permissible values is within 30 days from  query time. Either timeRange or customTimeRange could be used but not both. Default is none. </param>
+        /// <param name="customTimeRange"> Filter by custom time range in the format &lt;start-time&gt;/&lt;end-time&gt;  where time is in (ISO-8601 format)'. Permissible values is within 30 days from  query time. Either timeRange or customTimeRange could be used but not both. Default is none. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -255,13 +343,25 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ServiceAlertListResult.DeserializeServiceAlertListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetByIdRequestUri(string subscriptionId, Guid alertId)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.AlertsManagement/alerts/", false);
+            uri.AppendPath(alertId, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetByIdRequest(string subscriptionId, Guid alertId)
@@ -299,7 +399,7 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ServiceAlertData.DeserializeServiceAlertData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -327,7 +427,7 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ServiceAlertData.DeserializeServiceAlertData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -336,6 +436,20 @@ namespace Azure.ResourceManager.AlertsManagement
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateChangeStateRequestUri(string subscriptionId, Guid alertId, ServiceAlertState newState, string comment)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.AlertsManagement/alerts/", false);
+            uri.AppendPath(alertId, true);
+            uri.AppendPath("/changestate", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            uri.AppendQuery("newState", newState.ToString(), true);
+            return uri;
         }
 
         internal HttpMessage CreateChangeStateRequest(string subscriptionId, Guid alertId, ServiceAlertState newState, string comment)
@@ -384,7 +498,7 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ServiceAlertData.DeserializeServiceAlertData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -412,13 +526,26 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ServiceAlertData.DeserializeServiceAlertData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetHistoryRequestUri(string subscriptionId, Guid alertId)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.AlertsManagement/alerts/", false);
+            uri.AppendPath(alertId, true);
+            uri.AppendPath("/history", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetHistoryRequest(string subscriptionId, Guid alertId)
@@ -457,7 +584,7 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertModification value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ServiceAlertModification.DeserializeServiceAlertModification(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -483,13 +610,69 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertModification value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ServiceAlertModification.DeserializeServiceAlertModification(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetSummaryRequestUri(string subscriptionId, AlertsSummaryGroupByField groupby, bool? includeSmartGroupsCount, string targetResource, string targetResourceType, string targetResourceGroup, MonitorServiceSourceForAlert? monitorService, MonitorCondition? monitorCondition, ServiceAlertSeverity? severity, ServiceAlertState? alertState, string alertRule, TimeRangeFilter? timeRange, string customTimeRange)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.AlertsManagement/alertsSummary", false);
+            uri.AppendQuery("groupby", groupby.ToString(), true);
+            if (includeSmartGroupsCount != null)
+            {
+                uri.AppendQuery("includeSmartGroupsCount", includeSmartGroupsCount.Value, true);
+            }
+            if (targetResource != null)
+            {
+                uri.AppendQuery("targetResource", targetResource, true);
+            }
+            if (targetResourceType != null)
+            {
+                uri.AppendQuery("targetResourceType", targetResourceType, true);
+            }
+            if (targetResourceGroup != null)
+            {
+                uri.AppendQuery("targetResourceGroup", targetResourceGroup, true);
+            }
+            if (monitorService != null)
+            {
+                uri.AppendQuery("monitorService", monitorService.Value.ToString(), true);
+            }
+            if (monitorCondition != null)
+            {
+                uri.AppendQuery("monitorCondition", monitorCondition.Value.ToString(), true);
+            }
+            if (severity != null)
+            {
+                uri.AppendQuery("severity", severity.Value.ToString(), true);
+            }
+            if (alertState != null)
+            {
+                uri.AppendQuery("alertState", alertState.Value.ToString(), true);
+            }
+            if (alertRule != null)
+            {
+                uri.AppendQuery("alertRule", alertRule, true);
+            }
+            if (timeRange != null)
+            {
+                uri.AppendQuery("timeRange", timeRange.Value.ToString(), true);
+            }
+            if (customTimeRange != null)
+            {
+                uri.AppendQuery("customTimeRange", customTimeRange, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetSummaryRequest(string subscriptionId, AlertsSummaryGroupByField groupby, bool? includeSmartGroupsCount, string targetResource, string targetResourceType, string targetResourceGroup, MonitorServiceSourceForAlert? monitorService, MonitorCondition? monitorCondition, ServiceAlertSeverity? severity, ServiceAlertState? alertState, string alertRule, TimeRangeFilter? timeRange, string customTimeRange)
@@ -554,20 +737,20 @@ namespace Azure.ResourceManager.AlertsManagement
             return message;
         }
 
-        /// <summary> Get a summarized count of your alerts grouped by various parameters (e.g. grouping by &apos;Severity&apos; returns the count of alerts for each severity). </summary>
+        /// <summary> Get a summarized count of your alerts grouped by various parameters (e.g. grouping by 'Severity' returns the count of alerts for each severity). </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="groupby"> This parameter allows the result set to be grouped by input fields (Maximum 2 comma separated fields supported). For example, groupby=severity or groupby=severity,alertstate. </param>
-        /// <param name="includeSmartGroupsCount"> Include count of the SmartGroups as part of the summary. Default value is &apos;false&apos;. </param>
+        /// <param name="includeSmartGroupsCount"> Include count of the SmartGroups as part of the summary. Default value is 'false'. </param>
         /// <param name="targetResource"> Filter by target resource( which is full ARM ID) Default value is select all. </param>
         /// <param name="targetResourceType"> Filter by target resource type. Default value is select all. </param>
         /// <param name="targetResourceGroup"> Filter by target resource group name. Default value is select all. </param>
         /// <param name="monitorService"> Filter by monitor service which generates the alert instance. Default value is select all. </param>
-        /// <param name="monitorCondition"> Filter by monitor condition which is either &apos;Fired&apos; or &apos;Resolved&apos;. Default value is to select all. </param>
+        /// <param name="monitorCondition"> Filter by monitor condition which is either 'Fired' or 'Resolved'. Default value is to select all. </param>
         /// <param name="severity"> Filter by severity.  Default value is select all. </param>
         /// <param name="alertState"> Filter by state of the alert instance. Default value is to select all. </param>
         /// <param name="alertRule"> Filter by specific alert rule.  Default value is to select all. </param>
         /// <param name="timeRange"> Filter by time range by below listed values. Default value is 1 day. </param>
-        /// <param name="customTimeRange"> Filter by custom time range in the format &lt;start-time&gt;/&lt;end-time&gt;  where time is in (ISO-8601 format)&apos;. Permissible values is within 30 days from  query time. Either timeRange or customTimeRange could be used but not both. Default is none. </param>
+        /// <param name="customTimeRange"> Filter by custom time range in the format &lt;start-time&gt;/&lt;end-time&gt;  where time is in (ISO-8601 format)'. Permissible values is within 30 days from  query time. Either timeRange or customTimeRange could be used but not both. Default is none. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -582,7 +765,7 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertSummary value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ServiceAlertSummary.DeserializeServiceAlertSummary(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -591,20 +774,20 @@ namespace Azure.ResourceManager.AlertsManagement
             }
         }
 
-        /// <summary> Get a summarized count of your alerts grouped by various parameters (e.g. grouping by &apos;Severity&apos; returns the count of alerts for each severity). </summary>
+        /// <summary> Get a summarized count of your alerts grouped by various parameters (e.g. grouping by 'Severity' returns the count of alerts for each severity). </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
         /// <param name="groupby"> This parameter allows the result set to be grouped by input fields (Maximum 2 comma separated fields supported). For example, groupby=severity or groupby=severity,alertstate. </param>
-        /// <param name="includeSmartGroupsCount"> Include count of the SmartGroups as part of the summary. Default value is &apos;false&apos;. </param>
+        /// <param name="includeSmartGroupsCount"> Include count of the SmartGroups as part of the summary. Default value is 'false'. </param>
         /// <param name="targetResource"> Filter by target resource( which is full ARM ID) Default value is select all. </param>
         /// <param name="targetResourceType"> Filter by target resource type. Default value is select all. </param>
         /// <param name="targetResourceGroup"> Filter by target resource group name. Default value is select all. </param>
         /// <param name="monitorService"> Filter by monitor service which generates the alert instance. Default value is select all. </param>
-        /// <param name="monitorCondition"> Filter by monitor condition which is either &apos;Fired&apos; or &apos;Resolved&apos;. Default value is to select all. </param>
+        /// <param name="monitorCondition"> Filter by monitor condition which is either 'Fired' or 'Resolved'. Default value is to select all. </param>
         /// <param name="severity"> Filter by severity.  Default value is select all. </param>
         /// <param name="alertState"> Filter by state of the alert instance. Default value is to select all. </param>
         /// <param name="alertRule"> Filter by specific alert rule.  Default value is to select all. </param>
         /// <param name="timeRange"> Filter by time range by below listed values. Default value is 1 day. </param>
-        /// <param name="customTimeRange"> Filter by custom time range in the format &lt;start-time&gt;/&lt;end-time&gt;  where time is in (ISO-8601 format)&apos;. Permissible values is within 30 days from  query time. Either timeRange or customTimeRange could be used but not both. Default is none. </param>
+        /// <param name="customTimeRange"> Filter by custom time range in the format &lt;start-time&gt;/&lt;end-time&gt;  where time is in (ISO-8601 format)'. Permissible values is within 30 days from  query time. Either timeRange or customTimeRange could be used but not both. Default is none. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -619,13 +802,21 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertSummary value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ServiceAlertSummary.DeserializeServiceAlertSummary(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetAllNextPageRequestUri(string nextLink, string subscriptionId, string targetResource, string targetResourceType, string targetResourceGroup, MonitorServiceSourceForAlert? monitorService, MonitorCondition? monitorCondition, ServiceAlertSeverity? severity, ServiceAlertState? alertState, string alertRule, string smartGroupId, bool? includeContext, bool? includeEgressConfig, long? pageCount, ListServiceAlertsSortByField? sortBy, AlertsManagementQuerySortOrder? sortOrder, string select, TimeRangeFilter? timeRange, string customTimeRange)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateGetAllNextPageRequest(string nextLink, string subscriptionId, string targetResource, string targetResourceType, string targetResourceGroup, MonitorServiceSourceForAlert? monitorService, MonitorCondition? monitorCondition, ServiceAlertSeverity? severity, ServiceAlertState? alertState, string alertRule, string smartGroupId, bool? includeContext, bool? includeEgressConfig, long? pageCount, ListServiceAlertsSortByField? sortBy, AlertsManagementQuerySortOrder? sortOrder, string select, TimeRangeFilter? timeRange, string customTimeRange)
@@ -649,19 +840,19 @@ namespace Azure.ResourceManager.AlertsManagement
         /// <param name="targetResourceType"> Filter by target resource type. Default value is select all. </param>
         /// <param name="targetResourceGroup"> Filter by target resource group name. Default value is select all. </param>
         /// <param name="monitorService"> Filter by monitor service which generates the alert instance. Default value is select all. </param>
-        /// <param name="monitorCondition"> Filter by monitor condition which is either &apos;Fired&apos; or &apos;Resolved&apos;. Default value is to select all. </param>
+        /// <param name="monitorCondition"> Filter by monitor condition which is either 'Fired' or 'Resolved'. Default value is to select all. </param>
         /// <param name="severity"> Filter by severity.  Default value is select all. </param>
         /// <param name="alertState"> Filter by state of the alert instance. Default value is to select all. </param>
         /// <param name="alertRule"> Filter by specific alert rule.  Default value is to select all. </param>
         /// <param name="smartGroupId"> Filter the alerts list by the Smart Group Id. Default value is none. </param>
-        /// <param name="includeContext"> Include context which has contextual data specific to the monitor service. Default value is false&apos;. </param>
-        /// <param name="includeEgressConfig"> Include egress config which would be used for displaying the content in portal.  Default value is &apos;false&apos;. </param>
-        /// <param name="pageCount"> Determines number of alerts returned per page in response. Permissible value is between 1 to 250. When the &quot;includeContent&quot;  filter is selected, maximum value allowed is 25. Default value is 25. </param>
-        /// <param name="sortBy"> Sort the query results by input field,  Default value is &apos;lastModifiedDateTime&apos;. </param>
-        /// <param name="sortOrder"> Sort the query results order in either ascending or descending.  Default value is &apos;desc&apos; for time fields and &apos;asc&apos; for others. </param>
+        /// <param name="includeContext"> Include context which has contextual data specific to the monitor service. Default value is false'. </param>
+        /// <param name="includeEgressConfig"> Include egress config which would be used for displaying the content in portal.  Default value is 'false'. </param>
+        /// <param name="pageCount"> Determines number of alerts returned per page in response. Permissible value is between 1 to 250. When the "includeContent"  filter is selected, maximum value allowed is 25. Default value is 25. </param>
+        /// <param name="sortBy"> Sort the query results by input field,  Default value is 'lastModifiedDateTime'. </param>
+        /// <param name="sortOrder"> Sort the query results order in either ascending or descending.  Default value is 'desc' for time fields and 'asc' for others. </param>
         /// <param name="select"> This filter allows to selection of the fields(comma separated) which would  be part of the essential section. This would allow to project only the  required fields rather than getting entire content.  Default is to fetch all the fields in the essentials section. </param>
         /// <param name="timeRange"> Filter by time range by below listed values. Default value is 1 day. </param>
-        /// <param name="customTimeRange"> Filter by custom time range in the format &lt;start-time&gt;/&lt;end-time&gt;  where time is in (ISO-8601 format)&apos;. Permissible values is within 30 days from  query time. Either timeRange or customTimeRange could be used but not both. Default is none. </param>
+        /// <param name="customTimeRange"> Filter by custom time range in the format &lt;start-time&gt;/&lt;end-time&gt;  where time is in (ISO-8601 format)'. Permissible values is within 30 days from  query time. Either timeRange or customTimeRange could be used but not both. Default is none. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -677,7 +868,7 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ServiceAlertListResult.DeserializeServiceAlertListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -693,19 +884,19 @@ namespace Azure.ResourceManager.AlertsManagement
         /// <param name="targetResourceType"> Filter by target resource type. Default value is select all. </param>
         /// <param name="targetResourceGroup"> Filter by target resource group name. Default value is select all. </param>
         /// <param name="monitorService"> Filter by monitor service which generates the alert instance. Default value is select all. </param>
-        /// <param name="monitorCondition"> Filter by monitor condition which is either &apos;Fired&apos; or &apos;Resolved&apos;. Default value is to select all. </param>
+        /// <param name="monitorCondition"> Filter by monitor condition which is either 'Fired' or 'Resolved'. Default value is to select all. </param>
         /// <param name="severity"> Filter by severity.  Default value is select all. </param>
         /// <param name="alertState"> Filter by state of the alert instance. Default value is to select all. </param>
         /// <param name="alertRule"> Filter by specific alert rule.  Default value is to select all. </param>
         /// <param name="smartGroupId"> Filter the alerts list by the Smart Group Id. Default value is none. </param>
-        /// <param name="includeContext"> Include context which has contextual data specific to the monitor service. Default value is false&apos;. </param>
-        /// <param name="includeEgressConfig"> Include egress config which would be used for displaying the content in portal.  Default value is &apos;false&apos;. </param>
-        /// <param name="pageCount"> Determines number of alerts returned per page in response. Permissible value is between 1 to 250. When the &quot;includeContent&quot;  filter is selected, maximum value allowed is 25. Default value is 25. </param>
-        /// <param name="sortBy"> Sort the query results by input field,  Default value is &apos;lastModifiedDateTime&apos;. </param>
-        /// <param name="sortOrder"> Sort the query results order in either ascending or descending.  Default value is &apos;desc&apos; for time fields and &apos;asc&apos; for others. </param>
+        /// <param name="includeContext"> Include context which has contextual data specific to the monitor service. Default value is false'. </param>
+        /// <param name="includeEgressConfig"> Include egress config which would be used for displaying the content in portal.  Default value is 'false'. </param>
+        /// <param name="pageCount"> Determines number of alerts returned per page in response. Permissible value is between 1 to 250. When the "includeContent"  filter is selected, maximum value allowed is 25. Default value is 25. </param>
+        /// <param name="sortBy"> Sort the query results by input field,  Default value is 'lastModifiedDateTime'. </param>
+        /// <param name="sortOrder"> Sort the query results order in either ascending or descending.  Default value is 'desc' for time fields and 'asc' for others. </param>
         /// <param name="select"> This filter allows to selection of the fields(comma separated) which would  be part of the essential section. This would allow to project only the  required fields rather than getting entire content.  Default is to fetch all the fields in the essentials section. </param>
         /// <param name="timeRange"> Filter by time range by below listed values. Default value is 1 day. </param>
-        /// <param name="customTimeRange"> Filter by custom time range in the format &lt;start-time&gt;/&lt;end-time&gt;  where time is in (ISO-8601 format)&apos;. Permissible values is within 30 days from  query time. Either timeRange or customTimeRange could be used but not both. Default is none. </param>
+        /// <param name="customTimeRange"> Filter by custom time range in the format &lt;start-time&gt;/&lt;end-time&gt;  where time is in (ISO-8601 format)'. Permissible values is within 30 days from  query time. Either timeRange or customTimeRange could be used but not both. Default is none. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
@@ -721,7 +912,7 @@ namespace Azure.ResourceManager.AlertsManagement
                 case 200:
                     {
                         ServiceAlertListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ServiceAlertListResult.DeserializeServiceAlertListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

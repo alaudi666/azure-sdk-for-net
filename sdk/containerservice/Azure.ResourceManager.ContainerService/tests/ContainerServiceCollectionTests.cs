@@ -17,7 +17,6 @@ namespace Azure.ResourceManager.ContainerService.Tests
         {
         }
 
-        [TestCase]
         [RecordedTest]
         public async Task CreateListGetDelete()
         {
@@ -41,11 +40,10 @@ namespace Azure.ResourceManager.ContainerService.Tests
             await clusterFromGet.DeleteAsync(WaitUntil.Completed);
         }
 
-        [TestCase]
         [RecordedTest]
         public async Task Update()
         {
-            ResourceGroupResource rg = await CreateResourceGroupAsync(Subscription, "testaksrg", AzureLocation.EastUS);
+            ResourceGroupResource rg = await CreateResourceGroupAsync(Subscription, "testaksrg", AzureLocation.WestUS3);
             var clusterCollection = rg.GetContainerServiceManagedClusters();
             string clusterName = Recording.GenerateAssetName("akscluster");
             // Create
@@ -61,7 +59,6 @@ namespace Azure.ResourceManager.ContainerService.Tests
             await clusterFromUpdate.DeleteAsync(WaitUntil.Completed);
         }
 
-        [TestCase]
         [RecordedTest]
         public async Task GetCredentials()
         {

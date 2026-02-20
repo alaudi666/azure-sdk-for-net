@@ -5,105 +5,208 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
+using Azure.ResourceManager.SqlVirtualMachine;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
-    public partial class AvailabilityGroupReplica : IUtf8JsonSerializable
+    /// <summary> Availability group replica configuration. </summary>
+    public partial class AvailabilityGroupReplica : IJsonModel<AvailabilityGroupReplica>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual AvailabilityGroupReplica PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvailabilityGroupReplica>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeAvailabilityGroupReplica(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AvailabilityGroupReplica)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<AvailabilityGroupReplica>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvailabilityGroupReplica>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AvailabilityGroupReplica)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(SqlVmInstanceId))
             {
-                writer.WritePropertyName("sqlVirtualMachineInstanceId");
+                writer.WritePropertyName("sqlVirtualMachineInstanceId"u8);
                 writer.WriteStringValue(SqlVmInstanceId);
             }
             if (Optional.IsDefined(Role))
             {
-                writer.WritePropertyName("role");
+                writer.WritePropertyName("role"u8);
                 writer.WriteStringValue(Role.Value.ToString());
             }
             if (Optional.IsDefined(Commit))
             {
-                writer.WritePropertyName("commit");
+                writer.WritePropertyName("commit"u8);
                 writer.WriteStringValue(Commit.Value.ToString());
             }
             if (Optional.IsDefined(Failover))
             {
-                writer.WritePropertyName("failover");
+                writer.WritePropertyName("failover"u8);
                 writer.WriteStringValue(Failover.Value.ToString());
             }
             if (Optional.IsDefined(ReadableSecondary))
             {
-                writer.WritePropertyName("readableSecondary");
+                writer.WritePropertyName("readableSecondary"u8);
                 writer.WriteStringValue(ReadableSecondary.Value.ToString());
             }
-            writer.WriteEndObject();
-        }
-
-        internal static AvailabilityGroupReplica DeserializeAvailabilityGroupReplica(JsonElement element)
-        {
-            Optional<ResourceIdentifier> sqlVmInstanceId = default;
-            Optional<AvailabilityGroupReplicaRole> role = default;
-            Optional<AvailabilityGroupReplicaCommitMode> commit = default;
-            Optional<AvailabilityGroupReplicaFailoverMode> failover = default;
-            Optional<ReadableSecondaryMode> readableSecondary = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("sqlVirtualMachineInstanceId"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    sqlVmInstanceId = new ResourceIdentifier(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("role"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    role = new AvailabilityGroupReplicaRole(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("commit"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    commit = new AvailabilityGroupReplicaCommitMode(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("failover"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    failover = new AvailabilityGroupReplicaFailoverMode(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("readableSecondary"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    readableSecondary = new ReadableSecondaryMode(property.Value.GetString());
-                    continue;
+#endif
                 }
             }
-            return new AvailabilityGroupReplica(sqlVmInstanceId.Value, Optional.ToNullable(role), Optional.ToNullable(commit), Optional.ToNullable(failover), Optional.ToNullable(readableSecondary));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AvailabilityGroupReplica IJsonModel<AvailabilityGroupReplica>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual AvailabilityGroupReplica JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvailabilityGroupReplica>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AvailabilityGroupReplica)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAvailabilityGroupReplica(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static AvailabilityGroupReplica DeserializeAvailabilityGroupReplica(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ResourceIdentifier sqlVmInstanceId = default;
+            AvailabilityGroupReplicaRole? role = default;
+            AvailabilityGroupReplicaCommitMode? commit = default;
+            AvailabilityGroupReplicaFailoverMode? failover = default;
+            ReadableSecondaryMode? readableSecondary = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("sqlVirtualMachineInstanceId"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    sqlVmInstanceId = new ResourceIdentifier(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("role"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    role = new AvailabilityGroupReplicaRole(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("commit"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    commit = new AvailabilityGroupReplicaCommitMode(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("failover"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    failover = new AvailabilityGroupReplicaFailoverMode(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("readableSecondary"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    readableSecondary = new ReadableSecondaryMode(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new AvailabilityGroupReplica(
+                sqlVmInstanceId,
+                role,
+                commit,
+                failover,
+                readableSecondary,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<AvailabilityGroupReplica>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvailabilityGroupReplica>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerSqlVirtualMachineContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(AvailabilityGroupReplica)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AvailabilityGroupReplica IPersistableModel<AvailabilityGroupReplica>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<AvailabilityGroupReplica>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

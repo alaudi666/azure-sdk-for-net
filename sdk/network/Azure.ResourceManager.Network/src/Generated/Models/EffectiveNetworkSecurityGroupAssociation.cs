@@ -5,6 +5,8 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Resources.Models;
 
@@ -13,25 +15,60 @@ namespace Azure.ResourceManager.Network.Models
     /// <summary> The effective network security group association. </summary>
     public partial class EffectiveNetworkSecurityGroupAssociation
     {
-        /// <summary> Initializes a new instance of EffectiveNetworkSecurityGroupAssociation. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="EffectiveNetworkSecurityGroupAssociation"/>. </summary>
         internal EffectiveNetworkSecurityGroupAssociation()
         {
         }
 
-        /// <summary> Initializes a new instance of EffectiveNetworkSecurityGroupAssociation. </summary>
+        /// <summary> Initializes a new instance of <see cref="EffectiveNetworkSecurityGroupAssociation"/>. </summary>
         /// <param name="networkManager"> The ID of the Azure network manager if assigned. </param>
         /// <param name="subnet"> The ID of the subnet if assigned. </param>
         /// <param name="networkInterface"> The ID of the network interface if assigned. </param>
-        internal EffectiveNetworkSecurityGroupAssociation(WritableSubResource networkManager, WritableSubResource subnet, WritableSubResource networkInterface)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal EffectiveNetworkSecurityGroupAssociation(WritableSubResource networkManager, WritableSubResource subnet, WritableSubResource networkInterface, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             NetworkManager = networkManager;
             Subnet = subnet;
             NetworkInterface = networkInterface;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> The ID of the Azure network manager if assigned. </summary>
         internal WritableSubResource NetworkManager { get; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("networkManager.id")]
         public ResourceIdentifier NetworkManagerId
         {
             get => NetworkManager?.Id;
@@ -40,6 +77,7 @@ namespace Azure.ResourceManager.Network.Models
         /// <summary> The ID of the subnet if assigned. </summary>
         internal WritableSubResource Subnet { get; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("subnet.id")]
         public ResourceIdentifier SubnetId
         {
             get => Subnet?.Id;
@@ -48,6 +86,7 @@ namespace Azure.ResourceManager.Network.Models
         /// <summary> The ID of the network interface if assigned. </summary>
         internal WritableSubResource NetworkInterface { get; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("networkInterface.id")]
         public ResourceIdentifier NetworkInterfaceId
         {
             get => NetworkInterface?.Id;

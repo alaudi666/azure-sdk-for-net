@@ -5,42 +5,59 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
+using Azure.ResourceManager.SignalR;
 
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Object that describes a specific usage of the resources. </summary>
     public partial class SignalRUsage
     {
-        /// <summary> Initializes a new instance of SignalRUsage. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRUsage"/>. </summary>
         internal SignalRUsage()
         {
         }
 
-        /// <summary> Initializes a new instance of SignalRUsage. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRUsage"/>. </summary>
         /// <param name="id"> Fully qualified ARM resource id. </param>
         /// <param name="currentValue"> Current value for the usage quota. </param>
         /// <param name="limit"> The maximum permitted value for the usage quota. If there is no limit, this value will be -1. </param>
         /// <param name="name"> Localizable String object containing the name and a localized value. </param>
         /// <param name="unit"> Representing the units of the usage quota. Possible values are: Count, Bytes, Seconds, Percent, CountPerSecond, BytesPerSecond. </param>
-        internal SignalRUsage(ResourceIdentifier id, long? currentValue, long? limit, SignalRUsageName name, string unit)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRUsage(ResourceIdentifier id, long? currentValue, long? limit, SignalRUsageName name, string unit, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Id = id;
             CurrentValue = currentValue;
             Limit = limit;
             Name = name;
             Unit = unit;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Fully qualified ARM resource id. </summary>
+        [WirePath("id")]
         public ResourceIdentifier Id { get; }
+
         /// <summary> Current value for the usage quota. </summary>
+        [WirePath("currentValue")]
         public long? CurrentValue { get; }
+
         /// <summary> The maximum permitted value for the usage quota. If there is no limit, this value will be -1. </summary>
+        [WirePath("limit")]
         public long? Limit { get; }
+
         /// <summary> Localizable String object containing the name and a localized value. </summary>
+        [WirePath("name")]
         public SignalRUsageName Name { get; }
+
         /// <summary> Representing the units of the usage quota. Possible values are: Count, Bytes, Seconds, Percent, CountPerSecond, BytesPerSecond. </summary>
+        [WirePath("unit")]
         public string Unit { get; }
     }
 }

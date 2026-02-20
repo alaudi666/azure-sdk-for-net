@@ -13,47 +13,66 @@ namespace Azure.ResourceManager.DataBox.Models
     /// <summary> Configuration response specific to a region. </summary>
     public partial class RegionConfigurationResult
     {
-        /// <summary> Initializes a new instance of RegionConfigurationResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="RegionConfigurationResult"/>. </summary>
         internal RegionConfigurationResult()
         {
         }
 
-        /// <summary> Initializes a new instance of RegionConfigurationResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="RegionConfigurationResult"/>. </summary>
         /// <param name="scheduleAvailabilityResponse"> Schedule availability for given sku in a region. </param>
         /// <param name="transportAvailabilityResponse"> Transport options available for given sku in a region. </param>
-        /// <param name="dataCenterAddressResponse">
-        /// Datacenter address for given sku in a region.
-        /// Please note <see cref="DataCenterAddressResult"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="DataCenterAddressInstructionResult"/> and <see cref="DataCenterAddressLocationResult"/>.
-        /// </param>
-        internal RegionConfigurationResult(ScheduleAvailabilityResponse scheduleAvailabilityResponse, TransportAvailabilityResponse transportAvailabilityResponse, DataCenterAddressResult dataCenterAddressResponse)
+        /// <param name="dataCenterAddressResponse"> Datacenter address for given sku in a region. </param>
+        /// <param name="deviceCapabilityResponse"> Device capabilities available for a given sku in a region. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal RegionConfigurationResult(ScheduleAvailabilityResponse scheduleAvailabilityResponse, TransportAvailabilityResponse transportAvailabilityResponse, DataCenterAddressResult dataCenterAddressResponse, DeviceCapabilityResponse deviceCapabilityResponse, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ScheduleAvailabilityResponse = scheduleAvailabilityResponse;
             TransportAvailabilityResponse = transportAvailabilityResponse;
             DataCenterAddressResponse = dataCenterAddressResponse;
+            DeviceCapabilityResponse = deviceCapabilityResponse;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Schedule availability for given sku in a region. </summary>
         internal ScheduleAvailabilityResponse ScheduleAvailabilityResponse { get; }
-        /// <summary> List of dates available to schedule. </summary>
-        public IReadOnlyList<DateTimeOffset> ScheduleAvailabilityResponseAvailableDates
-        {
-            get => ScheduleAvailabilityResponse?.AvailableDates;
-        }
 
         /// <summary> Transport options available for given sku in a region. </summary>
         internal TransportAvailabilityResponse TransportAvailabilityResponse { get; }
+
+        /// <summary> Datacenter address for given sku in a region. </summary>
+        public DataCenterAddressResult DataCenterAddressResponse { get; }
+
+        /// <summary> Device capabilities available for a given sku in a region. </summary>
+        internal DeviceCapabilityResponse DeviceCapabilityResponse { get; }
+
+        /// <summary> List of dates available to schedule. </summary>
+        public IReadOnlyList<DateTimeOffset> ScheduleAvailabilityResponseAvailableDates
+        {
+            get
+            {
+                return ScheduleAvailabilityResponse.AvailableDates;
+            }
+        }
+
         /// <summary> List of transport availability details for given region. </summary>
         public IReadOnlyList<TransportAvailabilityDetails> TransportAvailabilityDetails
         {
-            get => TransportAvailabilityResponse?.TransportAvailabilityDetails;
+            get
+            {
+                return TransportAvailabilityResponse.TransportAvailabilityDetails;
+            }
         }
 
-        /// <summary>
-        /// Datacenter address for given sku in a region.
-        /// Please note <see cref="DataCenterAddressResult"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="DataCenterAddressInstructionResult"/> and <see cref="DataCenterAddressLocationResult"/>.
-        /// </summary>
-        public DataCenterAddressResult DataCenterAddressResponse { get; }
+        /// <summary> List of device capabilities available for a given region and a given sku. </summary>
+        public IReadOnlyList<DeviceCapabilityDetails> DeviceCapabilityDetails
+        {
+            get
+            {
+                return DeviceCapabilityResponse.DeviceCapabilityDetails;
+            }
+        }
     }
 }

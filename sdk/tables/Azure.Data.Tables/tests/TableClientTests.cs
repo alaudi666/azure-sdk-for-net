@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Net;
-using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.Diagnostics;
@@ -370,6 +369,33 @@ namespace Azure.Data.Tables.Tests
             Assert.That(dictEntity.TryGetValue(TableConstants.PropertyNames.Timestamp, out var _), Is.False, "Only PK, RK, and user properties should be sent");
         }
 
+        // This test validates that a table entity with an enum property that has an unknown enum value is not deserialized.
+        [Test]
+        public void EnumPropertiesWithUnknownValuesAreNotDeserialized()
+        {
+            Foo foo = (Foo)3;
+            NullableFoo? nullableFoo = (NullableFoo)3;
+            var entity = new EnumEntity
+            {
+                PartitionKey = "partitionKey",
+                RowKey = "01",
+                Timestamp = DateTime.Now,
+                MyFoo = foo,
+                MyNullableFoo = nullableFoo,
+                ETag = ETag.All
+            };
+
+            // Create the new entities.
+            var dictEntity = entity.ToOdataAnnotatedDictionary();
+            var deserializedEntity = dictEntity.ToTableEntity<EnumEntity>();
+            Assert.That(deserializedEntity.PartitionKey, Is.EqualTo(entity.PartitionKey), "The entities should be equivalent");
+            Assert.That(deserializedEntity.RowKey, Is.EqualTo(entity.RowKey), "The entities should be equivalent");
+            Assert.That(deserializedEntity.MyFoo.ToString(), Is.EqualTo(default(Foo).ToString()), "The non-existing enum value should not be deserialized.");
+            Assert.IsNull(deserializedEntity.MyNullableFoo, "The non-existing nullable enum value should not be deserialized.");
+            Assert.IsNull(deserializedEntity.MyNullableFoo2, "The entities should be equivalent.");
+            Assert.That(dictEntity.TryGetValue(TableConstants.PropertyNames.Timestamp, out var _), Is.False, "Only PK, RK, and user properties should be sent");
+        }
+
         [Test]
         public void RoundTripContinuationTokenWithPartitionKeyAndRowKey()
         {
@@ -511,26 +537,48 @@ namespace Azure.Data.Tables.Tests
             CollectionAssert.Contains(actualSas.Segments, TableName);
         }
 
-        private static IEnumerable<object[]> TableClientsAllCtors()
+        private static IEnumerable<object[]> TableClientsAllCtors(bool useEmulator)
         {
-            var sharedKeyCred = new TableSharedKeyCredential(AccountName, Secret);
-            var tokenCred = new MockCredential();
-            var connString = $"DefaultEndpointsProtocol=https;AccountName={AccountName};AccountKey={Secret};TableEndpoint=https://{AccountName}.table.core.windows.net/;";
-            var sasCred = new AzureSasCredential(signature);
-            var fromTableServiceClient = new TableServiceClient(_url, sharedKeyCred).GetTableClient(TableName);
+            Uri url;
+            string connectionString;
+            TableSharedKeyCredential sharedKeyCred;
 
-            yield return new object[] { new TableClient(connString, TableName) };
-            yield return new object[] { new TableClient(_url, TableName, sharedKeyCred) };
-            yield return new object[] { new TableClient(_url, TableName, tokenCred) };
-            yield return new object[] { new TableClient(_url, sasCred) };
-            yield return new object[] { new TableClient(new Uri($"{_url}?{signature}")) };
+            if (useEmulator)
+            {
+                url = new Uri("http://127.0.0.1:10002/devstoreaccount1");
+                connectionString = "UseDevelopmentStorage=true";
+                sharedKeyCred = new TableSharedKeyCredential("devstoreaccount1", "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==");
+            }
+            else
+            {
+                url = _url;
+                connectionString = $"DefaultEndpointsProtocol=https;AccountName={AccountName};AccountKey={Secret};TableEndpoint=https://{AccountName}.table.core.windows.net/;";
+                sharedKeyCred = new TableSharedKeyCredential(AccountName, Secret);
+            }
+
+            var tokenCred = new MockCredential();
+            var sasCred = new AzureSasCredential(signature);
+            var fromTableServiceClient = new TableServiceClient(url, sharedKeyCred).GetTableClient(TableName);
+
+            yield return new object[] { new TableClient(connectionString, TableName) };
+            yield return new object[] { new TableClient(url, TableName, sharedKeyCred) };
+            yield return new object[] { new TableClient(url, TableName, tokenCred) };
+            yield return new object[] { new TableClient(url, sasCred) };
+            yield return new object[] { new TableClient(new Uri($"{url}?{signature}")) };
             yield return new object[] { fromTableServiceClient };
         }
 
-        [TestCaseSource(nameof(TableClientsAllCtors))]
+        [TestCaseSource(nameof(TableClientsAllCtors), new object[] { false })]
         public void UriPropertyIsPopulated(TableClient client)
         {
-            Assert.AreEqual($"{_url}{TableName}", client.Uri.AbsoluteUri);
+            Assert.AreEqual(_urlWithTableName, client.Uri);
+            Assert.That(client.Uri.AbsoluteUri, Does.Not.Contain(signature));
+        }
+
+        [TestCaseSource(nameof(TableClientsAllCtors), new object[] { true })]
+        public void UriPropertyIsPopulatedForEmulator(TableClient client)
+        {
+            Assert.AreEqual(new Uri("http://127.0.0.1:10002/devstoreaccount1/" + TableName), client.Uri);
             Assert.That(client.Uri.AbsoluteUri, Does.Not.Contain(signature));
         }
 

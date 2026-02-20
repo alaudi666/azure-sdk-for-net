@@ -10,7 +10,10 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.ContainerService.Models
 {
-    /// <summary> The name of a managed cluster SKU. </summary>
+    /// <summary>
+    /// The name of a managed cluster SKU.
+    /// Serialized Name: ManagedClusterSKUName
+    /// </summary>
     public readonly partial struct ManagedClusterSkuName : IEquatable<ManagedClusterSkuName>
     {
         private readonly string _value;
@@ -22,15 +25,24 @@ namespace Azure.ResourceManager.ContainerService.Models
             _value = value ?? throw new ArgumentNullException(nameof(value));
         }
 
-        private const string BasicValue = "Basic";
+        private const string BaseValue = "Base";
+        private const string AutomaticValue = "Automatic";
 
-        /// <summary> Basic. </summary>
-        public static ManagedClusterSkuName Basic { get; } = new ManagedClusterSkuName(BasicValue);
+        /// <summary>
+        /// Base option for the AKS control plane.
+        /// Serialized Name: ManagedClusterSKUName.Base
+        /// </summary>
+        public static ManagedClusterSkuName Base { get; } = new ManagedClusterSkuName(BaseValue);
+        /// <summary>
+        /// Automatic clusters are optimized to run most production workloads with configuration that follows AKS best practices and recommendations for cluster and workload setup, scalability, and security. For more details about Automatic clusters see aka.ms/aks/automatic.
+        /// Serialized Name: ManagedClusterSKUName.Automatic
+        /// </summary>
+        public static ManagedClusterSkuName Automatic { get; } = new ManagedClusterSkuName(AutomaticValue);
         /// <summary> Determines if two <see cref="ManagedClusterSkuName"/> values are the same. </summary>
         public static bool operator ==(ManagedClusterSkuName left, ManagedClusterSkuName right) => left.Equals(right);
         /// <summary> Determines if two <see cref="ManagedClusterSkuName"/> values are not the same. </summary>
         public static bool operator !=(ManagedClusterSkuName left, ManagedClusterSkuName right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="ManagedClusterSkuName"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="ManagedClusterSkuName"/>. </summary>
         public static implicit operator ManagedClusterSkuName(string value) => new ManagedClusterSkuName(value);
 
         /// <inheritdoc />
@@ -41,7 +53,7 @@ namespace Azure.ResourceManager.ContainerService.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

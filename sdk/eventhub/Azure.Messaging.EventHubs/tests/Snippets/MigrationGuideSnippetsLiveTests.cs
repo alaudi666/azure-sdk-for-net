@@ -18,10 +18,6 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
     [Category(TestCategory.DisallowVisualStudioLiveUnitTesting)]
     public class MigrationGuideSnippetsLiveTests
     {
-        /// <summary>
-        ///   Performs basic smoke test validation of the contained snippet.
-        /// </summary>
-        ///
         [Test]
         public void CreateWithConnectionString()
         {
@@ -55,9 +51,9 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
             var credential = new DefaultAzureCredential();
 #else
-            var  fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
-            var  eventHubName = "fake";
-            var  credential = EventHubsTestEnvironment.Instance.Credential;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
+            var eventHubName = "fake";
+            var credential = EventHubsTestEnvironment.Instance.Credential;
 #endif
             var consumerGroup = EventHubConsumerClient.DefaultConsumerGroupName;
 

@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Consumption.Models;
@@ -37,6 +36,17 @@ namespace Azure.ResourceManager.Consumption
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
+        internal RequestUriBuilder CreateListRequestUri(string scope)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/", false);
+            uri.AppendPath(scope, false);
+            uri.AppendPath("/providers/Microsoft.Consumption/budgets", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
         internal HttpMessage CreateListRequest(string scope)
         {
             var message = _pipeline.CreateMessage();
@@ -55,7 +65,7 @@ namespace Azure.ResourceManager.Consumption
         }
 
         /// <summary> Lists all budgets for the defined scope. </summary>
-        /// <param name="scope"> The scope associated with budget operations. This includes &apos;/subscriptions/{subscriptionId}/&apos; for subscription scope, &apos;/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}&apos; for resourceGroup scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}&apos; for Billing Account scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}&apos; for Department scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}&apos; for EnrollmentAccount scope, &apos;/providers/Microsoft.Management/managementGroups/{managementGroupId}&apos; for Management Group scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}&apos; for billingProfile scope, &apos;providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}&apos; for invoiceSection scope. </param>
+        /// <param name="scope"> The scope associated with budget operations. This includes '/subscriptions/{subscriptionId}/' for subscription scope, '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}' for resourceGroup scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}' for Billing Account scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}' for Department scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}' for EnrollmentAccount scope, '/providers/Microsoft.Management/managementGroups/{managementGroupId}' for Management Group scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}' for billingProfile scope, 'providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}' for invoiceSection scope. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="scope"/> is null. </exception>
         public async Task<Response<BudgetsListResult>> ListAsync(string scope, CancellationToken cancellationToken = default)
@@ -69,7 +79,7 @@ namespace Azure.ResourceManager.Consumption
                 case 200:
                     {
                         BudgetsListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = BudgetsListResult.DeserializeBudgetsListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -79,7 +89,7 @@ namespace Azure.ResourceManager.Consumption
         }
 
         /// <summary> Lists all budgets for the defined scope. </summary>
-        /// <param name="scope"> The scope associated with budget operations. This includes &apos;/subscriptions/{subscriptionId}/&apos; for subscription scope, &apos;/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}&apos; for resourceGroup scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}&apos; for Billing Account scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}&apos; for Department scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}&apos; for EnrollmentAccount scope, &apos;/providers/Microsoft.Management/managementGroups/{managementGroupId}&apos; for Management Group scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}&apos; for billingProfile scope, &apos;providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}&apos; for invoiceSection scope. </param>
+        /// <param name="scope"> The scope associated with budget operations. This includes '/subscriptions/{subscriptionId}/' for subscription scope, '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}' for resourceGroup scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}' for Billing Account scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}' for Department scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}' for EnrollmentAccount scope, '/providers/Microsoft.Management/managementGroups/{managementGroupId}' for Management Group scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}' for billingProfile scope, 'providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}' for invoiceSection scope. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="scope"/> is null. </exception>
         public Response<BudgetsListResult> List(string scope, CancellationToken cancellationToken = default)
@@ -93,13 +103,25 @@ namespace Azure.ResourceManager.Consumption
                 case 200:
                     {
                         BudgetsListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = BudgetsListResult.DeserializeBudgetsListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetRequestUri(string scope, string budgetName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/", false);
+            uri.AppendPath(scope, false);
+            uri.AppendPath("/providers/Microsoft.Consumption/budgets/", false);
+            uri.AppendPath(budgetName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetRequest(string scope, string budgetName)
@@ -121,7 +143,7 @@ namespace Azure.ResourceManager.Consumption
         }
 
         /// <summary> Gets the budget for the scope by budget name. </summary>
-        /// <param name="scope"> The scope associated with budget operations. This includes &apos;/subscriptions/{subscriptionId}/&apos; for subscription scope, &apos;/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}&apos; for resourceGroup scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}&apos; for Billing Account scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}&apos; for Department scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}&apos; for EnrollmentAccount scope, &apos;/providers/Microsoft.Management/managementGroups/{managementGroupId}&apos; for Management Group scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}&apos; for billingProfile scope, &apos;providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}&apos; for invoiceSection scope. </param>
+        /// <param name="scope"> The scope associated with budget operations. This includes '/subscriptions/{subscriptionId}/' for subscription scope, '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}' for resourceGroup scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}' for Billing Account scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}' for Department scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}' for EnrollmentAccount scope, '/providers/Microsoft.Management/managementGroups/{managementGroupId}' for Management Group scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}' for billingProfile scope, 'providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}' for invoiceSection scope. </param>
         /// <param name="budgetName"> Budget Name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="scope"/> or <paramref name="budgetName"/> is null. </exception>
@@ -138,7 +160,7 @@ namespace Azure.ResourceManager.Consumption
                 case 200:
                     {
                         ConsumptionBudgetData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ConsumptionBudgetData.DeserializeConsumptionBudgetData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -150,7 +172,7 @@ namespace Azure.ResourceManager.Consumption
         }
 
         /// <summary> Gets the budget for the scope by budget name. </summary>
-        /// <param name="scope"> The scope associated with budget operations. This includes &apos;/subscriptions/{subscriptionId}/&apos; for subscription scope, &apos;/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}&apos; for resourceGroup scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}&apos; for Billing Account scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}&apos; for Department scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}&apos; for EnrollmentAccount scope, &apos;/providers/Microsoft.Management/managementGroups/{managementGroupId}&apos; for Management Group scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}&apos; for billingProfile scope, &apos;providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}&apos; for invoiceSection scope. </param>
+        /// <param name="scope"> The scope associated with budget operations. This includes '/subscriptions/{subscriptionId}/' for subscription scope, '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}' for resourceGroup scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}' for Billing Account scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}' for Department scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}' for EnrollmentAccount scope, '/providers/Microsoft.Management/managementGroups/{managementGroupId}' for Management Group scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}' for billingProfile scope, 'providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}' for invoiceSection scope. </param>
         /// <param name="budgetName"> Budget Name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="scope"/> or <paramref name="budgetName"/> is null. </exception>
@@ -167,7 +189,7 @@ namespace Azure.ResourceManager.Consumption
                 case 200:
                     {
                         ConsumptionBudgetData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ConsumptionBudgetData.DeserializeConsumptionBudgetData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -176,6 +198,18 @@ namespace Azure.ResourceManager.Consumption
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateCreateOrUpdateRequestUri(string scope, string budgetName, ConsumptionBudgetData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/", false);
+            uri.AppendPath(scope, false);
+            uri.AppendPath("/providers/Microsoft.Consumption/budgets/", false);
+            uri.AppendPath(budgetName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateCreateOrUpdateRequest(string scope, string budgetName, ConsumptionBudgetData data)
@@ -194,14 +228,14 @@ namespace Azure.ResourceManager.Consumption
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> The operation to create or update a budget. You can optionally provide an eTag if desired as a form of concurrency control. To obtain the latest eTag for a given budget, perform a get operation prior to your put operation. </summary>
-        /// <param name="scope"> The scope associated with budget operations. This includes &apos;/subscriptions/{subscriptionId}/&apos; for subscription scope, &apos;/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}&apos; for resourceGroup scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}&apos; for Billing Account scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}&apos; for Department scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}&apos; for EnrollmentAccount scope, &apos;/providers/Microsoft.Management/managementGroups/{managementGroupId}&apos; for Management Group scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}&apos; for billingProfile scope, &apos;providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}&apos; for invoiceSection scope. </param>
+        /// <param name="scope"> The scope associated with budget operations. This includes '/subscriptions/{subscriptionId}/' for subscription scope, '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}' for resourceGroup scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}' for Billing Account scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}' for Department scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}' for EnrollmentAccount scope, '/providers/Microsoft.Management/managementGroups/{managementGroupId}' for Management Group scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}' for billingProfile scope, 'providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}' for invoiceSection scope. </param>
         /// <param name="budgetName"> Budget Name. </param>
         /// <param name="data"> Parameters supplied to the Create Budget operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -221,7 +255,7 @@ namespace Azure.ResourceManager.Consumption
                 case 201:
                     {
                         ConsumptionBudgetData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ConsumptionBudgetData.DeserializeConsumptionBudgetData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -231,7 +265,7 @@ namespace Azure.ResourceManager.Consumption
         }
 
         /// <summary> The operation to create or update a budget. You can optionally provide an eTag if desired as a form of concurrency control. To obtain the latest eTag for a given budget, perform a get operation prior to your put operation. </summary>
-        /// <param name="scope"> The scope associated with budget operations. This includes &apos;/subscriptions/{subscriptionId}/&apos; for subscription scope, &apos;/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}&apos; for resourceGroup scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}&apos; for Billing Account scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}&apos; for Department scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}&apos; for EnrollmentAccount scope, &apos;/providers/Microsoft.Management/managementGroups/{managementGroupId}&apos; for Management Group scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}&apos; for billingProfile scope, &apos;providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}&apos; for invoiceSection scope. </param>
+        /// <param name="scope"> The scope associated with budget operations. This includes '/subscriptions/{subscriptionId}/' for subscription scope, '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}' for resourceGroup scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}' for Billing Account scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}' for Department scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}' for EnrollmentAccount scope, '/providers/Microsoft.Management/managementGroups/{managementGroupId}' for Management Group scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}' for billingProfile scope, 'providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}' for invoiceSection scope. </param>
         /// <param name="budgetName"> Budget Name. </param>
         /// <param name="data"> Parameters supplied to the Create Budget operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -251,13 +285,25 @@ namespace Azure.ResourceManager.Consumption
                 case 201:
                     {
                         ConsumptionBudgetData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ConsumptionBudgetData.DeserializeConsumptionBudgetData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateDeleteRequestUri(string scope, string budgetName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/", false);
+            uri.AppendPath(scope, false);
+            uri.AppendPath("/providers/Microsoft.Consumption/budgets/", false);
+            uri.AppendPath(budgetName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateDeleteRequest(string scope, string budgetName)
@@ -279,7 +325,7 @@ namespace Azure.ResourceManager.Consumption
         }
 
         /// <summary> The operation to delete a budget. </summary>
-        /// <param name="scope"> The scope associated with budget operations. This includes &apos;/subscriptions/{subscriptionId}/&apos; for subscription scope, &apos;/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}&apos; for resourceGroup scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}&apos; for Billing Account scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}&apos; for Department scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}&apos; for EnrollmentAccount scope, &apos;/providers/Microsoft.Management/managementGroups/{managementGroupId}&apos; for Management Group scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}&apos; for billingProfile scope, &apos;providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}&apos; for invoiceSection scope. </param>
+        /// <param name="scope"> The scope associated with budget operations. This includes '/subscriptions/{subscriptionId}/' for subscription scope, '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}' for resourceGroup scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}' for Billing Account scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}' for Department scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}' for EnrollmentAccount scope, '/providers/Microsoft.Management/managementGroups/{managementGroupId}' for Management Group scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}' for billingProfile scope, 'providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}' for invoiceSection scope. </param>
         /// <param name="budgetName"> Budget Name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="scope"/> or <paramref name="budgetName"/> is null. </exception>
@@ -301,7 +347,7 @@ namespace Azure.ResourceManager.Consumption
         }
 
         /// <summary> The operation to delete a budget. </summary>
-        /// <param name="scope"> The scope associated with budget operations. This includes &apos;/subscriptions/{subscriptionId}/&apos; for subscription scope, &apos;/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}&apos; for resourceGroup scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}&apos; for Billing Account scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}&apos; for Department scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}&apos; for EnrollmentAccount scope, &apos;/providers/Microsoft.Management/managementGroups/{managementGroupId}&apos; for Management Group scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}&apos; for billingProfile scope, &apos;providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}&apos; for invoiceSection scope. </param>
+        /// <param name="scope"> The scope associated with budget operations. This includes '/subscriptions/{subscriptionId}/' for subscription scope, '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}' for resourceGroup scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}' for Billing Account scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}' for Department scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}' for EnrollmentAccount scope, '/providers/Microsoft.Management/managementGroups/{managementGroupId}' for Management Group scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}' for billingProfile scope, 'providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}' for invoiceSection scope. </param>
         /// <param name="budgetName"> Budget Name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="scope"/> or <paramref name="budgetName"/> is null. </exception>
@@ -322,6 +368,14 @@ namespace Azure.ResourceManager.Consumption
             }
         }
 
+        internal RequestUriBuilder CreateListNextPageRequestUri(string nextLink, string scope)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
+        }
+
         internal HttpMessage CreateListNextPageRequest(string nextLink, string scope)
         {
             var message = _pipeline.CreateMessage();
@@ -338,7 +392,7 @@ namespace Azure.ResourceManager.Consumption
 
         /// <summary> Lists all budgets for the defined scope. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="scope"> The scope associated with budget operations. This includes &apos;/subscriptions/{subscriptionId}/&apos; for subscription scope, &apos;/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}&apos; for resourceGroup scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}&apos; for Billing Account scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}&apos; for Department scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}&apos; for EnrollmentAccount scope, &apos;/providers/Microsoft.Management/managementGroups/{managementGroupId}&apos; for Management Group scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}&apos; for billingProfile scope, &apos;providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}&apos; for invoiceSection scope. </param>
+        /// <param name="scope"> The scope associated with budget operations. This includes '/subscriptions/{subscriptionId}/' for subscription scope, '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}' for resourceGroup scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}' for Billing Account scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}' for Department scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}' for EnrollmentAccount scope, '/providers/Microsoft.Management/managementGroups/{managementGroupId}' for Management Group scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}' for billingProfile scope, 'providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}' for invoiceSection scope. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="scope"/> is null. </exception>
         public async Task<Response<BudgetsListResult>> ListNextPageAsync(string nextLink, string scope, CancellationToken cancellationToken = default)
@@ -353,7 +407,7 @@ namespace Azure.ResourceManager.Consumption
                 case 200:
                     {
                         BudgetsListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = BudgetsListResult.DeserializeBudgetsListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -364,7 +418,7 @@ namespace Azure.ResourceManager.Consumption
 
         /// <summary> Lists all budgets for the defined scope. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="scope"> The scope associated with budget operations. This includes &apos;/subscriptions/{subscriptionId}/&apos; for subscription scope, &apos;/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}&apos; for resourceGroup scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}&apos; for Billing Account scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}&apos; for Department scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}&apos; for EnrollmentAccount scope, &apos;/providers/Microsoft.Management/managementGroups/{managementGroupId}&apos; for Management Group scope, &apos;/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}&apos; for billingProfile scope, &apos;providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}&apos; for invoiceSection scope. </param>
+        /// <param name="scope"> The scope associated with budget operations. This includes '/subscriptions/{subscriptionId}/' for subscription scope, '/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}' for resourceGroup scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}' for Billing Account scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/departments/{departmentId}' for Department scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/enrollmentAccounts/{enrollmentAccountId}' for EnrollmentAccount scope, '/providers/Microsoft.Management/managementGroups/{managementGroupId}' for Management Group scope, '/providers/Microsoft.Billing/billingAccounts/{billingAccountId}/billingProfiles/{billingProfileId}' for billingProfile scope, 'providers/Microsoft.Billing/billingAccounts/{billingAccountId}/invoiceSections/{invoiceSectionId}' for invoiceSection scope. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="scope"/> is null. </exception>
         public Response<BudgetsListResult> ListNextPage(string nextLink, string scope, CancellationToken cancellationToken = default)
@@ -379,7 +433,7 @@ namespace Azure.ResourceManager.Consumption
                 case 200:
                     {
                         BudgetsListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = BudgetsListResult.DeserializeBudgetsListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

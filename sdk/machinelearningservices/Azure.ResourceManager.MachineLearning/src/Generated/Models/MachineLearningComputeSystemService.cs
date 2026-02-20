@@ -5,53 +5,72 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// A system service running on a compute.
-    /// Serialized Name: SystemService
-    /// </summary>
+    /// <summary> A system service running on a compute. </summary>
     public partial class MachineLearningComputeSystemService
     {
-        /// <summary> Initializes a new instance of MachineLearningComputeSystemService. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="MachineLearningComputeSystemService"/>. </summary>
         internal MachineLearningComputeSystemService()
         {
         }
 
-        /// <summary> Initializes a new instance of MachineLearningComputeSystemService. </summary>
-        /// <param name="systemServiceType">
-        /// The type of this system service.
-        /// Serialized Name: SystemService.systemServiceType
-        /// </param>
-        /// <param name="publicIPAddress">
-        /// Public IP address
-        /// Serialized Name: SystemService.publicIpAddress
-        /// </param>
-        /// <param name="version">
-        /// The version for this type.
-        /// Serialized Name: SystemService.version
-        /// </param>
-        internal MachineLearningComputeSystemService(string systemServiceType, string publicIPAddress, string version)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningComputeSystemService"/>. </summary>
+        /// <param name="systemServiceType"> The type of this system service. </param>
+        /// <param name="publicIPAddress"> Public IP address. </param>
+        /// <param name="version"> The version for this type. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal MachineLearningComputeSystemService(string systemServiceType, string publicIPAddress, string version, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             SystemServiceType = systemServiceType;
             PublicIPAddress = publicIPAddress;
             Version = version;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary>
-        /// The type of this system service.
-        /// Serialized Name: SystemService.systemServiceType
-        /// </summary>
+        /// <summary> The type of this system service. </summary>
+        [WirePath("systemServiceType")]
         public string SystemServiceType { get; }
-        /// <summary>
-        /// Public IP address
-        /// Serialized Name: SystemService.publicIpAddress
-        /// </summary>
+        /// <summary> Public IP address. </summary>
+        [WirePath("publicIpAddress")]
         public string PublicIPAddress { get; }
-        /// <summary>
-        /// The version for this type.
-        /// Serialized Name: SystemService.version
-        /// </summary>
+        /// <summary> The version for this type. </summary>
+        [WirePath("version")]
         public string Version { get; }
     }
 }

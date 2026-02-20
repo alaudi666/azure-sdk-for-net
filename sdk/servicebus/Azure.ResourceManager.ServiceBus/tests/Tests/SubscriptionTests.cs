@@ -3,15 +3,14 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NUnit.Framework;
-using Azure.ResourceManager.Resources;
 using Azure.Core.TestFramework;
+using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.ServiceBus.Models;
-using Azure.ResourceManager.ServiceBus.Tests.Helpers;
+using NUnit.Framework;
 
 namespace Azure.ResourceManager.ServiceBus.Tests
 {
-    public class SubscriptionTests : ServiceBusTestBase
+    public class SubscriptionTests : ServiceBusManagementTestBase
     {
         public SubscriptionTests(bool isAsync) : base(isAsync)
         {
@@ -65,7 +64,7 @@ namespace Azure.ResourceManager.ServiceBus.Tests
 
             //create a topic for autoforward
             string topicName1 = Recording.GenerateAssetName("topic");
-            ServiceBusTopicResource topic1 = (await topicCollection.CreateOrUpdateAsync(WaitUntil.Completed, topicName1, new ServiceBusTopicData() { EnablePartitioning = true})).Value;
+            ServiceBusTopicResource topic1 = (await topicCollection.CreateOrUpdateAsync(WaitUntil.Completed, topicName1, new ServiceBusTopicData() { EnablePartitioning = true })).Value;
             Assert.NotNull(topic1);
             Assert.AreEqual(topic1.Id.Name, topicName1);
 

@@ -5,24 +5,41 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.StorageSync.Models
 {
     /// <summary> Post Backup Response. </summary>
     public partial class CloudEndpointPostBackupResult
     {
-        /// <summary> Initializes a new instance of CloudEndpointPostBackupResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CloudEndpointPostBackupResult"/>. </summary>
         internal CloudEndpointPostBackupResult()
         {
         }
 
-        /// <summary> Initializes a new instance of CloudEndpointPostBackupResult. </summary>
-        /// <param name="cloudEndpointName"> cloud endpoint Name. </param>
-        internal CloudEndpointPostBackupResult(string cloudEndpointName)
+        /// <summary> Initializes a new instance of <see cref="CloudEndpointPostBackupResult"/>. </summary>
+        /// <param name="backupMetadata"> Post Backup Response Properties. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CloudEndpointPostBackupResult(PostBackupResponseProperties backupMetadata, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            CloudEndpointName = cloudEndpointName;
+            BackupMetadata = backupMetadata;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
+        /// <summary> Post Backup Response Properties. </summary>
+        internal PostBackupResponseProperties BackupMetadata { get; }
+
         /// <summary> cloud endpoint Name. </summary>
-        public string CloudEndpointName { get; }
+        public string CloudEndpointName
+        {
+            get
+            {
+                return BackupMetadata.CloudEndpointName;
+            }
+        }
     }
 }

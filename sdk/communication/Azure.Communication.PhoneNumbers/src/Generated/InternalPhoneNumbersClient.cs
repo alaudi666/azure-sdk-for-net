@@ -6,9 +6,10 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
 
@@ -32,11 +33,167 @@ namespace Azure.Communication.PhoneNumbers
         /// <param name="endpoint"> The communication resource, for example https://resourcename.communication.azure.com. </param>
         /// <param name="apiVersion"> Api Version. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="clientDiagnostics"/>, <paramref name="pipeline"/>, <paramref name="endpoint"/> or <paramref name="apiVersion"/> is null. </exception>
-        internal InternalPhoneNumbersClient(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, string endpoint, string apiVersion = "2022-12-01")
+        internal InternalPhoneNumbersClient(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, string endpoint, string apiVersion = "2025-06-01")
         {
             RestClient = new InternalPhoneNumbersRestClient(clientDiagnostics, pipeline, endpoint, apiVersion);
             _clientDiagnostics = clientDiagnostics;
             _pipeline = pipeline;
+        }
+
+        /// <summary> Browses for available phone numbers to purchase. </summary>
+        /// <param name="countryCode"> The ISO 3166-2 country code, e.g. US. </param>
+        /// <param name="phoneNumbersBrowseOptions"> An object defining the criteria to browse for available phone numbers. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <remarks> Browses for available phone numbers to purchase. The response will be a randomized list of phone numbers available to purchase matching the browsing criteria. This operation is not paginated. Since the results are randomized, repeating the same request will not guarantee the same results. </remarks>
+        public virtual async Task<Response<PhoneNumbersBrowseResult>> BrowseAvailableNumbersAsync(string countryCode, PhoneNumbersBrowseOptions phoneNumbersBrowseOptions, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.BrowseAvailableNumbers");
+            scope.Start();
+            try
+            {
+                return await RestClient.BrowseAvailableNumbersAsync(countryCode, phoneNumbersBrowseOptions, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary> Browses for available phone numbers to purchase. </summary>
+        /// <param name="countryCode"> The ISO 3166-2 country code, e.g. US. </param>
+        /// <param name="phoneNumbersBrowseOptions"> An object defining the criteria to browse for available phone numbers. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <remarks> Browses for available phone numbers to purchase. The response will be a randomized list of phone numbers available to purchase matching the browsing criteria. This operation is not paginated. Since the results are randomized, repeating the same request will not guarantee the same results. </remarks>
+        public virtual Response<PhoneNumbersBrowseResult> BrowseAvailableNumbers(string countryCode, PhoneNumbersBrowseOptions phoneNumbersBrowseOptions, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.BrowseAvailableNumbers");
+            scope.Start();
+            try
+            {
+                return RestClient.BrowseAvailableNumbers(countryCode, phoneNumbersBrowseOptions, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary> Creates or updates a reservation by its ID. </summary>
+        /// <param name="reservationId"> The id of the reservation. </param>
+        /// <param name="phoneNumbers"> A dictionary containing the reservation phone numbers. The key is the ID of the phone number (digits only) and values are AvailablePhoneNumber objects. Not populated when retrieving PhoneNumbersReservation collections. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <remarks> Adds and removes phone numbers from the reservation with the given ID. The response will be the updated state of the reservation. Phone numbers can be reserved by including them in the payload. If a number is already in the reservation, it will be ignored. To remove a phone number, set it explicitly to null in the request payload. This operation is idempotent. If a reservation with the same ID already exists, it will be updated, otherwise a new one is created. Only reservations with 'active' status can be updated. Updating a reservation will extend the expiration time of the reservation to 15 minutes after the last change, up to a maximum of 2 hours from creation time. Partial success is possible, in which case the response will have a 207 status code. </remarks>
+        public virtual async Task<Response<PhoneNumbersReservation>> CreateOrUpdateReservationAsync(Guid reservationId, IDictionary<string, AvailablePhoneNumber> phoneNumbers = null, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.CreateOrUpdateReservation");
+            scope.Start();
+            try
+            {
+                return await RestClient.CreateOrUpdateReservationAsync(reservationId, phoneNumbers, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary> Creates or updates a reservation by its ID. </summary>
+        /// <param name="reservationId"> The id of the reservation. </param>
+        /// <param name="phoneNumbers"> A dictionary containing the reservation phone numbers. The key is the ID of the phone number (digits only) and values are AvailablePhoneNumber objects. Not populated when retrieving PhoneNumbersReservation collections. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <remarks> Adds and removes phone numbers from the reservation with the given ID. The response will be the updated state of the reservation. Phone numbers can be reserved by including them in the payload. If a number is already in the reservation, it will be ignored. To remove a phone number, set it explicitly to null in the request payload. This operation is idempotent. If a reservation with the same ID already exists, it will be updated, otherwise a new one is created. Only reservations with 'active' status can be updated. Updating a reservation will extend the expiration time of the reservation to 15 minutes after the last change, up to a maximum of 2 hours from creation time. Partial success is possible, in which case the response will have a 207 status code. </remarks>
+        public virtual Response<PhoneNumbersReservation> CreateOrUpdateReservation(Guid reservationId, IDictionary<string, AvailablePhoneNumber> phoneNumbers = null, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.CreateOrUpdateReservation");
+            scope.Start();
+            try
+            {
+                return RestClient.CreateOrUpdateReservation(reservationId, phoneNumbers, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary> Gets a reservation by its ID. </summary>
+        /// <param name="reservationId"> The id of the reservation. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <remarks> Retrieves the reservation with the given ID, including all of the phone numbers associated with it. </remarks>
+        public virtual async Task<Response<PhoneNumbersReservation>> GetReservationAsync(Guid reservationId, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.GetReservation");
+            scope.Start();
+            try
+            {
+                return await RestClient.GetReservationAsync(reservationId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary> Gets a reservation by its ID. </summary>
+        /// <param name="reservationId"> The id of the reservation. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <remarks> Retrieves the reservation with the given ID, including all of the phone numbers associated with it. </remarks>
+        public virtual Response<PhoneNumbersReservation> GetReservation(Guid reservationId, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.GetReservation");
+            scope.Start();
+            try
+            {
+                return RestClient.GetReservation(reservationId, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary> Deletes a reservation by its ID. </summary>
+        /// <param name="reservationId"> The id of the reservation. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <remarks> Deletes the reservation with the given ID. Any phone number in the reservation will be released and made available for others to purchase. Only reservations with 'active' status can be deleted. </remarks>
+        public virtual async Task<Response> DeleteReservationAsync(Guid reservationId, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.DeleteReservation");
+            scope.Start();
+            try
+            {
+                return await RestClient.DeleteReservationAsync(reservationId, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary> Deletes a reservation by its ID. </summary>
+        /// <param name="reservationId"> The id of the reservation. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <remarks> Deletes the reservation with the given ID. Any phone number in the reservation will be released and made available for others to purchase. Only reservations with 'active' status can be deleted. </remarks>
+        public virtual Response DeleteReservation(Guid reservationId, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.DeleteReservation");
+            scope.Start();
+            try
+            {
+                return RestClient.DeleteReservation(reservationId, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
         }
 
         /// <summary> Gets a phone number search result by search id. </summary>
@@ -67,78 +224,6 @@ namespace Azure.Communication.PhoneNumbers
             try
             {
                 return RestClient.GetSearchResult(searchId, cancellationToken);
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
-        }
-
-        /// <summary> Gets an operation by its id. </summary>
-        /// <param name="operationId"> The id of the operation. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public virtual async Task<Response<PhoneNumberOperation>> GetOperationAsync(string operationId, CancellationToken cancellationToken = default)
-        {
-            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.GetOperation");
-            scope.Start();
-            try
-            {
-                return await RestClient.GetOperationAsync(operationId, cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
-        }
-
-        /// <summary> Gets an operation by its id. </summary>
-        /// <param name="operationId"> The id of the operation. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public virtual Response<PhoneNumberOperation> GetOperation(string operationId, CancellationToken cancellationToken = default)
-        {
-            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.GetOperation");
-            scope.Start();
-            try
-            {
-                return RestClient.GetOperation(operationId, cancellationToken);
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
-        }
-
-        /// <summary> Cancels an operation by its id. </summary>
-        /// <param name="operationId"> The id of the operation. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public virtual async Task<Response> CancelOperationAsync(string operationId, CancellationToken cancellationToken = default)
-        {
-            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.CancelOperation");
-            scope.Start();
-            try
-            {
-                return await RestClient.CancelOperationAsync(operationId, cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
-        }
-
-        /// <summary> Cancels an operation by its id. </summary>
-        /// <param name="operationId"> The id of the operation. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public virtual Response CancelOperation(string operationId, CancellationToken cancellationToken = default)
-        {
-            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.CancelOperation");
-            scope.Start();
-            try
-            {
-                return RestClient.CancelOperation(operationId, cancellationToken);
             }
             catch (Exception e)
             {
@@ -183,186 +268,106 @@ namespace Azure.Communication.PhoneNumbers
             }
         }
 
+        /// <summary> Searches for number format and operator information for a given list of phone numbers. </summary>
+        /// <param name="phoneNumbers"> Phone number(s) whose operator information is being requested. </param>
+        /// <param name="options"> Represents options to modify a search request for operator information. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        public virtual async Task<Response<OperatorInformationResult>> OperatorInformationSearchAsync(IEnumerable<string> phoneNumbers, OperatorInformationOptions options = null, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.OperatorInformationSearch");
+            scope.Start();
+            try
+            {
+                return await RestClient.OperatorInformationSearchAsync(phoneNumbers, options, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary> Searches for number format and operator information for a given list of phone numbers. </summary>
+        /// <param name="phoneNumbers"> Phone number(s) whose operator information is being requested. </param>
+        /// <param name="options"> Represents options to modify a search request for operator information. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        public virtual Response<OperatorInformationResult> OperatorInformationSearch(IEnumerable<string> phoneNumbers, OperatorInformationOptions options = null, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.OperatorInformationSearch");
+            scope.Start();
+            try
+            {
+                return RestClient.OperatorInformationSearch(phoneNumbers, options, cancellationToken);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
         /// <summary> Gets the list of available area codes. </summary>
         /// <param name="twoLetterIsoCountryName"> The ISO 3166-2 country code, e.g. US. </param>
-        /// <param name="phoneNumberType"> Filter by numberType, e.g. Geographic, TollFree. </param>
+        /// <param name="phoneNumberType"> Filter by numberType, e.g. Geographic, TollFree, Mobile. </param>
         /// <param name="skip"> An optional parameter for how many entries to skip, for pagination purposes. The default value is 0. </param>
         /// <param name="maxPageSize"> An optional parameter for how many entries to return, for pagination purposes. The default value is 100. </param>
-        /// <param name="assignmentType"> Filter by assignmentType, e.g. User, Application. </param>
+        /// <param name="assignmentType"> Filter by assignmentType, e.g. Person, Application. </param>
         /// <param name="locality"> The name of locality or town in which to search for the area code. This is required if the number type is Geographic. </param>
         /// <param name="administrativeDivision"> The name of the state or province in which to search for the area code. </param>
-        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. &apos;en-US&apos;. </param>
+        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. 'en-US'. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="twoLetterIsoCountryName"/> is null. </exception>
         public virtual AsyncPageable<PhoneNumberAreaCode> ListAreaCodesAsync(string twoLetterIsoCountryName, PhoneNumberType phoneNumberType, int? skip = null, int? maxPageSize = null, PhoneNumberAssignmentType? assignmentType = null, string locality = null, string administrativeDivision = null, string acceptLanguage = null, CancellationToken cancellationToken = default)
         {
-            if (twoLetterIsoCountryName == null)
-            {
-                throw new ArgumentNullException(nameof(twoLetterIsoCountryName));
-            }
+            Argument.AssertNotNullOrEmpty(twoLetterIsoCountryName, nameof(twoLetterIsoCountryName));
 
-            async Task<Page<PhoneNumberAreaCode>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListAreaCodes");
-                scope.Start();
-                try
-                {
-                    var response = await RestClient.ListAreaCodesAsync(twoLetterIsoCountryName, phoneNumberType, skip, maxPageSize, assignmentType, locality, administrativeDivision, acceptLanguage, cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.AreaCodes, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<PhoneNumberAreaCode>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListAreaCodes");
-                scope.Start();
-                try
-                {
-                    var response = await RestClient.ListAreaCodesNextPageAsync(nextLink, twoLetterIsoCountryName, phoneNumberType, skip, maxPageSize, assignmentType, locality, administrativeDivision, acceptLanguage, cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.AreaCodes, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => RestClient.CreateListAreaCodesRequest(twoLetterIsoCountryName, phoneNumberType, skip, maxPageSize, assignmentType, locality, administrativeDivision, acceptLanguage);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => RestClient.CreateListAreaCodesNextPageRequest(nextLink, twoLetterIsoCountryName, phoneNumberType, skip, maxPageSize, assignmentType, locality, administrativeDivision, acceptLanguage);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, PhoneNumberAreaCode.DeserializePhoneNumberAreaCode, _clientDiagnostics, _pipeline, "InternalPhoneNumbersClient.ListAreaCodes", "areaCodes", "nextLink", cancellationToken);
         }
 
         /// <summary> Gets the list of available area codes. </summary>
         /// <param name="twoLetterIsoCountryName"> The ISO 3166-2 country code, e.g. US. </param>
-        /// <param name="phoneNumberType"> Filter by numberType, e.g. Geographic, TollFree. </param>
+        /// <param name="phoneNumberType"> Filter by numberType, e.g. Geographic, TollFree, Mobile. </param>
         /// <param name="skip"> An optional parameter for how many entries to skip, for pagination purposes. The default value is 0. </param>
         /// <param name="maxPageSize"> An optional parameter for how many entries to return, for pagination purposes. The default value is 100. </param>
-        /// <param name="assignmentType"> Filter by assignmentType, e.g. User, Application. </param>
+        /// <param name="assignmentType"> Filter by assignmentType, e.g. Person, Application. </param>
         /// <param name="locality"> The name of locality or town in which to search for the area code. This is required if the number type is Geographic. </param>
         /// <param name="administrativeDivision"> The name of the state or province in which to search for the area code. </param>
-        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. &apos;en-US&apos;. </param>
+        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. 'en-US'. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="twoLetterIsoCountryName"/> is null. </exception>
         public virtual Pageable<PhoneNumberAreaCode> ListAreaCodes(string twoLetterIsoCountryName, PhoneNumberType phoneNumberType, int? skip = null, int? maxPageSize = null, PhoneNumberAssignmentType? assignmentType = null, string locality = null, string administrativeDivision = null, string acceptLanguage = null, CancellationToken cancellationToken = default)
         {
-            if (twoLetterIsoCountryName == null)
-            {
-                throw new ArgumentNullException(nameof(twoLetterIsoCountryName));
-            }
+            Argument.AssertNotNullOrEmpty(twoLetterIsoCountryName, nameof(twoLetterIsoCountryName));
 
-            Page<PhoneNumberAreaCode> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListAreaCodes");
-                scope.Start();
-                try
-                {
-                    var response = RestClient.ListAreaCodes(twoLetterIsoCountryName, phoneNumberType, skip, maxPageSize, assignmentType, locality, administrativeDivision, acceptLanguage, cancellationToken);
-                    return Page.FromValues(response.Value.AreaCodes, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<PhoneNumberAreaCode> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListAreaCodes");
-                scope.Start();
-                try
-                {
-                    var response = RestClient.ListAreaCodesNextPage(nextLink, twoLetterIsoCountryName, phoneNumberType, skip, maxPageSize, assignmentType, locality, administrativeDivision, acceptLanguage, cancellationToken);
-                    return Page.FromValues(response.Value.AreaCodes, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => RestClient.CreateListAreaCodesRequest(twoLetterIsoCountryName, phoneNumberType, skip, maxPageSize, assignmentType, locality, administrativeDivision, acceptLanguage);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => RestClient.CreateListAreaCodesNextPageRequest(nextLink, twoLetterIsoCountryName, phoneNumberType, skip, maxPageSize, assignmentType, locality, administrativeDivision, acceptLanguage);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, PhoneNumberAreaCode.DeserializePhoneNumberAreaCode, _clientDiagnostics, _pipeline, "InternalPhoneNumbersClient.ListAreaCodes", "areaCodes", "nextLink", cancellationToken);
         }
 
         /// <summary> Gets the list of supported countries. </summary>
         /// <param name="skip"> An optional parameter for how many entries to skip, for pagination purposes. The default value is 0. </param>
         /// <param name="maxPageSize"> An optional parameter for how many entries to return, for pagination purposes. The default value is 100. </param>
-        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. &apos;en-US&apos;. </param>
+        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. 'en-US'. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual AsyncPageable<PhoneNumberCountry> ListAvailableCountriesAsync(int? skip = null, int? maxPageSize = null, string acceptLanguage = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<PhoneNumberCountry>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListAvailableCountries");
-                scope.Start();
-                try
-                {
-                    var response = await RestClient.ListAvailableCountriesAsync(skip, maxPageSize, acceptLanguage, cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Countries, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<PhoneNumberCountry>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListAvailableCountries");
-                scope.Start();
-                try
-                {
-                    var response = await RestClient.ListAvailableCountriesNextPageAsync(nextLink, skip, maxPageSize, acceptLanguage, cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Countries, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => RestClient.CreateListAvailableCountriesRequest(skip, maxPageSize, acceptLanguage);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => RestClient.CreateListAvailableCountriesNextPageRequest(nextLink, skip, maxPageSize, acceptLanguage);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, PhoneNumberCountry.DeserializePhoneNumberCountry, _clientDiagnostics, _pipeline, "InternalPhoneNumbersClient.ListAvailableCountries", "countries", "nextLink", cancellationToken);
         }
 
         /// <summary> Gets the list of supported countries. </summary>
         /// <param name="skip"> An optional parameter for how many entries to skip, for pagination purposes. The default value is 0. </param>
         /// <param name="maxPageSize"> An optional parameter for how many entries to return, for pagination purposes. The default value is 100. </param>
-        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. &apos;en-US&apos;. </param>
+        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. 'en-US'. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Pageable<PhoneNumberCountry> ListAvailableCountries(int? skip = null, int? maxPageSize = null, string acceptLanguage = null, CancellationToken cancellationToken = default)
         {
-            Page<PhoneNumberCountry> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListAvailableCountries");
-                scope.Start();
-                try
-                {
-                    var response = RestClient.ListAvailableCountries(skip, maxPageSize, acceptLanguage, cancellationToken);
-                    return Page.FromValues(response.Value.Countries, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<PhoneNumberCountry> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListAvailableCountries");
-                scope.Start();
-                try
-                {
-                    var response = RestClient.ListAvailableCountriesNextPage(nextLink, skip, maxPageSize, acceptLanguage, cancellationToken);
-                    return Page.FromValues(response.Value.Countries, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => RestClient.CreateListAvailableCountriesRequest(skip, maxPageSize, acceptLanguage);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => RestClient.CreateListAvailableCountriesNextPageRequest(nextLink, skip, maxPageSize, acceptLanguage);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, PhoneNumberCountry.DeserializePhoneNumberCountry, _clientDiagnostics, _pipeline, "InternalPhoneNumbersClient.ListAvailableCountries", "countries", "nextLink", cancellationToken);
         }
 
         /// <summary> Gets the list of cities or towns with available phone numbers. </summary>
@@ -370,47 +375,17 @@ namespace Azure.Communication.PhoneNumbers
         /// <param name="skip"> An optional parameter for how many entries to skip, for pagination purposes. The default value is 0. </param>
         /// <param name="maxPageSize"> An optional parameter for how many entries to return, for pagination purposes. The default value is 100. </param>
         /// <param name="administrativeDivision"> An optional parameter for the name of the state or province in which to search for the area code. </param>
-        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. &apos;en-US&apos;. </param>
+        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. 'en-US'. </param>
+        /// <param name="phoneNumberType"> Filter by numberType, e.g. Geographic, TollFree, Mobile. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="twoLetterIsoCountryName"/> is null. </exception>
-        public virtual AsyncPageable<PhoneNumberLocality> ListAvailableLocalitiesAsync(string twoLetterIsoCountryName, int? skip = null, int? maxPageSize = null, string administrativeDivision = null, string acceptLanguage = null, CancellationToken cancellationToken = default)
+        public virtual AsyncPageable<PhoneNumberLocality> ListAvailableLocalitiesAsync(string twoLetterIsoCountryName, int? skip = null, int? maxPageSize = null, string administrativeDivision = null, string acceptLanguage = null, PhoneNumberType? phoneNumberType = null, CancellationToken cancellationToken = default)
         {
-            if (twoLetterIsoCountryName == null)
-            {
-                throw new ArgumentNullException(nameof(twoLetterIsoCountryName));
-            }
+            Argument.AssertNotNullOrEmpty(twoLetterIsoCountryName, nameof(twoLetterIsoCountryName));
 
-            async Task<Page<PhoneNumberLocality>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListAvailableLocalities");
-                scope.Start();
-                try
-                {
-                    var response = await RestClient.ListAvailableLocalitiesAsync(twoLetterIsoCountryName, skip, maxPageSize, administrativeDivision, acceptLanguage, cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.PhoneNumberLocalitiesValue, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<PhoneNumberLocality>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListAvailableLocalities");
-                scope.Start();
-                try
-                {
-                    var response = await RestClient.ListAvailableLocalitiesNextPageAsync(nextLink, twoLetterIsoCountryName, skip, maxPageSize, administrativeDivision, acceptLanguage, cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.PhoneNumberLocalitiesValue, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => RestClient.CreateListAvailableLocalitiesRequest(twoLetterIsoCountryName, skip, maxPageSize, administrativeDivision, acceptLanguage, phoneNumberType);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => RestClient.CreateListAvailableLocalitiesNextPageRequest(nextLink, twoLetterIsoCountryName, skip, maxPageSize, administrativeDivision, acceptLanguage, phoneNumberType);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, PhoneNumberLocality.DeserializePhoneNumberLocality, _clientDiagnostics, _pipeline, "InternalPhoneNumbersClient.ListAvailableLocalities", "phoneNumberLocalities", "nextLink", cancellationToken);
         }
 
         /// <summary> Gets the list of cities or towns with available phone numbers. </summary>
@@ -418,145 +393,75 @@ namespace Azure.Communication.PhoneNumbers
         /// <param name="skip"> An optional parameter for how many entries to skip, for pagination purposes. The default value is 0. </param>
         /// <param name="maxPageSize"> An optional parameter for how many entries to return, for pagination purposes. The default value is 100. </param>
         /// <param name="administrativeDivision"> An optional parameter for the name of the state or province in which to search for the area code. </param>
-        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. &apos;en-US&apos;. </param>
+        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. 'en-US'. </param>
+        /// <param name="phoneNumberType"> Filter by numberType, e.g. Geographic, TollFree, Mobile. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="twoLetterIsoCountryName"/> is null. </exception>
-        public virtual Pageable<PhoneNumberLocality> ListAvailableLocalities(string twoLetterIsoCountryName, int? skip = null, int? maxPageSize = null, string administrativeDivision = null, string acceptLanguage = null, CancellationToken cancellationToken = default)
+        public virtual Pageable<PhoneNumberLocality> ListAvailableLocalities(string twoLetterIsoCountryName, int? skip = null, int? maxPageSize = null, string administrativeDivision = null, string acceptLanguage = null, PhoneNumberType? phoneNumberType = null, CancellationToken cancellationToken = default)
         {
-            if (twoLetterIsoCountryName == null)
-            {
-                throw new ArgumentNullException(nameof(twoLetterIsoCountryName));
-            }
+            Argument.AssertNotNullOrEmpty(twoLetterIsoCountryName, nameof(twoLetterIsoCountryName));
 
-            Page<PhoneNumberLocality> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListAvailableLocalities");
-                scope.Start();
-                try
-                {
-                    var response = RestClient.ListAvailableLocalities(twoLetterIsoCountryName, skip, maxPageSize, administrativeDivision, acceptLanguage, cancellationToken);
-                    return Page.FromValues(response.Value.PhoneNumberLocalitiesValue, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<PhoneNumberLocality> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListAvailableLocalities");
-                scope.Start();
-                try
-                {
-                    var response = RestClient.ListAvailableLocalitiesNextPage(nextLink, twoLetterIsoCountryName, skip, maxPageSize, administrativeDivision, acceptLanguage, cancellationToken);
-                    return Page.FromValues(response.Value.PhoneNumberLocalitiesValue, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => RestClient.CreateListAvailableLocalitiesRequest(twoLetterIsoCountryName, skip, maxPageSize, administrativeDivision, acceptLanguage, phoneNumberType);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => RestClient.CreateListAvailableLocalitiesNextPageRequest(nextLink, twoLetterIsoCountryName, skip, maxPageSize, administrativeDivision, acceptLanguage, phoneNumberType);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, PhoneNumberLocality.DeserializePhoneNumberLocality, _clientDiagnostics, _pipeline, "InternalPhoneNumbersClient.ListAvailableLocalities", "phoneNumberLocalities", "nextLink", cancellationToken);
         }
 
         /// <summary> List available offerings of capabilities with rates for the given country. </summary>
         /// <param name="twoLetterIsoCountryName"> The ISO 3166-2 country code, e.g. US. </param>
         /// <param name="skip"> An optional parameter for how many entries to skip, for pagination purposes. The default value is 0. </param>
         /// <param name="maxPageSize"> An optional parameter for how many entries to return, for pagination purposes. The default value is 100. </param>
-        /// <param name="phoneNumberType"> Filter by numberType, e.g. Geographic, TollFree. </param>
+        /// <param name="phoneNumberType"> Filter by numberType, e.g. Geographic, TollFree, Mobile. </param>
         /// <param name="assignmentType"> Filter by assignmentType, e.g. Person, Application. </param>
-        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. &apos;en-US&apos;. </param>
+        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. 'en-US'. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="twoLetterIsoCountryName"/> is null. </exception>
         public virtual AsyncPageable<PhoneNumberOffering> ListOfferingsAsync(string twoLetterIsoCountryName, int? skip = null, int? maxPageSize = null, PhoneNumberType? phoneNumberType = null, PhoneNumberAssignmentType? assignmentType = null, string acceptLanguage = null, CancellationToken cancellationToken = default)
         {
-            if (twoLetterIsoCountryName == null)
-            {
-                throw new ArgumentNullException(nameof(twoLetterIsoCountryName));
-            }
+            Argument.AssertNotNullOrEmpty(twoLetterIsoCountryName, nameof(twoLetterIsoCountryName));
 
-            async Task<Page<PhoneNumberOffering>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListOfferings");
-                scope.Start();
-                try
-                {
-                    var response = await RestClient.ListOfferingsAsync(twoLetterIsoCountryName, skip, maxPageSize, phoneNumberType, assignmentType, acceptLanguage, cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.PhoneNumberOfferings, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<PhoneNumberOffering>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListOfferings");
-                scope.Start();
-                try
-                {
-                    var response = await RestClient.ListOfferingsNextPageAsync(nextLink, twoLetterIsoCountryName, skip, maxPageSize, phoneNumberType, assignmentType, acceptLanguage, cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.PhoneNumberOfferings, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => RestClient.CreateListOfferingsRequest(twoLetterIsoCountryName, skip, maxPageSize, phoneNumberType, assignmentType, acceptLanguage);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => RestClient.CreateListOfferingsNextPageRequest(nextLink, twoLetterIsoCountryName, skip, maxPageSize, phoneNumberType, assignmentType, acceptLanguage);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, PhoneNumberOffering.DeserializePhoneNumberOffering, _clientDiagnostics, _pipeline, "InternalPhoneNumbersClient.ListOfferings", "phoneNumberOfferings", "nextLink", cancellationToken);
         }
 
         /// <summary> List available offerings of capabilities with rates for the given country. </summary>
         /// <param name="twoLetterIsoCountryName"> The ISO 3166-2 country code, e.g. US. </param>
         /// <param name="skip"> An optional parameter for how many entries to skip, for pagination purposes. The default value is 0. </param>
         /// <param name="maxPageSize"> An optional parameter for how many entries to return, for pagination purposes. The default value is 100. </param>
-        /// <param name="phoneNumberType"> Filter by numberType, e.g. Geographic, TollFree. </param>
+        /// <param name="phoneNumberType"> Filter by numberType, e.g. Geographic, TollFree, Mobile. </param>
         /// <param name="assignmentType"> Filter by assignmentType, e.g. Person, Application. </param>
-        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. &apos;en-US&apos;. </param>
+        /// <param name="acceptLanguage"> The locale to display in the localized fields in the response. e.g. 'en-US'. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="twoLetterIsoCountryName"/> is null. </exception>
         public virtual Pageable<PhoneNumberOffering> ListOfferings(string twoLetterIsoCountryName, int? skip = null, int? maxPageSize = null, PhoneNumberType? phoneNumberType = null, PhoneNumberAssignmentType? assignmentType = null, string acceptLanguage = null, CancellationToken cancellationToken = default)
         {
-            if (twoLetterIsoCountryName == null)
-            {
-                throw new ArgumentNullException(nameof(twoLetterIsoCountryName));
-            }
+            Argument.AssertNotNullOrEmpty(twoLetterIsoCountryName, nameof(twoLetterIsoCountryName));
 
-            Page<PhoneNumberOffering> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListOfferings");
-                scope.Start();
-                try
-                {
-                    var response = RestClient.ListOfferings(twoLetterIsoCountryName, skip, maxPageSize, phoneNumberType, assignmentType, acceptLanguage, cancellationToken);
-                    return Page.FromValues(response.Value.PhoneNumberOfferings, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<PhoneNumberOffering> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListOfferings");
-                scope.Start();
-                try
-                {
-                    var response = RestClient.ListOfferingsNextPage(nextLink, twoLetterIsoCountryName, skip, maxPageSize, phoneNumberType, assignmentType, acceptLanguage, cancellationToken);
-                    return Page.FromValues(response.Value.PhoneNumberOfferings, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => RestClient.CreateListOfferingsRequest(twoLetterIsoCountryName, skip, maxPageSize, phoneNumberType, assignmentType, acceptLanguage);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => RestClient.CreateListOfferingsNextPageRequest(nextLink, twoLetterIsoCountryName, skip, maxPageSize, phoneNumberType, assignmentType, acceptLanguage);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, PhoneNumberOffering.DeserializePhoneNumberOffering, _clientDiagnostics, _pipeline, "InternalPhoneNumbersClient.ListOfferings", "phoneNumberOfferings", "nextLink", cancellationToken);
+        }
+
+        /// <summary> Lists all reservations. </summary>
+        /// <param name="maxPageSize"> An optional parameter for how many entries to return, for pagination purposes. The default value is 100. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <remarks> Retrieves a paginated list of all phone number reservations. Note that the reservations will not be populated with the phone numbers associated with them. </remarks>
+        public virtual AsyncPageable<PhoneNumbersReservation> ListReservationsAsync(int? maxPageSize = null, CancellationToken cancellationToken = default)
+        {
+            HttpMessage FirstPageRequest(int? pageSizeHint) => RestClient.CreateListReservationsRequest(maxPageSize);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => RestClient.CreateListReservationsNextPageRequest(nextLink, maxPageSize);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, PhoneNumbersReservation.DeserializePhoneNumbersReservation, _clientDiagnostics, _pipeline, "InternalPhoneNumbersClient.ListReservations", "reservations", "nextLink", cancellationToken);
+        }
+
+        /// <summary> Lists all reservations. </summary>
+        /// <param name="maxPageSize"> An optional parameter for how many entries to return, for pagination purposes. The default value is 100. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <remarks> Retrieves a paginated list of all phone number reservations. Note that the reservations will not be populated with the phone numbers associated with them. </remarks>
+        public virtual Pageable<PhoneNumbersReservation> ListReservations(int? maxPageSize = null, CancellationToken cancellationToken = default)
+        {
+            HttpMessage FirstPageRequest(int? pageSizeHint) => RestClient.CreateListReservationsRequest(maxPageSize);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => RestClient.CreateListReservationsNextPageRequest(nextLink, maxPageSize);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, PhoneNumbersReservation.DeserializePhoneNumbersReservation, _clientDiagnostics, _pipeline, "InternalPhoneNumbersClient.ListReservations", "reservations", "nextLink", cancellationToken);
         }
 
         /// <summary> Gets the list of all purchased phone numbers. </summary>
@@ -565,37 +470,9 @@ namespace Azure.Communication.PhoneNumbers
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual AsyncPageable<PurchasedPhoneNumber> ListPhoneNumbersAsync(int? skip = null, int? top = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<PurchasedPhoneNumber>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListPhoneNumbers");
-                scope.Start();
-                try
-                {
-                    var response = await RestClient.ListPhoneNumbersAsync(skip, top, cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.PhoneNumbers, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<PurchasedPhoneNumber>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListPhoneNumbers");
-                scope.Start();
-                try
-                {
-                    var response = await RestClient.ListPhoneNumbersNextPageAsync(nextLink, skip, top, cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.PhoneNumbers, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => RestClient.CreateListPhoneNumbersRequest(skip, top);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => RestClient.CreateListPhoneNumbersNextPageRequest(nextLink, skip, top);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, PurchasedPhoneNumber.DeserializePurchasedPhoneNumber, _clientDiagnostics, _pipeline, "InternalPhoneNumbersClient.ListPhoneNumbers", "phoneNumbers", "nextLink", cancellationToken);
         }
 
         /// <summary> Gets the list of all purchased phone numbers. </summary>
@@ -604,37 +481,51 @@ namespace Azure.Communication.PhoneNumbers
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Pageable<PurchasedPhoneNumber> ListPhoneNumbers(int? skip = null, int? top = null, CancellationToken cancellationToken = default)
         {
-            Page<PurchasedPhoneNumber> FirstPageFunc(int? pageSizeHint)
+            HttpMessage FirstPageRequest(int? pageSizeHint) => RestClient.CreateListPhoneNumbersRequest(skip, top);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => RestClient.CreateListPhoneNumbersNextPageRequest(nextLink, skip, top);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, PurchasedPhoneNumber.DeserializePurchasedPhoneNumber, _clientDiagnostics, _pipeline, "InternalPhoneNumbersClient.ListPhoneNumbers", "phoneNumbers", "nextLink", cancellationToken);
+        }
+
+        /// <summary> Starts the purchase of all phone numbers in the reservation. </summary>
+        /// <param name="reservationId"> The id of the reservation. </param>
+        /// <param name="agreeToNotResell"> The agreement to not resell the phone numbers. Defaults to false if not provided. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <remarks> Starts a long running operation to purchase all of the phone numbers in the reservation. Purchase can only be started for active reservations that at least one phone number. If any of the phone numbers in the reservation is from a country where reselling is not permitted, do not resell agreement is required. The response will include an 'Operation-Location' header that can be used to query the status of the operation. </remarks>
+        public virtual async Task<InternalPurchaseReservationOperation> StartPurchaseReservationAsync(Guid reservationId, bool? agreeToNotResell = null, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.StartPurchaseReservation");
+            scope.Start();
+            try
             {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListPhoneNumbers");
-                scope.Start();
-                try
-                {
-                    var response = RestClient.ListPhoneNumbers(skip, top, cancellationToken);
-                    return Page.FromValues(response.Value.PhoneNumbers, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
+                var originalResponse = await RestClient.PurchaseReservationAsync(reservationId, agreeToNotResell, cancellationToken).ConfigureAwait(false);
+                return new InternalPurchaseReservationOperation(_clientDiagnostics, _pipeline, RestClient.CreatePurchaseReservationRequest(reservationId, agreeToNotResell).Request, originalResponse);
             }
-            Page<PurchasedPhoneNumber> NextPageFunc(string nextLink, int? pageSizeHint)
+            catch (Exception e)
             {
-                using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.ListPhoneNumbers");
-                scope.Start();
-                try
-                {
-                    var response = RestClient.ListPhoneNumbersNextPage(nextLink, skip, top, cancellationToken);
-                    return Page.FromValues(response.Value.PhoneNumbers, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
+                scope.Failed(e);
+                throw;
             }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+        }
+
+        /// <summary> Starts the purchase of all phone numbers in the reservation. </summary>
+        /// <param name="reservationId"> The id of the reservation. </param>
+        /// <param name="agreeToNotResell"> The agreement to not resell the phone numbers. Defaults to false if not provided. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <remarks> Starts a long running operation to purchase all of the phone numbers in the reservation. Purchase can only be started for active reservations that at least one phone number. If any of the phone numbers in the reservation is from a country where reselling is not permitted, do not resell agreement is required. The response will include an 'Operation-Location' header that can be used to query the status of the operation. </remarks>
+        public virtual InternalPurchaseReservationOperation StartPurchaseReservation(Guid reservationId, bool? agreeToNotResell = null, CancellationToken cancellationToken = default)
+        {
+            using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.StartPurchaseReservation");
+            scope.Start();
+            try
+            {
+                var originalResponse = RestClient.PurchaseReservation(reservationId, agreeToNotResell, cancellationToken);
+                return new InternalPurchaseReservationOperation(_clientDiagnostics, _pipeline, RestClient.CreatePurchaseReservationRequest(reservationId, agreeToNotResell).Request, originalResponse);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
         }
 
         /// <summary> Search for available phone numbers to purchase. </summary>
@@ -699,15 +590,16 @@ namespace Azure.Communication.PhoneNumbers
 
         /// <summary> Purchases phone numbers. </summary>
         /// <param name="searchId"> The search id. </param>
+        /// <param name="agreeToNotResell"> The agreement to not resell the phone numbers. Defaults to false if not provided. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public virtual async Task<InternalPurchasePhoneNumbersOperation> StartPurchasePhoneNumbersAsync(string searchId = null, CancellationToken cancellationToken = default)
+        public virtual async Task<InternalPurchasePhoneNumbersOperation> StartPurchasePhoneNumbersAsync(string searchId = null, bool? agreeToNotResell = null, CancellationToken cancellationToken = default)
         {
             using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.StartPurchasePhoneNumbers");
             scope.Start();
             try
             {
-                var originalResponse = await RestClient.PurchasePhoneNumbersAsync(searchId, cancellationToken).ConfigureAwait(false);
-                return new InternalPurchasePhoneNumbersOperation(_clientDiagnostics, _pipeline, RestClient.CreatePurchasePhoneNumbersRequest(searchId).Request, originalResponse);
+                var originalResponse = await RestClient.PurchasePhoneNumbersAsync(searchId, agreeToNotResell, cancellationToken).ConfigureAwait(false);
+                return new InternalPurchasePhoneNumbersOperation(_clientDiagnostics, _pipeline, RestClient.CreatePurchasePhoneNumbersRequest(searchId, agreeToNotResell).Request, originalResponse);
             }
             catch (Exception e)
             {
@@ -718,15 +610,16 @@ namespace Azure.Communication.PhoneNumbers
 
         /// <summary> Purchases phone numbers. </summary>
         /// <param name="searchId"> The search id. </param>
+        /// <param name="agreeToNotResell"> The agreement to not resell the phone numbers. Defaults to false if not provided. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public virtual InternalPurchasePhoneNumbersOperation StartPurchasePhoneNumbers(string searchId = null, CancellationToken cancellationToken = default)
+        public virtual InternalPurchasePhoneNumbersOperation StartPurchasePhoneNumbers(string searchId = null, bool? agreeToNotResell = null, CancellationToken cancellationToken = default)
         {
             using var scope = _clientDiagnostics.CreateScope("InternalPhoneNumbersClient.StartPurchasePhoneNumbers");
             scope.Start();
             try
             {
-                var originalResponse = RestClient.PurchasePhoneNumbers(searchId, cancellationToken);
-                return new InternalPurchasePhoneNumbersOperation(_clientDiagnostics, _pipeline, RestClient.CreatePurchasePhoneNumbersRequest(searchId).Request, originalResponse);
+                var originalResponse = RestClient.PurchasePhoneNumbers(searchId, agreeToNotResell, cancellationToken);
+                return new InternalPurchasePhoneNumbersOperation(_clientDiagnostics, _pipeline, RestClient.CreatePurchasePhoneNumbersRequest(searchId, agreeToNotResell).Request, originalResponse);
             }
             catch (Exception e)
             {

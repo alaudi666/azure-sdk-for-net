@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Intended usage of the cluster
-    /// Serialized Name: ClusterPurpose
-    /// </summary>
+    /// <summary> Intended usage of the cluster. </summary>
     public readonly partial struct MachineLearningClusterPurpose : IEquatable<MachineLearningClusterPurpose>
     {
         private readonly string _value;
@@ -29,26 +26,17 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string DenseProdValue = "DenseProd";
         private const string DevTestValue = "DevTest";
 
-        /// <summary>
-        /// FastProd
-        /// Serialized Name: ClusterPurpose.FastProd
-        /// </summary>
+        /// <summary> FastProd. </summary>
         public static MachineLearningClusterPurpose FastProd { get; } = new MachineLearningClusterPurpose(FastProdValue);
-        /// <summary>
-        /// DenseProd
-        /// Serialized Name: ClusterPurpose.DenseProd
-        /// </summary>
+        /// <summary> DenseProd. </summary>
         public static MachineLearningClusterPurpose DenseProd { get; } = new MachineLearningClusterPurpose(DenseProdValue);
-        /// <summary>
-        /// DevTest
-        /// Serialized Name: ClusterPurpose.DevTest
-        /// </summary>
+        /// <summary> DevTest. </summary>
         public static MachineLearningClusterPurpose DevTest { get; } = new MachineLearningClusterPurpose(DevTestValue);
         /// <summary> Determines if two <see cref="MachineLearningClusterPurpose"/> values are the same. </summary>
         public static bool operator ==(MachineLearningClusterPurpose left, MachineLearningClusterPurpose right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningClusterPurpose"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningClusterPurpose left, MachineLearningClusterPurpose right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningClusterPurpose"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningClusterPurpose"/>. </summary>
         public static implicit operator MachineLearningClusterPurpose(string value) => new MachineLearningClusterPurpose(value);
 
         /// <inheritdoc />
@@ -59,7 +47,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

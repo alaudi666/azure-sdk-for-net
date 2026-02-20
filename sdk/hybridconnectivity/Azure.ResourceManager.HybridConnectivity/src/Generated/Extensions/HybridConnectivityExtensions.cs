@@ -11,88 +11,589 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Core;
 using Azure.ResourceManager;
+using Azure.ResourceManager.HybridConnectivity.Mocking;
+using Azure.ResourceManager.HybridConnectivity.Models;
+using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.HybridConnectivity
 {
     /// <summary> A class to add extension methods to Azure.ResourceManager.HybridConnectivity. </summary>
     public static partial class HybridConnectivityExtensions
     {
-        private static ArmResourceExtensionClient GetExtensionClient(ArmClient client, ResourceIdentifier scope)
+        /// <param name="client"></param>
+        private static MockableHybridConnectivityArmClient GetMockableHybridConnectivityArmClient(ArmClient client)
         {
-            return client.GetResourceClient(() =>
-            {
-                return new ArmResourceExtensionClient(client, scope);
-            }
-            );
+            return client.GetCachedClient(client0 => new MockableHybridConnectivityArmClient(client0, ResourceIdentifier.Root));
         }
 
-        private static ArmResourceExtensionClient GetExtensionClient(ArmResource armResource)
+        /// <param name="resourceGroupResource"></param>
+        private static MockableHybridConnectivityResourceGroupResource GetMockableHybridConnectivityResourceGroupResource(ResourceGroupResource resourceGroupResource)
         {
-            return armResource.GetCachedClient((client) =>
-            {
-                return new ArmResourceExtensionClient(client, armResource.Id);
-            }
-            );
+            return resourceGroupResource.GetCachedClient(client => new MockableHybridConnectivityResourceGroupResource(client, resourceGroupResource.Id));
         }
 
-        /// <summary> Gets a collection of EndpointResources in the ArmResource. </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="scope"> The scope that the resource will apply against. </param>
-        /// <returns> An object representing collection of EndpointResources and their operations over a EndpointResource. </returns>
-        public static EndpointResourceCollection GetEndpointResources(this ArmClient client, ResourceIdentifier scope)
+        /// <param name="subscriptionResource"></param>
+        private static MockableHybridConnectivitySubscriptionResource GetMockableHybridConnectivitySubscriptionResource(SubscriptionResource subscriptionResource)
         {
-            return GetExtensionClient(client, scope).GetEndpointResources();
+            return subscriptionResource.GetCachedClient(client => new MockableHybridConnectivitySubscriptionResource(client, subscriptionResource.Id));
         }
 
         /// <summary>
-        /// Gets the endpoint to the resource.
-        /// Request Path: /{resourceUri}/providers/Microsoft.HybridConnectivity/endpoints/{endpointName}
-        /// Operation Id: Endpoints_Get
+        /// Gets an object representing a <see cref="HybridConnectivityEndpointResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetHybridConnectivityEndpointResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="scope"> The scope that the resource will apply against. </param>
-        /// <param name="endpointName"> The endpoint name. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="endpointName"/> is null. </exception>
-        [ForwardsClientCalls]
-        public static async Task<Response<EndpointResource>> GetEndpointResourceAsync(this ArmClient client, ResourceIdentifier scope, string endpointName, CancellationToken cancellationToken = default)
-        {
-            return await client.GetEndpointResources(scope).GetAsync(endpointName, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Gets the endpoint to the resource.
-        /// Request Path: /{resourceUri}/providers/Microsoft.HybridConnectivity/endpoints/{endpointName}
-        /// Operation Id: Endpoints_Get
-        /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="scope"> The scope that the resource will apply against. </param>
-        /// <param name="endpointName"> The endpoint name. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="endpointName"/> is null. </exception>
-        [ForwardsClientCalls]
-        public static Response<EndpointResource> GetEndpointResource(this ArmClient client, ResourceIdentifier scope, string endpointName, CancellationToken cancellationToken = default)
-        {
-            return client.GetEndpointResources(scope).Get(endpointName, cancellationToken);
-        }
-
-        #region EndpointResource
-        /// <summary>
-        /// Gets an object representing an <see cref="EndpointResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="EndpointResource.CreateResourceIdentifier" /> to create an <see cref="EndpointResource" /> <see cref="ResourceIdentifier" /> from its components.
-        /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
         /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="EndpointResource" /> object. </returns>
-        public static EndpointResource GetEndpointResource(this ArmClient client, ResourceIdentifier id)
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="HybridConnectivityEndpointResource"/> object. </returns>
+        public static HybridConnectivityEndpointResource GetHybridConnectivityEndpointResource(this ArmClient client, ResourceIdentifier id)
         {
-            return client.GetResourceClient(() =>
-            {
-                EndpointResource.ValidateResourceId(id);
-                return new EndpointResource(client, id);
-            }
-            );
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetHybridConnectivityEndpointResource(id);
         }
-        #endregion
+
+        /// <summary>
+        /// Gets a collection of <see cref="HybridConnectivityEndpointCollection"/> objects within the specified scope.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetHybridConnectivityEndpoints(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="scope"> The scope of the resource collection to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a collection of <see cref="HybridConnectivityEndpointResource"/> objects. </returns>
+        public static HybridConnectivityEndpointCollection GetHybridConnectivityEndpoints(this ArmClient client, ResourceIdentifier scope)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetHybridConnectivityEndpoints(scope);
+        }
+
+        /// <summary>
+        /// Gets the endpoint to the resource.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetHybridConnectivityEndpoint(ResourceIdentifier, string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="scope"> The scope of the resource collection to get. </param>
+        /// <param name="endpointName"> The endpoint name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static Response<HybridConnectivityEndpointResource> GetHybridConnectivityEndpoint(this ArmClient client, ResourceIdentifier scope, string endpointName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetHybridConnectivityEndpoint(scope, endpointName, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the endpoint to the resource.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetHybridConnectivityEndpointAsync(ResourceIdentifier, string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="scope"> The scope of the resource collection to get. </param>
+        /// <param name="endpointName"> The endpoint name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static async Task<Response<HybridConnectivityEndpointResource>> GetHybridConnectivityEndpointAsync(this ArmClient client, ResourceIdentifier scope, string endpointName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return await GetMockableHybridConnectivityArmClient(client).GetHybridConnectivityEndpointAsync(scope, endpointName, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="HybridConnectivityServiceConfigurationResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetHybridConnectivityServiceConfigurationResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="HybridConnectivityServiceConfigurationResource"/> object. </returns>
+        public static HybridConnectivityServiceConfigurationResource GetHybridConnectivityServiceConfigurationResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetHybridConnectivityServiceConfigurationResource(id);
+        }
+
+        /// <summary>
+        /// Gets a collection of <see cref="HybridConnectivityServiceConfigurationCollection"/> objects within the specified scope.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetHybridConnectivityServiceConfigurations(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="scope"> The scope of the resource collection to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a collection of <see cref="HybridConnectivityServiceConfigurationResource"/> objects. </returns>
+        public static HybridConnectivityServiceConfigurationCollection GetHybridConnectivityServiceConfigurations(this ArmClient client, ResourceIdentifier scope)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetHybridConnectivityServiceConfigurations(scope);
+        }
+
+        /// <summary>
+        /// Gets the details about the service to the resource.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetHybridConnectivityServiceConfiguration(ResourceIdentifier, string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="scope"> The scope of the resource collection to get. </param>
+        /// <param name="serviceConfigurationName"> The service name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static Response<HybridConnectivityServiceConfigurationResource> GetHybridConnectivityServiceConfiguration(this ArmClient client, ResourceIdentifier scope, string serviceConfigurationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetHybridConnectivityServiceConfiguration(scope, serviceConfigurationName, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the details about the service to the resource.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetHybridConnectivityServiceConfigurationAsync(ResourceIdentifier, string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="scope"> The scope of the resource collection to get. </param>
+        /// <param name="serviceConfigurationName"> The service name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static async Task<Response<HybridConnectivityServiceConfigurationResource>> GetHybridConnectivityServiceConfigurationAsync(this ArmClient client, ResourceIdentifier scope, string serviceConfigurationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return await GetMockableHybridConnectivityArmClient(client).GetHybridConnectivityServiceConfigurationAsync(scope, serviceConfigurationName, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="PublicCloudConnectorResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetPublicCloudConnectorResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="PublicCloudConnectorResource"/> object. </returns>
+        public static PublicCloudConnectorResource GetPublicCloudConnectorResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetPublicCloudConnectorResource(id);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="PublicCloudConnectorSolutionConfigurationResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetPublicCloudConnectorSolutionConfigurationResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="PublicCloudConnectorSolutionConfigurationResource"/> object. </returns>
+        public static PublicCloudConnectorSolutionConfigurationResource GetPublicCloudConnectorSolutionConfigurationResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetPublicCloudConnectorSolutionConfigurationResource(id);
+        }
+
+        /// <summary>
+        /// Gets a collection of <see cref="PublicCloudConnectorSolutionConfigurationCollection"/> objects within the specified scope.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetPublicCloudConnectorSolutionConfigurations(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="scope"> The scope of the resource collection to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a collection of <see cref="PublicCloudConnectorSolutionConfigurationResource"/> objects. </returns>
+        public static PublicCloudConnectorSolutionConfigurationCollection GetPublicCloudConnectorSolutionConfigurations(this ArmClient client, ResourceIdentifier scope)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetPublicCloudConnectorSolutionConfigurations(scope);
+        }
+
+        /// <summary>
+        /// Get a SolutionConfiguration
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetPublicCloudConnectorSolutionConfiguration(ResourceIdentifier, string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="scope"> The scope of the resource collection to get. </param>
+        /// <param name="solutionConfiguration"> Represent Solution Configuration Resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static Response<PublicCloudConnectorSolutionConfigurationResource> GetPublicCloudConnectorSolutionConfiguration(this ArmClient client, ResourceIdentifier scope, string solutionConfiguration, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetPublicCloudConnectorSolutionConfiguration(scope, solutionConfiguration, cancellationToken);
+        }
+
+        /// <summary>
+        /// Get a SolutionConfiguration
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetPublicCloudConnectorSolutionConfigurationAsync(ResourceIdentifier, string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="scope"> The scope of the resource collection to get. </param>
+        /// <param name="solutionConfiguration"> Represent Solution Configuration Resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static async Task<Response<PublicCloudConnectorSolutionConfigurationResource>> GetPublicCloudConnectorSolutionConfigurationAsync(this ArmClient client, ResourceIdentifier scope, string solutionConfiguration, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return await GetMockableHybridConnectivityArmClient(client).GetPublicCloudConnectorSolutionConfigurationAsync(scope, solutionConfiguration, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="PublicCloudInventoryResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetPublicCloudInventoryResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="PublicCloudInventoryResource"/> object. </returns>
+        public static PublicCloudInventoryResource GetPublicCloudInventoryResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetPublicCloudInventoryResource(id);
+        }
+
+        /// <summary>
+        /// Gets a collection of <see cref="PublicCloudInventoryCollection"/> objects within the specified scope.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetPublicCloudInventories(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="scope"> The scope of the resource collection to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a collection of <see cref="PublicCloudInventoryResource"/> objects. </returns>
+        public static PublicCloudInventoryCollection GetPublicCloudInventories(this ArmClient client, ResourceIdentifier scope)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetPublicCloudInventories(scope);
+        }
+
+        /// <summary>
+        /// Get a InventoryResource
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetPublicCloudInventory(ResourceIdentifier, string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="scope"> The scope of the resource collection to get. </param>
+        /// <param name="inventoryId"> Inventory resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static Response<PublicCloudInventoryResource> GetPublicCloudInventory(this ArmClient client, ResourceIdentifier scope, string inventoryId, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetPublicCloudInventory(scope, inventoryId, cancellationToken);
+        }
+
+        /// <summary>
+        /// Get a InventoryResource
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetPublicCloudInventoryAsync(ResourceIdentifier, string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="scope"> The scope of the resource collection to get. </param>
+        /// <param name="inventoryId"> Inventory resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static async Task<Response<PublicCloudInventoryResource>> GetPublicCloudInventoryAsync(this ArmClient client, ResourceIdentifier scope, string inventoryId, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return await GetMockableHybridConnectivityArmClient(client).GetPublicCloudInventoryAsync(scope, inventoryId, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="PublicCloudConnectorSolutionTypeResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityArmClient.GetPublicCloudConnectorSolutionTypeResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="PublicCloudConnectorSolutionTypeResource"/> object. </returns>
+        public static PublicCloudConnectorSolutionTypeResource GetPublicCloudConnectorSolutionTypeResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableHybridConnectivityArmClient(client).GetPublicCloudConnectorSolutionTypeResource(id);
+        }
+
+        /// <summary>
+        /// Gets a collection of PublicCloudConnectors in the <see cref="ResourceGroupResource"/>
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityResourceGroupResource.GetPublicCloudConnectors()"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        /// <returns> An object representing collection of PublicCloudConnectors and their operations over a PublicCloudConnectorResource. </returns>
+        public static PublicCloudConnectorCollection GetPublicCloudConnectors(this ResourceGroupResource resourceGroupResource)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableHybridConnectivityResourceGroupResource(resourceGroupResource).GetPublicCloudConnectors();
+        }
+
+        /// <summary>
+        /// Get a PublicCloudConnector
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityResourceGroupResource.GetPublicCloudConnectorAsync(string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <param name="publicCloudConnector"> Represent public cloud connectors resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static async Task<Response<PublicCloudConnectorResource>> GetPublicCloudConnectorAsync(this ResourceGroupResource resourceGroupResource, string publicCloudConnector, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return await GetMockableHybridConnectivityResourceGroupResource(resourceGroupResource).GetPublicCloudConnectorAsync(publicCloudConnector, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get a PublicCloudConnector
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityResourceGroupResource.GetPublicCloudConnector(string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <param name="publicCloudConnector"> Represent public cloud connectors resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static Response<PublicCloudConnectorResource> GetPublicCloudConnector(this ResourceGroupResource resourceGroupResource, string publicCloudConnector, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableHybridConnectivityResourceGroupResource(resourceGroupResource).GetPublicCloudConnector(publicCloudConnector, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets a collection of PublicCloudConnectorSolutionTypes in the <see cref="ResourceGroupResource"/>
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityResourceGroupResource.GetPublicCloudConnectorSolutionTypes()"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        /// <returns> An object representing collection of PublicCloudConnectorSolutionTypes and their operations over a PublicCloudConnectorSolutionTypeResource. </returns>
+        public static PublicCloudConnectorSolutionTypeCollection GetPublicCloudConnectorSolutionTypes(this ResourceGroupResource resourceGroupResource)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableHybridConnectivityResourceGroupResource(resourceGroupResource).GetPublicCloudConnectorSolutionTypes();
+        }
+
+        /// <summary>
+        /// Get a SolutionTypeResource
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityResourceGroupResource.GetPublicCloudConnectorSolutionTypeAsync(string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <param name="solutionType"> Solution Type resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static async Task<Response<PublicCloudConnectorSolutionTypeResource>> GetPublicCloudConnectorSolutionTypeAsync(this ResourceGroupResource resourceGroupResource, string solutionType, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return await GetMockableHybridConnectivityResourceGroupResource(resourceGroupResource).GetPublicCloudConnectorSolutionTypeAsync(solutionType, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get a SolutionTypeResource
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivityResourceGroupResource.GetPublicCloudConnectorSolutionType(string, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <param name="solutionType"> Solution Type resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        [ForwardsClientCalls]
+        public static Response<PublicCloudConnectorSolutionTypeResource> GetPublicCloudConnectorSolutionType(this ResourceGroupResource resourceGroupResource, string solutionType, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableHybridConnectivityResourceGroupResource(resourceGroupResource).GetPublicCloudConnectorSolutionType(solutionType, cancellationToken);
+        }
+
+        /// <summary>
+        /// List PublicCloudConnector resources by subscription ID
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivitySubscriptionResource.GetPublicCloudConnectorsAsync(CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="PublicCloudConnectorResource"/> that may take multiple service requests to iterate over. </returns>
+        public static AsyncPageable<PublicCloudConnectorResource> GetPublicCloudConnectorsAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableHybridConnectivitySubscriptionResource(subscriptionResource).GetPublicCloudConnectorsAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// List PublicCloudConnector resources by subscription ID
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivitySubscriptionResource.GetPublicCloudConnectors(CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="PublicCloudConnectorResource"/> that may take multiple service requests to iterate over. </returns>
+        public static Pageable<PublicCloudConnectorResource> GetPublicCloudConnectors(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableHybridConnectivitySubscriptionResource(subscriptionResource).GetPublicCloudConnectors(cancellationToken);
+        }
+
+        /// <summary>
+        /// List SolutionTypeResource resources by subscription ID
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivitySubscriptionResource.GetPublicCloudConnectorSolutionTypesAsync(CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="PublicCloudConnectorSolutionTypeResource"/> that may take multiple service requests to iterate over. </returns>
+        public static AsyncPageable<PublicCloudConnectorSolutionTypeResource> GetPublicCloudConnectorSolutionTypesAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableHybridConnectivitySubscriptionResource(subscriptionResource).GetPublicCloudConnectorSolutionTypesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// List SolutionTypeResource resources by subscription ID
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivitySubscriptionResource.GetPublicCloudConnectorSolutionTypes(CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="PublicCloudConnectorSolutionTypeResource"/> that may take multiple service requests to iterate over. </returns>
+        public static Pageable<PublicCloudConnectorSolutionTypeResource> GetPublicCloudConnectorSolutionTypes(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableHybridConnectivitySubscriptionResource(subscriptionResource).GetPublicCloudConnectorSolutionTypes(cancellationToken);
+        }
+
+        /// <summary>
+        /// Retrieve AWS Cloud Formation template
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivitySubscriptionResource.PostGenerateAwsTemplateAsync(GenerateAwsTemplateContent, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="content"> ConnectorId and SolutionTypes and their properties to Generate AWS CFT Template. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        public static async Task<Response<GenerateAwsTemplateResult>> PostGenerateAwsTemplateAsync(this SubscriptionResource subscriptionResource, GenerateAwsTemplateContent content, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return await GetMockableHybridConnectivitySubscriptionResource(subscriptionResource).PostGenerateAwsTemplateAsync(content, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Retrieve AWS Cloud Formation template
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableHybridConnectivitySubscriptionResource.PostGenerateAwsTemplate(GenerateAwsTemplateContent, CancellationToken)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="content"> ConnectorId and SolutionTypes and their properties to Generate AWS CFT Template. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        public static Response<GenerateAwsTemplateResult> PostGenerateAwsTemplate(this SubscriptionResource subscriptionResource, GenerateAwsTemplateContent content, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableHybridConnectivitySubscriptionResource(subscriptionResource).PostGenerateAwsTemplate(content, cancellationToken);
+        }
     }
 }

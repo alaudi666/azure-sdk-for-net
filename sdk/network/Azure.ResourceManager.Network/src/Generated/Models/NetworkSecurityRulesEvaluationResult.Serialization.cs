@@ -5,80 +5,328 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class NetworkSecurityRulesEvaluationResult
+    public partial class NetworkSecurityRulesEvaluationResult : IUtf8JsonSerializable, IJsonModel<NetworkSecurityRulesEvaluationResult>
     {
-        internal static NetworkSecurityRulesEvaluationResult DeserializeNetworkSecurityRulesEvaluationResult(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<NetworkSecurityRulesEvaluationResult>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<NetworkSecurityRulesEvaluationResult>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<string> name = default;
-            Optional<bool> protocolMatched = default;
-            Optional<bool> sourceMatched = default;
-            Optional<bool> sourcePortMatched = default;
-            Optional<bool> destinationMatched = default;
-            Optional<bool> destinationPortMatched = default;
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NetworkSecurityRulesEvaluationResult>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NetworkSecurityRulesEvaluationResult)} does not support writing '{format}' format.");
+            }
+
+            if (Optional.IsDefined(Name))
+            {
+                writer.WritePropertyName("name"u8);
+                writer.WriteStringValue(Name);
+            }
+            if (Optional.IsDefined(ProtocolMatched))
+            {
+                writer.WritePropertyName("protocolMatched"u8);
+                writer.WriteBooleanValue(ProtocolMatched.Value);
+            }
+            if (Optional.IsDefined(SourceMatched))
+            {
+                writer.WritePropertyName("sourceMatched"u8);
+                writer.WriteBooleanValue(SourceMatched.Value);
+            }
+            if (Optional.IsDefined(SourcePortMatched))
+            {
+                writer.WritePropertyName("sourcePortMatched"u8);
+                writer.WriteBooleanValue(SourcePortMatched.Value);
+            }
+            if (Optional.IsDefined(DestinationMatched))
+            {
+                writer.WritePropertyName("destinationMatched"u8);
+                writer.WriteBooleanValue(DestinationMatched.Value);
+            }
+            if (Optional.IsDefined(DestinationPortMatched))
+            {
+                writer.WritePropertyName("destinationPortMatched"u8);
+                writer.WriteBooleanValue(DestinationPortMatched.Value);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        NetworkSecurityRulesEvaluationResult IJsonModel<NetworkSecurityRulesEvaluationResult>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NetworkSecurityRulesEvaluationResult>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NetworkSecurityRulesEvaluationResult)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeNetworkSecurityRulesEvaluationResult(document.RootElement, options);
+        }
+
+        internal static NetworkSecurityRulesEvaluationResult DeserializeNetworkSecurityRulesEvaluationResult(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string name = default;
+            bool? protocolMatched = default;
+            bool? sourceMatched = default;
+            bool? sourcePortMatched = default;
+            bool? destinationMatched = default;
+            bool? destinationPortMatched = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("protocolMatched"))
+                if (property.NameEquals("protocolMatched"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     protocolMatched = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("sourceMatched"))
+                if (property.NameEquals("sourceMatched"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     sourceMatched = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("sourcePortMatched"))
+                if (property.NameEquals("sourcePortMatched"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     sourcePortMatched = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("destinationMatched"))
+                if (property.NameEquals("destinationMatched"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     destinationMatched = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("destinationPortMatched"))
+                if (property.NameEquals("destinationPortMatched"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     destinationPortMatched = property.Value.GetBoolean();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new NetworkSecurityRulesEvaluationResult(name.Value, Optional.ToNullable(protocolMatched), Optional.ToNullable(sourceMatched), Optional.ToNullable(sourcePortMatched), Optional.ToNullable(destinationMatched), Optional.ToNullable(destinationPortMatched));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new NetworkSecurityRulesEvaluationResult(
+                name,
+                protocolMatched,
+                sourceMatched,
+                sourcePortMatched,
+                destinationMatched,
+                destinationPortMatched,
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Name))
+                {
+                    builder.Append("  name: ");
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ProtocolMatched), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  protocolMatched: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ProtocolMatched))
+                {
+                    builder.Append("  protocolMatched: ");
+                    var boolValue = ProtocolMatched.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SourceMatched), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  sourceMatched: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(SourceMatched))
+                {
+                    builder.Append("  sourceMatched: ");
+                    var boolValue = SourceMatched.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SourcePortMatched), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  sourcePortMatched: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(SourcePortMatched))
+                {
+                    builder.Append("  sourcePortMatched: ");
+                    var boolValue = SourcePortMatched.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DestinationMatched), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  destinationMatched: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DestinationMatched))
+                {
+                    builder.Append("  destinationMatched: ");
+                    var boolValue = DestinationMatched.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DestinationPortMatched), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  destinationPortMatched: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DestinationPortMatched))
+                {
+                    builder.Append("  destinationPortMatched: ");
+                    var boolValue = DestinationPortMatched.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<NetworkSecurityRulesEvaluationResult>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NetworkSecurityRulesEvaluationResult>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(NetworkSecurityRulesEvaluationResult)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        NetworkSecurityRulesEvaluationResult IPersistableModel<NetworkSecurityRulesEvaluationResult>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NetworkSecurityRulesEvaluationResult>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeNetworkSecurityRulesEvaluationResult(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(NetworkSecurityRulesEvaluationResult)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<NetworkSecurityRulesEvaluationResult>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

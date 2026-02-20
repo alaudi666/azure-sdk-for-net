@@ -5,32 +5,40 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 
 namespace Azure.ResourceManager.Dynatrace.Models
 {
     /// <summary> Response of a list App Services Operation. </summary>
     internal partial class AppServiceListResponse
     {
-        /// <summary> Initializes a new instance of AppServiceListResponse. </summary>
-        internal AppServiceListResponse()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AppServiceListResponse"/>. </summary>
+        /// <param name="value"> The AppServiceInfo items on this page. </param>
+        internal AppServiceListResponse(IEnumerable<DynatraceOneAgentEnabledAppServiceInfo> value)
         {
-            Value = new ChangeTrackingList<DynatraceOneAgentEnabledAppServiceInfo>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of AppServiceListResponse. </summary>
-        /// <param name="value"> The items on this page. </param>
+        /// <summary> Initializes a new instance of <see cref="AppServiceListResponse"/>. </summary>
+        /// <param name="value"> The AppServiceInfo items on this page. </param>
         /// <param name="nextLink"> The link to the next page of items. </param>
-        internal AppServiceListResponse(IReadOnlyList<DynatraceOneAgentEnabledAppServiceInfo> value, string nextLink)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal AppServiceListResponse(IList<DynatraceOneAgentEnabledAppServiceInfo> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The items on this page. </summary>
-        public IReadOnlyList<DynatraceOneAgentEnabledAppServiceInfo> Value { get; }
+        /// <summary> The AppServiceInfo items on this page. </summary>
+        public IList<DynatraceOneAgentEnabledAppServiceInfo> Value { get; }
+
         /// <summary> The link to the next page of items. </summary>
-        public string NextLink { get; }
+        public Uri NextLink { get; }
     }
 }

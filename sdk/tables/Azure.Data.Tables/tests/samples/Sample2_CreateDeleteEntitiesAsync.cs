@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using Azure.Core.TestFramework;
-using NUnit.Framework;
-using Azure.Data.Tables.Tests;
 using System.Threading.Tasks;
+using Azure.Core.TestFramework;
+using Azure.Data.Tables.Tests;
+using NUnit.Framework;
 
 namespace Azure.Data.Tables.Samples
 {
@@ -61,6 +61,9 @@ namespace Azure.Data.Tables.Samples
 
             // Delete the entity given the partition and row key.
             await client.DeleteEntityAsync(partitionKey, rowKey);
+
+            // Delete the strong entity given the entity object.
+            await client.DeleteEntityAsync(strongEntity);
 
             await client.DeleteAsync();
         }

@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Enum to determine the datastore credentials type.
-    /// Serialized Name: CredentialsType
-    /// </summary>
+    /// <summary> Enum to determine the datastore credentials type. </summary>
     internal readonly partial struct CredentialsType : IEquatable<CredentialsType>
     {
         private readonly string _value;
@@ -31,36 +28,21 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string SasValue = "Sas";
         private const string ServicePrincipalValue = "ServicePrincipal";
 
-        /// <summary>
-        /// AccountKey
-        /// Serialized Name: CredentialsType.AccountKey
-        /// </summary>
+        /// <summary> AccountKey. </summary>
         public static CredentialsType AccountKey { get; } = new CredentialsType(AccountKeyValue);
-        /// <summary>
-        /// Certificate
-        /// Serialized Name: CredentialsType.Certificate
-        /// </summary>
+        /// <summary> Certificate. </summary>
         public static CredentialsType Certificate { get; } = new CredentialsType(CertificateValue);
-        /// <summary>
-        /// None
-        /// Serialized Name: CredentialsType.None
-        /// </summary>
+        /// <summary> None. </summary>
         public static CredentialsType None { get; } = new CredentialsType(NoneValue);
-        /// <summary>
-        /// Sas
-        /// Serialized Name: CredentialsType.Sas
-        /// </summary>
+        /// <summary> Sas. </summary>
         public static CredentialsType Sas { get; } = new CredentialsType(SasValue);
-        /// <summary>
-        /// ServicePrincipal
-        /// Serialized Name: CredentialsType.ServicePrincipal
-        /// </summary>
+        /// <summary> ServicePrincipal. </summary>
         public static CredentialsType ServicePrincipal { get; } = new CredentialsType(ServicePrincipalValue);
         /// <summary> Determines if two <see cref="CredentialsType"/> values are the same. </summary>
         public static bool operator ==(CredentialsType left, CredentialsType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="CredentialsType"/> values are not the same. </summary>
         public static bool operator !=(CredentialsType left, CredentialsType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="CredentialsType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="CredentialsType"/>. </summary>
         public static implicit operator CredentialsType(string value) => new CredentialsType(value);
 
         /// <inheritdoc />
@@ -71,7 +53,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

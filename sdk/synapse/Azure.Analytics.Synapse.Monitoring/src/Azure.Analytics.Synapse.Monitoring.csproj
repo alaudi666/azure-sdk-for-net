@@ -4,6 +4,7 @@
     <AssemblyTitle>Azure.Analytics.Synapse.Monitoring</AssemblyTitle>
     <Version>1.0.0-beta.4</Version>
     <PackageTags>Microsoft Azure Synapse Monitoring;$(PackageCommonTags)</PackageTags>
+    <DisableEnhancedAnalysis>true</DisableEnhancedAnalysis>
     <TargetFrameworks>$(RequiredTargetFrameworks)</TargetFrameworks>
 
     <NoWarn>
@@ -14,13 +15,13 @@
       CS1591;
     </NoWarn>
     <IncludeOperationsSharedSource>true</IncludeOperationsSharedSource>
+    <IncludeAutorestDependency>true</IncludeAutorestDependency>
   </PropertyGroup>
 
   <Import Project="..\..\Azure.Analytics.Synapse.Shared\src\Azure.Analytics.Synapse.Shared.projitems" Label="Shared" />
 
   <ItemGroup>
     <PackageReference Include="Azure.Core" />
-    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
 
   <!-- Shared source from Azure.Core -->

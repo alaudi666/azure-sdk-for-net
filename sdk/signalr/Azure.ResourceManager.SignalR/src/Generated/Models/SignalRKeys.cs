@@ -5,36 +5,52 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.SignalR;
+
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> A class represents the access keys of the resource. </summary>
     public partial class SignalRKeys
     {
-        /// <summary> Initializes a new instance of SignalRKeys. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRKeys"/>. </summary>
         internal SignalRKeys()
         {
         }
 
-        /// <summary> Initializes a new instance of SignalRKeys. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRKeys"/>. </summary>
         /// <param name="primaryKey"> The primary access key. </param>
         /// <param name="secondaryKey"> The secondary access key. </param>
         /// <param name="primaryConnectionString"> Connection string constructed via the primaryKey. </param>
         /// <param name="secondaryConnectionString"> Connection string constructed via the secondaryKey. </param>
-        internal SignalRKeys(string primaryKey, string secondaryKey, string primaryConnectionString, string secondaryConnectionString)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRKeys(string primaryKey, string secondaryKey, string primaryConnectionString, string secondaryConnectionString, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             PrimaryKey = primaryKey;
             SecondaryKey = secondaryKey;
             PrimaryConnectionString = primaryConnectionString;
             SecondaryConnectionString = secondaryConnectionString;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The primary access key. </summary>
+        [WirePath("primaryKey")]
         public string PrimaryKey { get; }
+
         /// <summary> The secondary access key. </summary>
+        [WirePath("secondaryKey")]
         public string SecondaryKey { get; }
+
         /// <summary> Connection string constructed via the primaryKey. </summary>
+        [WirePath("primaryConnectionString")]
         public string PrimaryConnectionString { get; }
+
         /// <summary> Connection string constructed via the secondaryKey. </summary>
+        [WirePath("secondaryConnectionString")]
         public string SecondaryConnectionString { get; }
     }
 }

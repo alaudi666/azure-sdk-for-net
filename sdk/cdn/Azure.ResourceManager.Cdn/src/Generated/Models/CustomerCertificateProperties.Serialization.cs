@@ -6,32 +6,68 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
-    public partial class CustomerCertificateProperties : IUtf8JsonSerializable
+    public partial class CustomerCertificateProperties : IUtf8JsonSerializable, IJsonModel<CustomerCertificateProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<CustomerCertificateProperties>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<CustomerCertificateProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("secretSource");
-            JsonSerializer.Serialize(writer, SecretSource); if (Optional.IsDefined(SecretVersion))
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<CustomerCertificateProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                writer.WritePropertyName("secretVersion");
+                throw new FormatException($"The model {nameof(CustomerCertificateProperties)} does not support writing '{format}' format.");
+            }
+
+            base.JsonModelWriteCore(writer, options);
+            writer.WritePropertyName("secretSource"u8);
+            ((IJsonModel<WritableSubResource>)SecretSource).Write(writer, options);
+            if (Optional.IsDefined(SecretVersion))
+            {
+                writer.WritePropertyName("secretVersion"u8);
                 writer.WriteStringValue(SecretVersion);
             }
             if (Optional.IsDefined(UseLatestVersion))
             {
-                writer.WritePropertyName("useLatestVersion");
+                writer.WritePropertyName("useLatestVersion"u8);
                 writer.WriteBooleanValue(UseLatestVersion.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Subject))
+            {
+                writer.WritePropertyName("subject"u8);
+                writer.WriteStringValue(Subject);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ExpiresOn))
+            {
+                writer.WritePropertyName("expirationDate"u8);
+                writer.WriteStringValue(ExpiresOn.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(CertificateAuthority))
+            {
+                writer.WritePropertyName("certificateAuthority"u8);
+                writer.WriteStringValue(CertificateAuthority);
             }
             if (Optional.IsCollectionDefined(SubjectAlternativeNames))
             {
-                writer.WritePropertyName("subjectAlternativeNames");
+                writer.WritePropertyName("subjectAlternativeNames"u8);
                 writer.WriteStartArray();
                 foreach (var item in SubjectAlternativeNames)
                 {
@@ -39,69 +75,88 @@ namespace Azure.ResourceManager.Cdn.Models
                 }
                 writer.WriteEndArray();
             }
-            writer.WritePropertyName("type");
-            writer.WriteStringValue(SecretType.ToString());
-            writer.WriteEndObject();
+            if (options.Format != "W" && Optional.IsDefined(Thumbprint))
+            {
+                writer.WritePropertyName("thumbprint"u8);
+                writer.WriteStringValue(Thumbprint);
+            }
         }
 
-        internal static CustomerCertificateProperties DeserializeCustomerCertificateProperties(JsonElement element)
+        CustomerCertificateProperties IJsonModel<CustomerCertificateProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<CustomerCertificateProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(CustomerCertificateProperties)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeCustomerCertificateProperties(document.RootElement, options);
+        }
+
+        internal static CustomerCertificateProperties DeserializeCustomerCertificateProperties(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             WritableSubResource secretSource = default;
-            Optional<string> secretVersion = default;
-            Optional<bool> useLatestVersion = default;
-            Optional<string> subject = default;
-            Optional<DateTimeOffset> expirationDate = default;
-            Optional<string> certificateAuthority = default;
-            Optional<IList<string>> subjectAlternativeNames = default;
-            Optional<string> thumbprint = default;
+            string secretVersion = default;
+            bool? useLatestVersion = default;
+            string subject = default;
+            DateTimeOffset? expirationDate = default;
+            string certificateAuthority = default;
+            IList<string> subjectAlternativeNames = default;
+            string thumbprint = default;
             SecretType type = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("secretSource"))
+                if (property.NameEquals("secretSource"u8))
                 {
-                    secretSource = JsonSerializer.Deserialize<WritableSubResource>(property.Value.GetRawText());
+                    secretSource = ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(property.Value.GetRawText())), options, AzureResourceManagerCdnContext.Default);
                     continue;
                 }
-                if (property.NameEquals("secretVersion"))
+                if (property.NameEquals("secretVersion"u8))
                 {
                     secretVersion = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("useLatestVersion"))
+                if (property.NameEquals("useLatestVersion"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     useLatestVersion = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("subject"))
+                if (property.NameEquals("subject"u8))
                 {
                     subject = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("expirationDate"))
+                if (property.NameEquals("expirationDate"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     expirationDate = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("certificateAuthority"))
+                if (property.NameEquals("certificateAuthority"u8))
                 {
                     certificateAuthority = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("subjectAlternativeNames"))
+                if (property.NameEquals("subjectAlternativeNames"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -112,18 +167,271 @@ namespace Azure.ResourceManager.Cdn.Models
                     subjectAlternativeNames = array;
                     continue;
                 }
-                if (property.NameEquals("thumbprint"))
+                if (property.NameEquals("thumbprint"u8))
                 {
                     thumbprint = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     type = new SecretType(property.Value.GetString());
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new CustomerCertificateProperties(type, secretSource, secretVersion.Value, Optional.ToNullable(useLatestVersion), subject.Value, Optional.ToNullable(expirationDate), certificateAuthority.Value, Optional.ToList(subjectAlternativeNames), thumbprint.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new CustomerCertificateProperties(
+                type,
+                serializedAdditionalRawData,
+                secretSource,
+                secretVersion,
+                useLatestVersion,
+                subject,
+                expirationDate,
+                certificateAuthority,
+                subjectAlternativeNames ?? new ChangeTrackingList<string>(),
+                thumbprint);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("SecretSourceId", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  secretSource: ");
+                builder.AppendLine("{");
+                builder.Append("    id: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("  }");
+            }
+            else
+            {
+                if (Optional.IsDefined(SecretSource))
+                {
+                    builder.Append("  secretSource: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, SecretSource, options, 2, false, "  secretSource: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SecretVersion), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  secretVersion: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(SecretVersion))
+                {
+                    builder.Append("  secretVersion: ");
+                    if (SecretVersion.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{SecretVersion}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{SecretVersion}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(UseLatestVersion), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  useLatestVersion: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(UseLatestVersion))
+                {
+                    builder.Append("  useLatestVersion: ");
+                    var boolValue = UseLatestVersion.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Subject), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  subject: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Subject))
+                {
+                    builder.Append("  subject: ");
+                    if (Subject.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Subject}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Subject}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ExpiresOn), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  expirationDate: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ExpiresOn))
+                {
+                    builder.Append("  expirationDate: ");
+                    var formattedDateTimeString = TypeFormatters.ToString(ExpiresOn.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(CertificateAuthority), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  certificateAuthority: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(CertificateAuthority))
+                {
+                    builder.Append("  certificateAuthority: ");
+                    if (CertificateAuthority.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{CertificateAuthority}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{CertificateAuthority}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SubjectAlternativeNames), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  subjectAlternativeNames: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(SubjectAlternativeNames))
+                {
+                    if (SubjectAlternativeNames.Any())
+                    {
+                        builder.Append("  subjectAlternativeNames: ");
+                        builder.AppendLine("[");
+                        foreach (var item in SubjectAlternativeNames)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("    '''");
+                                builder.AppendLine($"{item}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"    '{item}'");
+                            }
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Thumbprint), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  thumbprint: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Thumbprint))
+                {
+                    builder.Append("  thumbprint: ");
+                    if (Thumbprint.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Thumbprint}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Thumbprint}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SecretType), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  type: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  type: ");
+                builder.AppendLine($"'{SecretType.ToString()}'");
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<CustomerCertificateProperties>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<CustomerCertificateProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerCdnContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(CustomerCertificateProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        CustomerCertificateProperties IPersistableModel<CustomerCertificateProperties>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<CustomerCertificateProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeCustomerCertificateProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(CustomerCertificateProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<CustomerCertificateProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -5,44 +5,59 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.SignalR;
 
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Describes scaling information of a sku. </summary>
     public partial class SignalRSkuCapacity
     {
-        /// <summary> Initializes a new instance of SignalRSkuCapacity. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRSkuCapacity"/>. </summary>
         internal SignalRSkuCapacity()
         {
             AllowedValues = new ChangeTrackingList<int>();
         }
 
-        /// <summary> Initializes a new instance of SignalRSkuCapacity. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRSkuCapacity"/>. </summary>
         /// <param name="minimum"> The lowest permitted capacity for this resource. </param>
         /// <param name="maximum"> The highest permitted capacity for this resource. </param>
         /// <param name="default"> The default capacity. </param>
         /// <param name="allowedValues"> Allows capacity value list. </param>
         /// <param name="scaleType"> The scale type applicable to the sku. </param>
-        internal SignalRSkuCapacity(int? minimum, int? maximum, int? @default, IReadOnlyList<int> allowedValues, SignalRScaleType? scaleType)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRSkuCapacity(int? minimum, int? maximum, int? @default, IReadOnlyList<int> allowedValues, SignalRScaleType? scaleType, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Minimum = minimum;
             Maximum = maximum;
             Default = @default;
             AllowedValues = allowedValues;
             ScaleType = scaleType;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The lowest permitted capacity for this resource. </summary>
+        [WirePath("minimum")]
         public int? Minimum { get; }
+
         /// <summary> The highest permitted capacity for this resource. </summary>
+        [WirePath("maximum")]
         public int? Maximum { get; }
+
         /// <summary> The default capacity. </summary>
+        [WirePath("default")]
         public int? Default { get; }
+
         /// <summary> Allows capacity value list. </summary>
+        [WirePath("allowedValues")]
         public IReadOnlyList<int> AllowedValues { get; }
+
         /// <summary> The scale type applicable to the sku. </summary>
+        [WirePath("scaleType")]
         public SignalRScaleType? ScaleType { get; }
     }
 }

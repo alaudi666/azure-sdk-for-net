@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Configure STL Decomposition of the time-series target column.
-    /// Serialized Name: UseStl
-    /// </summary>
+    /// <summary> Configure STL Decomposition of the time-series target column. </summary>
     public readonly partial struct MachineLearningUseStl : IEquatable<MachineLearningUseStl>
     {
         private readonly string _value;
@@ -29,26 +26,17 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string SeasonValue = "Season";
         private const string SeasonTrendValue = "SeasonTrend";
 
-        /// <summary>
-        /// No stl decomposition.
-        /// Serialized Name: UseStl.None
-        /// </summary>
+        /// <summary> No stl decomposition. </summary>
         public static MachineLearningUseStl None { get; } = new MachineLearningUseStl(NoneValue);
-        /// <summary>
-        /// Season
-        /// Serialized Name: UseStl.Season
-        /// </summary>
+        /// <summary> Season. </summary>
         public static MachineLearningUseStl Season { get; } = new MachineLearningUseStl(SeasonValue);
-        /// <summary>
-        /// SeasonTrend
-        /// Serialized Name: UseStl.SeasonTrend
-        /// </summary>
+        /// <summary> SeasonTrend. </summary>
         public static MachineLearningUseStl SeasonTrend { get; } = new MachineLearningUseStl(SeasonTrendValue);
         /// <summary> Determines if two <see cref="MachineLearningUseStl"/> values are the same. </summary>
         public static bool operator ==(MachineLearningUseStl left, MachineLearningUseStl right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningUseStl"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningUseStl left, MachineLearningUseStl right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningUseStl"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningUseStl"/>. </summary>
         public static implicit operator MachineLearningUseStl(string value) => new MachineLearningUseStl(value);
 
         /// <inheritdoc />
@@ -59,7 +47,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

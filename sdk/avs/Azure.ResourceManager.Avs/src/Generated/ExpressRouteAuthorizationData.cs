@@ -5,44 +5,83 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Avs.Models;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Avs
 {
-    /// <summary> A class representing the ExpressRouteAuthorization data model. </summary>
+    /// <summary> ExpressRoute Circuit Authorization. </summary>
     public partial class ExpressRouteAuthorizationData : ResourceData
     {
-        /// <summary> Initializes a new instance of ExpressRouteAuthorizationData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ExpressRouteAuthorizationData"/>. </summary>
         public ExpressRouteAuthorizationData()
         {
         }
 
-        /// <summary> Initializes a new instance of ExpressRouteAuthorizationData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="provisioningState"> The state of the  ExpressRoute Circuit Authorization provisioning. </param>
-        /// <param name="expressRouteAuthorizationId"> The ID of the ExpressRoute Circuit Authorization. </param>
-        /// <param name="expressRouteAuthorizationKey"> The key of the ExpressRoute Circuit Authorization. </param>
-        /// <param name="expressRouteId"> The ID of the ExpressRoute Circuit. </param>
-        internal ExpressRouteAuthorizationData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, ExpressRouteAuthorizationProvisioningState? provisioningState, ResourceIdentifier expressRouteAuthorizationId, string expressRouteAuthorizationKey, ResourceIdentifier expressRouteId) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="ExpressRouteAuthorizationData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> The resource-specific properties for this resource. </param>
+        internal ExpressRouteAuthorizationData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, ExpressRouteAuthorizationProperties properties) : base(id, name, resourceType, systemData)
         {
-            ProvisioningState = provisioningState;
-            ExpressRouteAuthorizationId = expressRouteAuthorizationId;
-            ExpressRouteAuthorizationKey = expressRouteAuthorizationKey;
-            ExpressRouteId = expressRouteId;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
 
-        /// <summary> The state of the  ExpressRoute Circuit Authorization provisioning. </summary>
-        public ExpressRouteAuthorizationProvisioningState? ProvisioningState { get; }
+        /// <summary> The resource-specific properties for this resource. </summary>
+        internal ExpressRouteAuthorizationProperties Properties { get; set; }
+
+        /// <summary> The state of the ExpressRoute Circuit Authorization provisioning. </summary>
+        public ExpressRouteAuthorizationProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+        }
+
         /// <summary> The ID of the ExpressRoute Circuit Authorization. </summary>
-        public ResourceIdentifier ExpressRouteAuthorizationId { get; }
+        public ResourceIdentifier ExpressRouteAuthorizationId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ExpressRouteAuthorizationId;
+            }
+        }
+
         /// <summary> The key of the ExpressRoute Circuit Authorization. </summary>
-        public string ExpressRouteAuthorizationKey { get; }
+        public string ExpressRouteAuthorizationKey
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ExpressRouteAuthorizationKey;
+            }
+        }
+
         /// <summary> The ID of the ExpressRoute Circuit. </summary>
-        public ResourceIdentifier ExpressRouteId { get; set; }
+        public ResourceIdentifier ExpressRouteId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ExpressRouteId;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ExpressRouteAuthorizationProperties();
+                }
+                Properties.ExpressRouteId = value;
+            }
+        }
     }
 }

@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.RecoveryServices;
 
 namespace Azure.ResourceManager.RecoveryServices.Models
@@ -14,24 +15,31 @@ namespace Azure.ResourceManager.RecoveryServices.Models
     /// <summary> Class which represent the stamps associated with the vault. </summary>
     internal partial class PrivateLinkResources
     {
-        /// <summary> Initializes a new instance of PrivateLinkResources. </summary>
-        internal PrivateLinkResources()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="PrivateLinkResources"/>. </summary>
+        /// <param name="value"> The PrivateLinkResource items on this page. </param>
+        internal PrivateLinkResources(IEnumerable<RecoveryServicesPrivateLinkResourceData> value)
         {
-            Value = new ChangeTrackingList<RecoveryServicesPrivateLinkResourceData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of PrivateLinkResources. </summary>
-        /// <param name="value"> A collection of private link resources. </param>
-        /// <param name="nextLink"> Link to the next chunk of the response. </param>
-        internal PrivateLinkResources(IReadOnlyList<RecoveryServicesPrivateLinkResourceData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="PrivateLinkResources"/>. </summary>
+        /// <param name="value"> The PrivateLinkResource items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal PrivateLinkResources(IList<RecoveryServicesPrivateLinkResourceData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> A collection of private link resources. </summary>
-        public IReadOnlyList<RecoveryServicesPrivateLinkResourceData> Value { get; }
-        /// <summary> Link to the next chunk of the response. </summary>
-        public string NextLink { get; }
+        /// <summary> The PrivateLinkResource items on this page. </summary>
+        public IList<RecoveryServicesPrivateLinkResourceData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

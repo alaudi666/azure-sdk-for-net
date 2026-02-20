@@ -7,41 +7,90 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.PowerBIDedicated;
 
 namespace Azure.ResourceManager.PowerBIDedicated.Models
 {
     /// <summary> Provision request specification. </summary>
     public partial class DedicatedCapacityPatch
     {
-        /// <summary> Initializes a new instance of DedicatedCapacityPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DedicatedCapacityPatch"/>. </summary>
         public DedicatedCapacityPatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="DedicatedCapacityPatch"/>. </summary>
+        /// <param name="sku"> The SKU of the Dedicated capacity resource. </param>
+        /// <param name="tags"> Key-value pairs of additional provisioning properties. </param>
+        /// <param name="properties"> Properties of the provision operation request. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DedicatedCapacityPatch(CapacitySku sku, IDictionary<string, string> tags, DedicatedCapacityMutableProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Sku = sku;
+            Tags = tags;
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> The SKU of the Dedicated capacity resource. </summary>
         public CapacitySku Sku { get; set; }
+
         /// <summary> Key-value pairs of additional provisioning properties. </summary>
         public IDictionary<string, string> Tags { get; }
-        /// <summary> A collection of Dedicated capacity administrators. </summary>
-        internal DedicatedCapacityAdministrators Administration { get; set; }
+
+        /// <summary> Properties of the provision operation request. </summary>
+        internal DedicatedCapacityMutableProperties Properties { get; set; }
+
+        /// <summary> Specifies the generation of the Power BI Embedded capacity. If no value is specified, the default value 'Gen2' is used. [Learn More](https://docs.microsoft.com/power-bi/developer/embedded/power-bi-embedded-generation-2). </summary>
+        public Mode? Mode
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Mode;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new DedicatedCapacityMutableProperties();
+                }
+                Properties.Mode = value.Value;
+            }
+        }
+
+        /// <summary> Tenant ID for the capacity. Used for creating Pro Plus capacity. </summary>
+        public Guid? TenantId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.TenantId;
+            }
+        }
+
+        /// <summary> Capacity name. </summary>
+        public string FriendlyName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.FriendlyName;
+            }
+        }
+
         /// <summary> An array of administrator user identities. </summary>
         public IList<string> AdministrationMembers
         {
             get
             {
-                if (Administration is null)
-                    Administration = new DedicatedCapacityAdministrators();
-                return Administration.Members;
+                if (Properties is null)
+                {
+                    Properties = new DedicatedCapacityMutableProperties();
+                }
+                return Properties.AdministrationMembers;
             }
         }
-
-        /// <summary> Specifies the generation of the Power BI Embedded capacity. If no value is specified, the default value &apos;Gen2&apos; is used. [Learn More](https://docs.microsoft.com/power-bi/developer/embedded/power-bi-embedded-generation-2). </summary>
-        public Mode? Mode { get; set; }
-        /// <summary> Tenant ID for the capacity. Used for creating Pro Plus capacity. </summary>
-        public Guid? TenantId { get; }
-        /// <summary> Capacity name. </summary>
-        public string FriendlyName { get; }
     }
 }

@@ -6,28 +6,35 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Shipment pick up response. </summary>
     public partial class DataBoxShipmentPickUpResult
     {
-        /// <summary> Initializes a new instance of DataBoxShipmentPickUpResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DataBoxShipmentPickUpResult"/>. </summary>
         internal DataBoxShipmentPickUpResult()
         {
         }
 
-        /// <summary> Initializes a new instance of DataBoxShipmentPickUpResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataBoxShipmentPickUpResult"/>. </summary>
         /// <param name="confirmationNumber"> Confirmation number for the pick up request. </param>
         /// <param name="readyBy"> Time by which shipment should be ready for pick up, this is in local time of pick up area. </param>
-        internal DataBoxShipmentPickUpResult(string confirmationNumber, DateTimeOffset? readyBy)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DataBoxShipmentPickUpResult(string confirmationNumber, DateTimeOffset? readyBy, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ConfirmationNumber = confirmationNumber;
             ReadyBy = readyBy;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Confirmation number for the pick up request. </summary>
         public string ConfirmationNumber { get; }
+
         /// <summary> Time by which shipment should be ready for pick up, this is in local time of pick up area. </summary>
         public DateTimeOffset? ReadyBy { get; }
     }

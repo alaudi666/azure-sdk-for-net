@@ -6,79 +6,177 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Dynatrace;
 
 namespace Azure.ResourceManager.Dynatrace.Models
 {
-    public partial class DynatraceEnvironmentInfo : IUtf8JsonSerializable
+    /// <summary> Dynatrace Environment Information. </summary>
+    public partial class DynatraceEnvironmentInfo : IJsonModel<DynatraceEnvironmentInfo>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DynatraceEnvironmentInfo PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceEnvironmentInfo>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDynatraceEnvironmentInfo(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DynatraceEnvironmentInfo)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DynatraceEnvironmentInfo>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceEnvironmentInfo>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DynatraceEnvironmentInfo)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(EnvironmentId))
             {
-                writer.WritePropertyName("environmentId");
+                writer.WritePropertyName("environmentId"u8);
                 writer.WriteStringValue(EnvironmentId);
             }
             if (Optional.IsDefined(IngestionKey))
             {
-                writer.WritePropertyName("ingestionKey");
+                writer.WritePropertyName("ingestionKey"u8);
                 writer.WriteStringValue(IngestionKey);
             }
             if (Optional.IsDefined(LogsIngestionEndpoint))
             {
-                writer.WritePropertyName("logsIngestionEndpoint");
+                writer.WritePropertyName("logsIngestionEndpoint"u8);
                 writer.WriteStringValue(LogsIngestionEndpoint.AbsoluteUri);
             }
             if (Optional.IsDefined(LandingUri))
             {
-                writer.WritePropertyName("landingURL");
+                writer.WritePropertyName("landingURL"u8);
                 writer.WriteStringValue(LandingUri.AbsoluteUri);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static DynatraceEnvironmentInfo DeserializeDynatraceEnvironmentInfo(JsonElement element)
-        {
-            Optional<string> environmentId = default;
-            Optional<string> ingestionKey = default;
-            Optional<Uri> logsIngestionEndpoint = default;
-            Optional<Uri> landingUri = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("environmentId"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    environmentId = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("ingestionKey"))
-                {
-                    ingestionKey = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("logsIngestionEndpoint"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        logsIngestionEndpoint = null;
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    logsIngestionEndpoint = new Uri(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("landingURL"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        landingUri = null;
-                        continue;
-                    }
-                    landingUri = new Uri(property.Value.GetString());
-                    continue;
+#endif
                 }
             }
-            return new DynatraceEnvironmentInfo(environmentId.Value, ingestionKey.Value, logsIngestionEndpoint.Value, landingUri.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DynatraceEnvironmentInfo IJsonModel<DynatraceEnvironmentInfo>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DynatraceEnvironmentInfo JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceEnvironmentInfo>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DynatraceEnvironmentInfo)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDynatraceEnvironmentInfo(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DynatraceEnvironmentInfo DeserializeDynatraceEnvironmentInfo(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string environmentId = default;
+            string ingestionKey = default;
+            Uri logsIngestionEndpoint = default;
+            Uri landingUri = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("environmentId"u8))
+                {
+                    environmentId = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("ingestionKey"u8))
+                {
+                    ingestionKey = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("logsIngestionEndpoint"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    logsIngestionEndpoint = string.IsNullOrEmpty(prop.Value.GetString()) ? null : new Uri(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("landingURL"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    landingUri = string.IsNullOrEmpty(prop.Value.GetString()) ? null : new Uri(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new DynatraceEnvironmentInfo(environmentId, ingestionKey, logsIngestionEndpoint, landingUri, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DynatraceEnvironmentInfo>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceEnvironmentInfo>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDynatraceContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DynatraceEnvironmentInfo)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DynatraceEnvironmentInfo IPersistableModel<DynatraceEnvironmentInfo>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DynatraceEnvironmentInfo>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

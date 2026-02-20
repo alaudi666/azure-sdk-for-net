@@ -8,8 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
@@ -21,62 +20,85 @@ using Azure.ResourceManager.Resources;
 namespace Azure.ResourceManager.LoadTesting
 {
     /// <summary>
-    /// A class representing a collection of <see cref="LoadTestingQuotaResource" /> and their operations.
-    /// Each <see cref="LoadTestingQuotaResource" /> in the collection will belong to the same instance of <see cref="SubscriptionResource" />.
-    /// To get a <see cref="LoadTestingQuotaCollection" /> instance call the GetLoadTestingQuota method from an instance of <see cref="SubscriptionResource" />.
+    /// A class representing a collection of <see cref="LoadTestingQuotaResource"/> and their operations.
+    /// Each <see cref="LoadTestingQuotaResource"/> in the collection will belong to the same instance of <see cref="SubscriptionResource"/>.
+    /// To get a <see cref="LoadTestingQuotaCollection"/> instance call the GetLoadTestingQuotas method from an instance of <see cref="SubscriptionResource"/>.
     /// </summary>
     public partial class LoadTestingQuotaCollection : ArmCollection, IEnumerable<LoadTestingQuotaResource>, IAsyncEnumerable<LoadTestingQuotaResource>
     {
-        private readonly ClientDiagnostics _loadTestingQuotaQuotasClientDiagnostics;
-        private readonly QuotasRestOperations _loadTestingQuotaQuotasRestClient;
+        private readonly ClientDiagnostics _loadTestMgmtClientClientDiagnostics;
+        private readonly LoadTestMgmtClient _loadTestMgmtClientRestClient;
+        /// <summary> The location. </summary>
         private readonly AzureLocation _location;
 
-        /// <summary> Initializes a new instance of the <see cref="LoadTestingQuotaCollection"/> class for mocking. </summary>
+        /// <summary> Initializes a new instance of LoadTestingQuotaCollection for mocking. </summary>
         protected LoadTestingQuotaCollection()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref="LoadTestingQuotaCollection"/> class. </summary>
+        /// <summary> Initializes a new instance of <see cref="LoadTestingQuotaCollection"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
-        /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
-        /// <param name="location"> The name of Azure region. </param>
+        /// <param name="id"> The identifier of the resource that is the target of operations. </param>
+        /// <param name="location"> The location for the resource. </param>
         internal LoadTestingQuotaCollection(ArmClient client, ResourceIdentifier id, AzureLocation location) : base(client, id)
         {
+            TryGetApiVersion(LoadTestingQuotaResource.ResourceType, out string loadTestingQuotaApiVersion);
             _location = location;
-            _loadTestingQuotaQuotasClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.LoadTesting", LoadTestingQuotaResource.ResourceType.Namespace, Diagnostics);
-            TryGetApiVersion(LoadTestingQuotaResource.ResourceType, out string loadTestingQuotaQuotasApiVersion);
-            _loadTestingQuotaQuotasRestClient = new QuotasRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, loadTestingQuotaQuotasApiVersion);
-#if DEBUG
-			ValidateResourceId(Id);
-#endif
+            _loadTestMgmtClientClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.LoadTesting", LoadTestingQuotaResource.ResourceType.Namespace, Diagnostics);
+            _loadTestMgmtClientRestClient = new LoadTestMgmtClient(_loadTestMgmtClientClientDiagnostics, Pipeline, Endpoint, loadTestingQuotaApiVersion ?? "2024-12-01-preview");
+            ValidateResourceId(id);
         }
 
+        /// <param name="id"></param>
+        [Conditional("DEBUG")]
         internal static void ValidateResourceId(ResourceIdentifier id)
         {
             if (id.ResourceType != SubscriptionResource.ResourceType)
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, SubscriptionResource.ResourceType), nameof(id));
+            {
+                throw new ArgumentException(string.Format("Invalid resource type {0} expected {1}", id.ResourceType, SubscriptionResource.ResourceType), id);
+            }
         }
 
         /// <summary>
         /// Get the available quota for a quota bucket per region per subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas/{quotaBucketName}
-        /// Operation Id: Quotas_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas/{quotaBucketName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> LoadTests_GetQuota. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-12-01-preview. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="quotaBucketName"> Quota Bucket name. </param>
+        /// <param name="quotaBucketName"> The quota name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="quotaBucketName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="quotaBucketName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="quotaBucketName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<LoadTestingQuotaResource>> GetAsync(string quotaBucketName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(quotaBucketName, nameof(quotaBucketName));
 
-            using var scope = _loadTestingQuotaQuotasClientDiagnostics.CreateScope("LoadTestingQuotaCollection.Get");
+            using DiagnosticScope scope = _loadTestMgmtClientClientDiagnostics.CreateScope("LoadTestingQuotaCollection.Get");
             scope.Start();
             try
             {
-                var response = await _loadTestingQuotaQuotasRestClient.GetAsync(Id.SubscriptionId, new AzureLocation(_location), quotaBucketName, cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _loadTestMgmtClientRestClient.CreateGetQuotaRequest(Guid.Parse(Id.SubscriptionId), _location, quotaBucketName, context);
+                Response result = await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                Response<LoadTestingQuotaData> response = Response.FromValue(LoadTestingQuotaData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new LoadTestingQuotaResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -88,24 +110,44 @@ namespace Azure.ResourceManager.LoadTesting
 
         /// <summary>
         /// Get the available quota for a quota bucket per region per subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas/{quotaBucketName}
-        /// Operation Id: Quotas_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas/{quotaBucketName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> LoadTests_GetQuota. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-12-01-preview. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="quotaBucketName"> Quota Bucket name. </param>
+        /// <param name="quotaBucketName"> The quota name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="quotaBucketName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="quotaBucketName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="quotaBucketName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<LoadTestingQuotaResource> Get(string quotaBucketName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(quotaBucketName, nameof(quotaBucketName));
 
-            using var scope = _loadTestingQuotaQuotasClientDiagnostics.CreateScope("LoadTestingQuotaCollection.Get");
+            using DiagnosticScope scope = _loadTestMgmtClientClientDiagnostics.CreateScope("LoadTestingQuotaCollection.Get");
             scope.Start();
             try
             {
-                var response = _loadTestingQuotaQuotasRestClient.Get(Id.SubscriptionId, new AzureLocation(_location), quotaBucketName, cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _loadTestMgmtClientRestClient.CreateGetQuotaRequest(Guid.Parse(Id.SubscriptionId), _location, quotaBucketName, context);
+                Response result = Pipeline.ProcessMessage(message, context);
+                Response<LoadTestingQuotaData> response = Response.FromValue(LoadTestingQuotaData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new LoadTestingQuotaResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -116,107 +158,109 @@ namespace Azure.ResourceManager.LoadTesting
         }
 
         /// <summary>
-        /// Lists all the available quota per region per subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas
-        /// Operation Id: Quotas_List
+        /// List quotas for a given subscription Id.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> LoadTests_ListQuota. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-12-01-preview. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="LoadTestingQuotaResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="LoadTestingQuotaResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<LoadTestingQuotaResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<LoadTestingQuotaResource>> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _loadTestingQuotaQuotasClientDiagnostics.CreateScope("LoadTestingQuotaCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _loadTestingQuotaQuotasRestClient.ListAsync(Id.SubscriptionId, new AzureLocation(_location), cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new LoadTestingQuotaResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<LoadTestingQuotaResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _loadTestingQuotaQuotasClientDiagnostics.CreateScope("LoadTestingQuotaCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _loadTestingQuotaQuotasRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, new AzureLocation(_location), cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new LoadTestingQuotaResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new AsyncPageableWrapper<LoadTestingQuotaData, LoadTestingQuotaResource>(new LoadTestMgmtClientGetQuotaAsyncCollectionResultOfT(_loadTestMgmtClientRestClient, Guid.Parse(Id.SubscriptionId), _location, context), data => new LoadTestingQuotaResource(Client, data));
         }
 
         /// <summary>
-        /// Lists all the available quota per region per subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas
-        /// Operation Id: Quotas_List
+        /// List quotas for a given subscription Id.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> LoadTests_ListQuota. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-12-01-preview. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="LoadTestingQuotaResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="LoadTestingQuotaResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<LoadTestingQuotaResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<LoadTestingQuotaResource> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _loadTestingQuotaQuotasClientDiagnostics.CreateScope("LoadTestingQuotaCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _loadTestingQuotaQuotasRestClient.List(Id.SubscriptionId, new AzureLocation(_location), cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new LoadTestingQuotaResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<LoadTestingQuotaResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _loadTestingQuotaQuotasClientDiagnostics.CreateScope("LoadTestingQuotaCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _loadTestingQuotaQuotasRestClient.ListNextPage(nextLink, Id.SubscriptionId, new AzureLocation(_location), cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new LoadTestingQuotaResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new PageableWrapper<LoadTestingQuotaData, LoadTestingQuotaResource>(new LoadTestMgmtClientGetQuotaCollectionResultOfT(_loadTestMgmtClientRestClient, Guid.Parse(Id.SubscriptionId), _location, context), data => new LoadTestingQuotaResource(Client, data));
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas/{quotaBucketName}
-        /// Operation Id: Quotas_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas/{quotaBucketName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> LoadTests_GetQuota. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-12-01-preview. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="quotaBucketName"> Quota Bucket name. </param>
+        /// <param name="quotaBucketName"> The quota name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="quotaBucketName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="quotaBucketName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="quotaBucketName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<bool>> ExistsAsync(string quotaBucketName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(quotaBucketName, nameof(quotaBucketName));
 
-            using var scope = _loadTestingQuotaQuotasClientDiagnostics.CreateScope("LoadTestingQuotaCollection.Exists");
+            using DiagnosticScope scope = _loadTestMgmtClientClientDiagnostics.CreateScope("LoadTestingQuotaCollection.Exists");
             scope.Start();
             try
             {
-                var response = await _loadTestingQuotaQuotasRestClient.GetAsync(Id.SubscriptionId, new AzureLocation(_location), quotaBucketName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _loadTestMgmtClientRestClient.CreateGetQuotaRequest(Guid.Parse(Id.SubscriptionId), _location, quotaBucketName, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<LoadTestingQuotaData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(LoadTestingQuotaData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((LoadTestingQuotaData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -228,23 +272,175 @@ namespace Azure.ResourceManager.LoadTesting
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas/{quotaBucketName}
-        /// Operation Id: Quotas_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas/{quotaBucketName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> LoadTests_GetQuota. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-12-01-preview. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="quotaBucketName"> Quota Bucket name. </param>
+        /// <param name="quotaBucketName"> The quota name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="quotaBucketName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="quotaBucketName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="quotaBucketName"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<bool> Exists(string quotaBucketName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(quotaBucketName, nameof(quotaBucketName));
 
-            using var scope = _loadTestingQuotaQuotasClientDiagnostics.CreateScope("LoadTestingQuotaCollection.Exists");
+            using DiagnosticScope scope = _loadTestMgmtClientClientDiagnostics.CreateScope("LoadTestingQuotaCollection.Exists");
             scope.Start();
             try
             {
-                var response = _loadTestingQuotaQuotasRestClient.Get(Id.SubscriptionId, new AzureLocation(_location), quotaBucketName, cancellationToken: cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _loadTestMgmtClientRestClient.CreateGetQuotaRequest(Guid.Parse(Id.SubscriptionId), _location, quotaBucketName, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<LoadTestingQuotaData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(LoadTestingQuotaData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((LoadTestingQuotaData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas/{quotaBucketName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> LoadTests_GetQuota. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-12-01-preview. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="quotaBucketName"> The quota name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="quotaBucketName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="quotaBucketName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual async Task<NullableResponse<LoadTestingQuotaResource>> GetIfExistsAsync(string quotaBucketName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(quotaBucketName, nameof(quotaBucketName));
+
+            using DiagnosticScope scope = _loadTestMgmtClientClientDiagnostics.CreateScope("LoadTestingQuotaCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _loadTestMgmtClientRestClient.CreateGetQuotaRequest(Guid.Parse(Id.SubscriptionId), _location, quotaBucketName, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<LoadTestingQuotaData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(LoadTestingQuotaData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((LoadTestingQuotaData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<LoadTestingQuotaResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new LoadTestingQuotaResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/providers/Microsoft.LoadTestService/locations/{location}/quotas/{quotaBucketName}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> LoadTests_GetQuota. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2024-12-01-preview. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="quotaBucketName"> The quota name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="quotaBucketName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="quotaBucketName"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual NullableResponse<LoadTestingQuotaResource> GetIfExists(string quotaBucketName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(quotaBucketName, nameof(quotaBucketName));
+
+            using DiagnosticScope scope = _loadTestMgmtClientClientDiagnostics.CreateScope("LoadTestingQuotaCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _loadTestMgmtClientRestClient.CreateGetQuotaRequest(Guid.Parse(Id.SubscriptionId), _location, quotaBucketName, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<LoadTestingQuotaData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(LoadTestingQuotaData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((LoadTestingQuotaData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<LoadTestingQuotaResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new LoadTestingQuotaResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {
@@ -263,6 +459,7 @@ namespace Azure.ResourceManager.LoadTesting
             return GetAll().GetEnumerator();
         }
 
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
         IAsyncEnumerator<LoadTestingQuotaResource> IAsyncEnumerable<LoadTestingQuotaResource>.GetAsyncEnumerator(CancellationToken cancellationToken)
         {
             return GetAllAsync(cancellationToken: cancellationToken).GetAsyncEnumerator(cancellationToken);

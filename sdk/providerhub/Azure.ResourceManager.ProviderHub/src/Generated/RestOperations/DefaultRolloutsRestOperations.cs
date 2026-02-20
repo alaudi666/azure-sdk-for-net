@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.ProviderHub.Models;
@@ -33,8 +32,22 @@ namespace Azure.ResourceManager.ProviderHub
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-09-01-preview";
+            _apiVersion = apiVersion ?? "2024-09-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
+        }
+
+        internal RequestUriBuilder CreateGetRequestUri(string subscriptionId, string providerNamespace, string rolloutName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/defaultRollouts/", false);
+            uri.AppendPath(rolloutName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetRequest(string subscriptionId, string providerNamespace, string rolloutName)
@@ -58,7 +71,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the default rollout details. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="rolloutName"> The rollout name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -77,7 +90,7 @@ namespace Azure.ResourceManager.ProviderHub
                 case 200:
                     {
                         DefaultRolloutData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = DefaultRolloutData.DeserializeDefaultRolloutData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -89,7 +102,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the default rollout details. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="rolloutName"> The rollout name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -108,7 +121,7 @@ namespace Azure.ResourceManager.ProviderHub
                 case 200:
                     {
                         DefaultRolloutData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = DefaultRolloutData.DeserializeDefaultRolloutData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -117,6 +130,20 @@ namespace Azure.ResourceManager.ProviderHub
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateDeleteRequestUri(string subscriptionId, string providerNamespace, string rolloutName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/defaultRollouts/", false);
+            uri.AppendPath(rolloutName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateDeleteRequest(string subscriptionId, string providerNamespace, string rolloutName)
@@ -140,7 +167,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Deletes the rollout resource. Rollout must be in terminal state. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="rolloutName"> The rollout name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -165,7 +192,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Deletes the rollout resource. Rollout must be in terminal state. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="rolloutName"> The rollout name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -189,6 +216,20 @@ namespace Azure.ResourceManager.ProviderHub
             }
         }
 
+        internal RequestUriBuilder CreateCreateOrUpdateRequestUri(string subscriptionId, string providerNamespace, string rolloutName, DefaultRolloutData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/defaultRollouts/", false);
+            uri.AppendPath(rolloutName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
         internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string providerNamespace, string rolloutName, DefaultRolloutData data)
         {
             var message = _pipeline.CreateMessage();
@@ -207,14 +248,14 @@ namespace Azure.ResourceManager.ProviderHub
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Creates or updates the rollout details. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="rolloutName"> The rollout name. </param>
         /// <param name="data"> The Default rollout properties supplied to the CreateOrUpdate operation. </param>
@@ -241,7 +282,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Creates or updates the rollout details. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="rolloutName"> The rollout name. </param>
         /// <param name="data"> The Default rollout properties supplied to the CreateOrUpdate operation. </param>
@@ -267,6 +308,19 @@ namespace Azure.ResourceManager.ProviderHub
             }
         }
 
+        internal RequestUriBuilder CreateListByProviderRegistrationRequestUri(string subscriptionId, string providerNamespace)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/defaultRollouts", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
         internal HttpMessage CreateListByProviderRegistrationRequest(string subscriptionId, string providerNamespace)
         {
             var message = _pipeline.CreateMessage();
@@ -287,12 +341,12 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the list of the rollouts for the given provider. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> or <paramref name="providerNamespace"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="providerNamespace"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<DefaultRolloutArrayResponseWithContinuation>> ListByProviderRegistrationAsync(string subscriptionId, string providerNamespace, CancellationToken cancellationToken = default)
+        public async Task<Response<DefaultRolloutListResult>> ListByProviderRegistrationAsync(string subscriptionId, string providerNamespace, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -303,9 +357,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        DefaultRolloutArrayResponseWithContinuation value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = DefaultRolloutArrayResponseWithContinuation.DeserializeDefaultRolloutArrayResponseWithContinuation(document.RootElement);
+                        DefaultRolloutListResult value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = DefaultRolloutListResult.DeserializeDefaultRolloutListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -314,12 +368,12 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Gets the list of the rollouts for the given provider. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> or <paramref name="providerNamespace"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="providerNamespace"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<DefaultRolloutArrayResponseWithContinuation> ListByProviderRegistration(string subscriptionId, string providerNamespace, CancellationToken cancellationToken = default)
+        public Response<DefaultRolloutListResult> ListByProviderRegistration(string subscriptionId, string providerNamespace, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
             Argument.AssertNotNullOrEmpty(providerNamespace, nameof(providerNamespace));
@@ -330,14 +384,29 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        DefaultRolloutArrayResponseWithContinuation value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = DefaultRolloutArrayResponseWithContinuation.DeserializeDefaultRolloutArrayResponseWithContinuation(document.RootElement);
+                        DefaultRolloutListResult value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = DefaultRolloutListResult.DeserializeDefaultRolloutListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateStopRequestUri(string subscriptionId, string providerNamespace, string rolloutName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.ProviderHub/providerRegistrations/", false);
+            uri.AppendPath(providerNamespace, true);
+            uri.AppendPath("/defaultRollouts/", false);
+            uri.AppendPath(rolloutName, true);
+            uri.AppendPath("/stop", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateStopRequest(string subscriptionId, string providerNamespace, string rolloutName)
@@ -362,7 +431,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Stops or cancels the rollout, if in progress. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="rolloutName"> The rollout name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -386,7 +455,7 @@ namespace Azure.ResourceManager.ProviderHub
         }
 
         /// <summary> Stops or cancels the rollout, if in progress. </summary>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="rolloutName"> The rollout name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -409,6 +478,14 @@ namespace Azure.ResourceManager.ProviderHub
             }
         }
 
+        internal RequestUriBuilder CreateListByProviderRegistrationNextPageRequestUri(string nextLink, string subscriptionId, string providerNamespace)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
+        }
+
         internal HttpMessage CreateListByProviderRegistrationNextPageRequest(string nextLink, string subscriptionId, string providerNamespace)
         {
             var message = _pipeline.CreateMessage();
@@ -425,12 +502,12 @@ namespace Azure.ResourceManager.ProviderHub
 
         /// <summary> Gets the list of the rollouts for the given provider. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/> or <paramref name="providerNamespace"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="providerNamespace"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<DefaultRolloutArrayResponseWithContinuation>> ListByProviderRegistrationNextPageAsync(string nextLink, string subscriptionId, string providerNamespace, CancellationToken cancellationToken = default)
+        public async Task<Response<DefaultRolloutListResult>> ListByProviderRegistrationNextPageAsync(string nextLink, string subscriptionId, string providerNamespace, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -442,9 +519,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        DefaultRolloutArrayResponseWithContinuation value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = DefaultRolloutArrayResponseWithContinuation.DeserializeDefaultRolloutArrayResponseWithContinuation(document.RootElement);
+                        DefaultRolloutListResult value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        value = DefaultRolloutListResult.DeserializeDefaultRolloutListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
@@ -454,12 +531,12 @@ namespace Azure.ResourceManager.ProviderHub
 
         /// <summary> Gets the list of the rollouts for the given provider. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="subscriptionId"> The ID of the target subscription. </param>
+        /// <param name="subscriptionId"> The ID of the target subscription. The value must be an UUID. </param>
         /// <param name="providerNamespace"> The name of the resource provider hosted within ProviderHub. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/> or <paramref name="providerNamespace"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> or <paramref name="providerNamespace"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<DefaultRolloutArrayResponseWithContinuation> ListByProviderRegistrationNextPage(string nextLink, string subscriptionId, string providerNamespace, CancellationToken cancellationToken = default)
+        public Response<DefaultRolloutListResult> ListByProviderRegistrationNextPage(string nextLink, string subscriptionId, string providerNamespace, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
@@ -471,9 +548,9 @@ namespace Azure.ResourceManager.ProviderHub
             {
                 case 200:
                     {
-                        DefaultRolloutArrayResponseWithContinuation value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = DefaultRolloutArrayResponseWithContinuation.DeserializeDefaultRolloutArrayResponseWithContinuation(document.RootElement);
+                        DefaultRolloutListResult value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        value = DefaultRolloutListResult.DeserializeDefaultRolloutListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:

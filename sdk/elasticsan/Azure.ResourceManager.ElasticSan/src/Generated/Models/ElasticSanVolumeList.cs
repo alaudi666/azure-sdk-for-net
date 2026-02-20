@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
 using Azure.ResourceManager.ElasticSan;
 
 namespace Azure.ResourceManager.ElasticSan.Models
@@ -16,28 +15,31 @@ namespace Azure.ResourceManager.ElasticSan.Models
     /// <summary> List of Volumes. </summary>
     internal partial class ElasticSanVolumeList
     {
-        /// <summary> Initializes a new instance of ElasticSanVolumeList. </summary>
-        /// <param name="value"> An array of Volume objects. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ElasticSanVolumeList"/>. </summary>
+        /// <param name="value"> The Volume items on this page. </param>
         internal ElasticSanVolumeList(IEnumerable<ElasticSanVolumeData> value)
         {
-            Argument.AssertNotNull(value, nameof(value));
-
             Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of ElasticSanVolumeList. </summary>
-        /// <param name="value"> An array of Volume objects. </param>
-        /// <param name="nextLink"> URI to fetch the next section of the paginated response. </param>
-        internal ElasticSanVolumeList(IReadOnlyList<ElasticSanVolumeData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ElasticSanVolumeList"/>. </summary>
+        /// <param name="value"> The Volume items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ElasticSanVolumeList(IList<ElasticSanVolumeData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> An array of Volume objects. </summary>
-        public IReadOnlyList<ElasticSanVolumeData> Value { get; }
-        /// <summary> URI to fetch the next section of the paginated response. </summary>
-        public string NextLink { get; }
+        /// <summary> The Volume items on this page. </summary>
+        public IList<ElasticSanVolumeData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

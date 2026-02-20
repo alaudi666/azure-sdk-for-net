@@ -5,33 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> A list of Virtual Machines. </summary>
+    /// <summary> The response of a VirtualMachine list operation. </summary>
     internal partial class VirtualMachinesList
     {
-        /// <summary> Initializes a new instance of VirtualMachinesList. </summary>
-        internal VirtualMachinesList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="VirtualMachinesList"/>. </summary>
+        /// <param name="value"> The VirtualMachine items on this page. </param>
+        internal VirtualMachinesList(IEnumerable<AvsPrivateCloudClusterVirtualMachineData> value)
         {
-            Value = new ChangeTrackingList<AvsPrivateCloudClusterVirtualMachineData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of VirtualMachinesList. </summary>
-        /// <param name="value"> The items to be displayed on the page. </param>
-        /// <param name="nextLink"> URL to get the next page if any. </param>
-        internal VirtualMachinesList(IReadOnlyList<AvsPrivateCloudClusterVirtualMachineData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="VirtualMachinesList"/>. </summary>
+        /// <param name="value"> The VirtualMachine items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal VirtualMachinesList(IList<AvsPrivateCloudClusterVirtualMachineData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The items to be displayed on the page. </summary>
-        public IReadOnlyList<AvsPrivateCloudClusterVirtualMachineData> Value { get; }
-        /// <summary> URL to get the next page if any. </summary>
-        public string NextLink { get; }
+        /// <summary> The VirtualMachine items on this page. </summary>
+        public IList<AvsPrivateCloudClusterVirtualMachineData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

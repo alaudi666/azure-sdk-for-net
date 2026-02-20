@@ -5,47 +5,167 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
-    public partial class ProductAvailabilityInformation
+    /// <summary> Availability information of a product system. </summary>
+    public partial class ProductAvailabilityInformation : IJsonModel<ProductAvailabilityInformation>
     {
-        internal static ProductAvailabilityInformation DeserializeProductAvailabilityInformation(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ProductAvailabilityInformation PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<ProductAvailabilityStage> availabilityStage = default;
-            Optional<ProductDisabledReason> disabledReason = default;
-            Optional<string> disabledReasonMessage = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ProductAvailabilityInformation>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("availabilityStage"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeProductAvailabilityInformation(document.RootElement, options);
                     }
-                    availabilityStage = new ProductAvailabilityStage(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("disabledReason"))
+                default:
+                    throw new FormatException($"The model {nameof(ProductAvailabilityInformation)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ProductAvailabilityInformation>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ProductAvailabilityInformation>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ProductAvailabilityInformation)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(AvailabilityStage))
+            {
+                writer.WritePropertyName("availabilityStage"u8);
+                writer.WriteStringValue(AvailabilityStage.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(DisabledReason))
+            {
+                writer.WritePropertyName("disabledReason"u8);
+                writer.WriteStringValue(DisabledReason.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(DisabledReasonMessage))
+            {
+                writer.WritePropertyName("disabledReasonMessage"u8);
+                writer.WriteStringValue(DisabledReasonMessage);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    disabledReason = new ProductDisabledReason(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("disabledReasonMessage"))
-                {
-                    disabledReasonMessage = property.Value.GetString();
-                    continue;
+#endif
                 }
             }
-            return new ProductAvailabilityInformation(Optional.ToNullable(availabilityStage), Optional.ToNullable(disabledReason), disabledReasonMessage.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ProductAvailabilityInformation IJsonModel<ProductAvailabilityInformation>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ProductAvailabilityInformation JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ProductAvailabilityInformation>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ProductAvailabilityInformation)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeProductAvailabilityInformation(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ProductAvailabilityInformation DeserializeProductAvailabilityInformation(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ProductAvailabilityStage? availabilityStage = default;
+            ProductDisabledReason? disabledReason = default;
+            string disabledReasonMessage = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("availabilityStage"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    availabilityStage = new ProductAvailabilityStage(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("disabledReason"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    disabledReason = new ProductDisabledReason(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("disabledReasonMessage"u8))
+                {
+                    disabledReasonMessage = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new ProductAvailabilityInformation(availabilityStage, disabledReason, disabledReasonMessage, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ProductAvailabilityInformation>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ProductAvailabilityInformation>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerEdgeOrderContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ProductAvailabilityInformation)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ProductAvailabilityInformation IPersistableModel<ProductAvailabilityInformation>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ProductAvailabilityInformation>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

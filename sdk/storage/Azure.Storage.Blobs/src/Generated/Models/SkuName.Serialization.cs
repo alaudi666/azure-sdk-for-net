@@ -18,16 +18,22 @@ namespace Azure.Storage.Blobs.Models
             SkuName.StandardRagrs => "Standard_RAGRS",
             SkuName.StandardZrs => "Standard_ZRS",
             SkuName.PremiumLrs => "Premium_LRS",
+            SkuName.StandardGzrs => "Standard_GZRS",
+            SkuName.PremiumZrs => "Premium_ZRS",
+            SkuName.StandardRagzrs => "Standard_RAGZRS",
             _ => throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown SkuName value.")
         };
 
         public static SkuName ToSkuName(this string value)
         {
-            if (string.Equals(value, "Standard_LRS", StringComparison.InvariantCultureIgnoreCase)) return SkuName.StandardLrs;
-            if (string.Equals(value, "Standard_GRS", StringComparison.InvariantCultureIgnoreCase)) return SkuName.StandardGrs;
-            if (string.Equals(value, "Standard_RAGRS", StringComparison.InvariantCultureIgnoreCase)) return SkuName.StandardRagrs;
-            if (string.Equals(value, "Standard_ZRS", StringComparison.InvariantCultureIgnoreCase)) return SkuName.StandardZrs;
-            if (string.Equals(value, "Premium_LRS", StringComparison.InvariantCultureIgnoreCase)) return SkuName.PremiumLrs;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Standard_LRS")) return SkuName.StandardLrs;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Standard_GRS")) return SkuName.StandardGrs;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Standard_RAGRS")) return SkuName.StandardRagrs;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Standard_ZRS")) return SkuName.StandardZrs;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Premium_LRS")) return SkuName.PremiumLrs;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Standard_GZRS")) return SkuName.StandardGzrs;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Premium_ZRS")) return SkuName.PremiumZrs;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "Standard_RAGZRS")) return SkuName.StandardRagzrs;
             throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown SkuName value.");
         }
     }

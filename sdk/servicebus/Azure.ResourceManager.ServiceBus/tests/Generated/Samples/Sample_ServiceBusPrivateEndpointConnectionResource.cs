@@ -7,24 +7,21 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Identity;
-using Azure.ResourceManager;
-using Azure.ResourceManager.ServiceBus;
 using Azure.ResourceManager.ServiceBus.Models;
+using NUnit.Framework;
 
 namespace Azure.ResourceManager.ServiceBus.Samples
 {
     public partial class Sample_ServiceBusPrivateEndpointConnectionResource
     {
-        // NameSpacePrivateEndPointConnectionCreate
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
-        public async Task Update_NameSpacePrivateEndPointConnectionCreate()
+        [Test]
+        [Ignore("Only validating compilation of examples")]
+        public async Task Get_NameSpacePrivateEndPointConnectionGet()
         {
-            // Generated from example definition: specification/servicebus/resource-manager/Microsoft.ServiceBus/stable/2021-11-01/examples/NameSpaces/PrivateEndPointConnectionCreate.json
-            // this example is just showing the usage of "PrivateEndpointConnections_CreateOrUpdate" operation, for the dependent resources, they will have to be created separately.
+            // Generated from example definition: specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/preview/2025-05-01-preview/examples/NameSpaces/PrivateEndPointConnectionGet.json
+            // this example is just showing the usage of "PrivateEndpointConnections_Get" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
             TokenCredential cred = new DefaultAzureCredential();
@@ -33,26 +30,15 @@ namespace Azure.ResourceManager.ServiceBus.Samples
 
             // this example assumes you already have this ServiceBusPrivateEndpointConnectionResource created on azure
             // for more information of creating ServiceBusPrivateEndpointConnectionResource, please refer to the document of ServiceBusPrivateEndpointConnectionResource
-            string subscriptionId = "subID";
-            string resourceGroupName = "ArunMonocle";
-            string namespaceName = "sdk-Namespace-2924";
+            string subscriptionId = "5f750a97-50d9-4e36-8081-c9ee4c0210d4";
+            string resourceGroupName = "SDK-ServiceBus-4794";
+            string namespaceName = "sdk-Namespace-5828";
             string privateEndpointConnectionName = "privateEndpointConnectionName";
             ResourceIdentifier serviceBusPrivateEndpointConnectionResourceId = ServiceBusPrivateEndpointConnectionResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, namespaceName, privateEndpointConnectionName);
             ServiceBusPrivateEndpointConnectionResource serviceBusPrivateEndpointConnection = client.GetServiceBusPrivateEndpointConnectionResource(serviceBusPrivateEndpointConnectionResourceId);
 
             // invoke the operation
-            ServiceBusPrivateEndpointConnectionData data = new ServiceBusPrivateEndpointConnectionData()
-            {
-                PrivateEndpointId = new ResourceIdentifier("/subscriptions/dbedb4e0-40e6-4145-81f3-f1314c150774/resourceGroups/SDK-ServiceBus-8396/providers/Microsoft.Network/privateEndpoints/sdk-Namespace-2847"),
-                ConnectionState = new ServiceBusPrivateLinkServiceConnectionState()
-                {
-                    Status = ServiceBusPrivateLinkConnectionStatus.Rejected,
-                    Description = "testing",
-                },
-                ProvisioningState = ServiceBusPrivateEndpointConnectionProvisioningState.Succeeded,
-            };
-            ArmOperation<ServiceBusPrivateEndpointConnectionResource> lro = await serviceBusPrivateEndpointConnection.UpdateAsync(WaitUntil.Completed, data);
-            ServiceBusPrivateEndpointConnectionResource result = lro.Value;
+            ServiceBusPrivateEndpointConnectionResource result = await serviceBusPrivateEndpointConnection.GetAsync();
 
             // the variable result is a resource, you could call other operations on this instance as well
             // but just for demo, we get its data from this resource instance
@@ -61,13 +47,39 @@ namespace Azure.ResourceManager.ServiceBus.Samples
             Console.WriteLine($"Succeeded on id: {resourceData.Id}");
         }
 
-        // NameSpacePrivateEndPointConnectionDelete
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
+        [Test]
+        [Ignore("Only validating compilation of examples")]
         public async Task Delete_NameSpacePrivateEndPointConnectionDelete()
         {
-            // Generated from example definition: specification/servicebus/resource-manager/Microsoft.ServiceBus/stable/2021-11-01/examples/NameSpaces/PrivateEndPointConnectionDelete.json
+            // Generated from example definition: specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/preview/2025-05-01-preview/examples/NameSpaces/PrivateEndPointConnectionDelete.json
             // this example is just showing the usage of "PrivateEndpointConnections_Delete" operation, for the dependent resources, they will have to be created separately.
+
+            // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
+            TokenCredential cred = new DefaultAzureCredential();
+            // authenticate your client
+            ArmClient client = new ArmClient(cred);
+
+            // this example assumes you already have this ServiceBusPrivateEndpointConnectionResource created on azure
+            // for more information of creating ServiceBusPrivateEndpointConnectionResource, please refer to the document of ServiceBusPrivateEndpointConnectionResource
+            string subscriptionId = "00000000-0000-0000-0000-000000000000";
+            string resourceGroupName = "ArunMonocle";
+            string namespaceName = "sdk-Namespace-3285";
+            string privateEndpointConnectionName = "928c44d5-b7c6-423b-b6fa-811e0c27b3e0";
+            ResourceIdentifier serviceBusPrivateEndpointConnectionResourceId = ServiceBusPrivateEndpointConnectionResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, namespaceName, privateEndpointConnectionName);
+            ServiceBusPrivateEndpointConnectionResource serviceBusPrivateEndpointConnection = client.GetServiceBusPrivateEndpointConnectionResource(serviceBusPrivateEndpointConnectionResourceId);
+
+            // invoke the operation
+            await serviceBusPrivateEndpointConnection.DeleteAsync(WaitUntil.Completed);
+
+            Console.WriteLine("Succeeded");
+        }
+
+        [Test]
+        [Ignore("Only validating compilation of examples")]
+        public async Task Update_NameSpacePrivateEndPointConnectionCreate()
+        {
+            // Generated from example definition: specification/servicebus/resource-manager/Microsoft.ServiceBus/ServiceBus/preview/2025-05-01-preview/examples/NameSpaces/PrivateEndPointConnectionCreate.json
+            // this example is just showing the usage of "PrivateEndpointConnections_CreateOrUpdate" operation, for the dependent resources, they will have to be created separately.
 
             // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
             TokenCredential cred = new DefaultAzureCredential();
@@ -78,41 +90,24 @@ namespace Azure.ResourceManager.ServiceBus.Samples
             // for more information of creating ServiceBusPrivateEndpointConnectionResource, please refer to the document of ServiceBusPrivateEndpointConnectionResource
             string subscriptionId = "5f750a97-50d9-4e36-8081-c9ee4c0210d4";
             string resourceGroupName = "ArunMonocle";
-            string namespaceName = "sdk-Namespace-3285";
-            string privateEndpointConnectionName = "928c44d5-b7c6-423b-b6fa-811e0c27b3e0";
-            ResourceIdentifier serviceBusPrivateEndpointConnectionResourceId = ServiceBusPrivateEndpointConnectionResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, namespaceName, privateEndpointConnectionName);
-            ServiceBusPrivateEndpointConnectionResource serviceBusPrivateEndpointConnection = client.GetServiceBusPrivateEndpointConnectionResource(serviceBusPrivateEndpointConnectionResourceId);
-
-            // invoke the operation
-            await serviceBusPrivateEndpointConnection.DeleteAsync(WaitUntil.Completed);
-
-            Console.WriteLine($"Succeeded");
-        }
-
-        // NameSpacePrivateEndPointConnectionGet
-        [NUnit.Framework.Test]
-        [NUnit.Framework.Ignore("Only verifying that the sample builds")]
-        public async Task Get_NameSpacePrivateEndPointConnectionGet()
-        {
-            // Generated from example definition: specification/servicebus/resource-manager/Microsoft.ServiceBus/stable/2021-11-01/examples/NameSpaces/PrivateEndPointConnectionGet.json
-            // this example is just showing the usage of "PrivateEndpointConnections_Get" operation, for the dependent resources, they will have to be created separately.
-
-            // get your azure access token, for more details of how Azure SDK get your access token, please refer to https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication?tabs=command-line
-            TokenCredential cred = new DefaultAzureCredential();
-            // authenticate your client
-            ArmClient client = new ArmClient(cred);
-
-            // this example assumes you already have this ServiceBusPrivateEndpointConnectionResource created on azure
-            // for more information of creating ServiceBusPrivateEndpointConnectionResource, please refer to the document of ServiceBusPrivateEndpointConnectionResource
-            string subscriptionId = "subID";
-            string resourceGroupName = "SDK-ServiceBus-4794";
-            string namespaceName = "sdk-Namespace-5828";
+            string namespaceName = "sdk-Namespace-2924";
             string privateEndpointConnectionName = "privateEndpointConnectionName";
             ResourceIdentifier serviceBusPrivateEndpointConnectionResourceId = ServiceBusPrivateEndpointConnectionResource.CreateResourceIdentifier(subscriptionId, resourceGroupName, namespaceName, privateEndpointConnectionName);
             ServiceBusPrivateEndpointConnectionResource serviceBusPrivateEndpointConnection = client.GetServiceBusPrivateEndpointConnectionResource(serviceBusPrivateEndpointConnectionResourceId);
 
             // invoke the operation
-            ServiceBusPrivateEndpointConnectionResource result = await serviceBusPrivateEndpointConnection.GetAsync();
+            ServiceBusPrivateEndpointConnectionData data = new ServiceBusPrivateEndpointConnectionData
+            {
+                PrivateEndpointId = new ResourceIdentifier("/subscriptions/dbedb4e0-40e6-4145-81f3-f1314c150774/resourceGroups/SDK-ServiceBus-8396/providers/Microsoft.Network/privateEndpoints/sdk-Namespace-2847"),
+                ConnectionState = new ServiceBusPrivateLinkServiceConnectionState
+                {
+                    Status = ServiceBusPrivateLinkConnectionStatus.Rejected,
+                    Description = "testing",
+                },
+                ProvisioningState = ServiceBusPrivateEndpointConnectionProvisioningState.Succeeded,
+            };
+            ArmOperation<ServiceBusPrivateEndpointConnectionResource> lro = await serviceBusPrivateEndpointConnection.UpdateAsync(WaitUntil.Completed, data);
+            ServiceBusPrivateEndpointConnectionResource result = lro.Value;
 
             // the variable result is a resource, you could call other operations on this instance as well
             // but just for demo, we get its data from this resource instance

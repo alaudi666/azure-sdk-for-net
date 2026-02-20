@@ -137,7 +137,7 @@ namespace Azure.Core.Tests
             HttpPipeline pipeline = HttpPipelineBuilder.Build(options);
 
             var message = pipeline.CreateMessage();
-            var userAgent = new TelemetryDetails(typeof(string).Assembly);
+            var userAgent = new TelemetryDetails(typeof(string).Assembly, default);
             userAgent.Apply(message);
             using Request request = message.Request;
             request.Method = RequestMethod.Get;
@@ -175,6 +175,44 @@ namespace Azure.Core.Tests
         }
 
         [Test]
+        public async Task CreateTelemetryPolicyHonorsCustomMaxApplicationIdLength()
+        {
+            var longApplicationId = new string('a', 50);
+            var options = new TestOptionsWithCustomMaxApplicationIdLength(50);
+            options.Diagnostics.ApplicationId = longApplicationId;
+
+            var transport = new MockTransport(new MockResponse(200));
+            var telemetryPolicy = HttpPipelineBuilder.CreateTelemetryPolicy(options);
+
+            await SendGetRequest(transport, telemetryPolicy);
+
+            Assert.True(transport.SingleRequest.TryGetHeader("User-Agent", out var userAgent));
+            StringAssert.StartsWith(longApplicationId + " ", userAgent);
+        }
+
+        [Test]
+        public void ApplicationIdExceedingDefaultMaxLengthThrowsAtPipelineBuild()
+        {
+            var options = new TestOptions();
+            options.Diagnostics.ApplicationId = new string('a', 25);
+
+            var ex = Assert.Throws<ArgumentOutOfRangeException>(() => HttpPipelineBuilder.Build(options));
+            Assert.That(ex.Message, Does.Contain("applicationId must be shorter than 25 characters"));
+            Assert.That(ex.Message, Does.Contain("MaxApplicationIdLength"));
+        }
+
+        [Test]
+        public void ApplicationIdExceedingCustomMaxLengthThrowsAtPipelineBuild()
+        {
+            var options = new TestOptionsWithCustomMaxApplicationIdLength(50);
+            options.Diagnostics.ApplicationId = new string('a', 51);
+
+            var ex = Assert.Throws<ArgumentOutOfRangeException>(() => HttpPipelineBuilder.Build(options));
+            Assert.That(ex.Message, Does.Contain("applicationId must be shorter than 51 characters"));
+            Assert.That(ex.Message, Does.Contain("MaxApplicationIdLength"));
+        }
+
+        [Test]
         public async Task CustomClientRequestIdAvailableInPerCallPolicies()
         {
             var policy = new Mock<HttpPipelineSynchronousPolicy>();
@@ -182,7 +220,7 @@ namespace Azure.Core.Tests
             policy.Setup(p => p.OnSendingRequest(It.IsAny<HttpMessage>()))
                 .Callback<HttpMessage>(message =>
                 {
-                    Assert.AreEqual("ExternalClientId",message.Request.ClientRequestId);
+                    Assert.AreEqual("ExternalClientId", message.Request.ClientRequestId);
                     Assert.True(message.Request.TryGetHeader("x-ms-client-request-id", out string requestId));
                     Assert.AreEqual("ExternalClientId", requestId);
                 }).Verifiable();
@@ -250,10 +288,7 @@ namespace Azure.Core.Tests
             List<EventWrittenEventArgs> events = new();
 
             using var listener = new AzureEventSourceListener(
-                (args, s) =>
-                {
-                    events.Add(args);
-                },
+                events.Add,
                 EventLevel.Verbose);
 
             var pipeline = HttpPipelineBuilder.Build(
@@ -279,6 +314,48 @@ namespace Azure.Core.Tests
         }
 
         [Test]
+        public async Task TransportOptionsIsClientRedirectEnabledIsOverriddenByClientOptions(
+            [Values(true, false, null)] bool? transportOptionsIsClientRedirectEnabled)
+        {
+            using var testListener = new TestEventListener();
+            testListener.EnableEvents(AzureCoreEventSource.Singleton, EventLevel.Verbose);
+
+            var transport = new MockTransport(
+                new MockResponse(300).AddHeader("Location", "https://new.host/"),
+                new MockResponse(200));
+
+            var options = new TestOptions
+            {
+                Transport = transport
+            };
+
+            var pipeline = HttpPipelineBuilder.Build(new HttpPipelineOptions(options)
+            {
+                ResponseClassifier = ResponseClassifier.Shared
+            }, transportOptionsIsClientRedirectEnabled.HasValue ?
+                new HttpPipelineTransportOptions() { IsClientRedirectEnabled = transportOptionsIsClientRedirectEnabled.Value } :
+                new HttpPipelineTransportOptions());
+
+            using (Request request = pipeline.CreateRequest())
+            {
+                request.Method = RequestMethod.Get;
+                request.Uri.Reset(new Uri("http://example.com"));
+                var response = await pipeline.SendRequestAsync(request, CancellationToken.None);
+
+                if (transportOptionsIsClientRedirectEnabled ?? false)
+                {
+                    Assert.AreEqual(200, response.Status);
+                    Assert.AreEqual(2, transport.Requests.Count);
+                }
+                else
+                {
+                    Assert.AreEqual(300, response.Status);
+                    Assert.AreEqual(1, transport.Requests.Count);
+                }
+            }
+        }
+
+        [Test]
         public void CanPassNullPolicies([Values(true, false)] bool isCustomTransportSet)
         {
             var pipeline = HttpPipelineBuilder.Build(
@@ -295,6 +372,15 @@ namespace Azure.Core.Tests
         {
             public TestOptions()
             {
+                Retry.Delay = TimeSpan.Zero;
+            }
+        }
+
+        private class TestOptionsWithCustomMaxApplicationIdLength : ClientOptions
+        {
+            public TestOptionsWithCustomMaxApplicationIdLength(int maxApplicationIdLength)
+            {
+                MaxApplicationIdLength = maxApplicationIdLength;
                 Retry.Delay = TimeSpan.Zero;
             }
         }

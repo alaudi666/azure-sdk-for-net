@@ -5,32 +5,39 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> The available skus operation response. </summary>
     internal partial class AvailableSkusResult
     {
-        /// <summary> Initializes a new instance of AvailableSkusResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AvailableSkusResult"/>. </summary>
         internal AvailableSkusResult()
         {
             Value = new ChangeTrackingList<DataBoxSkuInformation>();
         }
 
-        /// <summary> Initializes a new instance of AvailableSkusResult. </summary>
-        /// <param name="value"> List of available skus. </param>
-        /// <param name="nextLink"> Link for the next set of skus. </param>
-        internal AvailableSkusResult(IReadOnlyList<DataBoxSkuInformation> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="AvailableSkusResult"/>. </summary>
+        /// <param name="value"> [Placeholder] Description for page model. </param>
+        /// <param name="nextLink"> [Placeholder] Description for nextLink property. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal AvailableSkusResult(IReadOnlyList<DataBoxSkuInformation> value, string nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of available skus. </summary>
+        /// <summary> [Placeholder] Description for page model. </summary>
         public IReadOnlyList<DataBoxSkuInformation> Value { get; }
-        /// <summary> Link for the next set of skus. </summary>
+
+        /// <summary> [Placeholder] Description for nextLink property. </summary>
         public string NextLink { get; }
     }
 }

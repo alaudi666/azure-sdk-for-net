@@ -5,35 +5,46 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.StorageMover.Models
 {
     /// <summary>
     /// The resource specific properties for the Storage Mover resource.
-    /// Please note <see cref="EndpointBaseProperties"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-    /// The available derived classes include <see cref="AzureStorageBlobContainerEndpointProperties"/> and <see cref="NfsMountEndpointProperties"/>.
+    /// Please note this is the abstract base class. The derived classes available for instantiation are: <see cref="AzureStorageBlobContainerEndpointProperties"/>, <see cref="NfsMountEndpointProperties"/>, <see cref="AzureStorageSmbFileShareEndpointProperties"/>, <see cref="SmbMountEndpointProperties"/>, <see cref="AzureStorageNfsFileShareEndpointProperties"/>, and <see cref="AzureMultiCloudConnectorEndpointProperties"/>.
     /// </summary>
     public abstract partial class EndpointBaseProperties
     {
-        /// <summary> Initializes a new instance of EndpointBaseProperties. </summary>
-        protected EndpointBaseProperties()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EndpointBaseProperties"/>. </summary>
+        /// <param name="endpointType"> The Endpoint resource type. </param>
+        private protected EndpointBaseProperties(EndpointType endpointType)
         {
+            EndpointType = endpointType;
         }
 
-        /// <summary> Initializes a new instance of EndpointBaseProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="EndpointBaseProperties"/>. </summary>
         /// <param name="endpointType"> The Endpoint resource type. </param>
         /// <param name="description"> A description for the Endpoint. </param>
         /// <param name="provisioningState"> The provisioning state of this resource. </param>
-        internal EndpointBaseProperties(EndpointType endpointType, string description, StorageMoverProvisioningState? provisioningState)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EndpointBaseProperties(EndpointType endpointType, string description, StorageMoverProvisioningState? provisioningState, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             EndpointType = endpointType;
             Description = description;
             ProvisioningState = provisioningState;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The Endpoint resource type. </summary>
         internal EndpointType EndpointType { get; set; }
+
         /// <summary> A description for the Endpoint. </summary>
         public string Description { get; set; }
+
         /// <summary> The provisioning state of this resource. </summary>
         public StorageMoverProvisioningState? ProvisioningState { get; }
     }

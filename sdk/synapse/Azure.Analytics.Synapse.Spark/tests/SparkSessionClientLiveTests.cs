@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Azure.Analytics.Synapse.Spark.Models;
 using Azure.Analytics.Synapse.Tests;
 using Azure.Core.TestFramework;
@@ -30,6 +30,7 @@ namespace Azure.Analytics.Synapse.Spark.Tests
         {
             return InstrumentClient(new SparkSessionClient(
                 new Uri(TestEnvironment.EndpointUrl),
+                "2019-11-01-preview",
                 TestEnvironment.SparkPoolName,
                 TestEnvironment.Credential,
                 options: InstrumentClientOptions(new SparkClientOptions())
@@ -41,6 +42,7 @@ namespace Azure.Analytics.Synapse.Spark.Tests
         /// Azure Synapse Analytics service and perform operations.
         /// </summary>
         [RecordedTest]
+        [LiveOnly(Reason = "Test regularly fails due to timeout")]
         public async Task TestSparkSessionJob()
         {
             SparkSessionClient client = CreateClient();
@@ -62,9 +64,10 @@ namespace Azure.Analytics.Synapse.Spark.Tests
             );
 
             // Execute Spark statement in the session
-            var sparkStatementOptions = new SparkStatementOptions {
-                    Kind = SparkStatementLanguageType.Spark,
-                    Code = @"print(""Hello world"")"
+            var sparkStatementOptions = new SparkStatementOptions
+            {
+                Kind = SparkStatementLanguageType.Spark,
+                Code = @"print(""Hello world"")"
             };
             SparkStatementOperation statementOperation = await client.StartCreateSparkStatementAsync(sessionCreateResponse.Id, sparkStatementOptions);
             SparkStatement createStatementResponse = await statementOperation.WaitForCompletionAsync();
@@ -101,6 +104,7 @@ namespace Azure.Analytics.Synapse.Spark.Tests
         /// Azure Synapse Analytics service and perform operations.
         /// </summary>
         [RecordedTest]
+        [LiveOnly(Reason = "Test regularly fails due to timeout")]
         public async Task TestSparkSessionJobWithPublicConstructor()
         {
             SparkSessionClient client = CreateClient();
@@ -123,9 +127,10 @@ namespace Azure.Analytics.Synapse.Spark.Tests
             );
 
             // Execute Spark statement in the session
-            var sparkStatementOptions = new SparkStatementOptions {
-                    Kind = SparkStatementLanguageType.Spark,
-                    Code = @"print(""Hello world"")"
+            var sparkStatementOptions = new SparkStatementOptions
+            {
+                Kind = SparkStatementLanguageType.Spark,
+                Code = @"print(""Hello world"")"
             };
             SparkStatementOperation statementOperation = await client.StartCreateSparkStatementAsync(sessionCreateResponse.Id, sparkStatementOptions);
             SparkStatementOperation anotherStatementOperation = InstrumentOperation(new SparkStatementOperation(int.Parse(sessionOperation.Id), int.Parse(statementOperation.Id), client));

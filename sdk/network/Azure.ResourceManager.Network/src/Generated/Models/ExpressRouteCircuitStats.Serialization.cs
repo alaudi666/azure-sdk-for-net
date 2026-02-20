@@ -5,89 +5,252 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class ExpressRouteCircuitStats : IUtf8JsonSerializable
+    public partial class ExpressRouteCircuitStats : IUtf8JsonSerializable, IJsonModel<ExpressRouteCircuitStats>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ExpressRouteCircuitStats>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ExpressRouteCircuitStats>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ExpressRouteCircuitStats>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ExpressRouteCircuitStats)} does not support writing '{format}' format.");
+            }
+
             if (Optional.IsDefined(PrimarybytesIn))
             {
-                writer.WritePropertyName("primarybytesIn");
+                writer.WritePropertyName("primarybytesIn"u8);
                 writer.WriteNumberValue(PrimarybytesIn.Value);
             }
             if (Optional.IsDefined(PrimarybytesOut))
             {
-                writer.WritePropertyName("primarybytesOut");
+                writer.WritePropertyName("primarybytesOut"u8);
                 writer.WriteNumberValue(PrimarybytesOut.Value);
             }
             if (Optional.IsDefined(SecondarybytesIn))
             {
-                writer.WritePropertyName("secondarybytesIn");
+                writer.WritePropertyName("secondarybytesIn"u8);
                 writer.WriteNumberValue(SecondarybytesIn.Value);
             }
             if (Optional.IsDefined(SecondarybytesOut))
             {
-                writer.WritePropertyName("secondarybytesOut");
+                writer.WritePropertyName("secondarybytesOut"u8);
                 writer.WriteNumberValue(SecondarybytesOut.Value);
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static ExpressRouteCircuitStats DeserializeExpressRouteCircuitStats(JsonElement element)
+        ExpressRouteCircuitStats IJsonModel<ExpressRouteCircuitStats>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<long> primarybytesIn = default;
-            Optional<long> primarybytesOut = default;
-            Optional<long> secondarybytesIn = default;
-            Optional<long> secondarybytesOut = default;
+            var format = options.Format == "W" ? ((IPersistableModel<ExpressRouteCircuitStats>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ExpressRouteCircuitStats)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeExpressRouteCircuitStats(document.RootElement, options);
+        }
+
+        internal static ExpressRouteCircuitStats DeserializeExpressRouteCircuitStats(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            long? primarybytesIn = default;
+            long? primarybytesOut = default;
+            long? secondarybytesIn = default;
+            long? secondarybytesOut = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("primarybytesIn"))
+                if (property.NameEquals("primarybytesIn"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     primarybytesIn = property.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("primarybytesOut"))
+                if (property.NameEquals("primarybytesOut"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     primarybytesOut = property.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("secondarybytesIn"))
+                if (property.NameEquals("secondarybytesIn"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     secondarybytesIn = property.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("secondarybytesOut"))
+                if (property.NameEquals("secondarybytesOut"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     secondarybytesOut = property.Value.GetInt64();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ExpressRouteCircuitStats(Optional.ToNullable(primarybytesIn), Optional.ToNullable(primarybytesOut), Optional.ToNullable(secondarybytesIn), Optional.ToNullable(secondarybytesOut));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ExpressRouteCircuitStats(primarybytesIn, primarybytesOut, secondarybytesIn, secondarybytesOut, serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PrimarybytesIn), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  primarybytesIn: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(PrimarybytesIn))
+                {
+                    builder.Append("  primarybytesIn: ");
+                    builder.AppendLine($"'{PrimarybytesIn.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PrimarybytesOut), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  primarybytesOut: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(PrimarybytesOut))
+                {
+                    builder.Append("  primarybytesOut: ");
+                    builder.AppendLine($"'{PrimarybytesOut.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SecondarybytesIn), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  secondarybytesIn: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(SecondarybytesIn))
+                {
+                    builder.Append("  secondarybytesIn: ");
+                    builder.AppendLine($"'{SecondarybytesIn.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SecondarybytesOut), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  secondarybytesOut: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(SecondarybytesOut))
+                {
+                    builder.Append("  secondarybytesOut: ");
+                    builder.AppendLine($"'{SecondarybytesOut.Value.ToString()}'");
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<ExpressRouteCircuitStats>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ExpressRouteCircuitStats>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(ExpressRouteCircuitStats)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ExpressRouteCircuitStats IPersistableModel<ExpressRouteCircuitStats>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ExpressRouteCircuitStats>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeExpressRouteCircuitStats(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ExpressRouteCircuitStats)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ExpressRouteCircuitStats>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

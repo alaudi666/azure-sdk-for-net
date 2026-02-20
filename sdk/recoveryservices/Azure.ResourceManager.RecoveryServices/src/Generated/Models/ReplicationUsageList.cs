@@ -5,28 +5,39 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.RecoveryServices;
 
 namespace Azure.ResourceManager.RecoveryServices.Models
 {
     /// <summary> Replication usages for vault. </summary>
     internal partial class ReplicationUsageList
     {
-        /// <summary> Initializes a new instance of ReplicationUsageList. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ReplicationUsageList"/>. </summary>
         internal ReplicationUsageList()
         {
             Value = new ChangeTrackingList<ReplicationUsage>();
         }
 
-        /// <summary> Initializes a new instance of ReplicationUsageList. </summary>
+        /// <summary> Initializes a new instance of <see cref="ReplicationUsageList"/>. </summary>
         /// <param name="value"> The list of replication usages for the given vault. </param>
-        internal ReplicationUsageList(IReadOnlyList<ReplicationUsage> value)
+        /// <param name="nextLink"></param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ReplicationUsageList(IList<ReplicationUsage> value, string nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
+            NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The list of replication usages for the given vault. </summary>
-        public IReadOnlyList<ReplicationUsage> Value { get; }
+        public IList<ReplicationUsage> Value { get; }
+
+        /// <summary> Gets the NextLink. </summary>
+        public string NextLink { get; }
     }
 }

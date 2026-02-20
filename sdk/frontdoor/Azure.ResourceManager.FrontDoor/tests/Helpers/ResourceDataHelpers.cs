@@ -1,16 +1,16 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using Azure.Core;
 using Azure.ResourceManager.FrontDoor.Models;
 using Azure.ResourceManager.Models;
+using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.Resources.Models;
 using NUnit.Framework;
-using Azure.Core;
-using System;
-using System.Text;
-using Azure.ResourceManager.Resources;
-using System.Threading.Tasks;
 
 namespace Azure.ResourceManager.FrontDoor.Tests.Helpers
 {
@@ -273,62 +273,70 @@ namespace Azure.ResourceManager.FrontDoor.Tests.Helpers
                 {
                     EnabledState = PolicyEnabledState.Enabled,
                     Mode = FrontDoorWebApplicationFirewallPolicyMode.Prevention,
-                    RedirectUri = new Uri("http://www.bing.com"),
-                    CustomBlockResponseStatusCode = 499,
+                    RedirectUri = new Uri("http://www.bing.com")
+,
+                    CustomBlockResponseStatusCode = 429,
                     CustomBlockResponseBody = "PGh0bWw+CjxoZWFkZXI+PHRpdGxlPkhlbGxvPC90aXRsZT48L2hlYWRlcj4KPGJvZHk+CkhlbGxvIHdvcmxkCjwvYm9keT4KPC9odG1sPg==",
                     RequestBodyCheck = PolicyRequestBodyCheck.Disabled,
                 },
                 CustomRuleList = new CustomRuleList()
                 {
                     Rules =
-                    {
-                        new WebApplicationCustomRule(1, WebApplicationRuleType.RateLimitRule, matchConditions1,RuleMatchActionType.Block),
-                        new WebApplicationCustomRule(2, WebApplicationRuleType.MatchRule, matchConditions2,RuleMatchActionType.Block),
-                    }
+            {
+                new WebApplicationCustomRule(1, WebApplicationRuleType.RateLimitRule, matchConditions1,RuleMatchActionType.Block)
+                {
+                    Name = "customrule1",
+                    RateLimitThreshold = 5,
+                },
+                new WebApplicationCustomRule(2, WebApplicationRuleType.MatchRule, matchConditions2,RuleMatchActionType.Block)
+                {
+                    Name = "customrule2"
+                }
+            }
                 },
                 Sku = new FrontDoorSku()
                 {
-                    Name = "Classic_AzureFrontDoor"
+                    Name = "Premium_AzureFrontDoor"
                 },
-                ManagedRules =
+                ManagedRules = new ManagedRuleSetList()
                 {
                     ManagedRuleSets =
+            {
+                new ManagedRuleSet("DefaultRuleSet", "1.0")
+                {
+                    RuleSetAction = ManagedRuleSetActionType.Block,
+                    Exclusions =
                     {
-                        new ManagedRuleSet("DefaultRuleSet", "1.0")
+                        new ManagedRuleExclusion(ManagedRuleExclusionMatchVariable.RequestHeaderNames, ManagedRuleExclusionSelectorMatchOperator.EqualsValue, "User-Agent")
+                    },
+                    RuleGroupOverrides =
+                    {
+                        new ManagedRuleGroupOverride("SQLI")
                         {
-                            RuleSetAction = ManagedRuleSetActionType.Block,
                             Exclusions =
                             {
-                                new ManagedRuleExclusion(ManagedRuleExclusionMatchVariable.RequestHeaderNames, ManagedRuleExclusionSelectorMatchOperator.EqualsValue, "User-Agent")
+                                new ManagedRuleExclusion(ManagedRuleExclusionMatchVariable.RequestCookieNames, ManagedRuleExclusionSelectorMatchOperator.StartsWith, "token")
                             },
-                            RuleGroupOverrides =
+                            Rules =
                             {
-                                new ManagedRuleGroupOverride("SQLI")
+                                new ManagedRuleOverride("942100")
                                 {
+                                    EnabledState = ManagedRuleEnabledState.Enabled,
+                                    Action = RuleMatchActionType.Redirect,
                                     Exclusions =
                                     {
-                                        new ManagedRuleExclusion(ManagedRuleExclusionMatchVariable.RequestCookieNames, ManagedRuleExclusionSelectorMatchOperator.StartsWith, "token")
-                                    },
-                                    Rules =
-                                    {
-                                        new ManagedRuleOverride("942100")
-                                        {
-                                            EnabledState = ManagedRuleEnabledState.Enabled,
-                                            Action = RuleMatchActionType.Redirect,
-                                            Exclusions =
-                                            {
-                                                new ManagedRuleExclusion(ManagedRuleExclusionMatchVariable.RequestHeaderNames, ManagedRuleExclusionSelectorMatchOperator.EqualsValue, "query")
-                                            }
-                                        },
-                                        new ManagedRuleOverride("942110")
-                                        {
-                                            EnabledState = ManagedRuleEnabledState.Disabled
-                                        }
-                                    },
+                                        new ManagedRuleExclusion(ManagedRuleExclusionMatchVariable.RequestHeaderNames, ManagedRuleExclusionSelectorMatchOperator.EqualsValue, "query")
+                                    }
+                                },
+                                new ManagedRuleOverride("942110")
+                                {
+                                    EnabledState = ManagedRuleEnabledState.Disabled
                                 }
-                            }
+                            },
                         }
                     }
+                }
+            }
                 }
             };
             return data;

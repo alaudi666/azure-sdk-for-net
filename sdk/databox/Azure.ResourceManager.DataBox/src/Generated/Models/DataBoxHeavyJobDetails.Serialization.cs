@@ -5,311 +5,385 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class DataBoxHeavyJobDetails : IUtf8JsonSerializable
+    /// <summary> Databox Heavy Device Job Details. </summary>
+    public partial class DataBoxHeavyJobDetails : DataBoxBasicJobDetails, IJsonModel<DataBoxHeavyJobDetails>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="DataBoxHeavyJobDetails"/> for deserialization. </summary>
+        internal DataBoxHeavyJobDetails()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override DataBoxBasicJobDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxHeavyJobDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDataBoxHeavyJobDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxHeavyJobDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DataBoxHeavyJobDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(DevicePassword))
-            {
-                writer.WritePropertyName("devicePassword");
-                writer.WriteStringValue(DevicePassword);
-            }
-            writer.WritePropertyName("contactDetails");
-            writer.WriteObjectValue(ContactDetails);
-            if (Optional.IsDefined(ShippingAddress))
-            {
-                writer.WritePropertyName("shippingAddress");
-                writer.WriteObjectValue(ShippingAddress);
-            }
-            if (Optional.IsCollectionDefined(DataImportDetails))
-            {
-                writer.WritePropertyName("dataImportDetails");
-                writer.WriteStartArray();
-                foreach (var item in DataImportDetails)
-                {
-                    writer.WriteObjectValue(item);
-                }
-                writer.WriteEndArray();
-            }
-            if (Optional.IsCollectionDefined(DataExportDetails))
-            {
-                writer.WritePropertyName("dataExportDetails");
-                writer.WriteStartArray();
-                foreach (var item in DataExportDetails)
-                {
-                    writer.WriteObjectValue(item);
-                }
-                writer.WriteEndArray();
-            }
-            writer.WritePropertyName("jobDetailsType");
-            writer.WriteStringValue(JobDetailsType.ToSerialString());
-            if (Optional.IsDefined(Preferences))
-            {
-                writer.WritePropertyName("preferences");
-                writer.WriteObjectValue(Preferences);
-            }
-            if (Optional.IsDefined(KeyEncryptionKey))
-            {
-                writer.WritePropertyName("keyEncryptionKey");
-                writer.WriteObjectValue(KeyEncryptionKey);
-            }
-            if (Optional.IsDefined(ExpectedDataSizeInTerabytes))
-            {
-                writer.WritePropertyName("expectedDataSizeInTeraBytes");
-                writer.WriteNumberValue(ExpectedDataSizeInTerabytes.Value);
-            }
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static DataBoxHeavyJobDetails DeserializeDataBoxHeavyJobDetails(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<IReadOnlyList<DataBoxCopyProgress>> copyProgress = default;
-            Optional<string> devicePassword = default;
-            Optional<IReadOnlyList<DataBoxJobStage>> jobStages = default;
-            DataBoxContactDetails contactDetails = default;
-            Optional<DataBoxShippingAddress> shippingAddress = default;
-            Optional<PackageShippingDetails> deliveryPackage = default;
-            Optional<PackageShippingDetails> returnPackage = default;
-            Optional<IList<DataImportDetails>> dataImportDetails = default;
-            Optional<IList<DataExportDetails>> dataExportDetails = default;
-            DataBoxOrderType jobDetailsType = default;
-            Optional<DataBoxOrderPreferences> preferences = default;
-            Optional<IReadOnlyList<CopyLogDetails>> copyLogDetails = default;
-            Optional<string> reverseShipmentLabelSasKey = default;
-            Optional<string> chainOfCustodySasKey = default;
-            Optional<DeviceErasureDetails> deviceErasureDetails = default;
-            Optional<DataBoxKeyEncryptionKey> keyEncryptionKey = default;
-            Optional<int> expectedDataSizeInTerabytes = default;
-            Optional<IReadOnlyList<CustomerResolutionCode>> actions = default;
-            Optional<LastMitigationActionOnJob> lastMitigationActionOnJob = default;
-            Optional<DataCenterAddressResult> dataCenterAddress = default;
-            Optional<DataCenterCode> dataCenterCode = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxHeavyJobDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("copyProgress"))
+                throw new FormatException($"The model {nameof(DataBoxHeavyJobDetails)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
+            if (options.Format != "W" && Optional.IsCollectionDefined(CopyProgress))
+            {
+                writer.WritePropertyName("copyProgress"u8);
+                writer.WriteStartArray();
+                foreach (DataBoxCopyProgress item in CopyProgress)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    List<DataBoxCopyProgress> array = new List<DataBoxCopyProgress>();
-                    foreach (var item in property.Value.EnumerateArray())
-                    {
-                        array.Add(DataBoxCopyProgress.DeserializeDataBoxCopyProgress(item));
-                    }
-                    copyProgress = array;
-                    continue;
+                    writer.WriteObjectValue(item, options);
                 }
-                if (property.NameEquals("devicePassword"))
+                writer.WriteEndArray();
+            }
+            if (Optional.IsDefined(DevicePassword))
+            {
+                writer.WritePropertyName("devicePassword"u8);
+                writer.WriteStringValue(DevicePassword);
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxHeavyJobDetails IJsonModel<DataBoxHeavyJobDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (DataBoxHeavyJobDetails)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override DataBoxBasicJobDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxHeavyJobDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DataBoxHeavyJobDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDataBoxHeavyJobDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DataBoxHeavyJobDetails DeserializeDataBoxHeavyJobDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IReadOnlyList<DataBoxJobStage> jobStages = default;
+            DataBoxContactDetails contactDetails = default;
+            DataBoxShippingAddress shippingAddress = default;
+            PackageShippingDetails deliveryPackage = default;
+            PackageShippingDetails returnPackage = default;
+            IList<DataImportDetails> dataImportDetails = default;
+            IList<DataExportDetails> dataExportDetails = default;
+            DataBoxOrderType jobDetailsType = default;
+            DataBoxOrderPreferences preferences = default;
+            ReverseShippingDetails reverseShippingDetails = default;
+            IReadOnlyList<CopyLogDetails> copyLogDetails = default;
+            string reverseShipmentLabelSasKey = default;
+            string chainOfCustodySasKey = default;
+            DeviceErasureDetails deviceErasureDetails = default;
+            DataBoxKeyEncryptionKey keyEncryptionKey = default;
+            int? expectedDataSizeInTerabytes = default;
+            IReadOnlyList<CustomerResolutionCode> actions = default;
+            LastMitigationActionOnJob lastMitigationActionOnJob = default;
+            DataCenterAddressResult dataCenterAddress = default;
+            DataCenterCode? dataCenterCode = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            IReadOnlyList<DataBoxCopyProgress> copyProgress = default;
+            string devicePassword = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("jobStages"u8))
                 {
-                    devicePassword = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("jobStages"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<DataBoxJobStage> array = new List<DataBoxJobStage>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(DataBoxJobStage.DeserializeDataBoxJobStage(item));
+                        array.Add(DataBoxJobStage.DeserializeDataBoxJobStage(item, options));
                     }
                     jobStages = array;
                     continue;
                 }
-                if (property.NameEquals("contactDetails"))
+                if (prop.NameEquals("contactDetails"u8))
                 {
-                    contactDetails = DataBoxContactDetails.DeserializeDataBoxContactDetails(property.Value);
+                    contactDetails = DataBoxContactDetails.DeserializeDataBoxContactDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("shippingAddress"))
+                if (prop.NameEquals("shippingAddress"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    shippingAddress = DataBoxShippingAddress.DeserializeDataBoxShippingAddress(property.Value);
+                    shippingAddress = DataBoxShippingAddress.DeserializeDataBoxShippingAddress(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("deliveryPackage"))
+                if (prop.NameEquals("deliveryPackage"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    deliveryPackage = PackageShippingDetails.DeserializePackageShippingDetails(property.Value);
+                    deliveryPackage = PackageShippingDetails.DeserializePackageShippingDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("returnPackage"))
+                if (prop.NameEquals("returnPackage"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    returnPackage = PackageShippingDetails.DeserializePackageShippingDetails(property.Value);
+                    returnPackage = PackageShippingDetails.DeserializePackageShippingDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("dataImportDetails"))
+                if (prop.NameEquals("dataImportDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<DataImportDetails> array = new List<DataImportDetails>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(Models.DataImportDetails.DeserializeDataImportDetails(item));
+                        array.Add(Models.DataImportDetails.DeserializeDataImportDetails(item, options));
                     }
                     dataImportDetails = array;
                     continue;
                 }
-                if (property.NameEquals("dataExportDetails"))
+                if (prop.NameEquals("dataExportDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<DataExportDetails> array = new List<DataExportDetails>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(Models.DataExportDetails.DeserializeDataExportDetails(item));
+                        array.Add(Models.DataExportDetails.DeserializeDataExportDetails(item, options));
                     }
                     dataExportDetails = array;
                     continue;
                 }
-                if (property.NameEquals("jobDetailsType"))
+                if (prop.NameEquals("jobDetailsType"u8))
                 {
-                    jobDetailsType = property.Value.GetString().ToDataBoxOrderType();
+                    jobDetailsType = prop.Value.GetString().ToDataBoxOrderType();
                     continue;
                 }
-                if (property.NameEquals("preferences"))
+                if (prop.NameEquals("preferences"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    preferences = DataBoxOrderPreferences.DeserializeDataBoxOrderPreferences(property.Value);
+                    preferences = DataBoxOrderPreferences.DeserializeDataBoxOrderPreferences(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("copyLogDetails"))
+                if (prop.NameEquals("reverseShippingDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    reverseShippingDetails = ReverseShippingDetails.DeserializeReverseShippingDetails(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("copyLogDetails"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
                     List<CopyLogDetails> array = new List<CopyLogDetails>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(Models.CopyLogDetails.DeserializeCopyLogDetails(item));
+                        array.Add(Models.CopyLogDetails.DeserializeCopyLogDetails(item, options));
                     }
                     copyLogDetails = array;
                     continue;
                 }
-                if (property.NameEquals("reverseShipmentLabelSasKey"))
+                if (prop.NameEquals("reverseShipmentLabelSasKey"u8))
                 {
-                    reverseShipmentLabelSasKey = property.Value.GetString();
+                    reverseShipmentLabelSasKey = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("chainOfCustodySasKey"))
+                if (prop.NameEquals("chainOfCustodySasKey"u8))
                 {
-                    chainOfCustodySasKey = property.Value.GetString();
+                    chainOfCustodySasKey = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("deviceErasureDetails"))
+                if (prop.NameEquals("deviceErasureDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    deviceErasureDetails = DeviceErasureDetails.DeserializeDeviceErasureDetails(property.Value);
+                    deviceErasureDetails = DeviceErasureDetails.DeserializeDeviceErasureDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("keyEncryptionKey"))
+                if (prop.NameEquals("keyEncryptionKey"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    keyEncryptionKey = DataBoxKeyEncryptionKey.DeserializeDataBoxKeyEncryptionKey(property.Value);
+                    keyEncryptionKey = DataBoxKeyEncryptionKey.DeserializeDataBoxKeyEncryptionKey(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("expectedDataSizeInTeraBytes"))
+                if (prop.NameEquals("expectedDataSizeInTeraBytes"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    expectedDataSizeInTerabytes = property.Value.GetInt32();
+                    expectedDataSizeInTerabytes = prop.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("actions"))
+                if (prop.NameEquals("actions"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<CustomerResolutionCode> array = new List<CustomerResolutionCode>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
                         array.Add(item.GetString().ToCustomerResolutionCode());
                     }
                     actions = array;
                     continue;
                 }
-                if (property.NameEquals("lastMitigationActionOnJob"))
+                if (prop.NameEquals("lastMitigationActionOnJob"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    lastMitigationActionOnJob = LastMitigationActionOnJob.DeserializeLastMitigationActionOnJob(property.Value);
+                    lastMitigationActionOnJob = LastMitigationActionOnJob.DeserializeLastMitigationActionOnJob(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("datacenterAddress"))
+                if (prop.NameEquals("datacenterAddress"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    dataCenterAddress = DataCenterAddressResult.DeserializeDataCenterAddressResult(property.Value);
+                    dataCenterAddress = DataCenterAddressResult.DeserializeDataCenterAddressResult(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("dataCenterCode"))
+                if (prop.NameEquals("dataCenterCode"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    dataCenterCode = new DataCenterCode(property.Value.GetString());
+                    dataCenterCode = new DataCenterCode(prop.Value.GetString());
                     continue;
+                }
+                if (prop.NameEquals("copyProgress"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<DataBoxCopyProgress> array = new List<DataBoxCopyProgress>();
+                    foreach (var item in prop.Value.EnumerateArray())
+                    {
+                        array.Add(DataBoxCopyProgress.DeserializeDataBoxCopyProgress(item, options));
+                    }
+                    copyProgress = array;
+                    continue;
+                }
+                if (prop.NameEquals("devicePassword"u8))
+                {
+                    devicePassword = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new DataBoxHeavyJobDetails(Optional.ToList(jobStages), contactDetails, shippingAddress.Value, deliveryPackage.Value, returnPackage.Value, Optional.ToList(dataImportDetails), Optional.ToList(dataExportDetails), jobDetailsType, preferences.Value, Optional.ToList(copyLogDetails), reverseShipmentLabelSasKey.Value, chainOfCustodySasKey.Value, deviceErasureDetails.Value, keyEncryptionKey.Value, Optional.ToNullable(expectedDataSizeInTerabytes), Optional.ToList(actions), lastMitigationActionOnJob.Value, dataCenterAddress.Value, Optional.ToNullable(dataCenterCode), Optional.ToList(copyProgress), devicePassword.Value);
+            return new DataBoxHeavyJobDetails(
+                jobStages ?? new ChangeTrackingList<DataBoxJobStage>(),
+                contactDetails,
+                shippingAddress,
+                deliveryPackage,
+                returnPackage,
+                dataImportDetails ?? new ChangeTrackingList<DataImportDetails>(),
+                dataExportDetails ?? new ChangeTrackingList<DataExportDetails>(),
+                jobDetailsType,
+                preferences,
+                reverseShippingDetails,
+                copyLogDetails ?? new ChangeTrackingList<CopyLogDetails>(),
+                reverseShipmentLabelSasKey,
+                chainOfCustodySasKey,
+                deviceErasureDetails,
+                keyEncryptionKey,
+                expectedDataSizeInTerabytes,
+                actions ?? new ChangeTrackingList<CustomerResolutionCode>(),
+                lastMitigationActionOnJob,
+                dataCenterAddress,
+                dataCenterCode,
+                additionalBinaryDataProperties,
+                copyProgress ?? new ChangeTrackingList<DataBoxCopyProgress>(),
+                devicePassword);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DataBoxHeavyJobDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxHeavyJobDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxHeavyJobDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxHeavyJobDetails IPersistableModel<DataBoxHeavyJobDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => (DataBoxHeavyJobDetails)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DataBoxHeavyJobDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

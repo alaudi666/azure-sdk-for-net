@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
@@ -14,33 +15,50 @@ namespace Azure.ResourceManager.StorageSync.Models
     /// <summary> A private link resource. </summary>
     public partial class StorageSyncPrivateLinkResource : ResourceData
     {
-        /// <summary> Initializes a new instance of StorageSyncPrivateLinkResource. </summary>
-        public StorageSyncPrivateLinkResource()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="StorageSyncPrivateLinkResource"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> Resource properties. </param>
+        internal StorageSyncPrivateLinkResource(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, StorageSyncPrivateLinkResourceProperties properties) : base(id, name, resourceType, systemData)
         {
-            RequiredMembers = new ChangeTrackingList<string>();
-            RequiredZoneNames = new ChangeTrackingList<string>();
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
 
-        /// <summary> Initializes a new instance of StorageSyncPrivateLinkResource. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="groupId"> The private link resource group id. </param>
-        /// <param name="requiredMembers"> The private link resource required member names. </param>
-        /// <param name="requiredZoneNames"> The private link resource Private link DNS zone name. </param>
-        internal StorageSyncPrivateLinkResource(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string groupId, IReadOnlyList<string> requiredMembers, IList<string> requiredZoneNames) : base(id, name, resourceType, systemData)
-        {
-            GroupId = groupId;
-            RequiredMembers = requiredMembers;
-            RequiredZoneNames = requiredZoneNames;
-        }
+        /// <summary> Resource properties. </summary>
+        internal StorageSyncPrivateLinkResourceProperties Properties { get; }
 
         /// <summary> The private link resource group id. </summary>
-        public string GroupId { get; }
+        public string GroupId
+        {
+            get
+            {
+                return Properties.GroupId;
+            }
+        }
+
         /// <summary> The private link resource required member names. </summary>
-        public IReadOnlyList<string> RequiredMembers { get; }
-        /// <summary> The private link resource Private link DNS zone name. </summary>
-        public IList<string> RequiredZoneNames { get; }
+        public IReadOnlyList<string> RequiredMembers
+        {
+            get
+            {
+                return Properties.RequiredMembers;
+            }
+        }
+
+        /// <summary> The private link resource private link DNS zone name. </summary>
+        public IList<string> RequiredZoneNames
+        {
+            get
+            {
+                return Properties.RequiredZoneNames;
+            }
+        }
     }
 }

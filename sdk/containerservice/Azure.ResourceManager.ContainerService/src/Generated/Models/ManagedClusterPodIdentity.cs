@@ -6,18 +6,61 @@
 #nullable disable
 
 using System;
-using Azure;
-using Azure.Core;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.ContainerService.Models
 {
-    /// <summary> Details about the pod identity assigned to the Managed Cluster. </summary>
+    /// <summary>
+    /// Details about the pod identity assigned to the Managed Cluster.
+    /// Serialized Name: ManagedClusterPodIdentity
+    /// </summary>
     public partial class ManagedClusterPodIdentity
     {
-        /// <summary> Initializes a new instance of ManagedClusterPodIdentity. </summary>
-        /// <param name="name"> The name of the pod identity. </param>
-        /// <param name="namespace"> The namespace of the pod identity. </param>
-        /// <param name="identity"> The user assigned identity details. </param>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedClusterPodIdentity"/>. </summary>
+        /// <param name="name">
+        /// The name of the pod identity.
+        /// Serialized Name: ManagedClusterPodIdentity.name
+        /// </param>
+        /// <param name="namespace">
+        /// The namespace of the pod identity.
+        /// Serialized Name: ManagedClusterPodIdentity.namespace
+        /// </param>
+        /// <param name="identity">
+        /// The user assigned identity details.
+        /// Serialized Name: ManagedClusterPodIdentity.identity
+        /// </param>
         /// <exception cref="ArgumentNullException"> <paramref name="name"/>, <paramref name="namespace"/> or <paramref name="identity"/> is null. </exception>
         public ManagedClusterPodIdentity(string name, string @namespace, ContainerServiceUserAssignedIdentity identity)
         {
@@ -30,14 +73,30 @@ namespace Azure.ResourceManager.ContainerService.Models
             Identity = identity;
         }
 
-        /// <summary> Initializes a new instance of ManagedClusterPodIdentity. </summary>
-        /// <param name="name"> The name of the pod identity. </param>
-        /// <param name="namespace"> The namespace of the pod identity. </param>
-        /// <param name="bindingSelector"> The binding selector to use for the AzureIdentityBinding resource. </param>
-        /// <param name="identity"> The user assigned identity details. </param>
-        /// <param name="provisioningState"> The current provisioning state of the pod identity. </param>
-        /// <param name="provisioningInfo"></param>
-        internal ManagedClusterPodIdentity(string name, string @namespace, string bindingSelector, ContainerServiceUserAssignedIdentity identity, ManagedClusterPodIdentityProvisioningState? provisioningState, ManagedClusterPodIdentityProvisioningInfo provisioningInfo)
+        /// <summary> Initializes a new instance of <see cref="ManagedClusterPodIdentity"/>. </summary>
+        /// <param name="name">
+        /// The name of the pod identity.
+        /// Serialized Name: ManagedClusterPodIdentity.name
+        /// </param>
+        /// <param name="namespace">
+        /// The namespace of the pod identity.
+        /// Serialized Name: ManagedClusterPodIdentity.namespace
+        /// </param>
+        /// <param name="bindingSelector">
+        /// The binding selector to use for the AzureIdentityBinding resource.
+        /// Serialized Name: ManagedClusterPodIdentity.bindingSelector
+        /// </param>
+        /// <param name="identity">
+        /// The user assigned identity details.
+        /// Serialized Name: ManagedClusterPodIdentity.identity
+        /// </param>
+        /// <param name="provisioningState">
+        /// The current provisioning state of the pod identity.
+        /// Serialized Name: ManagedClusterPodIdentity.provisioningState
+        /// </param>
+        /// <param name="provisioningInfo"> Serialized Name: ManagedClusterPodIdentity.provisioningInfo. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedClusterPodIdentity(string name, string @namespace, string bindingSelector, ContainerServiceUserAssignedIdentity identity, ManagedClusterPodIdentityProvisioningState? provisioningState, ManagedClusterPodIdentityProvisioningInfo provisioningInfo, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Name = name;
             Namespace = @namespace;
@@ -45,21 +104,51 @@ namespace Azure.ResourceManager.ContainerService.Models
             Identity = identity;
             ProvisioningState = provisioningState;
             ProvisioningInfo = provisioningInfo;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary> The name of the pod identity. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedClusterPodIdentity"/> for deserialization. </summary>
+        internal ManagedClusterPodIdentity()
+        {
+        }
+
+        /// <summary>
+        /// The name of the pod identity.
+        /// Serialized Name: ManagedClusterPodIdentity.name
+        /// </summary>
+        [WirePath("name")]
         public string Name { get; set; }
-        /// <summary> The namespace of the pod identity. </summary>
+        /// <summary>
+        /// The namespace of the pod identity.
+        /// Serialized Name: ManagedClusterPodIdentity.namespace
+        /// </summary>
+        [WirePath("namespace")]
         public string Namespace { get; set; }
-        /// <summary> The binding selector to use for the AzureIdentityBinding resource. </summary>
+        /// <summary>
+        /// The binding selector to use for the AzureIdentityBinding resource.
+        /// Serialized Name: ManagedClusterPodIdentity.bindingSelector
+        /// </summary>
+        [WirePath("bindingSelector")]
         public string BindingSelector { get; set; }
-        /// <summary> The user assigned identity details. </summary>
+        /// <summary>
+        /// The user assigned identity details.
+        /// Serialized Name: ManagedClusterPodIdentity.identity
+        /// </summary>
+        [WirePath("identity")]
         public ContainerServiceUserAssignedIdentity Identity { get; set; }
-        /// <summary> The current provisioning state of the pod identity. </summary>
+        /// <summary>
+        /// The current provisioning state of the pod identity.
+        /// Serialized Name: ManagedClusterPodIdentity.provisioningState
+        /// </summary>
+        [WirePath("provisioningState")]
         public ManagedClusterPodIdentityProvisioningState? ProvisioningState { get; }
-        /// <summary> Gets the provisioning info. </summary>
+        /// <summary> Serialized Name: ManagedClusterPodIdentity.provisioningInfo. </summary>
         internal ManagedClusterPodIdentityProvisioningInfo ProvisioningInfo { get; }
-        /// <summary> Details about the error. </summary>
+        /// <summary>
+        /// Details about the error.
+        /// Serialized Name: ManagedClusterPodIdentityProvisioningError.error
+        /// </summary>
+        [WirePath("provisioningInfo.error.error")]
         public ResponseError ErrorDetail
         {
             get => ProvisioningInfo?.ErrorDetail;

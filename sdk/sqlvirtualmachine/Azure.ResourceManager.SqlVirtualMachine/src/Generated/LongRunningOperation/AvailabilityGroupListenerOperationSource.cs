@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.SqlVirtualMachine
 {
-    internal class AvailabilityGroupListenerOperationSource : IOperationSource<AvailabilityGroupListenerResource>
+    /// <summary></summary>
+    internal partial class AvailabilityGroupListenerOperationSource : IOperationSource<AvailabilityGroupListenerResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal AvailabilityGroupListenerOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         AvailabilityGroupListenerResource IOperationSource<AvailabilityGroupListenerResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = AvailabilityGroupListenerData.DeserializeAvailabilityGroupListenerData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            AvailabilityGroupListenerData data = AvailabilityGroupListenerData.DeserializeAvailabilityGroupListenerData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new AvailabilityGroupListenerResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<AvailabilityGroupListenerResource> IOperationSource<AvailabilityGroupListenerResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = AvailabilityGroupListenerData.DeserializeAvailabilityGroupListenerData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            AvailabilityGroupListenerData data = AvailabilityGroupListenerData.DeserializeAvailabilityGroupListenerData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new AvailabilityGroupListenerResource(_client, data);
         }
     }

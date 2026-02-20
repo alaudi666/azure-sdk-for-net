@@ -5,76 +5,215 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
-    public partial class UriSigningActionProperties : IUtf8JsonSerializable
+    public partial class UriSigningActionProperties : IUtf8JsonSerializable, IJsonModel<UriSigningActionProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<UriSigningActionProperties>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<UriSigningActionProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("typeName");
-            writer.WriteStringValue(ActionType.ToString());
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<UriSigningActionProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(UriSigningActionProperties)} does not support writing '{format}' format.");
+            }
+
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(Algorithm))
             {
-                writer.WritePropertyName("algorithm");
+                writer.WritePropertyName("algorithm"u8);
                 writer.WriteStringValue(Algorithm.Value.ToString());
             }
             if (Optional.IsCollectionDefined(ParameterNameOverride))
             {
-                writer.WritePropertyName("parameterNameOverride");
+                writer.WritePropertyName("parameterNameOverride"u8);
                 writer.WriteStartArray();
                 foreach (var item in ParameterNameOverride)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
-            writer.WriteEndObject();
         }
 
-        internal static UriSigningActionProperties DeserializeUriSigningActionProperties(JsonElement element)
+        UriSigningActionProperties IJsonModel<UriSigningActionProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            UriSigningActionType typeName = default;
-            Optional<UriSigningAlgorithm> algorithm = default;
-            Optional<IList<UriSigningParamIdentifier>> parameterNameOverride = default;
+            var format = options.Format == "W" ? ((IPersistableModel<UriSigningActionProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(UriSigningActionProperties)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeUriSigningActionProperties(document.RootElement, options);
+        }
+
+        internal static UriSigningActionProperties DeserializeUriSigningActionProperties(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            UriSigningAlgorithm? algorithm = default;
+            IList<UriSigningParamIdentifier> parameterNameOverride = default;
+            DeliveryRuleActionParametersType typeName = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("typeName"))
-                {
-                    typeName = new UriSigningActionType(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("algorithm"))
+                if (property.NameEquals("algorithm"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     algorithm = new UriSigningAlgorithm(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("parameterNameOverride"))
+                if (property.NameEquals("parameterNameOverride"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<UriSigningParamIdentifier> array = new List<UriSigningParamIdentifier>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(UriSigningParamIdentifier.DeserializeUriSigningParamIdentifier(item));
+                        array.Add(UriSigningParamIdentifier.DeserializeUriSigningParamIdentifier(item, options));
                     }
                     parameterNameOverride = array;
                     continue;
                 }
+                if (property.NameEquals("typeName"u8))
+                {
+                    typeName = new DeliveryRuleActionParametersType(property.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new UriSigningActionProperties(typeName, Optional.ToNullable(algorithm), Optional.ToList(parameterNameOverride));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new UriSigningActionProperties(typeName, serializedAdditionalRawData, algorithm, parameterNameOverride ?? new ChangeTrackingList<UriSigningParamIdentifier>());
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Algorithm), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  algorithm: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Algorithm))
+                {
+                    builder.Append("  algorithm: ");
+                    builder.AppendLine($"'{Algorithm.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ParameterNameOverride), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  parameterNameOverride: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(ParameterNameOverride))
+                {
+                    if (ParameterNameOverride.Any())
+                    {
+                        builder.Append("  parameterNameOverride: ");
+                        builder.AppendLine("[");
+                        foreach (var item in ParameterNameOverride)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  parameterNameOverride: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(TypeName), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  typeName: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  typeName: ");
+                builder.AppendLine($"'{TypeName.ToString()}'");
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<UriSigningActionProperties>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<UriSigningActionProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerCdnContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(UriSigningActionProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        UriSigningActionProperties IPersistableModel<UriSigningActionProperties>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<UriSigningActionProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeUriSigningActionProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(UriSigningActionProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<UriSigningActionProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

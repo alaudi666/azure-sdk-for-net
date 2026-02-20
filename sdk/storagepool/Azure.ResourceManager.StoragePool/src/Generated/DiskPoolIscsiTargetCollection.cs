@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.StoragePool.Models;
 
 namespace Azure.ResourceManager.StoragePool
 {
     /// <summary>
-    /// A class representing a collection of <see cref="DiskPoolIscsiTargetResource" /> and their operations.
-    /// Each <see cref="DiskPoolIscsiTargetResource" /> in the collection will belong to the same instance of <see cref="DiskPoolResource" />.
-    /// To get a <see cref="DiskPoolIscsiTargetCollection" /> instance call the GetDiskPoolIscsiTargets method from an instance of <see cref="DiskPoolResource" />.
+    /// A class representing a collection of <see cref="DiskPoolIscsiTargetResource"/> and their operations.
+    /// Each <see cref="DiskPoolIscsiTargetResource"/> in the collection will belong to the same instance of <see cref="DiskPoolResource"/>.
+    /// To get a <see cref="DiskPoolIscsiTargetCollection"/> instance call the GetDiskPoolIscsiTargets method from an instance of <see cref="DiskPoolResource"/>.
     /// </summary>
     public partial class DiskPoolIscsiTargetCollection : ArmCollection, IEnumerable<DiskPoolIscsiTargetResource>, IAsyncEnumerable<DiskPoolIscsiTargetResource>
     {
@@ -56,8 +54,24 @@ namespace Azure.ResourceManager.StoragePool
 
         /// <summary>
         /// Create or Update an iSCSI Target.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}
-        /// Operation Id: IscsiTargets_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IscsiTargets_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiskPoolIscsiTargetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="iscsiTargetName"> The name of the iSCSI Target. </param>
@@ -89,8 +103,24 @@ namespace Azure.ResourceManager.StoragePool
 
         /// <summary>
         /// Create or Update an iSCSI Target.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}
-        /// Operation Id: IscsiTargets_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IscsiTargets_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiskPoolIscsiTargetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="iscsiTargetName"> The name of the iSCSI Target. </param>
@@ -122,8 +152,24 @@ namespace Azure.ResourceManager.StoragePool
 
         /// <summary>
         /// Get an iSCSI Target.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}
-        /// Operation Id: IscsiTargets_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IscsiTargets_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiskPoolIscsiTargetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="iscsiTargetName"> The name of the iSCSI Target. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -151,8 +197,24 @@ namespace Azure.ResourceManager.StoragePool
 
         /// <summary>
         /// Get an iSCSI Target.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}
-        /// Operation Id: IscsiTargets_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IscsiTargets_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiskPoolIscsiTargetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="iscsiTargetName"> The name of the iSCSI Target. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -180,92 +242,84 @@ namespace Azure.ResourceManager.StoragePool
 
         /// <summary>
         /// Get iSCSI Targets in a Disk pool.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets
-        /// Operation Id: IscsiTargets_ListByDiskPool
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IscsiTargets_ListByDiskPool</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiskPoolIscsiTargetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="DiskPoolIscsiTargetResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="DiskPoolIscsiTargetResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<DiskPoolIscsiTargetResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<DiskPoolIscsiTargetResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _diskPoolIscsiTargetIscsiTargetsClientDiagnostics.CreateScope("DiskPoolIscsiTargetCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _diskPoolIscsiTargetIscsiTargetsRestClient.ListByDiskPoolAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new DiskPoolIscsiTargetResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<DiskPoolIscsiTargetResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _diskPoolIscsiTargetIscsiTargetsClientDiagnostics.CreateScope("DiskPoolIscsiTargetCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _diskPoolIscsiTargetIscsiTargetsRestClient.ListByDiskPoolNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new DiskPoolIscsiTargetResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _diskPoolIscsiTargetIscsiTargetsRestClient.CreateListByDiskPoolRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _diskPoolIscsiTargetIscsiTargetsRestClient.CreateListByDiskPoolNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new DiskPoolIscsiTargetResource(Client, DiskPoolIscsiTargetData.DeserializeDiskPoolIscsiTargetData(e)), _diskPoolIscsiTargetIscsiTargetsClientDiagnostics, Pipeline, "DiskPoolIscsiTargetCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Get iSCSI Targets in a Disk pool.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets
-        /// Operation Id: IscsiTargets_ListByDiskPool
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IscsiTargets_ListByDiskPool</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiskPoolIscsiTargetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="DiskPoolIscsiTargetResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="DiskPoolIscsiTargetResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<DiskPoolIscsiTargetResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<DiskPoolIscsiTargetResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _diskPoolIscsiTargetIscsiTargetsClientDiagnostics.CreateScope("DiskPoolIscsiTargetCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _diskPoolIscsiTargetIscsiTargetsRestClient.ListByDiskPool(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new DiskPoolIscsiTargetResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<DiskPoolIscsiTargetResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _diskPoolIscsiTargetIscsiTargetsClientDiagnostics.CreateScope("DiskPoolIscsiTargetCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _diskPoolIscsiTargetIscsiTargetsRestClient.ListByDiskPoolNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new DiskPoolIscsiTargetResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _diskPoolIscsiTargetIscsiTargetsRestClient.CreateListByDiskPoolRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _diskPoolIscsiTargetIscsiTargetsRestClient.CreateListByDiskPoolNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new DiskPoolIscsiTargetResource(Client, DiskPoolIscsiTargetData.DeserializeDiskPoolIscsiTargetData(e)), _diskPoolIscsiTargetIscsiTargetsClientDiagnostics, Pipeline, "DiskPoolIscsiTargetCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}
-        /// Operation Id: IscsiTargets_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IscsiTargets_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiskPoolIscsiTargetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="iscsiTargetName"> The name of the iSCSI Target. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -291,8 +345,24 @@ namespace Azure.ResourceManager.StoragePool
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}
-        /// Operation Id: IscsiTargets_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IscsiTargets_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiskPoolIscsiTargetResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="iscsiTargetName"> The name of the iSCSI Target. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -308,6 +378,96 @@ namespace Azure.ResourceManager.StoragePool
             {
                 var response = _diskPoolIscsiTargetIscsiTargetsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, iscsiTargetName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IscsiTargets_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiskPoolIscsiTargetResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="iscsiTargetName"> The name of the iSCSI Target. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="iscsiTargetName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="iscsiTargetName"/> is null. </exception>
+        public virtual async Task<NullableResponse<DiskPoolIscsiTargetResource>> GetIfExistsAsync(string iscsiTargetName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(iscsiTargetName, nameof(iscsiTargetName));
+
+            using var scope = _diskPoolIscsiTargetIscsiTargetsClientDiagnostics.CreateScope("DiskPoolIscsiTargetCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _diskPoolIscsiTargetIscsiTargetsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, iscsiTargetName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<DiskPoolIscsiTargetResource>(response.GetRawResponse());
+                return Response.FromValue(new DiskPoolIscsiTargetResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.StoragePool/diskPools/{diskPoolName}/iscsiTargets/{iscsiTargetName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>IscsiTargets_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-08-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="DiskPoolIscsiTargetResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="iscsiTargetName"> The name of the iSCSI Target. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="iscsiTargetName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="iscsiTargetName"/> is null. </exception>
+        public virtual NullableResponse<DiskPoolIscsiTargetResource> GetIfExists(string iscsiTargetName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(iscsiTargetName, nameof(iscsiTargetName));
+
+            using var scope = _diskPoolIscsiTargetIscsiTargetsClientDiagnostics.CreateScope("DiskPoolIscsiTargetCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _diskPoolIscsiTargetIscsiTargetsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, iscsiTargetName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<DiskPoolIscsiTargetResource>(response.GetRawResponse());
+                return Response.FromValue(new DiskPoolIscsiTargetResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

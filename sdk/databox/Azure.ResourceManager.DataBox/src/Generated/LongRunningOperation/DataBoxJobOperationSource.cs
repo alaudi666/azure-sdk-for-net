@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.DataBox
 {
-    internal class DataBoxJobOperationSource : IOperationSource<DataBoxJobResource>
+    /// <summary></summary>
+    internal partial class DataBoxJobOperationSource : IOperationSource<DataBoxJobResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal DataBoxJobOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         DataBoxJobResource IOperationSource<DataBoxJobResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = DataBoxJobData.DeserializeDataBoxJobData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            DataBoxJobData data = DataBoxJobData.DeserializeDataBoxJobData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new DataBoxJobResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<DataBoxJobResource> IOperationSource<DataBoxJobResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = DataBoxJobData.DeserializeDataBoxJobData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            DataBoxJobData data = DataBoxJobData.DeserializeDataBoxJobData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new DataBoxJobResource(_client, data);
         }
     }

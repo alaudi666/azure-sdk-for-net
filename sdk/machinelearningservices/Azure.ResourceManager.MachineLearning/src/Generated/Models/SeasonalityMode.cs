@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Forecasting seasonality mode.
-    /// Serialized Name: SeasonalityMode
-    /// </summary>
+    /// <summary> Forecasting seasonality mode. </summary>
     internal readonly partial struct SeasonalityMode : IEquatable<SeasonalityMode>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string AutoValue = "Auto";
         private const string CustomValue = "Custom";
 
-        /// <summary>
-        /// Seasonality to be determined automatically.
-        /// Serialized Name: SeasonalityMode.Auto
-        /// </summary>
+        /// <summary> Seasonality to be determined automatically. </summary>
         public static SeasonalityMode Auto { get; } = new SeasonalityMode(AutoValue);
-        /// <summary>
-        /// Use the custom seasonality value.
-        /// Serialized Name: SeasonalityMode.Custom
-        /// </summary>
+        /// <summary> Use the custom seasonality value. </summary>
         public static SeasonalityMode Custom { get; } = new SeasonalityMode(CustomValue);
         /// <summary> Determines if two <see cref="SeasonalityMode"/> values are the same. </summary>
         public static bool operator ==(SeasonalityMode left, SeasonalityMode right) => left.Equals(right);
         /// <summary> Determines if two <see cref="SeasonalityMode"/> values are not the same. </summary>
         public static bool operator !=(SeasonalityMode left, SeasonalityMode right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="SeasonalityMode"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="SeasonalityMode"/>. </summary>
         public static implicit operator SeasonalityMode(string value) => new SeasonalityMode(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

@@ -7,26 +7,18 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
     /// <summary>
     /// Image Instance Segmentation. Instance segmentation is used to identify objects in an image at the pixel level,
     /// drawing a polygon around each object in the image.
-    /// Serialized Name: ImageInstanceSegmentation
     /// </summary>
     public partial class ImageInstanceSegmentation : AutoMLVertical
     {
-        /// <summary> Initializes a new instance of ImageInstanceSegmentation. </summary>
-        /// <param name="trainingData">
-        /// [Required] Training data input.
-        /// Serialized Name: AutoMLVertical.trainingData
-        /// </param>
-        /// <param name="limitSettings">
-        /// [Required] Limit settings for the AutoML job.
-        /// Serialized Name: ImageVertical.limitSettings
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="ImageInstanceSegmentation"/>. </summary>
+        /// <param name="trainingData"> [Required] Training data input. </param>
+        /// <param name="limitSettings"> [Required] Limit settings for the AutoML job. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="trainingData"/> or <paramref name="limitSettings"/> is null. </exception>
         public ImageInstanceSegmentation(MachineLearningTableJobInput trainingData, ImageLimitSettings limitSettings) : base(trainingData)
         {
@@ -38,55 +30,27 @@ namespace Azure.ResourceManager.MachineLearning.Models
             TaskType = TaskType.ImageInstanceSegmentation;
         }
 
-        /// <summary> Initializes a new instance of ImageInstanceSegmentation. </summary>
-        /// <param name="logVerbosity">
-        /// Log verbosity for the job.
-        /// Serialized Name: AutoMLVertical.logVerbosity
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="ImageInstanceSegmentation"/>. </summary>
+        /// <param name="taskType"> [Required] Task type for AutoMLJob. </param>
+        /// <param name="logVerbosity"> Log verbosity for the job. </param>
+        /// <param name="trainingData"> [Required] Training data input. </param>
         /// <param name="targetColumnName">
         /// Target column name: This is prediction values column.
         /// Also known as label column name in context of classification tasks.
-        /// Serialized Name: AutoMLVertical.targetColumnName
         /// </param>
-        /// <param name="taskType">
-        /// [Required] Task type for AutoMLJob.
-        /// Serialized Name: AutoMLVertical.taskType
-        /// </param>
-        /// <param name="trainingData">
-        /// [Required] Training data input.
-        /// Serialized Name: AutoMLVertical.trainingData
-        /// </param>
-        /// <param name="primaryMetric">
-        /// Primary metric to optimize for this task.
-        /// Serialized Name: ImageInstanceSegmentation.primaryMetric
-        /// </param>
-        /// <param name="modelSettings">
-        /// Settings used for training the model.
-        /// Serialized Name: ImageObjectDetectionBase.modelSettings
-        /// </param>
-        /// <param name="searchSpace">
-        /// Search space for sampling different combinations of models and their hyperparameters.
-        /// Serialized Name: ImageObjectDetectionBase.searchSpace
-        /// </param>
-        /// <param name="limitSettings">
-        /// [Required] Limit settings for the AutoML job.
-        /// Serialized Name: ImageVertical.limitSettings
-        /// </param>
-        /// <param name="sweepSettings">
-        /// Model sweeping and hyperparameter sweeping related settings.
-        /// Serialized Name: ImageVertical.sweepSettings
-        /// </param>
-        /// <param name="validationData">
-        /// Validation data inputs.
-        /// Serialized Name: ImageVertical.validationData
-        /// </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="primaryMetric"> Primary metric to optimize for this task. </param>
+        /// <param name="modelSettings"> Settings used for training the model. </param>
+        /// <param name="searchSpace"> Search space for sampling different combinations of models and their hyperparameters. </param>
+        /// <param name="limitSettings"> [Required] Limit settings for the AutoML job. </param>
+        /// <param name="sweepSettings"> Model sweeping and hyperparameter sweeping related settings. </param>
+        /// <param name="validationData"> Validation data inputs. </param>
         /// <param name="validationDataSize">
         /// The fraction of training dataset that needs to be set aside for validation purpose.
         /// Values between (0.0 , 1.0)
         /// Applied when validation dataset is not provided.
-        /// Serialized Name: ImageVertical.validationDataSize
         /// </param>
-        internal ImageInstanceSegmentation(MachineLearningLogVerbosity? logVerbosity, string targetColumnName, TaskType taskType, MachineLearningTableJobInput trainingData, InstanceSegmentationPrimaryMetric? primaryMetric, ImageModelSettingsObjectDetection modelSettings, IList<ImageModelDistributionSettingsObjectDetection> searchSpace, ImageLimitSettings limitSettings, ImageSweepSettings sweepSettings, MachineLearningTableJobInput validationData, double? validationDataSize) : base(logVerbosity, targetColumnName, taskType, trainingData)
+        internal ImageInstanceSegmentation(TaskType taskType, MachineLearningLogVerbosity? logVerbosity, MachineLearningTableJobInput trainingData, string targetColumnName, IDictionary<string, BinaryData> serializedAdditionalRawData, InstanceSegmentationPrimaryMetric? primaryMetric, ImageModelSettingsObjectDetection modelSettings, IList<ImageModelDistributionSettingsObjectDetection> searchSpace, ImageLimitSettings limitSettings, ImageSweepSettings sweepSettings, MachineLearningTableJobInput validationData, double? validationDataSize) : base(taskType, logVerbosity, trainingData, targetColumnName, serializedAdditionalRawData)
         {
             PrimaryMetric = primaryMetric;
             ModelSettings = modelSettings;
@@ -98,42 +62,35 @@ namespace Azure.ResourceManager.MachineLearning.Models
             TaskType = taskType;
         }
 
-        /// <summary>
-        /// Primary metric to optimize for this task.
-        /// Serialized Name: ImageInstanceSegmentation.primaryMetric
-        /// </summary>
+        /// <summary> Initializes a new instance of <see cref="ImageInstanceSegmentation"/> for deserialization. </summary>
+        internal ImageInstanceSegmentation()
+        {
+        }
+
+        /// <summary> Primary metric to optimize for this task. </summary>
+        [WirePath("primaryMetric")]
         public InstanceSegmentationPrimaryMetric? PrimaryMetric { get; set; }
-        /// <summary>
-        /// Settings used for training the model.
-        /// Serialized Name: ImageObjectDetectionBase.modelSettings
-        /// </summary>
+        /// <summary> Settings used for training the model. </summary>
+        [WirePath("modelSettings")]
         public ImageModelSettingsObjectDetection ModelSettings { get; set; }
-        /// <summary>
-        /// Search space for sampling different combinations of models and their hyperparameters.
-        /// Serialized Name: ImageObjectDetectionBase.searchSpace
-        /// </summary>
+        /// <summary> Search space for sampling different combinations of models and their hyperparameters. </summary>
+        [WirePath("searchSpace")]
         public IList<ImageModelDistributionSettingsObjectDetection> SearchSpace { get; set; }
-        /// <summary>
-        /// [Required] Limit settings for the AutoML job.
-        /// Serialized Name: ImageVertical.limitSettings
-        /// </summary>
+        /// <summary> [Required] Limit settings for the AutoML job. </summary>
+        [WirePath("limitSettings")]
         public ImageLimitSettings LimitSettings { get; set; }
-        /// <summary>
-        /// Model sweeping and hyperparameter sweeping related settings.
-        /// Serialized Name: ImageVertical.sweepSettings
-        /// </summary>
+        /// <summary> Model sweeping and hyperparameter sweeping related settings. </summary>
+        [WirePath("sweepSettings")]
         public ImageSweepSettings SweepSettings { get; set; }
-        /// <summary>
-        /// Validation data inputs.
-        /// Serialized Name: ImageVertical.validationData
-        /// </summary>
+        /// <summary> Validation data inputs. </summary>
+        [WirePath("validationData")]
         public MachineLearningTableJobInput ValidationData { get; set; }
         /// <summary>
         /// The fraction of training dataset that needs to be set aside for validation purpose.
         /// Values between (0.0 , 1.0)
         /// Applied when validation dataset is not provided.
-        /// Serialized Name: ImageVertical.validationDataSize
         /// </summary>
+        [WirePath("validationDataSize")]
         public double? ValidationDataSize { get; set; }
     }
 }

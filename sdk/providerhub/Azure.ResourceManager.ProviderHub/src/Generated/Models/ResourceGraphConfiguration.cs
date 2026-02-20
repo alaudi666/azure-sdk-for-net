@@ -5,28 +5,65 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.ProviderHub.Models
 {
     /// <summary> The ResourceGraphConfiguration. </summary>
     public partial class ResourceGraphConfiguration
     {
-        /// <summary> Initializes a new instance of ResourceGraphConfiguration. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="ResourceGraphConfiguration"/>. </summary>
         public ResourceGraphConfiguration()
         {
         }
 
-        /// <summary> Initializes a new instance of ResourceGraphConfiguration. </summary>
-        /// <param name="enabled"></param>
-        /// <param name="apiVersion"></param>
-        internal ResourceGraphConfiguration(bool? enabled, string apiVersion)
+        /// <summary> Initializes a new instance of <see cref="ResourceGraphConfiguration"/>. </summary>
+        /// <param name="isEnabled"> Whether it's enabled. </param>
+        /// <param name="apiVersion"> The api version. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal ResourceGraphConfiguration(bool? isEnabled, string apiVersion, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
-            Enabled = enabled;
+            IsEnabled = isEnabled;
             ApiVersion = apiVersion;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary> Gets or sets the enabled. </summary>
-        public bool? Enabled { get; set; }
-        /// <summary> Gets or sets the api version. </summary>
+        /// <summary> Whether it's enabled. </summary>
+        public bool? IsEnabled { get; set; }
+        /// <summary> The api version. </summary>
         public string ApiVersion { get; set; }
     }
 }

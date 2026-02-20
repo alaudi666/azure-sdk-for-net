@@ -5,22 +5,25 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The UnknownIdentityConfiguration.
-    /// Serialized Name: UnknownIdentityConfiguration
-    /// </summary>
+    /// <summary> Unknown version of IdentityConfiguration. </summary>
     internal partial class UnknownIdentityConfiguration : MachineLearningIdentityConfiguration
     {
-        /// <summary> Initializes a new instance of UnknownIdentityConfiguration. </summary>
-        /// <param name="identityType">
-        /// [Required] Specifies the type of identity framework.
-        /// Serialized Name: IdentityConfiguration.identityType
-        /// </param>
-        internal UnknownIdentityConfiguration(IdentityConfigurationType identityType) : base(identityType)
+        /// <summary> Initializes a new instance of <see cref="UnknownIdentityConfiguration"/>. </summary>
+        /// <param name="identityType"> [Required] Specifies the type of identity framework. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal UnknownIdentityConfiguration(IdentityConfigurationType identityType, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(identityType, serializedAdditionalRawData)
         {
             IdentityType = identityType;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="UnknownIdentityConfiguration"/> for deserialization. </summary>
+        internal UnknownIdentityConfiguration()
+        {
         }
     }
 }

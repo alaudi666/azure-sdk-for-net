@@ -5,25 +5,27 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Avs.Models
 {
     /// <summary> The properties of an Arc addon. </summary>
     public partial class AddonArcProperties : AvsPrivateCloudAddonProperties
     {
-        /// <summary> Initializes a new instance of AddonArcProperties. </summary>
-        public AddonArcProperties()
+        /// <summary> Initializes a new instance of <see cref="AddonArcProperties"/>. </summary>
+        public AddonArcProperties() : base(AddonType.Arc)
         {
-            AddonType = AddonType.Arc;
         }
 
-        /// <summary> Initializes a new instance of AddonArcProperties. </summary>
-        /// <param name="addonType"> The type of private cloud addon. </param>
+        /// <summary> Initializes a new instance of <see cref="AddonArcProperties"/>. </summary>
+        /// <param name="addonType"> Addon type. </param>
         /// <param name="provisioningState"> The state of the addon provisioning. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
         /// <param name="vCenter"> The VMware vCenter resource ID. </param>
-        internal AddonArcProperties(AddonType addonType, AddonProvisioningState? provisioningState, string vCenter) : base(addonType, provisioningState)
+        internal AddonArcProperties(AddonType addonType, AddonProvisioningState? provisioningState, IDictionary<string, BinaryData> additionalBinaryDataProperties, string vCenter) : base(addonType, provisioningState, additionalBinaryDataProperties)
         {
             VCenter = vCenter;
-            AddonType = addonType;
         }
 
         /// <summary> The VMware vCenter resource ID. </summary>

@@ -7,35 +7,71 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
     /// <summary> Pre Restore request object. </summary>
     public partial class PreRestoreContent
     {
-        /// <summary> Initializes a new instance of PreRestoreContent. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="PreRestoreContent"/>. </summary>
         public PreRestoreContent()
         {
             RestoreFileSpec = new ChangeTrackingList<RestoreFileSpec>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="PreRestoreContent"/>. </summary>
+        /// <param name="partition"> Pre Restore partition. </param>
+        /// <param name="replicaGroup"> Pre Restore replica group. </param>
+        /// <param name="requestId"> Pre Restore request id. </param>
+        /// <param name="azureFileShareUri"> Pre Restore Azure file share uri. </param>
+        /// <param name="status"> Pre Restore Azure status. </param>
+        /// <param name="sourceAzureFileShareUri"> Pre Restore Azure source azure file share uri. </param>
+        /// <param name="backupMetadataPropertyBag"> Pre Restore backup metadata property bag. </param>
+        /// <param name="restoreFileSpec"> Pre Restore restore file spec array. </param>
+        /// <param name="pauseWaitForSyncDrainTimePeriodInSeconds"> Pre Restore pause wait for sync drain time period in seconds. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal PreRestoreContent(string partition, string replicaGroup, string requestId, Uri azureFileShareUri, string status, Uri sourceAzureFileShareUri, string backupMetadataPropertyBag, IList<RestoreFileSpec> restoreFileSpec, int? pauseWaitForSyncDrainTimePeriodInSeconds, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Partition = partition;
+            ReplicaGroup = replicaGroup;
+            RequestId = requestId;
+            AzureFileShareUri = azureFileShareUri;
+            Status = status;
+            SourceAzureFileShareUri = sourceAzureFileShareUri;
+            BackupMetadataPropertyBag = backupMetadataPropertyBag;
+            RestoreFileSpec = restoreFileSpec;
+            PauseWaitForSyncDrainTimePeriodInSeconds = pauseWaitForSyncDrainTimePeriodInSeconds;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> Pre Restore partition. </summary>
         public string Partition { get; set; }
+
         /// <summary> Pre Restore replica group. </summary>
         public string ReplicaGroup { get; set; }
+
         /// <summary> Pre Restore request id. </summary>
         public string RequestId { get; set; }
+
         /// <summary> Pre Restore Azure file share uri. </summary>
         public Uri AzureFileShareUri { get; set; }
+
         /// <summary> Pre Restore Azure status. </summary>
         public string Status { get; set; }
+
         /// <summary> Pre Restore Azure source azure file share uri. </summary>
         public Uri SourceAzureFileShareUri { get; set; }
+
         /// <summary> Pre Restore backup metadata property bag. </summary>
         public string BackupMetadataPropertyBag { get; set; }
+
         /// <summary> Pre Restore restore file spec array. </summary>
         public IList<RestoreFileSpec> RestoreFileSpec { get; }
+
         /// <summary> Pre Restore pause wait for sync drain time period in seconds. </summary>
         public int? PauseWaitForSyncDrainTimePeriodInSeconds { get; set; }
     }

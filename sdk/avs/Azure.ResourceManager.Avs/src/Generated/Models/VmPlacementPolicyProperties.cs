@@ -9,41 +9,42 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Azure.Core;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
     /// <summary> VM-VM placement policy properties. </summary>
     public partial class VmPlacementPolicyProperties : PlacementPolicyProperties
     {
-        /// <summary> Initializes a new instance of VmPlacementPolicyProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="VmPlacementPolicyProperties"/>. </summary>
         /// <param name="vmMembers"> Virtual machine members list. </param>
         /// <param name="affinityType"> placement policy affinity type. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="vmMembers"/> is null. </exception>
-        public VmPlacementPolicyProperties(IEnumerable<ResourceIdentifier> vmMembers, AvsPlacementPolicyAffinityType affinityType)
+        public VmPlacementPolicyProperties(IEnumerable<ResourceIdentifier> vmMembers, AvsPlacementPolicyAffinityType affinityType) : base(PlacementPolicyType.VmVm)
         {
             Argument.AssertNotNull(vmMembers, nameof(vmMembers));
 
             VmMembers = vmMembers.ToList();
             AffinityType = affinityType;
-            PolicyType = PlacementPolicyType.VmVm;
         }
 
-        /// <summary> Initializes a new instance of VmPlacementPolicyProperties. </summary>
-        /// <param name="policyType"> placement policy type. </param>
+        /// <summary> Initializes a new instance of <see cref="VmPlacementPolicyProperties"/>. </summary>
+        /// <param name="type"> Placement Policy type. </param>
         /// <param name="state"> Whether the placement policy is enabled or disabled. </param>
         /// <param name="displayName"> Display name of the placement policy. </param>
         /// <param name="provisioningState"> The provisioning state. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
         /// <param name="vmMembers"> Virtual machine members list. </param>
         /// <param name="affinityType"> placement policy affinity type. </param>
-        internal VmPlacementPolicyProperties(PlacementPolicyType policyType, PlacementPolicyState? state, string displayName, PlacementPolicyProvisioningState? provisioningState, IList<ResourceIdentifier> vmMembers, AvsPlacementPolicyAffinityType affinityType) : base(policyType, state, displayName, provisioningState)
+        internal VmPlacementPolicyProperties(PlacementPolicyType @type, PlacementPolicyState? state, string displayName, PlacementPolicyProvisioningState? provisioningState, IDictionary<string, BinaryData> additionalBinaryDataProperties, IList<ResourceIdentifier> vmMembers, AvsPlacementPolicyAffinityType affinityType) : base(@type, state, displayName, provisioningState, additionalBinaryDataProperties)
         {
             VmMembers = vmMembers;
             AffinityType = affinityType;
-            PolicyType = policyType;
         }
 
         /// <summary> Virtual machine members list. </summary>
         public IList<ResourceIdentifier> VmMembers { get; }
+
         /// <summary> placement policy affinity type. </summary>
         public AvsPlacementPolicyAffinityType AffinityType { get; set; }
     }

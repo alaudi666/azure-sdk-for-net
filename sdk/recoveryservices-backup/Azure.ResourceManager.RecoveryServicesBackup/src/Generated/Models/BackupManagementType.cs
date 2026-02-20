@@ -31,8 +31,6 @@ namespace Azure.ResourceManager.RecoveryServicesBackup.Models
         private const string AzureStorageValue = "AzureStorage";
         private const string AzureWorkloadValue = "AzureWorkload";
         private const string DefaultBackupValue = "DefaultBackup";
-        private const string BackupProtectedItemCountSummaryValue = "BackupProtectedItemCountSummary";
-        private const string BackupProtectionContainerCountSummaryValue = "BackupProtectionContainerCountSummary";
 
         /// <summary> Invalid. </summary>
         public static BackupManagementType Invalid { get; } = new BackupManagementType(InvalidValue);
@@ -52,15 +50,11 @@ namespace Azure.ResourceManager.RecoveryServicesBackup.Models
         public static BackupManagementType AzureWorkload { get; } = new BackupManagementType(AzureWorkloadValue);
         /// <summary> DefaultBackup. </summary>
         public static BackupManagementType DefaultBackup { get; } = new BackupManagementType(DefaultBackupValue);
-        /// <summary> BackupProtectedItemCountSummary. </summary>
-        public static BackupManagementType BackupProtectedItemCountSummary { get; } = new BackupManagementType(BackupProtectedItemCountSummaryValue);
-        /// <summary> BackupProtectionContainerCountSummary. </summary>
-        public static BackupManagementType BackupProtectionContainerCountSummary { get; } = new BackupManagementType(BackupProtectionContainerCountSummaryValue);
         /// <summary> Determines if two <see cref="BackupManagementType"/> values are the same. </summary>
         public static bool operator ==(BackupManagementType left, BackupManagementType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="BackupManagementType"/> values are not the same. </summary>
         public static bool operator !=(BackupManagementType left, BackupManagementType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="BackupManagementType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="BackupManagementType"/>. </summary>
         public static implicit operator BackupManagementType(string value) => new BackupManagementType(value);
 
         /// <inheritdoc />
@@ -71,7 +65,7 @@ namespace Azure.ResourceManager.RecoveryServicesBackup.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

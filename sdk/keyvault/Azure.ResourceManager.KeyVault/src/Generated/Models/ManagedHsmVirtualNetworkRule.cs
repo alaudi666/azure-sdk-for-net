@@ -6,15 +6,20 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> A rule governing the accessibility of a managed hsm pool from a specific virtual network. </summary>
     public partial class ManagedHsmVirtualNetworkRule
     {
-        /// <summary> Initializes a new instance of ManagedHsmVirtualNetworkRule. </summary>
-        /// <param name="subnetId"> Full resource id of a vnet subnet, such as &apos;/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1&apos;. </param>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmVirtualNetworkRule"/>. </summary>
+        /// <param name="subnetId"> Full resource id of a vnet subnet, such as '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1'. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subnetId"/> is null. </exception>
         public ManagedHsmVirtualNetworkRule(ResourceIdentifier subnetId)
         {
@@ -23,7 +28,17 @@ namespace Azure.ResourceManager.KeyVault.Models
             SubnetId = subnetId;
         }
 
-        /// <summary> Full resource id of a vnet subnet, such as &apos;/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1&apos;. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmVirtualNetworkRule"/>. </summary>
+        /// <param name="subnetId"> Full resource id of a vnet subnet, such as '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1'. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedHsmVirtualNetworkRule(ResourceIdentifier subnetId, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            SubnetId = subnetId;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> Full resource id of a vnet subnet, such as '/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1'. </summary>
+        [WirePath("id")]
         public ResourceIdentifier SubnetId { get; set; }
     }
 }

@@ -5,43 +5,151 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class DataBoxAccountCopyLogDetails
+    /// <summary> Copy log details for a storage account of a DataBox job. </summary>
+    public partial class DataBoxAccountCopyLogDetails : CopyLogDetails, IJsonModel<DataBoxAccountCopyLogDetails>
     {
-        internal static DataBoxAccountCopyLogDetails DeserializeDataBoxAccountCopyLogDetails(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override CopyLogDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<string> accountName = default;
-            Optional<string> copyLogLink = default;
-            Optional<string> copyVerboseLogLink = default;
-            DataBoxOrderType copyLogDetailsType = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxAccountCopyLogDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("accountName"))
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDataBoxAccountCopyLogDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxAccountCopyLogDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DataBoxAccountCopyLogDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxAccountCopyLogDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DataBoxAccountCopyLogDetails)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
+            if (options.Format != "W" && Optional.IsDefined(AccountName))
+            {
+                writer.WritePropertyName("accountName"u8);
+                writer.WriteStringValue(AccountName);
+            }
+            if (options.Format != "W" && Optional.IsDefined(CopyLogLink))
+            {
+                writer.WritePropertyName("copyLogLink"u8);
+                writer.WriteStringValue(CopyLogLink);
+            }
+            if (options.Format != "W" && Optional.IsDefined(CopyVerboseLogLink))
+            {
+                writer.WritePropertyName("copyVerboseLogLink"u8);
+                writer.WriteStringValue(CopyVerboseLogLink);
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxAccountCopyLogDetails IJsonModel<DataBoxAccountCopyLogDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (DataBoxAccountCopyLogDetails)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override CopyLogDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxAccountCopyLogDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DataBoxAccountCopyLogDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDataBoxAccountCopyLogDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DataBoxAccountCopyLogDetails DeserializeDataBoxAccountCopyLogDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DataBoxOrderType copyLogDetailsType = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            string accountName = default;
+            string copyLogLink = default;
+            string copyVerboseLogLink = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("copyLogDetailsType"u8))
                 {
-                    accountName = property.Value.GetString();
+                    copyLogDetailsType = prop.Value.GetString().ToDataBoxOrderType();
                     continue;
                 }
-                if (property.NameEquals("copyLogLink"))
+                if (prop.NameEquals("accountName"u8))
                 {
-                    copyLogLink = property.Value.GetString();
+                    accountName = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("copyVerboseLogLink"))
+                if (prop.NameEquals("copyLogLink"u8))
                 {
-                    copyVerboseLogLink = property.Value.GetString();
+                    copyLogLink = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("copyLogDetailsType"))
+                if (prop.NameEquals("copyVerboseLogLink"u8))
                 {
-                    copyLogDetailsType = property.Value.GetString().ToDataBoxOrderType();
+                    copyVerboseLogLink = prop.Value.GetString();
                     continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new DataBoxAccountCopyLogDetails(copyLogDetailsType, accountName.Value, copyLogLink.Value, copyVerboseLogLink.Value);
+            return new DataBoxAccountCopyLogDetails(copyLogDetailsType, additionalBinaryDataProperties, accountName, copyLogLink, copyVerboseLogLink);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DataBoxAccountCopyLogDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxAccountCopyLogDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxAccountCopyLogDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxAccountCopyLogDetails IPersistableModel<DataBoxAccountCopyLogDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => (DataBoxAccountCopyLogDetails)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DataBoxAccountCopyLogDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

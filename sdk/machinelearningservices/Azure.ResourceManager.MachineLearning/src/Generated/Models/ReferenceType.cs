@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Enum to determine which reference method to use for an asset.
-    /// Serialized Name: ReferenceType
-    /// </summary>
+    /// <summary> Enum to determine which reference method to use for an asset. </summary>
     internal readonly partial struct ReferenceType : IEquatable<ReferenceType>
     {
         private readonly string _value;
@@ -29,26 +26,17 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string DataPathValue = "DataPath";
         private const string OutputPathValue = "OutputPath";
 
-        /// <summary>
-        /// Id
-        /// Serialized Name: ReferenceType.Id
-        /// </summary>
+        /// <summary> Id. </summary>
         public static ReferenceType Id { get; } = new ReferenceType(IdValue);
-        /// <summary>
-        /// DataPath
-        /// Serialized Name: ReferenceType.DataPath
-        /// </summary>
+        /// <summary> DataPath. </summary>
         public static ReferenceType DataPath { get; } = new ReferenceType(DataPathValue);
-        /// <summary>
-        /// OutputPath
-        /// Serialized Name: ReferenceType.OutputPath
-        /// </summary>
+        /// <summary> OutputPath. </summary>
         public static ReferenceType OutputPath { get; } = new ReferenceType(OutputPathValue);
         /// <summary> Determines if two <see cref="ReferenceType"/> values are the same. </summary>
         public static bool operator ==(ReferenceType left, ReferenceType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="ReferenceType"/> values are not the same. </summary>
         public static bool operator !=(ReferenceType left, ReferenceType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="ReferenceType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="ReferenceType"/>. </summary>
         public static implicit operator ReferenceType(string value) => new ReferenceType(value);
 
         /// <inheritdoc />
@@ -59,7 +47,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

@@ -5,28 +5,37 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Describes a node type supported sku. </summary>
     public partial class NodeTypeSupportedSku
     {
-        /// <summary> Initializes a new instance of NodeTypeSupportedSku. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NodeTypeSupportedSku"/>. </summary>
         internal NodeTypeSupportedSku()
         {
         }
 
-        /// <summary> Initializes a new instance of NodeTypeSupportedSku. </summary>
+        /// <summary> Initializes a new instance of <see cref="NodeTypeSupportedSku"/>. </summary>
         /// <param name="name"> The sku name. </param>
-        /// <param name="tier"> Specifies the tier of the node type. &lt;br /&gt;&lt;br /&gt; Possible Values:&lt;br /&gt; **Standard**. </param>
-        internal NodeTypeSupportedSku(string name, string tier)
+        /// <param name="tier"> Specifies the tier of the node type. Possible Values: <b>Standard</b>. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NodeTypeSupportedSku(string name, string tier, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Name = name;
             Tier = tier;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The sku name. </summary>
         public string Name { get; }
-        /// <summary> Specifies the tier of the node type. &lt;br /&gt;&lt;br /&gt; Possible Values:&lt;br /&gt; **Standard**. </summary>
+
+        /// <summary> Specifies the tier of the node type. Possible Values: <b>Standard</b>. </summary>
         public string Tier { get; }
     }
 }

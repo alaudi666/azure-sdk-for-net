@@ -5,48 +5,56 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the ExpressRouteGateway data model. </summary>
+    /// <summary>
+    /// A class representing the ExpressRouteGateway data model.
+    /// ExpressRoute gateway resource.
+    /// </summary>
     public partial class ExpressRouteGatewayData : NetworkTrackedResourceData
     {
-        /// <summary> Initializes a new instance of ExpressRouteGatewayData. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExpressRouteGatewayData"/>. </summary>
         public ExpressRouteGatewayData()
         {
-            ExpressRouteConnections = new ChangeTrackingList<ExpressRouteConnectionData>();
+            ExpressRouteConnectionList = new ChangeTrackingList<ExpressRouteConnectionData>();
         }
 
-        /// <summary> Initializes a new instance of ExpressRouteGatewayData. </summary>
+        /// <summary> Initializes a new instance of <see cref="ExpressRouteGatewayData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
         /// <param name="location"> Resource location. </param>
         /// <param name="tags"> Resource tags. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="autoScaleConfiguration"> Configuration for auto scaling. </param>
-        /// <param name="expressRouteConnections"> List of ExpressRoute connections to the ExpressRoute gateway. </param>
+        /// <param name="expressRouteConnectionList"> List of ExpressRoute connections to the ExpressRoute gateway. </param>
         /// <param name="provisioningState"> The provisioning state of the express route gateway resource. </param>
         /// <param name="virtualHub"> The Virtual Hub where the ExpressRoute gateway is or will be deployed. </param>
-        internal ExpressRouteGatewayData(ResourceIdentifier id, string name, ResourceType? resourceType, AzureLocation? location, IDictionary<string, string> tags, ETag? etag, ExpressRouteGatewayPropertiesAutoScaleConfiguration autoScaleConfiguration, IReadOnlyList<ExpressRouteConnectionData> expressRouteConnections, NetworkProvisioningState? provisioningState, WritableSubResource virtualHub) : base(id, name, resourceType, location, tags)
+        /// <param name="allowNonVirtualWanTraffic"> Configures this gateway to accept traffic from non Virtual WAN networks. </param>
+        internal ExpressRouteGatewayData(ResourceIdentifier id, string name, ResourceType? resourceType, AzureLocation? location, IDictionary<string, string> tags, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, ExpressRouteGatewayPropertiesAutoScaleConfiguration autoScaleConfiguration, IList<ExpressRouteConnectionData> expressRouteConnectionList, NetworkProvisioningState? provisioningState, WritableSubResource virtualHub, bool? allowNonVirtualWanTraffic) : base(id, name, resourceType, location, tags, serializedAdditionalRawData)
         {
             ETag = etag;
             AutoScaleConfiguration = autoScaleConfiguration;
-            ExpressRouteConnections = expressRouteConnections;
+            ExpressRouteConnectionList = expressRouteConnectionList;
             ProvisioningState = provisioningState;
             VirtualHub = virtualHub;
+            AllowNonVirtualWanTraffic = allowNonVirtualWanTraffic;
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> Configuration for auto scaling. </summary>
         internal ExpressRouteGatewayPropertiesAutoScaleConfiguration AutoScaleConfiguration { get; set; }
         /// <summary> Minimum and maximum number of scale units to deploy. </summary>
+        [WirePath("properties.autoScaleConfiguration.bounds")]
         public ExpressRouteGatewayPropertiesAutoScaleConfigurationBounds AutoScaleBounds
         {
             get => AutoScaleConfiguration is null ? default : AutoScaleConfiguration.Bounds;
@@ -59,12 +67,15 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> List of ExpressRoute connections to the ExpressRoute gateway. </summary>
-        public IReadOnlyList<ExpressRouteConnectionData> ExpressRouteConnections { get; }
+        [WirePath("properties.expressRouteConnections")]
+        public IList<ExpressRouteConnectionData> ExpressRouteConnectionList { get; }
         /// <summary> The provisioning state of the express route gateway resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
         /// <summary> The Virtual Hub where the ExpressRoute gateway is or will be deployed. </summary>
         internal WritableSubResource VirtualHub { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.virtualHub.id")]
         public ResourceIdentifier VirtualHubId
         {
             get => VirtualHub is null ? default : VirtualHub.Id;
@@ -75,5 +86,9 @@ namespace Azure.ResourceManager.Network
                 VirtualHub.Id = value;
             }
         }
+
+        /// <summary> Configures this gateway to accept traffic from non Virtual WAN networks. </summary>
+        [WirePath("properties.allowNonVirtualWanTraffic")]
+        public bool? AllowNonVirtualWanTraffic { get; set; }
     }
 }

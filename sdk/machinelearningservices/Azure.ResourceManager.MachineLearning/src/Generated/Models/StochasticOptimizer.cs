@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Stochastic optimizer for image models.
-    /// Serialized Name: StochasticOptimizer
-    /// </summary>
+    /// <summary> Stochastic optimizer for image models. </summary>
     public readonly partial struct StochasticOptimizer : IEquatable<StochasticOptimizer>
     {
         private readonly string _value;
@@ -30,31 +27,19 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string AdamValue = "Adam";
         private const string AdamwValue = "Adamw";
 
-        /// <summary>
-        /// No optimizer selected.
-        /// Serialized Name: StochasticOptimizer.None
-        /// </summary>
+        /// <summary> No optimizer selected. </summary>
         public static StochasticOptimizer None { get; } = new StochasticOptimizer(NoneValue);
-        /// <summary>
-        /// Stochastic Gradient Descent optimizer.
-        /// Serialized Name: StochasticOptimizer.Sgd
-        /// </summary>
+        /// <summary> Stochastic Gradient Descent optimizer. </summary>
         public static StochasticOptimizer Sgd { get; } = new StochasticOptimizer(SgdValue);
-        /// <summary>
-        /// Adam is algorithm the optimizes stochastic objective functions based on adaptive estimates of moments
-        /// Serialized Name: StochasticOptimizer.Adam
-        /// </summary>
+        /// <summary> Adam is algorithm the optimizes stochastic objective functions based on adaptive estimates of moments. </summary>
         public static StochasticOptimizer Adam { get; } = new StochasticOptimizer(AdamValue);
-        /// <summary>
-        /// AdamW is a variant of the optimizer Adam that has an improved implementation of weight decay.
-        /// Serialized Name: StochasticOptimizer.Adamw
-        /// </summary>
+        /// <summary> AdamW is a variant of the optimizer Adam that has an improved implementation of weight decay. </summary>
         public static StochasticOptimizer Adamw { get; } = new StochasticOptimizer(AdamwValue);
         /// <summary> Determines if two <see cref="StochasticOptimizer"/> values are the same. </summary>
         public static bool operator ==(StochasticOptimizer left, StochasticOptimizer right) => left.Equals(right);
         /// <summary> Determines if two <see cref="StochasticOptimizer"/> values are not the same. </summary>
         public static bool operator !=(StochasticOptimizer left, StochasticOptimizer right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="StochasticOptimizer"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="StochasticOptimizer"/>. </summary>
         public static implicit operator StochasticOptimizer(string value) => new StochasticOptimizer(value);
 
         /// <inheritdoc />
@@ -65,7 +50,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

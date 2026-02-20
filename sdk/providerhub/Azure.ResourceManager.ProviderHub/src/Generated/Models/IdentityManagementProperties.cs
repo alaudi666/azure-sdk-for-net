@@ -5,28 +5,75 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.ProviderHub.Models
 {
     /// <summary> The IdentityManagementProperties. </summary>
     public partial class IdentityManagementProperties
     {
-        /// <summary> Initializes a new instance of IdentityManagementProperties. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="IdentityManagementProperties"/>. </summary>
         public IdentityManagementProperties()
         {
+            ApplicationIds = new ChangeTrackingList<string>();
+            DelegationAppIds = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of IdentityManagementProperties. </summary>
-        /// <param name="managementType"></param>
-        /// <param name="applicationId"></param>
-        internal IdentityManagementProperties(IdentityManagementType? managementType, string applicationId)
+        /// <summary> Initializes a new instance of <see cref="IdentityManagementProperties"/>. </summary>
+        /// <param name="managementType"> The type. </param>
+        /// <param name="applicationId"> The application id. </param>
+        /// <param name="applicationIds"> The application ids. </param>
+        /// <param name="delegationAppIds"> The delegation app ids. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal IdentityManagementProperties(IdentityManagementType? managementType, string applicationId, IList<string> applicationIds, IList<string> delegationAppIds, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             ManagementType = managementType;
             ApplicationId = applicationId;
+            ApplicationIds = applicationIds;
+            DelegationAppIds = delegationAppIds;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary> Gets or sets the management type. </summary>
+        /// <summary> The type. </summary>
         public IdentityManagementType? ManagementType { get; set; }
-        /// <summary> Gets or sets the application id. </summary>
+        /// <summary> The application id. </summary>
         public string ApplicationId { get; set; }
+        /// <summary> The application ids. </summary>
+        public IList<string> ApplicationIds { get; }
+        /// <summary> The delegation app ids. </summary>
+        public IList<string> DelegationAppIds { get; }
     }
 }

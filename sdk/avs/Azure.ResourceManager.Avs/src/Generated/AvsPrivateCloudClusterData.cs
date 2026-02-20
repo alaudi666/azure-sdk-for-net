@@ -13,55 +13,106 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Avs
 {
-    /// <summary> A class representing the AvsPrivateCloudCluster data model. </summary>
+    /// <summary> A cluster resource. </summary>
     public partial class AvsPrivateCloudClusterData : ResourceData
     {
-        /// <summary> Initializes a new instance of AvsPrivateCloudClusterData. </summary>
-        /// <param name="sku"> The cluster SKU. </param>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AvsPrivateCloudClusterData"/>. </summary>
+        /// <param name="sku"> The SKU (Stock Keeping Unit) assigned to this resource. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="sku"/> is null. </exception>
         public AvsPrivateCloudClusterData(AvsSku sku)
         {
             Argument.AssertNotNull(sku, nameof(sku));
 
             Sku = sku;
-            Hosts = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of AvsPrivateCloudClusterData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="sku"> The cluster SKU. </param>
-        /// <param name="clusterSize"> The cluster size. </param>
-        /// <param name="provisioningState"> The state of the cluster provisioning. </param>
-        /// <param name="clusterId"> The identity. </param>
-        /// <param name="hosts"> The hosts. </param>
-        internal AvsPrivateCloudClusterData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, AvsSku sku, int? clusterSize, AvsPrivateCloudClusterProvisioningState? provisioningState, int? clusterId, IList<string> hosts) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="AvsPrivateCloudClusterData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> The resource-specific properties for this resource. </param>
+        /// <param name="sku"> The SKU (Stock Keeping Unit) assigned to this resource. </param>
+        internal AvsPrivateCloudClusterData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, ClusterProperties properties, AvsSku sku) : base(id, name, resourceType, systemData)
         {
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
             Sku = sku;
-            ClusterSize = clusterSize;
-            ProvisioningState = provisioningState;
-            ClusterId = clusterId;
-            Hosts = hosts;
         }
 
-        /// <summary> The cluster SKU. </summary>
-        internal AvsSku Sku { get; set; }
-        /// <summary> The name of the SKU. </summary>
-        public string SkuName
-        {
-            get => Sku is null ? default : Sku.Name;
-            set => Sku = new AvsSku(value);
-        }
+        /// <summary> The resource-specific properties for this resource. </summary>
+        internal ClusterProperties Properties { get; set; }
+
+        /// <summary> The SKU (Stock Keeping Unit) assigned to this resource. </summary>
+        public AvsSku Sku { get; set; }
 
         /// <summary> The cluster size. </summary>
-        public int? ClusterSize { get; set; }
+        public int? ClusterSize
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ClusterSize;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ClusterProperties();
+                }
+                Properties.ClusterSize = value.Value;
+            }
+        }
+
         /// <summary> The state of the cluster provisioning. </summary>
-        public AvsPrivateCloudClusterProvisioningState? ProvisioningState { get; }
+        public AvsPrivateCloudClusterProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+        }
+
         /// <summary> The identity. </summary>
-        public int? ClusterId { get; }
+        public int? ClusterId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ClusterId;
+            }
+        }
+
         /// <summary> The hosts. </summary>
-        public IList<string> Hosts { get; }
+        public IList<string> Hosts
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new ClusterProperties();
+                }
+                return Properties.Hosts;
+            }
+        }
+
+        /// <summary> Name of the vsan datastore associated with the cluster. </summary>
+        public string VsanDatastoreName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.VsanDatastoreName;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ClusterProperties();
+                }
+                Properties.VsanDatastoreName = value;
+            }
+        }
     }
 }

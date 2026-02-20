@@ -6,31 +6,25 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.RecoveryServices.Models
 {
     /// <summary> Certificate details representing the Vault credentials for ACS. </summary>
     public partial class ResourceCertificateAndAcsDetails : ResourceCertificateDetails
     {
-        /// <summary> Initializes a new instance of ResourceCertificateAndAcsDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="ResourceCertificateAndAcsDetails"/>. </summary>
         /// <param name="globalAcsNamespace"> ACS namespace name - tenant for our service. </param>
         /// <param name="globalAcsHostName"> Acs mgmt host name to connect to. </param>
         /// <param name="globalAcsRPRealm"> Global ACS namespace RP realm. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="globalAcsNamespace"/>, <paramref name="globalAcsHostName"/> or <paramref name="globalAcsRPRealm"/> is null. </exception>
-        internal ResourceCertificateAndAcsDetails(string globalAcsNamespace, string globalAcsHostName, string globalAcsRPRealm)
+        internal ResourceCertificateAndAcsDetails(string globalAcsNamespace, string globalAcsHostName, string globalAcsRPRealm) : base("AccessControlService")
         {
-            Argument.AssertNotNull(globalAcsNamespace, nameof(globalAcsNamespace));
-            Argument.AssertNotNull(globalAcsHostName, nameof(globalAcsHostName));
-            Argument.AssertNotNull(globalAcsRPRealm, nameof(globalAcsRPRealm));
-
             GlobalAcsNamespace = globalAcsNamespace;
             GlobalAcsHostName = globalAcsHostName;
             GlobalAcsRPRealm = globalAcsRPRealm;
-            AuthType = "AccessControlService";
         }
 
-        /// <summary> Initializes a new instance of ResourceCertificateAndAcsDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="ResourceCertificateAndAcsDetails"/>. </summary>
         /// <param name="authType"> This property will be used as the discriminator for deciding the specific types in the polymorphic chain of types. </param>
         /// <param name="certificate"> The base64 encoded certificate raw data string. </param>
         /// <param name="friendlyName"> Certificate friendly name. </param>
@@ -38,23 +32,25 @@ namespace Azure.ResourceManager.RecoveryServices.Models
         /// <param name="resourceId"> Resource ID of the vault. </param>
         /// <param name="subject"> Certificate Subject Name. </param>
         /// <param name="thumbprint"> Certificate thumbprint. </param>
-        /// <param name="validFrom"> Certificate Validity start Date time. </param>
-        /// <param name="validTo"> Certificate Validity End Date time. </param>
+        /// <param name="validStartOn"> Certificate Validity start Date time. </param>
+        /// <param name="validEndOn"> Certificate Validity End Date time. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
         /// <param name="globalAcsNamespace"> ACS namespace name - tenant for our service. </param>
         /// <param name="globalAcsHostName"> Acs mgmt host name to connect to. </param>
         /// <param name="globalAcsRPRealm"> Global ACS namespace RP realm. </param>
-        internal ResourceCertificateAndAcsDetails(string authType, byte[] certificate, string friendlyName, string issuer, long? resourceId, string subject, string thumbprint, DateTimeOffset? validFrom, DateTimeOffset? validTo, string globalAcsNamespace, string globalAcsHostName, string globalAcsRPRealm) : base(authType, certificate, friendlyName, issuer, resourceId, subject, thumbprint, validFrom, validTo)
+        internal ResourceCertificateAndAcsDetails(string authType, byte[] certificate, string friendlyName, string issuer, long? resourceId, string subject, BinaryData thumbprint, DateTimeOffset? validStartOn, DateTimeOffset? validEndOn, IDictionary<string, BinaryData> additionalBinaryDataProperties, string globalAcsNamespace, string globalAcsHostName, string globalAcsRPRealm) : base(authType, certificate, friendlyName, issuer, resourceId, subject, thumbprint, validStartOn, validEndOn, additionalBinaryDataProperties)
         {
             GlobalAcsNamespace = globalAcsNamespace;
             GlobalAcsHostName = globalAcsHostName;
             GlobalAcsRPRealm = globalAcsRPRealm;
-            AuthType = authType ?? "AccessControlService";
         }
 
         /// <summary> ACS namespace name - tenant for our service. </summary>
         public string GlobalAcsNamespace { get; }
+
         /// <summary> Acs mgmt host name to connect to. </summary>
         public string GlobalAcsHostName { get; }
+
         /// <summary> Global ACS namespace RP realm. </summary>
         public string GlobalAcsRPRealm { get; }
     }

@@ -5,63 +5,151 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    public partial class PSCredentialExecutionParameterDetails : IUtf8JsonSerializable
+    /// <summary> a powershell credential object. </summary>
+    public partial class PSCredentialExecutionParameterDetails : ScriptExecutionParameterDetails, IJsonModel<PSCredentialExecutionParameterDetails>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="PSCredentialExecutionParameterDetails"/> for deserialization. </summary>
+        internal PSCredentialExecutionParameterDetails()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override ScriptExecutionParameterDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<PSCredentialExecutionParameterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializePSCredentialExecutionParameterDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(PSCredentialExecutionParameterDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<PSCredentialExecutionParameterDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<PSCredentialExecutionParameterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(PSCredentialExecutionParameterDetails)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(Username))
             {
-                writer.WritePropertyName("username");
+                writer.WritePropertyName("username"u8);
                 writer.WriteStringValue(Username);
             }
             if (Optional.IsDefined(Password))
             {
-                writer.WritePropertyName("password");
+                writer.WritePropertyName("password"u8);
                 writer.WriteStringValue(Password);
             }
-            writer.WritePropertyName("name");
-            writer.WriteStringValue(Name);
-            writer.WritePropertyName("type");
-            writer.WriteStringValue(ParameterType.ToString());
-            writer.WriteEndObject();
         }
 
-        internal static PSCredentialExecutionParameterDetails DeserializePSCredentialExecutionParameterDetails(JsonElement element)
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        PSCredentialExecutionParameterDetails IJsonModel<PSCredentialExecutionParameterDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (PSCredentialExecutionParameterDetails)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override ScriptExecutionParameterDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> username = default;
-            Optional<string> password = default;
-            string name = default;
-            ScriptExecutionParameterType type = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<PSCredentialExecutionParameterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("username"))
+                throw new FormatException($"The model {nameof(PSCredentialExecutionParameterDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializePSCredentialExecutionParameterDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static PSCredentialExecutionParameterDetails DeserializePSCredentialExecutionParameterDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ScriptExecutionParameterType @type = default;
+            string name = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            string username = default;
+            string password = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("type"u8))
                 {
-                    username = property.Value.GetString();
+                    @type = new ScriptExecutionParameterType(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("password"))
+                if (prop.NameEquals("name"u8))
                 {
-                    password = property.Value.GetString();
+                    name = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (prop.NameEquals("username"u8))
                 {
-                    name = property.Value.GetString();
+                    username = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (prop.NameEquals("password"u8))
                 {
-                    type = new ScriptExecutionParameterType(property.Value.GetString());
+                    password = prop.Value.GetString();
                     continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new PSCredentialExecutionParameterDetails(name, type, username.Value, password.Value);
+            return new PSCredentialExecutionParameterDetails(@type, name, additionalBinaryDataProperties, username, password);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<PSCredentialExecutionParameterDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<PSCredentialExecutionParameterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerAvsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(PSCredentialExecutionParameterDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        PSCredentialExecutionParameterDetails IPersistableModel<PSCredentialExecutionParameterDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => (PSCredentialExecutionParameterDetails)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<PSCredentialExecutionParameterDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

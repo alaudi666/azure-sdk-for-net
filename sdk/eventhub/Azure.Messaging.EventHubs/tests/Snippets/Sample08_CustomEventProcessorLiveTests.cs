@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core;
+using Azure.Identity;
 using Azure.Messaging.EventHubs.Consumer;
 using Azure.Messaging.EventHubs.Primitives;
 using Azure.Messaging.EventHubs.Processor;
@@ -48,18 +49,26 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             #region Snippet:EventHubs_Sample08_CustomProcessorUse
 
 #if SNIPPET
-            var storageConnectionString = "<< CONNECTION STRING FOR THE STORAGE ACCOUNT >>";
+            var credential = new DefaultAzureCredential();
+
+            var storageAccountEndpoint = "<< Account Uri (likely similar to https://{your-account}.blob.core.windows.net) >>";
             var blobContainerName = "<< NAME OF THE BLOB CONTAINER >>";
 
-            var eventHubsConnectionString = "<< CONNECTION STRING FOR THE EVENT HUBS NAMESPACE >>";
+            var fullyQualifiedNamespace = "<< NAMESPACE (likely similar to {your-namespace}.servicebus.windows.net) >>";
             var eventHubName = "<< NAME OF THE EVENT HUB >>";
             var consumerGroup = "<< NAME OF THE EVENT HUB CONSUMER GROUP >>";
 
+            var blobUriBuilder = new BlobUriBuilder(new Uri(storageAccountEndpoint))
+            {
+                BlobContainerName = blobContainerName
+            };
+
             var storageClient = new BlobContainerClient(
-                storageConnectionString,
-                blobContainerName);
+                blobUriBuilder.ToUri(),
+                credential);
 #else
-            var eventHubsConnectionString = EventHubsTestEnvironment.Instance.EventHubsConnectionString;
+            var credential = EventHubsTestEnvironment.Instance.Credential;
+            var fullyQualifiedNamespace = EventHubsTestEnvironment.Instance.FullyQualifiedNamespace;
             var eventHubName = eventHubScope.EventHubName;
             var consumerGroup = eventHubScope.ConsumerGroups.First();
             var storageClient = Mock.Of<BlobContainerClient>();
@@ -71,8 +80,9 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                 storageClient,
                 maximumBatchSize,
                 consumerGroup,
-                eventHubsConnectionString,
-                eventHubName);
+                fullyQualifiedNamespace,
+                eventHubName,
+                credential);
 
             using var cancellationSource = new CancellationTokenSource();
             cancellationSource.CancelAfter(TimeSpan.FromSeconds(30));
@@ -113,8 +123,9 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                 BlobContainerClient storageClient,
                 int eventBatchMaximumCount,
                 string consumerGroup,
-                string connectionString,
+                string fullyQualifiedNamespace,
                 string eventHubName,
+                TokenCredential credential,
                 EventProcessorOptions clientOptions = default)
                     : base(
 #if SNIPPET
@@ -124,8 +135,9 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 #endif
                         eventBatchMaximumCount,
                         consumerGroup,
-                        connectionString,
+                        fullyQualifiedNamespace,
                         eventHubName,
+                        credential,
                         clientOptions)
             {
             }
@@ -139,11 +151,11 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 
                 try
                 {
-                    Console.WriteLine($"Received events for partition { partition.PartitionId }");
+                    Console.WriteLine($"Received events for partition {partition.PartitionId}");
 
                     foreach (var currentEvent in events)
                     {
-                        Console.WriteLine($"Event: { currentEvent.EventBody }");
+                        Console.WriteLine($"Event: {currentEvent.EventBody}");
                         lastEvent = currentEvent;
                     }
 
@@ -151,8 +163,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     {
                         await UpdateCheckpointAsync(
                             partition.PartitionId,
-                            lastEvent.Offset,
-                            lastEvent.SequenceNumber,
+                            CheckpointPosition.FromEvent(lastEvent),
                             cancellationToken)
                         .ConfigureAwait(false);
                     }
@@ -168,7 +179,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     // In this case, the partition processing task will fault and be restarted
                     // from the last recorded checkpoint.
 
-                    Console.WriteLine($"Exception while processing events: { ex }");
+                    Console.WriteLine($"Exception while processing events: {ex}");
                 }
             }
 
@@ -183,13 +194,13 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     if (partition != null)
                     {
                         Console.Error.WriteLine(
-                            $"Exception on partition { partition.PartitionId } while " +
-                            $"performing { operationDescription }: {exception}");
+                            $"Exception on partition {partition.PartitionId} while " +
+                            $"performing {operationDescription}: {exception}");
                     }
                     else
                     {
                         Console.Error.WriteLine(
-                            $"Exception while performing { operationDescription }: { exception }");
+                            $"Exception while performing {operationDescription}: {exception}");
                     }
                 }
                 catch (Exception ex)
@@ -203,7 +214,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     // In this case, unhandled exceptions will not impact the processor
                     // operation but will go unobserved, hiding potential application problems.
 
-                    Console.WriteLine($"Exception while processing events: { ex }");
+                    Console.WriteLine($"Exception while processing events: {ex}");
                 }
 
                 return Task.CompletedTask;
@@ -215,7 +226,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             {
                 try
                 {
-                    Console.WriteLine($"Initializing partition { partition.PartitionId }");
+                    Console.WriteLine($"Initializing partition {partition.PartitionId}");
                 }
                 catch (Exception ex)
                 {
@@ -228,7 +239,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     // In this case, the partition processing task will fault and the
                     // partition will be initialized again.
 
-                    Console.WriteLine($"Exception while initializing a partition: { ex }");
+                    Console.WriteLine($"Exception while initializing a partition: {ex}");
                 }
 
                 return Task.CompletedTask;
@@ -242,8 +253,8 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                 try
                 {
                     Console.WriteLine(
-                        $"No longer processing partition { partition.PartitionId } " +
-                        $"because { reason }");
+                        $"No longer processing partition {partition.PartitionId} " +
+                        $"because {reason}");
                 }
                 catch (Exception ex)
                 {
@@ -256,7 +267,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     // In this case, unhandled exceptions will not impact the processor
                     // operation but will go unobserved, hiding potential application problems.
 
-                    Console.WriteLine($"Exception while stopping processing for a partition: { ex }");
+                    Console.WriteLine($"Exception while stopping processing for a partition: {ex}");
                 }
 
                 return Task.CompletedTask;
@@ -312,11 +323,11 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
 
                     checkpoint = new EventProcessorCheckpoint
                     {
-                       FullyQualifiedNamespace = this.FullyQualifiedNamespace,
-                       EventHubName = this.EventHubName,
-                       ConsumerGroup = this.ConsumerGroup,
-                       PartitionId = partitionId,
-                       StartingPosition = EventPosition.FromEnqueuedTime(startingTime)
+                        FullyQualifiedNamespace = this.FullyQualifiedNamespace,
+                        EventHubName = this.EventHubName,
+                        ConsumerGroup = this.ConsumerGroup,
+                        PartitionId = partitionId,
+                        StartingPosition = EventPosition.FromEnqueuedTime(startingTime)
                     };
                 }
 
@@ -437,14 +448,14 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
         ///
         public class BlobCheckpointStore : CheckpointStore
         {
-            public BlobCheckpointStore(BlobContainerClient storageClient) {}
+            public BlobCheckpointStore(BlobContainerClient storageClient) { }
             public override Task<IEnumerable<EventProcessorPartitionOwnership>> ClaimOwnershipAsync(IEnumerable<EventProcessorPartitionOwnership> desiredOwnership, CancellationToken cancellationToken) => Task.FromResult(Enumerable.Empty<EventProcessorPartitionOwnership>());
 
             public override Task<EventProcessorCheckpoint> GetCheckpointAsync(string fullyQualifiedNamespace, string eventHubName, string consumerGroup, string partitionId, CancellationToken cancellationToken) => Task.FromResult<EventProcessorCheckpoint>(null);
 
             public override Task<IEnumerable<EventProcessorPartitionOwnership>> ListOwnershipAsync(string fullyQualifiedNamespace, string eventHubName, string consumerGroup, CancellationToken cancellationToken) => Task.FromResult(Enumerable.Empty<EventProcessorPartitionOwnership>());
 
-            public override Task UpdateCheckpointAsync(string fullyQualifiedNamespace, string eventHubName, string consumerGroup, string partitionId, long offset, long? sequenceNumber, CancellationToken cancellationToken) => Task.CompletedTask;
+            public override Task UpdateCheckpointAsync(string fullyQualifiedNamespace, string eventHubName, string consumerGroup, string partitionId, string clientIdentifier, CheckpointPosition checkpointPosition, CancellationToken cancellationToken) => Task.CompletedTask;
         }
 
         /// <summary>

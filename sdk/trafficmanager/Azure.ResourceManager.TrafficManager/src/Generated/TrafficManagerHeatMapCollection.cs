@@ -10,18 +10,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.TrafficManager.Models;
 
 namespace Azure.ResourceManager.TrafficManager
 {
     /// <summary>
-    /// A class representing a collection of <see cref="TrafficManagerHeatMapResource" /> and their operations.
-    /// Each <see cref="TrafficManagerHeatMapResource" /> in the collection will belong to the same instance of <see cref="TrafficManagerProfileResource" />.
-    /// To get a <see cref="TrafficManagerHeatMapCollection" /> instance call the GetTrafficManagerHeatMaps method from an instance of <see cref="TrafficManagerProfileResource" />.
+    /// A class representing a collection of <see cref="TrafficManagerHeatMapResource"/> and their operations.
+    /// Each <see cref="TrafficManagerHeatMapResource"/> in the collection will belong to the same instance of <see cref="TrafficManagerProfileResource"/>.
+    /// To get a <see cref="TrafficManagerHeatMapCollection"/> instance call the GetTrafficManagerHeatMaps method from an instance of <see cref="TrafficManagerProfileResource"/>.
     /// </summary>
     public partial class TrafficManagerHeatMapCollection : ArmCollection
     {
@@ -54,8 +52,24 @@ namespace Azure.ResourceManager.TrafficManager
 
         /// <summary>
         /// Gets latest heatmap for Traffic Manager profile.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/trafficmanagerprofiles/{profileName}/heatMaps/{heatMapType}
-        /// Operation Id: HeatMap_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/trafficmanagerprofiles/{profileName}/heatMaps/{heatMapType}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>HeatMap_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TrafficManagerHeatMapResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="heatMapType"> The type of HeatMap for the Traffic Manager profile. </param>
         /// <param name="topLeft"> The top left latitude,longitude pair of the rectangular viewport to query for. </param>
@@ -81,8 +95,24 @@ namespace Azure.ResourceManager.TrafficManager
 
         /// <summary>
         /// Gets latest heatmap for Traffic Manager profile.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/trafficmanagerprofiles/{profileName}/heatMaps/{heatMapType}
-        /// Operation Id: HeatMap_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/trafficmanagerprofiles/{profileName}/heatMaps/{heatMapType}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>HeatMap_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TrafficManagerHeatMapResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="heatMapType"> The type of HeatMap for the Traffic Manager profile. </param>
         /// <param name="topLeft"> The top left latitude,longitude pair of the rectangular viewport to query for. </param>
@@ -108,8 +138,24 @@ namespace Azure.ResourceManager.TrafficManager
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/trafficmanagerprofiles/{profileName}/heatMaps/{heatMapType}
-        /// Operation Id: HeatMap_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/trafficmanagerprofiles/{profileName}/heatMaps/{heatMapType}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>HeatMap_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TrafficManagerHeatMapResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="heatMapType"> The type of HeatMap for the Traffic Manager profile. </param>
         /// <param name="topLeft"> The top left latitude,longitude pair of the rectangular viewport to query for. </param>
@@ -133,8 +179,24 @@ namespace Azure.ResourceManager.TrafficManager
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/trafficmanagerprofiles/{profileName}/heatMaps/{heatMapType}
-        /// Operation Id: HeatMap_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/trafficmanagerprofiles/{profileName}/heatMaps/{heatMapType}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>HeatMap_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TrafficManagerHeatMapResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="heatMapType"> The type of HeatMap for the Traffic Manager profile. </param>
         /// <param name="topLeft"> The top left latitude,longitude pair of the rectangular viewport to query for. </param>
@@ -148,6 +210,92 @@ namespace Azure.ResourceManager.TrafficManager
             {
                 var response = _trafficManagerHeatMapHeatMapRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, heatMapType, topLeft, botRight, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/trafficmanagerprofiles/{profileName}/heatMaps/{heatMapType}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>HeatMap_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TrafficManagerHeatMapResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="heatMapType"> The type of HeatMap for the Traffic Manager profile. </param>
+        /// <param name="topLeft"> The top left latitude,longitude pair of the rectangular viewport to query for. </param>
+        /// <param name="botRight"> The bottom right latitude,longitude pair of the rectangular viewport to query for. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        public virtual async Task<NullableResponse<TrafficManagerHeatMapResource>> GetIfExistsAsync(TrafficManagerHeatMapType heatMapType, IEnumerable<double> topLeft = null, IEnumerable<double> botRight = null, CancellationToken cancellationToken = default)
+        {
+            using var scope = _trafficManagerHeatMapHeatMapClientDiagnostics.CreateScope("TrafficManagerHeatMapCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _trafficManagerHeatMapHeatMapRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, heatMapType, topLeft, botRight, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<TrafficManagerHeatMapResource>(response.GetRawResponse());
+                return Response.FromValue(new TrafficManagerHeatMapResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Network/trafficmanagerprofiles/{profileName}/heatMaps/{heatMapType}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>HeatMap_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="TrafficManagerHeatMapResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="heatMapType"> The type of HeatMap for the Traffic Manager profile. </param>
+        /// <param name="topLeft"> The top left latitude,longitude pair of the rectangular viewport to query for. </param>
+        /// <param name="botRight"> The bottom right latitude,longitude pair of the rectangular viewport to query for. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        public virtual NullableResponse<TrafficManagerHeatMapResource> GetIfExists(TrafficManagerHeatMapType heatMapType, IEnumerable<double> topLeft = null, IEnumerable<double> botRight = null, CancellationToken cancellationToken = default)
+        {
+            using var scope = _trafficManagerHeatMapHeatMapClientDiagnostics.CreateScope("TrafficManagerHeatMapCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _trafficManagerHeatMapHeatMapRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, heatMapType, topLeft, botRight, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<TrafficManagerHeatMapResource>(response.GetRawResponse());
+                return Response.FromValue(new TrafficManagerHeatMapResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

@@ -8,8 +8,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
+using Azure.ResourceManager.ResourceGraph.Mocking;
 using Azure.ResourceManager.ResourceGraph.Models;
 using Azure.ResourceManager.Resources;
 
@@ -18,77 +18,272 @@ namespace Azure.ResourceManager.ResourceGraph
     /// <summary> A class to add extension methods to Azure.ResourceManager.ResourceGraph. </summary>
     public static partial class ResourceGraphExtensions
     {
-        private static TenantResourceExtensionClient GetExtensionClient(TenantResource tenantResource)
+        private static MockableResourceGraphArmClient GetMockableResourceGraphArmClient(ArmClient client)
         {
-            return tenantResource.GetCachedClient((client) =>
-            {
-                return new TenantResourceExtensionClient(client, tenantResource.Id);
-            }
-            );
+            return client.GetCachedClient(client0 => new MockableResourceGraphArmClient(client0));
+        }
+
+        private static MockableResourceGraphResourceGroupResource GetMockableResourceGraphResourceGroupResource(ArmResource resource)
+        {
+            return resource.GetCachedClient(client => new MockableResourceGraphResourceGroupResource(client, resource.Id));
+        }
+
+        private static MockableResourceGraphSubscriptionResource GetMockableResourceGraphSubscriptionResource(ArmResource resource)
+        {
+            return resource.GetCachedClient(client => new MockableResourceGraphSubscriptionResource(client, resource.Id));
+        }
+
+        private static MockableResourceGraphTenantResource GetMockableResourceGraphTenantResource(ArmResource resource)
+        {
+            return resource.GetCachedClient(client => new MockableResourceGraphTenantResource(client, resource.Id));
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="ResourceGraphQueryResource" /> along with the instance operations that can be performed on it but with no data.
+        /// You can use <see cref="ResourceGraphQueryResource.CreateResourceIdentifier" /> to create a <see cref="ResourceGraphQueryResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableResourceGraphArmClient.GetResourceGraphQueryResource(ResourceIdentifier)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="ResourceGraphQueryResource"/> object. </returns>
+        public static ResourceGraphQueryResource GetResourceGraphQueryResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableResourceGraphArmClient(client).GetResourceGraphQueryResource(id);
+        }
+
+        /// <summary>
+        /// Gets a collection of ResourceGraphQueryResources in the ResourceGroupResource.
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableResourceGraphResourceGroupResource.GetResourceGraphQueries()"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        /// <returns> An object representing collection of ResourceGraphQueryResources and their operations over a ResourceGraphQueryResource. </returns>
+        public static ResourceGraphQueryCollection GetResourceGraphQueries(this ResourceGroupResource resourceGroupResource)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableResourceGraphResourceGroupResource(resourceGroupResource).GetResourceGraphQueries();
+        }
+
+        /// <summary>
+        /// Get a single graph query by its resourceName.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ResourceGraph/queries/{resourceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>GraphQuery_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ResourceGraphQueryResource"/></description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableResourceGraphResourceGroupResource.GetResourceGraphQueryAsync(string,CancellationToken)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <param name="resourceName"> The name of the Graph Query resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> or <paramref name="resourceName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="resourceName"/> is an empty string, and was expected to be non-empty. </exception>
+        [ForwardsClientCalls]
+        public static async Task<Response<ResourceGraphQueryResource>> GetResourceGraphQueryAsync(this ResourceGroupResource resourceGroupResource, string resourceName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return await GetMockableResourceGraphResourceGroupResource(resourceGroupResource).GetResourceGraphQueryAsync(resourceName, cancellationToken).ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Get a single graph query by its resourceName.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.ResourceGraph/queries/{resourceName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>GraphQuery_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ResourceGraphQueryResource"/></description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableResourceGraphResourceGroupResource.GetResourceGraphQuery(string,CancellationToken)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
+        /// <param name="resourceName"> The name of the Graph Query resource. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> or <paramref name="resourceName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="resourceName"/> is an empty string, and was expected to be non-empty. </exception>
+        [ForwardsClientCalls]
+        public static Response<ResourceGraphQueryResource> GetResourceGraphQuery(this ResourceGroupResource resourceGroupResource, string resourceName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableResourceGraphResourceGroupResource(resourceGroupResource).GetResourceGraphQuery(resourceName, cancellationToken);
+        }
+
+        /// <summary>
+        /// Get all graph queries defined within a specified subscription.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.ResourceGraph/queries</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>GraphQuery_ListBySubscription</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ResourceGraphQueryResource"/></description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableResourceGraphSubscriptionResource.GetResourceGraphQueries(CancellationToken)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> An async collection of <see cref="ResourceGraphQueryResource"/> that may take multiple service requests to iterate over. </returns>
+        public static AsyncPageable<ResourceGraphQueryResource> GetResourceGraphQueriesAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableResourceGraphSubscriptionResource(subscriptionResource).GetResourceGraphQueriesAsync(cancellationToken);
+        }
+
+        /// <summary>
+        /// Get all graph queries defined within a specified subscription.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.ResourceGraph/queries</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>GraphQuery_ListBySubscription</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ResourceGraphQueryResource"/></description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableResourceGraphSubscriptionResource.GetResourceGraphQueries(CancellationToken)"/> instead.</description>
+        /// </item>
+        /// </summary>
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="ResourceGraphQueryResource"/> that may take multiple service requests to iterate over. </returns>
+        public static Pageable<ResourceGraphQueryResource> GetResourceGraphQueries(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableResourceGraphSubscriptionResource(subscriptionResource).GetResourceGraphQueries(cancellationToken);
         }
 
         /// <summary>
         /// Queries the resources managed by Azure Resource Manager for scopes specified in the request.
-        /// Request Path: /providers/Microsoft.ResourceGraph/resources
-        /// Operation Id: Resources
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.ResourceGraph/resources</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Resources</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableResourceGraphTenantResource.GetResources(ResourceQueryContent,CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
         /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
         /// <param name="content"> Request specifying query and its options. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="tenantResource"/> or <paramref name="content"/> is null. </exception>
         public static async Task<Response<ResourceQueryResult>> GetResourcesAsync(this TenantResource tenantResource, ResourceQueryContent content, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNull(content, nameof(content));
+            Argument.AssertNotNull(tenantResource, nameof(tenantResource));
 
-            return await GetExtensionClient(tenantResource).GetResourcesAsync(content, cancellationToken).ConfigureAwait(false);
+            return await GetMockableResourceGraphTenantResource(tenantResource).GetResourcesAsync(content, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
         /// Queries the resources managed by Azure Resource Manager for scopes specified in the request.
-        /// Request Path: /providers/Microsoft.ResourceGraph/resources
-        /// Operation Id: Resources
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.ResourceGraph/resources</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Resources</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// </list>
+        /// <item>
+        /// <term>Mocking</term>
+        /// <description>To mock this method, please mock <see cref="MockableResourceGraphTenantResource.GetResources(ResourceQueryContent,CancellationToken)"/> instead.</description>
+        /// </item>
         /// </summary>
         /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
         /// <param name="content"> Request specifying query and its options. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="tenantResource"/> or <paramref name="content"/> is null. </exception>
         public static Response<ResourceQueryResult> GetResources(this TenantResource tenantResource, ResourceQueryContent content, CancellationToken cancellationToken = default)
         {
-            Argument.AssertNotNull(content, nameof(content));
+            Argument.AssertNotNull(tenantResource, nameof(tenantResource));
 
-            return GetExtensionClient(tenantResource).GetResources(content, cancellationToken);
-        }
-
-        /// <summary>
-        /// List all snapshots of a resource for a given time interval.
-        /// Request Path: /providers/Microsoft.ResourceGraph/resourcesHistory
-        /// Operation Id: ResourcesHistory
-        /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="content"> Request specifying the query and its options. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
-        public static async Task<Response<BinaryData>> GetResourceHistoryAsync(this TenantResource tenantResource, ResourcesHistoryContent content, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNull(content, nameof(content));
-
-            return await GetExtensionClient(tenantResource).GetResourceHistoryAsync(content, cancellationToken).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// List all snapshots of a resource for a given time interval.
-        /// Request Path: /providers/Microsoft.ResourceGraph/resourcesHistory
-        /// Operation Id: ResourcesHistory
-        /// </summary>
-        /// <param name="tenantResource"> The <see cref="TenantResource" /> instance the method will execute against. </param>
-        /// <param name="content"> Request specifying the query and its options. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
-        public static Response<BinaryData> GetResourceHistory(this TenantResource tenantResource, ResourcesHistoryContent content, CancellationToken cancellationToken = default)
-        {
-            Argument.AssertNotNull(content, nameof(content));
-
-            return GetExtensionClient(tenantResource).GetResourceHistory(content, cancellationToken);
+            return GetMockableResourceGraphTenantResource(tenantResource).GetResources(content, cancellationToken);
         }
     }
 }

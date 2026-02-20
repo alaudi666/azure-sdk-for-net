@@ -4,13 +4,17 @@
 using System;
 using Azure.Core.Extensions;
 using Azure.Data.AppConfiguration;
+using Microsoft.TypeSpec.Generator.Customizations;
 
 namespace Microsoft.Extensions.Azure
 {
+    // CUSTOM:
+    // - Rename.
     /// <summary>
     /// Extension methods to add <see cref="ConfigurationClient"/> client to clients builder.
     /// </summary>
-    public static class ConfigurationClientBuilderExtensions
+    [CodeGenType("AppConfigurationClientBuilderExtensions")]
+    public static partial class ConfigurationClientBuilderExtensions
     {
         /// <summary>
         /// Registers a <see cref="ConfigurationClient"/> instance with the provided <paramref name="connectionString"/>.
@@ -28,15 +32,6 @@ namespace Microsoft.Extensions.Azure
             where TBuilder : IAzureClientFactoryBuilderWithCredential
         {
             return builder.RegisterClientFactory<ConfigurationClient, ConfigurationClientOptions>((options, cred) => new ConfigurationClient(configurationUri, cred, options));
-        }
-
-        /// <summary>
-        /// Registers a <see cref="ConfigurationClient"/> instance with connection options loaded from the provided <paramref name="configuration"/> instance.
-        /// </summary>
-        public static IAzureClientBuilder<ConfigurationClient, ConfigurationClientOptions> AddConfigurationClient<TBuilder, TConfiguration>(this TBuilder builder, TConfiguration configuration)
-            where TBuilder : IAzureClientFactoryBuilderWithConfiguration<TConfiguration>
-        {
-            return builder.RegisterClientFactory<ConfigurationClient, ConfigurationClientOptions>(configuration);
         }
     }
 }

@@ -1,13 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.NotificationHubs.Models;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
-using System.Threading.Tasks;
 
 namespace Azure.ResourceManager.NotificationHubs.Tests
 {
@@ -43,7 +43,7 @@ namespace Azure.ResourceManager.NotificationHubs.Tests
 
         protected async Task<NotificationHubNamespaceResource> CreateNotificationHubNamespace(ResourceGroupResource resourceGroup, string namespaceName)
         {
-            var data = new NotificationHubNamespaceCreateOrUpdateContent(DefaultLocation)
+            var data = new NotificationHubNamespaceData(DefaultLocation)
             {
                 Sku = new NotificationHubSku(NotificationHubSkuName.Standard),
             };
@@ -53,7 +53,7 @@ namespace Azure.ResourceManager.NotificationHubs.Tests
 
         protected async Task<NotificationHubResource> CreateNotificationHub(NotificationHubNamespaceResource notificationHubNamespaceResource, string notificationHubName)
         {
-            var data = new NotificationHubCreateOrUpdateContent(DefaultLocation);
+            var data = new NotificationHubData(DefaultLocation);
             var notificationHub = await notificationHubNamespaceResource.GetNotificationHubs().CreateOrUpdateAsync(WaitUntil.Completed, notificationHubName, data);
             return notificationHub.Value;
         }

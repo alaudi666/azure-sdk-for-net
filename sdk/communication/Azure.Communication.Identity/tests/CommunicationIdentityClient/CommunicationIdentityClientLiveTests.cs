@@ -4,11 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Azure.Communication.Identity.Models;
 using Azure.Communication.Tests;
 using Azure.Core;
 using Azure.Core.TestFramework;
 using NUnit.Framework;
+using static Azure.Communication.Identity.CommunicationIdentityClientOptions;
 
 namespace Azure.Communication.Identity.Tests
 {
@@ -56,25 +59,46 @@ namespace Azure.Communication.Identity.Tests
             CTEOptions = await CreateTeamsUserParams();
         }
 
-        [Test]
-        [TestCase(AuthMethod.ConnectionString, "chat", TestName = "GettingTokenWithSingleScopeWithConnectionString")]
-        [TestCase(AuthMethod.KeyCredential, "chat", TestName = "GettingTokenWithSingleScopeWithKeyCredential")]
-        [TestCase(AuthMethod.TokenCredential, "chat", TestName = "GettingTokenWithSingleScopeWithTokenCredential")]
-        [TestCase(AuthMethod.ConnectionString, "chat", "voip", TestName = "GettingTokenWithMultipleScopesWithConnectionString")]
-        [TestCase(AuthMethod.KeyCredential, "chat", "voip", TestName = "GettingTokenWithMultipleScopesWithKeyCredential")]
-        [TestCase(AuthMethod.TokenCredential, "chat", "voip", TestName = "GettingTokenWithMultipleScopesWithTokenCredential")]
-        public async Task GetTokenGeneratesTokenAndIdentityWithScopes(AuthMethod authMethod, params string[] scopes)
+        [TestCase(AuthMethod.ConnectionString, TestName = "GettingTokenWithConnectionString")]
+        [TestCase(AuthMethod.KeyCredential, TestName = "GettingTokenWithKeyCredential")]
+        [TestCase(AuthMethod.TokenCredential, TestName = "GettingTokenWithTokenCredential")]
+        public async Task GetTokenUsingDifferentAuthentication(AuthMethod authMethod)
         {
-            CommunicationIdentityClient client = authMethod switch
-            {
-                AuthMethod.ConnectionString => CreateClientWithConnectionString(),
-                AuthMethod.KeyCredential => CreateClientWithAzureKeyCredential(),
-                AuthMethod.TokenCredential => CreateClientWithTokenCredential(),
-                _ => throw new ArgumentOutOfRangeException(nameof(authMethod)),
-            };
+            string[] scopes = new[] { "chat", "voip" };
+
+            CommunicationIdentityClient client = CreateClient(authMethod);
 
             Response<CommunicationUserIdentifier> userResponse = await client.CreateUserAsync();
             Response<AccessToken> tokenResponse = await client.GetTokenAsync(userResponse.Value, scopes: scopes.Select(x => new CommunicationTokenScope(x)));
+            Assert.IsNotNull(tokenResponse.Value);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(tokenResponse.Value.Token));
+            ValidateScopesIfNotSanitized();
+
+            void ValidateScopesIfNotSanitized()
+            {
+                if (Mode != RecordedTestMode.Playback)
+                {
+                    JwtTokenParser.JwtPayload payload = JwtTokenParser.DecodeJwtPayload(tokenResponse.Value.Token);
+                    CollectionAssert.AreEquivalent(scopes, payload.Scopes);
+                }
+            }
+        }
+
+        [TestCase("chat", TestName = "GettingTokenWithChatScope")]
+        [TestCase("voip", TestName = "GettingTokenWithVoipScope")]
+        [TestCase("chat.join", TestName = "GettingTokenWithChatJoinScope")]
+        [TestCase("chat.join.limited", TestName = "GettingTokenWithChatJoinLimitedScope")]
+        [TestCase("voip.join", TestName = "GettingTokenWithVoipJoinScope")]
+        [TestCase("chat", "voip", TestName = "GettingTokenWithChatVoipScopes")]
+        [TestCase("chat", "chat.join", "chat.join.limited", TestName = "GettingTokenWithAllChatScopes")]
+        [TestCase("voip", "voip.join", TestName = "GettingTokenWithAllVoipScopes")]
+        [TestCase("chat.join", "voip.join", TestName = "GettingTokenWithChatJoinVoipJoinScopes")]
+        public async Task GetTokenGeneratesTokenAndIdentityWithScopes(params string[] scopes)
+        {
+            CommunicationIdentityClient client = CreateClient();
+            Response<CommunicationUserIdentifier> userResponse = await client.CreateUserAsync();
+            Response<AccessToken> tokenResponse = await client.GetTokenAsync(userResponse.Value, scopes: scopes.Select(x => new CommunicationTokenScope(x)));
+
             Assert.IsNotNull(tokenResponse.Value);
             Assert.IsFalse(string.IsNullOrWhiteSpace(tokenResponse.Value.Token));
             ValidateScopesIfNotSanitized();
@@ -94,7 +118,7 @@ namespace Azure.Communication.Identity.Tests
         {
             try
             {
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 Response<AccessToken> accessToken = await client.GetTokenAsync(communicationUser: null, scopes: new[] { CommunicationTokenScope.Chat });
             }
             catch (NullReferenceException ex)
@@ -111,7 +135,7 @@ namespace Azure.Communication.Identity.Tests
         {
             try
             {
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 CommunicationUserIdentifier userIdentifier = await client.CreateUserAsync();
                 Response<AccessToken> accessToken = await client.GetTokenAsync(communicationUser: userIdentifier, scopes: null);
             }
@@ -124,13 +148,42 @@ namespace Azure.Communication.Identity.Tests
         }
 
         [Test]
+        [TestCase("chat", TestName = "CreateUserAndTokenWithChatScope")]
+        [TestCase("voip", TestName = "CreateUserAndTokenWithVoIPScope")]
+        [TestCase("chat.join", TestName = "CreateUserAndTokenWithChatJoinScope")]
+        [TestCase("chat.join.limited", TestName = "CreateUserAndTokenWithChatJoinLimitedScope")]
+        [TestCase("voip.join", TestName = "CreateUserAndTokenWithVoipJoinScope")]
+        [TestCase("chat", "voip", TestName = "CreateUserAndTokenWithChatVoipScopes")]
+        [TestCase("chat", "chat.join", "chat.join.limited", TestName = "CreateUserAndTokenWithAllChatScopes")]
+        [TestCase("voip", "voip.join", TestName = "CreateUserAndTokenWithAllVoipScopes")]
+        [TestCase("chat.join", "voip.join", TestName = "CreateUserAndTokenWithChatJoinVoipJoinScopes")]
+        public async Task CreateUserAndTokenWithDifferentScopes(params string[] scopes)
+        {
+            CommunicationIdentityClient client = CreateClient();
+            Response<CommunicationUserIdentifierAndToken> accessToken = await client.CreateUserAndTokenAsync(scopes: scopes.Select(x => new CommunicationTokenScope(x)));
+
+            Assert.IsNotNull(accessToken.Value.AccessToken);
+            Assert.IsFalse(string.IsNullOrWhiteSpace(accessToken.Value.AccessToken.Token));
+            ValidateScopesIfNotSanitized();
+
+            void ValidateScopesIfNotSanitized()
+            {
+                if (Mode != RecordedTestMode.Playback)
+                {
+                    JwtTokenParser.JwtPayload payload = JwtTokenParser.DecodeJwtPayload(accessToken.Value.AccessToken.Token);
+                    CollectionAssert.AreEquivalent(scopes, payload.Scopes);
+                }
+            }
+        }
+
+        [Test]
         [TestCase(MIN_VALID_EXPIRATION_TIME, TestName = "CreateUserAndTokenWithMinValidCustomExpiration")]
         [TestCase(MAX_VALID_EXPIRATION_TIME, TestName = "CreateUserAndTokenWithMaxValidCustomExpiration")]
         public async Task CreateUserAndTokenWithValidCustomExpiration(string expiresIn)
         {
             TimeSpan tokenExpiresIn = TokenCustomExpirationTimes[expiresIn];
 
-            CommunicationIdentityClient client = CreateClientWithConnectionString();
+            CommunicationIdentityClient client = CreateClient();
             Response<CommunicationUserIdentifierAndToken> accessToken = await client.CreateUserAndTokenAsync(scopes: new[] { CommunicationTokenScope.Chat }, tokenExpiresIn: tokenExpiresIn);
 
             Assert.IsNotNull(accessToken.Value.AccessToken);
@@ -154,7 +207,7 @@ namespace Azure.Communication.Identity.Tests
             try
             {
                 TimeSpan tokenExpiresIn = TokenCustomExpirationTimes[expiresIn];
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 Response<CommunicationUserIdentifierAndToken> accessToken = await client.CreateUserAndTokenAsync(scopes: new[] { CommunicationTokenScope.Chat }, tokenExpiresIn: tokenExpiresIn);
             }
             catch (RequestFailedException ex)
@@ -173,7 +226,7 @@ namespace Azure.Communication.Identity.Tests
             {
                 // int.MaxValue / 20 as hours argument is used to simulate situation when subsequent flow tries to convert minutes value of the TimeSpan instance to int type and overflows
                 TimeSpan tokenExpiresIn = new TimeSpan(int.MaxValue / 20, 0, 0);
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 Response<CommunicationUserIdentifierAndToken> accessToken = await client.CreateUserAndTokenAsync(scopes: new[] { CommunicationTokenScope.Chat }, tokenExpiresIn: tokenExpiresIn);
             }
             catch (ArgumentOutOfRangeException ex)
@@ -193,9 +246,9 @@ namespace Azure.Communication.Identity.Tests
         {
             TimeSpan tokenExpiresIn = TokenCustomExpirationTimes[expiresIn];
 
-            CommunicationIdentityClient client = CreateClientWithConnectionString();
+            CommunicationIdentityClient client = CreateClient();
             CommunicationUserIdentifier userIdentifier = await client.CreateUserAsync();
-            Response<AccessToken> accessToken = await client.GetTokenAsync(communicationUser: userIdentifier, scopes: new[] { CommunicationTokenScope.Chat }, tokenExpiresIn: tokenExpiresIn);
+            Response<AccessToken> accessToken = await client.GetTokenAsync(communicationUser: userIdentifier, scopes: new[] { CommunicationTokenScope.VoIP }, tokenExpiresIn: tokenExpiresIn);
 
             Assert.IsNotNull(accessToken.Value);
             Assert.IsFalse(string.IsNullOrWhiteSpace(accessToken.Value.Token));
@@ -218,9 +271,9 @@ namespace Azure.Communication.Identity.Tests
             try
             {
                 TimeSpan tokenExpiresIn = TokenCustomExpirationTimes[expiresIn];
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 CommunicationUserIdentifier userIdentifier = await client.CreateUserAsync();
-                Response<AccessToken> accessToken = await client.GetTokenAsync(communicationUser: userIdentifier, scopes: new[] { CommunicationTokenScope.Chat }, tokenExpiresIn: tokenExpiresIn);
+                Response<AccessToken> accessToken = await client.GetTokenAsync(communicationUser: userIdentifier, scopes: new[] { CommunicationTokenScope.VoIP }, tokenExpiresIn: tokenExpiresIn);
             }
             catch (RequestFailedException ex)
             {
@@ -238,9 +291,9 @@ namespace Azure.Communication.Identity.Tests
             {
                 // int.MaxValue / 20 as hours argument is used to simulate situation when subsequent flow tries to convert minutes value of the TimeSpan instance to int type and overflows
                 TimeSpan tokenExpiresIn = new TimeSpan(int.MaxValue / 20, 0, 0);
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 CommunicationUserIdentifier userIdentifier = await client.CreateUserAsync();
-                Response<AccessToken> accessToken = await client.GetTokenAsync(communicationUser: userIdentifier, scopes: new[] { CommunicationTokenScope.Chat }, tokenExpiresIn: tokenExpiresIn);
+                Response<AccessToken> accessToken = await client.GetTokenAsync(communicationUser: userIdentifier, scopes: new[] { CommunicationTokenScope.VoIP }, tokenExpiresIn: tokenExpiresIn);
             }
             catch (ArgumentOutOfRangeException ex)
             {
@@ -257,7 +310,7 @@ namespace Azure.Communication.Identity.Tests
         {
             try
             {
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 Response deleteResponse = await client.DeleteUserAsync(communicationUser: null);
             }
             catch (NullReferenceException ex)
@@ -274,7 +327,7 @@ namespace Azure.Communication.Identity.Tests
         {
             try
             {
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 Response deleteResponse = await client.RevokeTokensAsync(communicationUser: null);
             }
             catch (NullReferenceException ex)
@@ -291,10 +344,10 @@ namespace Azure.Communication.Identity.Tests
         {
             if (TestEnvironment.ShouldIgnoreIdentityExchangeTokenTest)
             {
-                Assert.Ignore("Ignore exchange teams token test if flag is enabled.");
+                Assert.Pass("Ignore exchange teams token test if flag is enabled.");
             }
 
-            CommunicationIdentityClient client = CreateClientWithConnectionString();
+            CommunicationIdentityClient client = CreateClient();
             Response<AccessToken> tokenResponse = await client.GetTokenForTeamsUserAsync(CTEOptions);
             Assert.IsNotNull(tokenResponse.Value);
             Assert.IsFalse(string.IsNullOrWhiteSpace(tokenResponse.Value.Token));
@@ -312,7 +365,7 @@ namespace Azure.Communication.Identity.Tests
             var userObjectId = isUserIdNull ? null : CTEOptions.UserObjectId;
             try
             {
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 Response<AccessToken> tokenResponse = await client.GetTokenForTeamsUserAsync(new GetTokenForTeamsUserOptions(teamsUserAadToken, clientId, userObjectId));
             }
             catch (ArgumentNullException ex)
@@ -330,7 +383,7 @@ namespace Azure.Communication.Identity.Tests
         {
             try
             {
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 Response<AccessToken> tokenResponse = await client.GetTokenForTeamsUserAsync(new GetTokenForTeamsUserOptions(token, CTEOptions.ClientId, CTEOptions.UserObjectId));
             }
             catch (RequestFailedException ex)
@@ -348,7 +401,7 @@ namespace Azure.Communication.Identity.Tests
         {
             try
             {
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 Response<AccessToken> tokenResponse = await client.GetTokenForTeamsUserAsync(new GetTokenForTeamsUserOptions(TestEnvironment.CommunicationExpiredTeamsToken, CTEOptions.ClientId, CTEOptions.UserObjectId));
             }
             catch (RequestFailedException ex)
@@ -368,12 +421,12 @@ namespace Azure.Communication.Identity.Tests
         {
             if (TestEnvironment.ShouldIgnoreIdentityExchangeTokenTest)
             {
-                Assert.Ignore("Ignore exchange teams token test if flag is enabled.");
+                Assert.Pass("Ignore exchange teams token test if flag is enabled.");
             }
 
             try
             {
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 Response<AccessToken> tokenResponse = await client.GetTokenForTeamsUserAsync(new GetTokenForTeamsUserOptions(CTEOptions.TeamsUserAadToken, clientId, CTEOptions.UserObjectId));
             }
             catch (RequestFailedException ex)
@@ -391,12 +444,12 @@ namespace Azure.Communication.Identity.Tests
         {
             if (TestEnvironment.ShouldIgnoreIdentityExchangeTokenTest)
             {
-                Assert.Ignore("Ignore exchange teams token test if flag is enabled.");
+                Assert.Pass("Ignore exchange teams token test if flag is enabled.");
             }
 
             try
             {
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 Response<AccessToken> tokenResponse = await client.GetTokenForTeamsUserAsync(new GetTokenForTeamsUserOptions(CTEOptions.TeamsUserAadToken, CTEOptions.UserObjectId, CTEOptions.UserObjectId));
             }
             catch (RequestFailedException ex)
@@ -416,12 +469,12 @@ namespace Azure.Communication.Identity.Tests
         {
             if (TestEnvironment.ShouldIgnoreIdentityExchangeTokenTest)
             {
-                Assert.Ignore("Ignore exchange teams token test if flag is enabled.");
+                Assert.Pass("Ignore exchange teams token test if flag is enabled.");
             }
 
             try
             {
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 Response<AccessToken> tokenResponse = await client.GetTokenForTeamsUserAsync(new GetTokenForTeamsUserOptions(CTEOptions.TeamsUserAadToken, CTEOptions.ClientId, userObjectId));
             }
             catch (RequestFailedException ex)
@@ -439,12 +492,12 @@ namespace Azure.Communication.Identity.Tests
         {
             if (TestEnvironment.ShouldIgnoreIdentityExchangeTokenTest)
             {
-                Assert.Ignore("Ignore exchange teams token test if flag is enabled.");
+                Assert.Pass("Ignore exchange teams token test if flag is enabled.");
             }
 
             try
             {
-                CommunicationIdentityClient client = CreateClientWithConnectionString();
+                CommunicationIdentityClient client = CreateClient();
                 Response<AccessToken> tokenResponse = await client.GetTokenForTeamsUserAsync(new GetTokenForTeamsUserOptions(CTEOptions.TeamsUserAadToken, CTEOptions.ClientId, CTEOptions.ClientId));
             }
             catch (RequestFailedException ex)
@@ -452,6 +505,76 @@ namespace Azure.Communication.Identity.Tests
                 Assert.NotNull(ex.Message);
                 Assert.True(ex.Message.Contains("400"));
                 Console.WriteLine(ex.Message);
+                return;
+            }
+            Assert.Fail("An exception should have been thrown.");
+        }
+
+        [Test]
+        [TestCase(ServiceVersion.V2021_03_07, TestName = "CreateIdentityWithServiceVersion_V2021_03_07")]
+        [TestCase(ServiceVersion.V2022_06_01, TestName = "CreateIdentityWithServiceVersion_V2022_06_01")]
+        [TestCase(ServiceVersion.V2022_10_01, TestName = "CreateIdentityWithServiceVersion_V2022_10_01")]
+        [TestCase(ServiceVersion.V2023_10_01, TestName = "CreateIdentityWithServiceVersion_V2023_10_01")]
+        [TestCase(ServiceVersion.V2025_03_02_PREVIEW, TestName = "CreateIdentityWithServiceVersion_V2025_03_02_PREVIEW")]
+        public async Task CreateIdentityWithDifferentServiceVersions(ServiceVersion version)
+        {
+            try
+            {
+                CommunicationIdentityClient client = CreateClient(default, version);
+                CommunicationUserIdentifier userResponse = await client.CreateUserAsync();
+                Assert.IsNotNull(userResponse);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail($"Unexpected error: {ex}");
+            }
+        }
+
+        [Test]
+        public async Task CreateUserWithCustomIdShouldReturnExistingIdentity()
+        {
+            var customId = "bob@contoso.com";
+            CommunicationIdentityClient client = CreateClient();
+            Response<CommunicationUserIdentifier> createResponse = await client.CreateUserAsync(customId);
+
+            Assert.IsTrue((int)HttpStatusCode.Created == createResponse.GetRawResponse().Status);
+            Assert.IsNotNull(createResponse.Value.Id);
+
+            Response<CommunicationUserIdentifier> createResponse2 = await client.CreateUserAsync(customId);
+            Assert.AreEqual((int)HttpStatusCode.Created, createResponse2.GetRawResponse().Status);
+            Assert.AreEqual(createResponse.Value.Id, createResponse2.Value.Id);
+        }
+
+        [Test]
+        public async Task GetUserShouldReturnTheCustomId()
+        {
+            var customId = "alice@contoso.com";
+            CommunicationIdentityClient client = CreateClient();
+            Response<CommunicationUserIdentifierAndToken> createResponse = await client.CreateUserAndTokenAsync(customId,
+                new List<CommunicationTokenScope> { CommunicationTokenScope.VoIP },
+                TimeSpan.FromHours(2));
+            Assert.IsTrue((int)HttpStatusCode.Created == createResponse.GetRawResponse().Status
+                || (int)HttpStatusCode.OK == createResponse.GetRawResponse().Status);
+            Assert.IsNotNull(createResponse.Value.User);
+
+            Response<CommunicationUserDetail> getResponse = await client.GetUserDetailAsync(createResponse.Value.User);
+            Assert.AreEqual((int)HttpStatusCode.OK, getResponse.GetRawResponse().Status);
+            Assert.AreEqual(createResponse.Value.User.Id, getResponse.Value.User.Id);
+            Assert.AreEqual(customId, getResponse.Value.CustomId);
+            Assert.IsNotNull(getResponse.Value.LastTokenIssuedAt);
+        }
+
+        [Test]
+        public void CreateClientWithIncorrectServiceVersionShouldThrow()
+        {
+            try
+            {
+                ServiceVersion invalidVersion = (ServiceVersion)(-1);
+                CommunicationIdentityClient client = CreateClient(default, invalidVersion);
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                Assert.NotNull(ex.Message);
                 return;
             }
             Assert.Fail("An exception should have been thrown.");

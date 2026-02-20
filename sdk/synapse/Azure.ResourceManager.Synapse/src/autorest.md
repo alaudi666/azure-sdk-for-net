@@ -9,14 +9,26 @@ csharp: true
 library-name: Synapse
 namespace: Azure.ResourceManager.Synapse
 # The readme.md in swagger repo contains invalid setting for C# sdk
-# require: https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/readme.md
+# require: https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/readme.md
 tag: package-composite-v2
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
+sample-gen:
+  output-folder: $(this-folder)/../tests/Generated
+  clear-output-folder: true
+  skipped-operations:
+  - WorkspaceManagedSqlServerDedicatedSQLMinimalTlsSettings_Update
+  - SqlPoolSensitivityLabels_CreateOrUpdate
+  - SqlPoolSensitivityLabels_Delete
 skip-csproj: true
+use-core-datafactory-replacements: false
 modelerfour:
   flatten-payloads: false
   lenient-model-deduplication: true   # Mitigate the duplication schema 'ErrorResponse' issue
+use-model-reader-writer: true
+
+# mgmt-debug:
+#   show-serialized-names: true
 
 rename-mapping:
   AzureADOnlyAuthentication: SynapseAadOnlyAuthentication
@@ -169,6 +181,10 @@ rename-mapping:
   Workspace.properties.workspaceUID: WorkspaceUid|uuid
   Workspace.properties.adlaResourceId: -|arm-id
   KustoPoolUpdate.properties.workspaceUID: WorkspaceUid|uuid
+  PrivateLinkResources: SynapseKustoPoolPrivateLinkList
+  KustoPoolPrivateLinkResources: SynapseKustoPoolPrivateLinkData
+  IntegrationRuntimeStatus.type: RuntimeType
+  EntityReference.type: IntegrationRuntimeEntityReferenceType
 
 prepend-rp-prefix:
   - AttachedDatabaseConfiguration
@@ -193,7 +209,7 @@ prepend-rp-prefix:
   - ExtendedSqlPoolBlobAuditingPolicyListResult
   - GeoBackupPolicy
   - GeoBackupPolicyListResult
-  - IPFirewallRuleInfo
+  - IpFirewallRuleInfo
   - Key
   - KustoPool
   - MaintenanceWindows
@@ -279,7 +295,7 @@ prepend-rp-prefix:
   - IntegrationRuntimeEntityReferenceType
   - IntegrationRuntimeInternalChannelEncryptionMode
   - IntegrationRuntimeLicenseType
-  - IntegrationRuntimeNodeIPAddress
+  - IntegrationRuntimeNodeIpAddress
   - IntegrationRuntimeOutboundNetworkDependenciesCategoryEndpoint
   - IntegrationRuntimeOutboundNetworkDependenciesEndpoint
   - IntegrationRuntimeOutboundNetworkDependenciesEndpointDetails
@@ -292,8 +308,8 @@ prepend-rp-prefix:
   - IntegrationRuntimeUpdateResult
   - IotHubDataConnection
   - IotHubDataFormat
-  - IPFirewallRuleInfoListResult
-  - IPFirewallRuleProperties
+  - IpFirewallRuleInfoListResult
+  - IpFirewallRuleProperties
   - LanguageExtension
   - LanguageExtensionName
   - LanguageExtensionsList
@@ -363,8 +379,9 @@ override-operation-name:
   KustoPoolChildResource_CheckNameAvailability: CheckKustoPoolChildResourceNameAvailability
   KustoPoolPrincipalAssignments_CheckNameAvailability: CheckKustoPoolPrincipalAssignmentNameAvailability
   KustoPools_CheckNameAvailability: CheckKustoPoolNameAvailability
-  KustoPoolDataConnections_dataConnectionValidation: ValidateDataConnection
+  KustoPoolDataConnections_DataConnectionValidation: ValidateDataConnection
   IntegrationRuntimeNodeIpAddress_Get: GetIntegrationRuntimeNodeIPAddress
+  KustoPoolPrivateLinkResources_List: GetAllKustoPoolPrivateLinkData
 
 request-path-to-resource-name:
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/privateLinkHubs/{privateLinkHubName}/privateLinkResources/{privateLinkResourceName}: SynapsePrivateLinkResource
@@ -379,7 +396,7 @@ format-by-name-rules:
   '*Uri': 'Uri'
   '*Uris': 'Uri'
 
-rename-rules:
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS
@@ -422,7 +439,16 @@ list-exception:
   - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/connectionPolicies/{connectionPolicyName}
   - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/vulnerabilityAssessments/{vulnerabilityAssessmentName}/rules/{ruleId}/baselines/{baselineName}
 
+suppress-abstract-base-class:
+- SynapseDatabaseData
+- SynapseDataConnectionData
+- SynapseIntegrationRuntimeProperties
+- SynapseIntegrationRuntimeStatus
+
 directive:
+  - remove-operation: Get_IntegrationRuntimeStart
+  - remove-operation: Get_IntegrationRuntimeStop
+  - remove-operation: Get_IntegrationRuntimeEnableInteractivequery
   - remove-operation: Operations_List
   - remove-operation: Operations_GetLocationHeaderResult
   - remove-operation: Operations_GetAzureAsyncHeaderResult
@@ -458,6 +484,59 @@ directive:
     where: $.paths..parameters[?(@.name === 'securityAlertPolicyName')]
     transform: >
       $['x-ms-enum']['name'] = 'SqlServerSecurityAlertPolicyName';
+  # Fix the breaking changes relative to version 1.0.0
+  - from: bigDataPool.json
+    where: $.paths['/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/bigDataPools/{bigDataPoolName}'].delete
+    transform: >
+      $.description += ' You can call ToObjectFromJson<SynapseBigDataPoolInfoData>() against the Value property of the result to get specified type.';
+      $.responses['200'].schema = {
+          "type": "object"
+      };
+      $.responses['202'].schema = {
+          "type": "object"
+      };
+  - from: firewallRule.json
+    where: $.paths['/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/firewallRules/{ruleName}'].delete
+    transform: >
+      $.description += '. You can call ToObjectFromJson<SynapseIPFirewallRuleInfoData>() against the Value property of the result to get specified type.';
+      $.responses['200'].schema = {
+          "type": "object"
+      };
+  - from: sqlPool.json
+    where: $.paths['/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}'].delete
+    transform: >
+      $.description += '. You can call ToObjectFromJson<SynapseSqlPoolData>() against the Value property of the result to get specified type.';
+      $.responses['200'].schema = {
+          "type": "object"
+      };
+      $.responses['202'].schema = {
+          "type": "object"
+      };
+  - from: sqlPool.json
+    where: $.paths['/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/pause'].post
+    transform: >
+      $.description += '. You can call ToObjectFromJson<SynapseSqlPoolData>() against the Value property of the result to get specified type.';
+      $.responses['200'].schema = {
+          "type": "object"
+      };
+      $.responses['202'].schema = {
+          "type": "object"
+      };
+  - from: sqlPool.json
+    where: $.paths['/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Synapse/workspaces/{workspaceName}/sqlPools/{sqlPoolName}/resume'].post
+    transform: >
+      $.description += '. You can call ToObjectFromJson<SynapseSqlPoolData>() against the Value property of the result to get specified type.';
+      $.responses['200'].schema = {
+          "type": "object"
+      };
+      $.responses['202'].schema = {
+          "type": "object"
+      };
+  - from: integrationRuntime.json
+    where: $.definitions
+    transform: >
+      $.IntegrationRuntimeResource.properties.properties['x-ms-client-flatten'] = false;
+      $.IntegrationRuntimeStatusResponse.properties.properties['x-ms-client-flatten'] = false;
 
 ```
 
@@ -467,20 +546,20 @@ These settings apply only when --tag=package-composite-v2 is specified on the co
 
 ```yaml $(tag) == 'package-composite-v2'
 input-file:
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/azureADOnlyAuthentication.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/checkNameAvailability.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/firewallRule.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/keys.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/operations.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/privateEndpointConnections.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/privateLinkResources.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/privatelinkhub.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlServer.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/workspace.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/preview/2021-06-01-preview/bigDataPool.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/preview/2021-06-01-preview/library.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/preview/2021-06-01-preview/integrationRuntime.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/preview/2021-06-01-preview/sparkConfiguration.json
-  - https://github.com/Azure/azure-rest-api-specs/blob/34ba022add0034e30462b76e1548ce5a7e053e33/specification/synapse/resource-manager/Microsoft.Synapse/preview/2021-06-01-preview/kustoPool.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/azureADOnlyAuthentication.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/checkNameAvailability.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/firewallRule.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/keys.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/operations.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/privateEndpointConnections.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/privateLinkResources.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/privatelinkhub.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlPool.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/sqlServer.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/stable/2021-06-01/workspace.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/preview/2021-06-01-preview/bigDataPool.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/preview/2021-06-01-preview/library.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/preview/2021-06-01-preview/integrationRuntime.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/preview/2021-06-01-preview/sparkConfiguration.json
+  - https://github.com/Azure/azure-rest-api-specs/blob/340d577969b7bff5ad0488d79543314bc17daa50/specification/synapse/resource-manager/Microsoft.Synapse/preview/2021-06-01-preview/kustoPool.json
 ```

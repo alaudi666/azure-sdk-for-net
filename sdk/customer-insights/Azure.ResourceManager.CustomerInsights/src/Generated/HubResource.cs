@@ -10,10 +10,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.CustomerInsights.Models;
 using Azure.ResourceManager.Resources;
 
@@ -21,13 +20,16 @@ namespace Azure.ResourceManager.CustomerInsights
 {
     /// <summary>
     /// A Class representing a Hub along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="HubResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetHubResource method.
-    /// Otherwise you can get one from its parent resource <see cref="ResourceGroupResource" /> using the GetHub method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="HubResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetHubResource method.
+    /// Otherwise you can get one from its parent resource <see cref="ResourceGroupResource"/> using the GetHub method.
     /// </summary>
     public partial class HubResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="HubResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="resourceGroupName"> The resourceGroupName. </param>
+        /// <param name="hubName"> The hubName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string resourceGroupName, string hubName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}";
@@ -42,12 +44,15 @@ namespace Azure.ResourceManager.CustomerInsights
         private readonly ImagesRestOperations _imagesRestClient;
         private readonly HubData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.CustomerInsights/hubs";
+
         /// <summary> Initializes a new instance of the <see cref="HubResource"/> class for mocking. </summary>
         protected HubResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "HubResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="HubResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal HubResource(ArmClient client, HubData data) : this(client, data.Id)
@@ -72,9 +77,6 @@ namespace Azure.ResourceManager.CustomerInsights
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.CustomerInsights/hubs";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -101,19 +103,35 @@ namespace Azure.ResourceManager.CustomerInsights
         /// <returns> An object representing collection of ProfileResourceFormatResources and their operations over a ProfileResourceFormatResource. </returns>
         public virtual ProfileResourceFormatCollection GetProfileResourceFormats()
         {
-            return GetCachedClient(Client => new ProfileResourceFormatCollection(Client, Id));
+            return GetCachedClient(client => new ProfileResourceFormatCollection(client, Id));
         }
 
         /// <summary>
         /// Gets information about the specified profile.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/profiles/{profileName}
-        /// Operation Id: Profiles_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/profiles/{profileName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Profiles_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ProfileResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="profileName"> The name of the profile. </param>
         /// <param name="localeCode"> Locale of profile to retrieve, default is en-us. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="profileName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="profileName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="profileName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<ProfileResourceFormatResource>> GetProfileResourceFormatAsync(string profileName, string localeCode = null, CancellationToken cancellationToken = default)
         {
@@ -122,14 +140,30 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets information about the specified profile.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/profiles/{profileName}
-        /// Operation Id: Profiles_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/profiles/{profileName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Profiles_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ProfileResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="profileName"> The name of the profile. </param>
         /// <param name="localeCode"> Locale of profile to retrieve, default is en-us. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="profileName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="profileName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="profileName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<ProfileResourceFormatResource> GetProfileResourceFormat(string profileName, string localeCode = null, CancellationToken cancellationToken = default)
         {
@@ -140,19 +174,35 @@ namespace Azure.ResourceManager.CustomerInsights
         /// <returns> An object representing collection of InteractionResourceFormatResources and their operations over a InteractionResourceFormatResource. </returns>
         public virtual InteractionResourceFormatCollection GetInteractionResourceFormats()
         {
-            return GetCachedClient(Client => new InteractionResourceFormatCollection(Client, Id));
+            return GetCachedClient(client => new InteractionResourceFormatCollection(client, Id));
         }
 
         /// <summary>
         /// Gets information about the specified interaction.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/interactions/{interactionName}
-        /// Operation Id: Interactions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/interactions/{interactionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Interactions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="InteractionResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="interactionName"> The name of the interaction. </param>
         /// <param name="localeCode"> Locale of interaction to retrieve, default is en-us. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="interactionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="interactionName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="interactionName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<InteractionResourceFormatResource>> GetInteractionResourceFormatAsync(string interactionName, string localeCode = null, CancellationToken cancellationToken = default)
         {
@@ -161,14 +211,30 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets information about the specified interaction.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/interactions/{interactionName}
-        /// Operation Id: Interactions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/interactions/{interactionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Interactions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="InteractionResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="interactionName"> The name of the interaction. </param>
         /// <param name="localeCode"> Locale of interaction to retrieve, default is en-us. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="interactionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="interactionName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="interactionName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<InteractionResourceFormatResource> GetInteractionResourceFormat(string interactionName, string localeCode = null, CancellationToken cancellationToken = default)
         {
@@ -179,18 +245,34 @@ namespace Azure.ResourceManager.CustomerInsights
         /// <returns> An object representing collection of RelationshipResourceFormatResources and their operations over a RelationshipResourceFormatResource. </returns>
         public virtual RelationshipResourceFormatCollection GetRelationshipResourceFormats()
         {
-            return GetCachedClient(Client => new RelationshipResourceFormatCollection(Client, Id));
+            return GetCachedClient(client => new RelationshipResourceFormatCollection(client, Id));
         }
 
         /// <summary>
         /// Gets information about the specified relationship.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/relationships/{relationshipName}
-        /// Operation Id: Relationships_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/relationships/{relationshipName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Relationships_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="RelationshipResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="relationshipName"> The name of the relationship. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="relationshipName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="relationshipName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="relationshipName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<RelationshipResourceFormatResource>> GetRelationshipResourceFormatAsync(string relationshipName, CancellationToken cancellationToken = default)
         {
@@ -199,13 +281,29 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets information about the specified relationship.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/relationships/{relationshipName}
-        /// Operation Id: Relationships_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/relationships/{relationshipName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Relationships_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="RelationshipResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="relationshipName"> The name of the relationship. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="relationshipName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="relationshipName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="relationshipName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<RelationshipResourceFormatResource> GetRelationshipResourceFormat(string relationshipName, CancellationToken cancellationToken = default)
         {
@@ -216,18 +314,34 @@ namespace Azure.ResourceManager.CustomerInsights
         /// <returns> An object representing collection of RelationshipLinkResourceFormatResources and their operations over a RelationshipLinkResourceFormatResource. </returns>
         public virtual RelationshipLinkResourceFormatCollection GetRelationshipLinkResourceFormats()
         {
-            return GetCachedClient(Client => new RelationshipLinkResourceFormatCollection(Client, Id));
+            return GetCachedClient(client => new RelationshipLinkResourceFormatCollection(client, Id));
         }
 
         /// <summary>
         /// Gets information about the specified relationship Link.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/relationshipLinks/{relationshipLinkName}
-        /// Operation Id: RelationshipLinks_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/relationshipLinks/{relationshipLinkName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>RelationshipLinks_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="RelationshipLinkResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="relationshipLinkName"> The name of the relationship link. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="relationshipLinkName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="relationshipLinkName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="relationshipLinkName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<RelationshipLinkResourceFormatResource>> GetRelationshipLinkResourceFormatAsync(string relationshipLinkName, CancellationToken cancellationToken = default)
         {
@@ -236,13 +350,29 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets information about the specified relationship Link.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/relationshipLinks/{relationshipLinkName}
-        /// Operation Id: RelationshipLinks_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/relationshipLinks/{relationshipLinkName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>RelationshipLinks_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="RelationshipLinkResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="relationshipLinkName"> The name of the relationship link. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="relationshipLinkName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="relationshipLinkName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="relationshipLinkName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<RelationshipLinkResourceFormatResource> GetRelationshipLinkResourceFormat(string relationshipLinkName, CancellationToken cancellationToken = default)
         {
@@ -253,18 +383,34 @@ namespace Azure.ResourceManager.CustomerInsights
         /// <returns> An object representing collection of AuthorizationPolicyResourceFormatResources and their operations over a AuthorizationPolicyResourceFormatResource. </returns>
         public virtual AuthorizationPolicyResourceFormatCollection GetAuthorizationPolicyResourceFormats()
         {
-            return GetCachedClient(Client => new AuthorizationPolicyResourceFormatCollection(Client, Id));
+            return GetCachedClient(client => new AuthorizationPolicyResourceFormatCollection(client, Id));
         }
 
         /// <summary>
         /// Gets an authorization policy in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/authorizationPolicies/{authorizationPolicyName}
-        /// Operation Id: AuthorizationPolicies_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/authorizationPolicies/{authorizationPolicyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AuthorizationPolicies_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AuthorizationPolicyResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="authorizationPolicyName"> The name of the policy. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="authorizationPolicyName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="authorizationPolicyName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="authorizationPolicyName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<AuthorizationPolicyResourceFormatResource>> GetAuthorizationPolicyResourceFormatAsync(string authorizationPolicyName, CancellationToken cancellationToken = default)
         {
@@ -273,13 +419,29 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets an authorization policy in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/authorizationPolicies/{authorizationPolicyName}
-        /// Operation Id: AuthorizationPolicies_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/authorizationPolicies/{authorizationPolicyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AuthorizationPolicies_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AuthorizationPolicyResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="authorizationPolicyName"> The name of the policy. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="authorizationPolicyName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="authorizationPolicyName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="authorizationPolicyName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<AuthorizationPolicyResourceFormatResource> GetAuthorizationPolicyResourceFormat(string authorizationPolicyName, CancellationToken cancellationToken = default)
         {
@@ -290,18 +452,34 @@ namespace Azure.ResourceManager.CustomerInsights
         /// <returns> An object representing collection of ConnectorResourceFormatResources and their operations over a ConnectorResourceFormatResource. </returns>
         public virtual ConnectorResourceFormatCollection GetConnectorResourceFormats()
         {
-            return GetCachedClient(Client => new ConnectorResourceFormatCollection(Client, Id));
+            return GetCachedClient(client => new ConnectorResourceFormatCollection(client, Id));
         }
 
         /// <summary>
         /// Gets a connector in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/connectors/{connectorName}
-        /// Operation Id: Connectors_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/connectors/{connectorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Connectors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ConnectorResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="connectorName"> The name of the connector. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="connectorName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="connectorName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="connectorName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<ConnectorResourceFormatResource>> GetConnectorResourceFormatAsync(string connectorName, CancellationToken cancellationToken = default)
         {
@@ -310,13 +488,29 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets a connector in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/connectors/{connectorName}
-        /// Operation Id: Connectors_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/connectors/{connectorName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Connectors_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ConnectorResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="connectorName"> The name of the connector. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="connectorName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="connectorName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="connectorName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<ConnectorResourceFormatResource> GetConnectorResourceFormat(string connectorName, CancellationToken cancellationToken = default)
         {
@@ -327,18 +521,34 @@ namespace Azure.ResourceManager.CustomerInsights
         /// <returns> An object representing collection of KpiResourceFormatResources and their operations over a KpiResourceFormatResource. </returns>
         public virtual KpiResourceFormatCollection GetKpiResourceFormats()
         {
-            return GetCachedClient(Client => new KpiResourceFormatCollection(Client, Id));
+            return GetCachedClient(client => new KpiResourceFormatCollection(client, Id));
         }
 
         /// <summary>
         /// Gets a KPI in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/kpi/{kpiName}
-        /// Operation Id: Kpi_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/kpi/{kpiName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Kpi_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="KpiResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="kpiName"> The name of the KPI. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="kpiName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="kpiName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="kpiName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<KpiResourceFormatResource>> GetKpiResourceFormatAsync(string kpiName, CancellationToken cancellationToken = default)
         {
@@ -347,13 +557,29 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets a KPI in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/kpi/{kpiName}
-        /// Operation Id: Kpi_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/kpi/{kpiName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Kpi_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="KpiResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="kpiName"> The name of the KPI. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="kpiName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="kpiName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="kpiName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<KpiResourceFormatResource> GetKpiResourceFormat(string kpiName, CancellationToken cancellationToken = default)
         {
@@ -364,18 +590,34 @@ namespace Azure.ResourceManager.CustomerInsights
         /// <returns> An object representing collection of WidgetTypeResourceFormatResources and their operations over a WidgetTypeResourceFormatResource. </returns>
         public virtual WidgetTypeResourceFormatCollection GetWidgetTypeResourceFormats()
         {
-            return GetCachedClient(Client => new WidgetTypeResourceFormatCollection(Client, Id));
+            return GetCachedClient(client => new WidgetTypeResourceFormatCollection(client, Id));
         }
 
         /// <summary>
         /// Gets a widget type in the specified hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/widgetTypes/{widgetTypeName}
-        /// Operation Id: WidgetTypes_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/widgetTypes/{widgetTypeName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WidgetTypes_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="WidgetTypeResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="widgetTypeName"> The name of the widget type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="widgetTypeName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="widgetTypeName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="widgetTypeName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<WidgetTypeResourceFormatResource>> GetWidgetTypeResourceFormatAsync(string widgetTypeName, CancellationToken cancellationToken = default)
         {
@@ -384,13 +626,29 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets a widget type in the specified hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/widgetTypes/{widgetTypeName}
-        /// Operation Id: WidgetTypes_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/widgetTypes/{widgetTypeName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>WidgetTypes_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="WidgetTypeResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="widgetTypeName"> The name of the widget type. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="widgetTypeName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="widgetTypeName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="widgetTypeName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<WidgetTypeResourceFormatResource> GetWidgetTypeResourceFormat(string widgetTypeName, CancellationToken cancellationToken = default)
         {
@@ -401,19 +659,35 @@ namespace Azure.ResourceManager.CustomerInsights
         /// <returns> An object representing collection of ViewResourceFormatResources and their operations over a ViewResourceFormatResource. </returns>
         public virtual ViewResourceFormatCollection GetViewResourceFormats()
         {
-            return GetCachedClient(Client => new ViewResourceFormatCollection(Client, Id));
+            return GetCachedClient(client => new ViewResourceFormatCollection(client, Id));
         }
 
         /// <summary>
         /// Gets a view in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}
-        /// Operation Id: Views_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Views_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ViewResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="viewName"> The name of the view. </param>
         /// <param name="userId"> The user ID. Use * to retrieve hub level view. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="viewName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="viewName"/> or <paramref name="userId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="viewName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<ViewResourceFormatResource>> GetViewResourceFormatAsync(string viewName, string userId, CancellationToken cancellationToken = default)
         {
@@ -422,14 +696,30 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets a view in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}
-        /// Operation Id: Views_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/views/{viewName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Views_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ViewResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="viewName"> The name of the view. </param>
         /// <param name="userId"> The user ID. Use * to retrieve hub level view. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="viewName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="viewName"/> or <paramref name="userId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="viewName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<ViewResourceFormatResource> GetViewResourceFormat(string viewName, string userId, CancellationToken cancellationToken = default)
         {
@@ -440,18 +730,34 @@ namespace Azure.ResourceManager.CustomerInsights
         /// <returns> An object representing collection of LinkResourceFormatResources and their operations over a LinkResourceFormatResource. </returns>
         public virtual LinkResourceFormatCollection GetLinkResourceFormats()
         {
-            return GetCachedClient(Client => new LinkResourceFormatCollection(Client, Id));
+            return GetCachedClient(client => new LinkResourceFormatCollection(client, Id));
         }
 
         /// <summary>
         /// Gets a link in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/links/{linkName}
-        /// Operation Id: Links_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/links/{linkName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Links_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LinkResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="linkName"> The name of the link. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="linkName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="linkName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="linkName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<LinkResourceFormatResource>> GetLinkResourceFormatAsync(string linkName, CancellationToken cancellationToken = default)
         {
@@ -460,13 +766,29 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets a link in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/links/{linkName}
-        /// Operation Id: Links_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/links/{linkName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Links_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="LinkResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="linkName"> The name of the link. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="linkName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="linkName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="linkName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<LinkResourceFormatResource> GetLinkResourceFormat(string linkName, CancellationToken cancellationToken = default)
         {
@@ -477,18 +799,34 @@ namespace Azure.ResourceManager.CustomerInsights
         /// <returns> An object representing collection of RoleAssignmentResourceFormatResources and their operations over a RoleAssignmentResourceFormatResource. </returns>
         public virtual RoleAssignmentResourceFormatCollection GetRoleAssignmentResourceFormats()
         {
-            return GetCachedClient(Client => new RoleAssignmentResourceFormatCollection(Client, Id));
+            return GetCachedClient(client => new RoleAssignmentResourceFormatCollection(client, Id));
         }
 
         /// <summary>
         /// Gets the role assignment in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/roleAssignments/{assignmentName}
-        /// Operation Id: RoleAssignments_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/roleAssignments/{assignmentName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>RoleAssignments_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="RoleAssignmentResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="assignmentName"> The name of the role assignment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="assignmentName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="assignmentName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="assignmentName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<RoleAssignmentResourceFormatResource>> GetRoleAssignmentResourceFormatAsync(string assignmentName, CancellationToken cancellationToken = default)
         {
@@ -497,13 +835,29 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets the role assignment in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/roleAssignments/{assignmentName}
-        /// Operation Id: RoleAssignments_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/roleAssignments/{assignmentName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>RoleAssignments_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="RoleAssignmentResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="assignmentName"> The name of the role assignment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="assignmentName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="assignmentName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="assignmentName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<RoleAssignmentResourceFormatResource> GetRoleAssignmentResourceFormat(string assignmentName, CancellationToken cancellationToken = default)
         {
@@ -514,18 +868,34 @@ namespace Azure.ResourceManager.CustomerInsights
         /// <returns> An object representing collection of PredictionResourceFormatResources and their operations over a PredictionResourceFormatResource. </returns>
         public virtual PredictionResourceFormatCollection GetPredictionResourceFormats()
         {
-            return GetCachedClient(Client => new PredictionResourceFormatCollection(Client, Id));
+            return GetCachedClient(client => new PredictionResourceFormatCollection(client, Id));
         }
 
         /// <summary>
         /// Gets a Prediction in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/predictions/{predictionName}
-        /// Operation Id: Predictions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/predictions/{predictionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Predictions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PredictionResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="predictionName"> The name of the Prediction. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="predictionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="predictionName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="predictionName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<PredictionResourceFormatResource>> GetPredictionResourceFormatAsync(string predictionName, CancellationToken cancellationToken = default)
         {
@@ -534,13 +904,29 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets a Prediction in the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/predictions/{predictionName}
-        /// Operation Id: Predictions_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/predictions/{predictionName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Predictions_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PredictionResourceFormatResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="predictionName"> The name of the Prediction. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="predictionName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="predictionName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="predictionName"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<PredictionResourceFormatResource> GetPredictionResourceFormat(string predictionName, CancellationToken cancellationToken = default)
         {
@@ -549,8 +935,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets information about the specified hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}
-        /// Operation Id: Hubs_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Hubs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="HubResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<HubResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -573,8 +975,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets information about the specified hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}
-        /// Operation Id: Hubs_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Hubs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="HubResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<HubResource> Get(CancellationToken cancellationToken = default)
@@ -597,8 +1015,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Deletes the specified hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}
-        /// Operation Id: Hubs_Delete
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Hubs_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="HubResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -623,8 +1057,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Deletes the specified hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}
-        /// Operation Id: Hubs_Delete
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Hubs_Delete</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="HubResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -649,8 +1099,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Updates a Hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}
-        /// Operation Id: Hubs_Update
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Hubs_Update</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="HubResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="data"> Parameters supplied to the Update Hub operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -675,8 +1141,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Updates a Hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}
-        /// Operation Id: Hubs_Update
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Hubs_Update</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="HubResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="data"> Parameters supplied to the Update Hub operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -701,92 +1183,72 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets all the roles for the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/roles
-        /// Operation Id: Roles_ListByHub
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/roles</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Roles_ListByHub</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="RoleResourceFormat" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="RoleResourceFormat"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<RoleResourceFormat> GetRolesAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<RoleResourceFormat>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _rolesClientDiagnostics.CreateScope("HubResource.GetRoles");
-                scope.Start();
-                try
-                {
-                    var response = await _rolesRestClient.ListByHubAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<RoleResourceFormat>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _rolesClientDiagnostics.CreateScope("HubResource.GetRoles");
-                scope.Start();
-                try
-                {
-                    var response = await _rolesRestClient.ListByHubNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _rolesRestClient.CreateListByHubRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _rolesRestClient.CreateListByHubNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => RoleResourceFormat.DeserializeRoleResourceFormat(e), _rolesClientDiagnostics, Pipeline, "HubResource.GetRoles", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Gets all the roles for the hub.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/roles
-        /// Operation Id: Roles_ListByHub
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/roles</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Roles_ListByHub</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="RoleResourceFormat" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="RoleResourceFormat"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<RoleResourceFormat> GetRoles(CancellationToken cancellationToken = default)
         {
-            Page<RoleResourceFormat> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _rolesClientDiagnostics.CreateScope("HubResource.GetRoles");
-                scope.Start();
-                try
-                {
-                    var response = _rolesRestClient.ListByHub(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<RoleResourceFormat> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _rolesClientDiagnostics.CreateScope("HubResource.GetRoles");
-                scope.Start();
-                try
-                {
-                    var response = _rolesRestClient.ListByHubNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _rolesRestClient.CreateListByHubRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _rolesRestClient.CreateListByHubNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => RoleResourceFormat.DeserializeRoleResourceFormat(e), _rolesClientDiagnostics, Pipeline, "HubResource.GetRoles", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Gets entity type (profile or interaction) image upload URL.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/images/getEntityTypeImageUploadUrl
-        /// Operation Id: Images_GetUploadUrlForEntityType
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/images/getEntityTypeImageUploadUrl</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Images_GetUploadUrlForEntityType</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="input"> Parameters supplied to the GetUploadUrlForEntityType operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -811,8 +1273,20 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets entity type (profile or interaction) image upload URL.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/images/getEntityTypeImageUploadUrl
-        /// Operation Id: Images_GetUploadUrlForEntityType
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/images/getEntityTypeImageUploadUrl</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Images_GetUploadUrlForEntityType</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="input"> Parameters supplied to the GetUploadUrlForEntityType operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -837,8 +1311,20 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets data image upload URL.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/images/getDataImageUploadUrl
-        /// Operation Id: Images_GetUploadUrlForData
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/images/getDataImageUploadUrl</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Images_GetUploadUrlForData</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="input"> Parameters supplied to the GetUploadUrlForData operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -863,8 +1349,20 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Gets data image upload URL.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/images/getDataImageUploadUrl
-        /// Operation Id: Images_GetUploadUrlForData
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}/images/getDataImageUploadUrl</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Images_GetUploadUrlForData</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="input"> Parameters supplied to the GetUploadUrlForData operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -889,8 +1387,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Add a tag to the current resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}
-        /// Operation Id: Hubs_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Hubs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="HubResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
         /// <param name="value"> The value for the tag. </param>
@@ -935,8 +1449,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Add a tag to the current resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}
-        /// Operation Id: Hubs_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Hubs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="HubResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
         /// <param name="value"> The value for the tag. </param>
@@ -981,8 +1511,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Replace the tags on the resource with the given set.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}
-        /// Operation Id: Hubs_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Hubs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="HubResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="tags"> The set of tags to use as replacement. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -1022,8 +1568,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Replace the tags on the resource with the given set.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}
-        /// Operation Id: Hubs_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Hubs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="HubResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="tags"> The set of tags to use as replacement. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -1063,8 +1625,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Removes a tag by key from the resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}
-        /// Operation Id: Hubs_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Hubs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="HubResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -1107,8 +1685,24 @@ namespace Azure.ResourceManager.CustomerInsights
 
         /// <summary>
         /// Removes a tag by key from the resource.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}
-        /// Operation Id: Hubs_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CustomerInsights/hubs/{hubName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Hubs_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2017-04-26</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="HubResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="key"> The key for the tag. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>

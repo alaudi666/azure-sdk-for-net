@@ -5,15 +5,19 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Filter details to transfer Azure Blobs. </summary>
     public partial class BlobFilterDetails
     {
-        /// <summary> Initializes a new instance of BlobFilterDetails. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="BlobFilterDetails"/>. </summary>
         public BlobFilterDetails()
         {
             BlobPrefixList = new ChangeTrackingList<string>();
@@ -21,21 +25,25 @@ namespace Azure.ResourceManager.DataBox.Models
             ContainerList = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of BlobFilterDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="BlobFilterDetails"/>. </summary>
         /// <param name="blobPrefixList"> Prefix list of the Azure blobs to be transferred. </param>
         /// <param name="blobPathList"> List of full path of the blobs to be transferred. </param>
         /// <param name="containerList"> List of blob containers to be transferred. </param>
-        internal BlobFilterDetails(IList<string> blobPrefixList, IList<string> blobPathList, IList<string> containerList)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal BlobFilterDetails(IList<string> blobPrefixList, IList<string> blobPathList, IList<string> containerList, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             BlobPrefixList = blobPrefixList;
             BlobPathList = blobPathList;
             ContainerList = containerList;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Prefix list of the Azure blobs to be transferred. </summary>
         public IList<string> BlobPrefixList { get; }
+
         /// <summary> List of full path of the blobs to be transferred. </summary>
         public IList<string> BlobPathList { get; }
+
         /// <summary> List of blob containers to be transferred. </summary>
         public IList<string> ContainerList { get; }
     }

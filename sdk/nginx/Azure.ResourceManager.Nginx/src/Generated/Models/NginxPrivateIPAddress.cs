@@ -5,32 +5,44 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using System.Net;
+using Azure.Core;
+
 namespace Azure.ResourceManager.Nginx.Models
 {
-    /// <summary> The NginxPrivateIPAddress. </summary>
+    /// <summary> Nginx Private IP Address. </summary>
     public partial class NginxPrivateIPAddress
     {
-        /// <summary> Initializes a new instance of NginxPrivateIPAddress. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NginxPrivateIPAddress"/>. </summary>
         public NginxPrivateIPAddress()
         {
         }
 
-        /// <summary> Initializes a new instance of NginxPrivateIPAddress. </summary>
+        /// <summary> Initializes a new instance of <see cref="NginxPrivateIPAddress"/>. </summary>
         /// <param name="privateIPAddress"></param>
-        /// <param name="privateIPAllocationMethod"></param>
+        /// <param name="privateIPAllocationMethod"> Nginx Private IP Allocation Method. </param>
         /// <param name="subnetId"></param>
-        internal NginxPrivateIPAddress(string privateIPAddress, NginxPrivateIPAllocationMethod? privateIPAllocationMethod, string subnetId)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NginxPrivateIPAddress(IPAddress privateIPAddress, NginxPrivateIPAllocationMethod? privateIPAllocationMethod, ResourceIdentifier subnetId, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             PrivateIPAddress = privateIPAddress;
             PrivateIPAllocationMethod = privateIPAllocationMethod;
             SubnetId = subnetId;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets or sets the private ip address. </summary>
-        public string PrivateIPAddress { get; set; }
-        /// <summary> Gets or sets the private ip allocation method. </summary>
+        /// <summary> Gets or sets the PrivateIPAddress. </summary>
+        public IPAddress PrivateIPAddress { get; set; }
+
+        /// <summary> Nginx Private IP Allocation Method. </summary>
         public NginxPrivateIPAllocationMethod? PrivateIPAllocationMethod { get; set; }
-        /// <summary> Gets or sets the subnet id. </summary>
-        public string SubnetId { get; set; }
+
+        /// <summary> Gets or sets the SubnetId. </summary>
+        public ResourceIdentifier SubnetId { get; set; }
     }
 }

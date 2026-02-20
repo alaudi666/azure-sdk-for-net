@@ -5,63 +5,177 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure;
+using Azure.ResourceManager.DeviceProvisioningServices;
 
 namespace Azure.ResourceManager.DeviceProvisioningServices.Models
 {
-    public partial class DeviceProvisioningServicesSharedAccessKey : IUtf8JsonSerializable
+    /// <summary> Description of the shared access key. </summary>
+    public partial class DeviceProvisioningServicesSharedAccessKey : IJsonModel<DeviceProvisioningServicesSharedAccessKey>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="DeviceProvisioningServicesSharedAccessKey"/> for deserialization. </summary>
+        internal DeviceProvisioningServicesSharedAccessKey()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DeviceProvisioningServicesSharedAccessKey PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DeviceProvisioningServicesSharedAccessKey>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDeviceProvisioningServicesSharedAccessKey(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DeviceProvisioningServicesSharedAccessKey)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="response"> The <see cref="Response"/> to deserialize the <see cref="DeviceProvisioningServicesSharedAccessKey"/> from. </param>
+        internal static DeviceProvisioningServicesSharedAccessKey FromResponse(Response response)
+        {
+            using JsonDocument document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeDeviceProvisioningServicesSharedAccessKey(document.RootElement, ModelSerializationExtensions.WireOptions);
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DeviceProvisioningServicesSharedAccessKey>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("keyName");
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DeviceProvisioningServicesSharedAccessKey>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DeviceProvisioningServicesSharedAccessKey)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("keyName"u8);
             writer.WriteStringValue(KeyName);
             if (Optional.IsDefined(PrimaryKey))
             {
-                writer.WritePropertyName("primaryKey");
+                writer.WritePropertyName("primaryKey"u8);
                 writer.WriteStringValue(PrimaryKey);
             }
             if (Optional.IsDefined(SecondaryKey))
             {
-                writer.WritePropertyName("secondaryKey");
+                writer.WritePropertyName("secondaryKey"u8);
                 writer.WriteStringValue(SecondaryKey);
             }
-            writer.WritePropertyName("rights");
+            writer.WritePropertyName("rights"u8);
             writer.WriteStringValue(Rights.ToString());
-            writer.WriteEndObject();
-        }
-
-        internal static DeviceProvisioningServicesSharedAccessKey DeserializeDeviceProvisioningServicesSharedAccessKey(JsonElement element)
-        {
-            string keyName = default;
-            Optional<string> primaryKey = default;
-            Optional<string> secondaryKey = default;
-            DeviceProvisioningServicesAccessKeyRight rights = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("keyName"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    keyName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("primaryKey"))
-                {
-                    primaryKey = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("secondaryKey"))
-                {
-                    secondaryKey = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("rights"))
-                {
-                    rights = new DeviceProvisioningServicesAccessKeyRight(property.Value.GetString());
-                    continue;
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
                 }
             }
-            return new DeviceProvisioningServicesSharedAccessKey(keyName, primaryKey.Value, secondaryKey.Value, rights);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DeviceProvisioningServicesSharedAccessKey IJsonModel<DeviceProvisioningServicesSharedAccessKey>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DeviceProvisioningServicesSharedAccessKey JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DeviceProvisioningServicesSharedAccessKey>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DeviceProvisioningServicesSharedAccessKey)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDeviceProvisioningServicesSharedAccessKey(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DeviceProvisioningServicesSharedAccessKey DeserializeDeviceProvisioningServicesSharedAccessKey(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string keyName = default;
+            string primaryKey = default;
+            string secondaryKey = default;
+            DeviceProvisioningServicesAccessKeyRight rights = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("keyName"u8))
+                {
+                    keyName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("primaryKey"u8))
+                {
+                    primaryKey = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("secondaryKey"u8))
+                {
+                    secondaryKey = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("rights"u8))
+                {
+                    rights = new DeviceProvisioningServicesAccessKeyRight(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new DeviceProvisioningServicesSharedAccessKey(keyName, primaryKey, secondaryKey, rights, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DeviceProvisioningServicesSharedAccessKey>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DeviceProvisioningServicesSharedAccessKey>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDeviceProvisioningServicesContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DeviceProvisioningServicesSharedAccessKey)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DeviceProvisioningServicesSharedAccessKey IPersistableModel<DeviceProvisioningServicesSharedAccessKey>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DeviceProvisioningServicesSharedAccessKey>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -110,7 +110,9 @@ namespace Azure.Core.Tests
             Response response = await SendGetRequest(mockTransport, TimeoutPolicy, bufferResponse: false);
 
             var buffer = new byte[100];
+#pragma warning disable CA2022 // The return value of ReadAsync is not needed for this test
             Assert.ThrowsAsync<TaskCanceledException>(async () => await response.ContentStream.ReadAsync(buffer, 0, 100));
+#pragma warning restore CA2022
             Assert.AreEqual(50, hangingStream.ReadTimeout);
         }
 
@@ -212,14 +214,14 @@ namespace Azure.Core.Tests
 
         private static IEnumerable<object[]> GetExceptionCases()
         {
-            yield return new object[] { new IOException(), TimeoutPolicy};
-            yield return new object[] { new IOException(), NoTimeoutPolicy};
-            yield return new object[] { new ObjectDisposedException("test"), TimeoutPolicy};
-            yield return new object[] { new ObjectDisposedException("test"), NoTimeoutPolicy};
-            yield return new object[] { new OperationCanceledException(), TimeoutPolicy};
-            yield return new object[] { new OperationCanceledException(), NoTimeoutPolicy};
-            yield return new object[] { new NotSupportedException(), TimeoutPolicy};
-            yield return new object[] { new NotSupportedException(), NoTimeoutPolicy};
+            yield return new object[] { new IOException(), TimeoutPolicy };
+            yield return new object[] { new IOException(), NoTimeoutPolicy };
+            yield return new object[] { new ObjectDisposedException("test"), TimeoutPolicy };
+            yield return new object[] { new ObjectDisposedException("test"), NoTimeoutPolicy };
+            yield return new object[] { new OperationCanceledException(), TimeoutPolicy };
+            yield return new object[] { new OperationCanceledException(), NoTimeoutPolicy };
+            yield return new object[] { new NotSupportedException(), TimeoutPolicy };
+            yield return new object[] { new NotSupportedException(), NoTimeoutPolicy };
         }
 
         [TestCaseSource(nameof(GetExceptionCases))]
@@ -368,7 +370,7 @@ namespace Azure.Core.Tests
             public bool IsClosed { get; set; }
         }
 
-        private abstract class TestReadStream: Stream
+        private abstract class TestReadStream : Stream
         {
             public override bool CanRead { get; } = true;
             public override bool CanSeek { get; }

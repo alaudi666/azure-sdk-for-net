@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.Peering
 {
     /// <summary>
-    /// A class representing a collection of <see cref="PeerAsnResource" /> and their operations.
-    /// Each <see cref="PeerAsnResource" /> in the collection will belong to the same instance of <see cref="SubscriptionResource" />.
-    /// To get a <see cref="PeerAsnCollection" /> instance call the GetPeerAsns method from an instance of <see cref="SubscriptionResource" />.
+    /// A class representing a collection of <see cref="PeerAsnResource"/> and their operations.
+    /// Each <see cref="PeerAsnResource"/> in the collection will belong to the same instance of <see cref="SubscriptionResource"/>.
+    /// To get a <see cref="PeerAsnCollection"/> instance call the GetPeerAsns method from an instance of <see cref="SubscriptionResource"/>.
     /// </summary>
     public partial class PeerAsnCollection : ArmCollection, IEnumerable<PeerAsnResource>, IAsyncEnumerable<PeerAsnResource>
     {
@@ -56,8 +54,24 @@ namespace Azure.ResourceManager.Peering
 
         /// <summary>
         /// Creates a new peer ASN or updates an existing peer ASN with the specified name under the given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}
-        /// Operation Id: PeerAsns_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="peerAsnName"> The peer ASN name. </param>
@@ -75,7 +89,9 @@ namespace Azure.ResourceManager.Peering
             try
             {
                 var response = await _peerAsnRestClient.CreateOrUpdateAsync(Id.SubscriptionId, peerAsnName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new PeeringArmOperation<PeerAsnResource>(Response.FromValue(new PeerAsnResource(Client, response), response.GetRawResponse()));
+                var uri = _peerAsnRestClient.CreateCreateOrUpdateRequestUri(Id.SubscriptionId, peerAsnName, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new PeeringArmOperation<PeerAsnResource>(Response.FromValue(new PeerAsnResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -89,8 +105,24 @@ namespace Azure.ResourceManager.Peering
 
         /// <summary>
         /// Creates a new peer ASN or updates an existing peer ASN with the specified name under the given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}
-        /// Operation Id: PeerAsns_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="peerAsnName"> The peer ASN name. </param>
@@ -108,7 +140,9 @@ namespace Azure.ResourceManager.Peering
             try
             {
                 var response = _peerAsnRestClient.CreateOrUpdate(Id.SubscriptionId, peerAsnName, data, cancellationToken);
-                var operation = new PeeringArmOperation<PeerAsnResource>(Response.FromValue(new PeerAsnResource(Client, response), response.GetRawResponse()));
+                var uri = _peerAsnRestClient.CreateCreateOrUpdateRequestUri(Id.SubscriptionId, peerAsnName, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new PeeringArmOperation<PeerAsnResource>(Response.FromValue(new PeerAsnResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -122,8 +156,24 @@ namespace Azure.ResourceManager.Peering
 
         /// <summary>
         /// Gets the peer ASN with the specified name under the given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}
-        /// Operation Id: PeerAsns_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="peerAsnName"> The peer ASN name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -151,8 +201,24 @@ namespace Azure.ResourceManager.Peering
 
         /// <summary>
         /// Gets the peer ASN with the specified name under the given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}
-        /// Operation Id: PeerAsns_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="peerAsnName"> The peer ASN name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -180,92 +246,84 @@ namespace Azure.ResourceManager.Peering
 
         /// <summary>
         /// Lists all of the peer ASNs under the given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns
-        /// Operation Id: PeerAsns_ListBySubscription
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_ListBySubscription</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="PeerAsnResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="PeerAsnResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<PeerAsnResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<PeerAsnResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _peerAsnClientDiagnostics.CreateScope("PeerAsnCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _peerAsnRestClient.ListBySubscriptionAsync(Id.SubscriptionId, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new PeerAsnResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<PeerAsnResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _peerAsnClientDiagnostics.CreateScope("PeerAsnCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _peerAsnRestClient.ListBySubscriptionNextPageAsync(nextLink, Id.SubscriptionId, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new PeerAsnResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _peerAsnRestClient.CreateListBySubscriptionRequest(Id.SubscriptionId);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _peerAsnRestClient.CreateListBySubscriptionNextPageRequest(nextLink, Id.SubscriptionId);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new PeerAsnResource(Client, PeerAsnData.DeserializePeerAsnData(e)), _peerAsnClientDiagnostics, Pipeline, "PeerAsnCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Lists all of the peer ASNs under the given subscription.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns
-        /// Operation Id: PeerAsns_ListBySubscription
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_ListBySubscription</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="PeerAsnResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="PeerAsnResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<PeerAsnResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<PeerAsnResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _peerAsnClientDiagnostics.CreateScope("PeerAsnCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _peerAsnRestClient.ListBySubscription(Id.SubscriptionId, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new PeerAsnResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<PeerAsnResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _peerAsnClientDiagnostics.CreateScope("PeerAsnCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _peerAsnRestClient.ListBySubscriptionNextPage(nextLink, Id.SubscriptionId, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new PeerAsnResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _peerAsnRestClient.CreateListBySubscriptionRequest(Id.SubscriptionId);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _peerAsnRestClient.CreateListBySubscriptionNextPageRequest(nextLink, Id.SubscriptionId);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new PeerAsnResource(Client, PeerAsnData.DeserializePeerAsnData(e)), _peerAsnClientDiagnostics, Pipeline, "PeerAsnCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}
-        /// Operation Id: PeerAsns_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="peerAsnName"> The peer ASN name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -291,8 +349,24 @@ namespace Azure.ResourceManager.Peering
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}
-        /// Operation Id: PeerAsns_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="peerAsnName"> The peer ASN name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -308,6 +382,96 @@ namespace Azure.ResourceManager.Peering
             {
                 var response = _peerAsnRestClient.Get(Id.SubscriptionId, peerAsnName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="peerAsnName"> The peer ASN name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="peerAsnName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="peerAsnName"/> is null. </exception>
+        public virtual async Task<NullableResponse<PeerAsnResource>> GetIfExistsAsync(string peerAsnName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(peerAsnName, nameof(peerAsnName));
+
+            using var scope = _peerAsnClientDiagnostics.CreateScope("PeerAsnCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _peerAsnRestClient.GetAsync(Id.SubscriptionId, peerAsnName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<PeerAsnResource>(response.GetRawResponse());
+                return Response.FromValue(new PeerAsnResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Peering/peerAsns/{peerAsnName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PeerAsns_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-10-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="PeerAsnResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="peerAsnName"> The peer ASN name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="peerAsnName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="peerAsnName"/> is null. </exception>
+        public virtual NullableResponse<PeerAsnResource> GetIfExists(string peerAsnName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(peerAsnName, nameof(peerAsnName));
+
+            using var scope = _peerAsnClientDiagnostics.CreateScope("PeerAsnCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _peerAsnRestClient.Get(Id.SubscriptionId, peerAsnName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<PeerAsnResource>(response.GetRawResponse());
+                return Response.FromValue(new PeerAsnResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

@@ -10,23 +10,27 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.Maintenance
 {
     /// <summary>
     /// A Class representing a MaintenanceApplyUpdate along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="MaintenanceApplyUpdateResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetMaintenanceApplyUpdateResource method.
-    /// Otherwise you can get one from its parent resource <see cref="ResourceGroupResource" /> using the GetMaintenanceApplyUpdate method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="MaintenanceApplyUpdateResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetMaintenanceApplyUpdateResource method.
+    /// Otherwise you can get one from its parent resource <see cref="ResourceGroupResource"/> using the GetMaintenanceApplyUpdate method.
     /// </summary>
     public partial class MaintenanceApplyUpdateResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="MaintenanceApplyUpdateResource"/> instance. </summary>
+        /// <param name="subscriptionId"> The subscriptionId. </param>
+        /// <param name="resourceGroupName"> The resourceGroupName. </param>
+        /// <param name="providerName"> The providerName. </param>
+        /// <param name="resourceType"> The resourceType. </param>
+        /// <param name="resourceName"> The resourceName. </param>
+        /// <param name="applyUpdateName"> The applyUpdateName. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string subscriptionId, string resourceGroupName, string providerName, string resourceType, string resourceName, string applyUpdateName)
         {
             var resourceId = $"/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/{providerName}/{resourceType}/{resourceName}/providers/Microsoft.Maintenance/applyUpdates/{applyUpdateName}";
@@ -37,12 +41,15 @@ namespace Azure.ResourceManager.Maintenance
         private readonly ApplyUpdatesRestOperations _maintenanceApplyUpdateApplyUpdatesRestClient;
         private readonly MaintenanceApplyUpdateData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.Maintenance/applyUpdates";
+
         /// <summary> Initializes a new instance of the <see cref="MaintenanceApplyUpdateResource"/> class for mocking. </summary>
         protected MaintenanceApplyUpdateResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "MaintenanceApplyUpdateResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="MaintenanceApplyUpdateResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal MaintenanceApplyUpdateResource(ArmClient client, MaintenanceApplyUpdateData data) : this(client, data.Id)
@@ -63,9 +70,6 @@ namespace Azure.ResourceManager.Maintenance
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.Maintenance/applyUpdates";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -90,8 +94,24 @@ namespace Azure.ResourceManager.Maintenance
 
         /// <summary>
         /// Track maintenance updates to resource
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/{providerName}/{resourceType}/{resourceName}/providers/Microsoft.Maintenance/applyUpdates/{applyUpdateName}
-        /// Operation Id: ApplyUpdates_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/{providerName}/{resourceType}/{resourceName}/providers/Microsoft.Maintenance/applyUpdates/{applyUpdateName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ApplyUpdates_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MaintenanceApplyUpdateResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<MaintenanceApplyUpdateResource>> GetAsync(CancellationToken cancellationToken = default)
@@ -100,7 +120,7 @@ namespace Azure.ResourceManager.Maintenance
             scope.Start();
             try
             {
-                var response = await _maintenanceApplyUpdateApplyUpdatesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.ResourceType.Namespace, Id.Parent.ResourceType.GetLastType(), Id.Parent.Name, Id.Name, cancellationToken).ConfigureAwait(false);
+                var response = await _maintenanceApplyUpdateApplyUpdatesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.ResourceType.Namespace, Id.Parent.ResourceType.GetLastType(), Id.Parent.Name, Id.Name, cancellationToken).ConfigureAwait(false);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new MaintenanceApplyUpdateResource(Client, response.Value), response.GetRawResponse());
@@ -114,8 +134,24 @@ namespace Azure.ResourceManager.Maintenance
 
         /// <summary>
         /// Track maintenance updates to resource
-        /// Request Path: /subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/{providerName}/{resourceType}/{resourceName}/providers/Microsoft.Maintenance/applyUpdates/{applyUpdateName}
-        /// Operation Id: ApplyUpdates_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}/providers/{providerName}/{resourceType}/{resourceName}/providers/Microsoft.Maintenance/applyUpdates/{applyUpdateName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ApplyUpdates_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2021-05-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MaintenanceApplyUpdateResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<MaintenanceApplyUpdateResource> Get(CancellationToken cancellationToken = default)
@@ -124,7 +160,7 @@ namespace Azure.ResourceManager.Maintenance
             scope.Start();
             try
             {
-                var response = _maintenanceApplyUpdateApplyUpdatesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.ResourceType.Namespace, Id.Parent.ResourceType.GetLastType(), Id.Parent.Name, Id.Name, cancellationToken);
+                var response = _maintenanceApplyUpdateApplyUpdatesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Parent.ResourceType.Namespace, Id.Parent.ResourceType.GetLastType(), Id.Parent.Name, Id.Name, cancellationToken);
                 if (response.Value == null)
                     throw new RequestFailedException(response.GetRawResponse());
                 return Response.FromValue(new MaintenanceApplyUpdateResource(Client, response.Value), response.GetRawResponse());

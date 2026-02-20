@@ -5,31 +5,41 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
     /// <summary> Domain credentials for setting up Windows Server Failover Cluster for SQL availability group. </summary>
     public partial class WindowsServerFailoverClusterDomainCredentials
     {
-        /// <summary> Initializes a new instance of WindowsServerFailoverClusterDomainCredentials. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="WindowsServerFailoverClusterDomainCredentials"/>. </summary>
         public WindowsServerFailoverClusterDomainCredentials()
         {
         }
 
-        /// <summary> Initializes a new instance of WindowsServerFailoverClusterDomainCredentials. </summary>
+        /// <summary> Initializes a new instance of <see cref="WindowsServerFailoverClusterDomainCredentials"/>. </summary>
         /// <param name="clusterBootstrapAccountPassword"> Cluster bootstrap account password. </param>
         /// <param name="clusterOperatorAccountPassword"> Cluster operator account password. </param>
         /// <param name="sqlServiceAccountPassword"> SQL service account password. </param>
-        internal WindowsServerFailoverClusterDomainCredentials(string clusterBootstrapAccountPassword, string clusterOperatorAccountPassword, string sqlServiceAccountPassword)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal WindowsServerFailoverClusterDomainCredentials(string clusterBootstrapAccountPassword, string clusterOperatorAccountPassword, string sqlServiceAccountPassword, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ClusterBootstrapAccountPassword = clusterBootstrapAccountPassword;
             ClusterOperatorAccountPassword = clusterOperatorAccountPassword;
             SqlServiceAccountPassword = sqlServiceAccountPassword;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Cluster bootstrap account password. </summary>
         public string ClusterBootstrapAccountPassword { get; set; }
+
         /// <summary> Cluster operator account password. </summary>
         public string ClusterOperatorAccountPassword { get; set; }
+
         /// <summary> SQL service account password. </summary>
         public string SqlServiceAccountPassword { get; set; }
     }

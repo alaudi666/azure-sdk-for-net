@@ -5,59 +5,300 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class ExpressRouteCircuitRoutesTableSummary
+    public partial class ExpressRouteCircuitRoutesTableSummary : IUtf8JsonSerializable, IJsonModel<ExpressRouteCircuitRoutesTableSummary>
     {
-        internal static ExpressRouteCircuitRoutesTableSummary DeserializeExpressRouteCircuitRoutesTableSummary(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ExpressRouteCircuitRoutesTableSummary>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ExpressRouteCircuitRoutesTableSummary>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<string> neighbor = default;
-            Optional<int> v = default;
-            Optional<int> @as = default;
-            Optional<string> upDown = default;
-            Optional<string> statePfxRcd = default;
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ExpressRouteCircuitRoutesTableSummary>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ExpressRouteCircuitRoutesTableSummary)} does not support writing '{format}' format.");
+            }
+
+            if (Optional.IsDefined(Neighbor))
+            {
+                writer.WritePropertyName("neighbor"u8);
+                writer.WriteStringValue(Neighbor);
+            }
+            if (Optional.IsDefined(V))
+            {
+                writer.WritePropertyName("v"u8);
+                writer.WriteNumberValue(V.Value);
+            }
+            if (Optional.IsDefined(As))
+            {
+                writer.WritePropertyName("as"u8);
+                writer.WriteNumberValue(As.Value);
+            }
+            if (Optional.IsDefined(UpDown))
+            {
+                writer.WritePropertyName("upDown"u8);
+                writer.WriteStringValue(UpDown);
+            }
+            if (Optional.IsDefined(StatePfxRcd))
+            {
+                writer.WritePropertyName("statePfxRcd"u8);
+                writer.WriteStringValue(StatePfxRcd);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        ExpressRouteCircuitRoutesTableSummary IJsonModel<ExpressRouteCircuitRoutesTableSummary>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ExpressRouteCircuitRoutesTableSummary>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ExpressRouteCircuitRoutesTableSummary)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeExpressRouteCircuitRoutesTableSummary(document.RootElement, options);
+        }
+
+        internal static ExpressRouteCircuitRoutesTableSummary DeserializeExpressRouteCircuitRoutesTableSummary(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string neighbor = default;
+            int? v = default;
+            int? @as = default;
+            string upDown = default;
+            string statePfxRcd = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("neighbor"))
+                if (property.NameEquals("neighbor"u8))
                 {
                     neighbor = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("v"))
+                if (property.NameEquals("v"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     v = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("as"))
+                if (property.NameEquals("as"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     @as = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("upDown"))
+                if (property.NameEquals("upDown"u8))
                 {
                     upDown = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("statePfxRcd"))
+                if (property.NameEquals("statePfxRcd"u8))
                 {
                     statePfxRcd = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ExpressRouteCircuitRoutesTableSummary(neighbor.Value, Optional.ToNullable(v), Optional.ToNullable(@as), upDown.Value, statePfxRcd.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ExpressRouteCircuitRoutesTableSummary(
+                neighbor,
+                v,
+                @as,
+                upDown,
+                statePfxRcd,
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Neighbor), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  neighbor: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Neighbor))
+                {
+                    builder.Append("  neighbor: ");
+                    if (Neighbor.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Neighbor}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Neighbor}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(V), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  v: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(V))
+                {
+                    builder.Append("  v: ");
+                    builder.AppendLine($"{V.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(As), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  as: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(As))
+                {
+                    builder.Append("  as: ");
+                    builder.AppendLine($"{As.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(UpDown), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  upDown: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(UpDown))
+                {
+                    builder.Append("  upDown: ");
+                    if (UpDown.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{UpDown}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{UpDown}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(StatePfxRcd), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  statePfxRcd: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(StatePfxRcd))
+                {
+                    builder.Append("  statePfxRcd: ");
+                    if (StatePfxRcd.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{StatePfxRcd}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{StatePfxRcd}'");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<ExpressRouteCircuitRoutesTableSummary>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ExpressRouteCircuitRoutesTableSummary>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(ExpressRouteCircuitRoutesTableSummary)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ExpressRouteCircuitRoutesTableSummary IPersistableModel<ExpressRouteCircuitRoutesTableSummary>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ExpressRouteCircuitRoutesTableSummary>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeExpressRouteCircuitRoutesTableSummary(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ExpressRouteCircuitRoutesTableSummary)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ExpressRouteCircuitRoutesTableSummary>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

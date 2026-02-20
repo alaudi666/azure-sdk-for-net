@@ -8,34 +8,16 @@ trigger:
     - release/*
   paths:
     include:
-    - sdk/servicebus/ci.yml
     - sdk/servicebus/service.projects
     - sdk/servicebus/Azure.Messaging.ServiceBus
-    - sdk/servicebus/Microsoft.Azure.WebJobs.Extensions.ServiceBus
-
-pr:
-  branches:
-    include:
-    - main
-    - feature/*
-    - hotfix/*
-    - release/*
-  paths:
-    include:
     - sdk/servicebus/ci.yml
-    - sdk/servicebus/service.projects
-    - sdk/servicebus/Azure.Messaging.ServiceBus
-    - sdk/servicebus/Microsoft.Azure.WebJobs.Extensions.ServiceBus
 
 extends:
   template: /eng/pipelines/templates/stages/archetype-sdk-client.yml
   parameters:
     SDKType: client
     ServiceDirectory: servicebus
-    BuildSnippets: true
     ArtifactName: packages
     Artifacts:
     - name: Azure.Messaging.ServiceBus
       safeName: AzureMessagingServiceBus
-    - name: Microsoft.Azure.WebJobs.Extensions.ServiceBus
-      safeName: MicrosoftAzureWebJobsExtensionsServiceBus

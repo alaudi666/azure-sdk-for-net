@@ -6,82 +6,210 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Elastic;
 
 namespace Azure.ResourceManager.Elastic.Models
 {
-    public partial class ElasticCloudDeployment : IUtf8JsonSerializable
+    /// <summary> Details of the user's elastic deployment associated with the monitor resource. </summary>
+    public partial class ElasticCloudDeployment : IJsonModel<ElasticCloudDeployment>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ElasticCloudDeployment PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ElasticCloudDeployment>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeElasticCloudDeployment(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ElasticCloudDeployment)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ElasticCloudDeployment>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static ElasticCloudDeployment DeserializeElasticCloudDeployment(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<string> name = default;
-            Optional<string> deploymentId = default;
-            Optional<string> azureSubscriptionId = default;
-            Optional<string> elasticsearchRegion = default;
-            Optional<Uri> elasticsearchServiceUrl = default;
-            Optional<Uri> kibanaServiceUrl = default;
-            Optional<Uri> kibanaSsoUrl = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ElasticCloudDeployment>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("name"))
+                throw new FormatException($"The model {nameof(ElasticCloudDeployment)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(Name))
+            {
+                writer.WritePropertyName("name"u8);
+                writer.WriteStringValue(Name);
+            }
+            if (options.Format != "W" && Optional.IsDefined(DeploymentId))
+            {
+                writer.WritePropertyName("deploymentId"u8);
+                writer.WriteStringValue(DeploymentId);
+            }
+            if (options.Format != "W" && Optional.IsDefined(AzureSubscriptionId))
+            {
+                writer.WritePropertyName("azureSubscriptionId"u8);
+                writer.WriteStringValue(AzureSubscriptionId);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ElasticsearchRegion))
+            {
+                writer.WritePropertyName("elasticsearchRegion"u8);
+                writer.WriteStringValue(ElasticsearchRegion);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ElasticsearchServiceUri))
+            {
+                writer.WritePropertyName("elasticsearchServiceUrl"u8);
+                WriteElasticsearchServiceUri(writer, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(KibanaServiceUri))
+            {
+                writer.WritePropertyName("kibanaServiceUrl"u8);
+                WriteKibanaServiceUri(writer, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(KibanaSsoUri))
+            {
+                writer.WritePropertyName("kibanaSsoUrl"u8);
+                WriteKibanaSsoUri(writer, options);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    name = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("deploymentId"))
-                {
-                    deploymentId = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("azureSubscriptionId"))
-                {
-                    azureSubscriptionId = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("elasticsearchRegion"))
-                {
-                    elasticsearchRegion = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("elasticsearchServiceUrl"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        elasticsearchServiceUrl = null;
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    elasticsearchServiceUrl = new Uri(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("kibanaServiceUrl"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        kibanaServiceUrl = null;
-                        continue;
-                    }
-                    kibanaServiceUrl = new Uri(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("kibanaSsoUrl"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        kibanaSsoUrl = null;
-                        continue;
-                    }
-                    kibanaSsoUrl = new Uri(property.Value.GetString());
-                    continue;
+#endif
                 }
             }
-            return new ElasticCloudDeployment(name.Value, deploymentId.Value, azureSubscriptionId.Value, elasticsearchRegion.Value, elasticsearchServiceUrl.Value, kibanaServiceUrl.Value, kibanaSsoUrl.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ElasticCloudDeployment IJsonModel<ElasticCloudDeployment>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ElasticCloudDeployment JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ElasticCloudDeployment>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ElasticCloudDeployment)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeElasticCloudDeployment(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ElasticCloudDeployment DeserializeElasticCloudDeployment(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string name = default;
+            string deploymentId = default;
+            string azureSubscriptionId = default;
+            string elasticsearchRegion = default;
+            Uri elasticsearchServiceUri = default;
+            Uri kibanaServiceUri = default;
+            Uri kibanaSsoUri = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("name"u8))
+                {
+                    name = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("deploymentId"u8))
+                {
+                    deploymentId = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("azureSubscriptionId"u8))
+                {
+                    azureSubscriptionId = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("elasticsearchRegion"u8))
+                {
+                    elasticsearchRegion = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("elasticsearchServiceUrl"u8))
+                {
+                    DeserializeElasticsearchServiceUri(prop, ref elasticsearchServiceUri);
+                    continue;
+                }
+                if (prop.NameEquals("kibanaServiceUrl"u8))
+                {
+                    DeserializeKibanaServiceUri(prop, ref kibanaServiceUri);
+                    continue;
+                }
+                if (prop.NameEquals("kibanaSsoUrl"u8))
+                {
+                    DeserializeKibanaSsoUri(prop, ref kibanaSsoUri);
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new ElasticCloudDeployment(
+                name,
+                deploymentId,
+                azureSubscriptionId,
+                elasticsearchRegion,
+                elasticsearchServiceUri,
+                kibanaServiceUri,
+                kibanaSsoUri,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ElasticCloudDeployment>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ElasticCloudDeployment>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerElasticContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ElasticCloudDeployment)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ElasticCloudDeployment IPersistableModel<ElasticCloudDeployment>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ElasticCloudDeployment>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

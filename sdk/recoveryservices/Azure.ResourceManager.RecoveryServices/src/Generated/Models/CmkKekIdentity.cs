@@ -5,28 +5,38 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.Core;
+
 namespace Azure.ResourceManager.RecoveryServices.Models
 {
     /// <summary> The details of the identity used for CMK. </summary>
     public partial class CmkKekIdentity
     {
-        /// <summary> Initializes a new instance of CmkKekIdentity. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CmkKekIdentity"/>. </summary>
         public CmkKekIdentity()
         {
         }
 
-        /// <summary> Initializes a new instance of CmkKekIdentity. </summary>
-        /// <param name="useSystemAssignedIdentity"> Indicate that system assigned identity should be used. Mutually exclusive with &apos;userAssignedIdentity&apos; field. </param>
+        /// <summary> Initializes a new instance of <see cref="CmkKekIdentity"/>. </summary>
+        /// <param name="useSystemAssignedIdentity"> Indicate that system assigned identity should be used. Mutually exclusive with 'userAssignedIdentity' field. </param>
         /// <param name="userAssignedIdentity"> The user assigned identity to be used to grant permissions in case the type of identity used is UserAssigned. </param>
-        internal CmkKekIdentity(bool? useSystemAssignedIdentity, string userAssignedIdentity)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CmkKekIdentity(bool? useSystemAssignedIdentity, ResourceIdentifier userAssignedIdentity, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             UseSystemAssignedIdentity = useSystemAssignedIdentity;
             UserAssignedIdentity = userAssignedIdentity;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Indicate that system assigned identity should be used. Mutually exclusive with &apos;userAssignedIdentity&apos; field. </summary>
+        /// <summary> Indicate that system assigned identity should be used. Mutually exclusive with 'userAssignedIdentity' field. </summary>
         public bool? UseSystemAssignedIdentity { get; set; }
+
         /// <summary> The user assigned identity to be used to grant permissions in case the type of identity used is UserAssigned. </summary>
-        public string UserAssignedIdentity { get; set; }
+        public ResourceIdentifier UserAssignedIdentity { get; set; }
     }
 }

@@ -5,36 +5,52 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Holds details about product hierarchy information. </summary>
     public partial class HierarchyInformation
     {
-        /// <summary> Initializes a new instance of HierarchyInformation. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="HierarchyInformation"/>. </summary>
         public HierarchyInformation()
         {
         }
 
-        /// <summary> Initializes a new instance of HierarchyInformation. </summary>
+        /// <summary> Initializes a new instance of <see cref="HierarchyInformation"/>. </summary>
         /// <param name="productFamilyName"> Represents product family name that uniquely identifies product family. </param>
         /// <param name="productLineName"> Represents product line name that uniquely identifies product line. </param>
         /// <param name="productName"> Represents product name that uniquely identifies product. </param>
         /// <param name="configurationName"> Represents configuration name that uniquely identifies configuration. </param>
-        internal HierarchyInformation(string productFamilyName, string productLineName, string productName, string configurationName)
+        /// <param name="configurationIdDisplayName"> Represents Model Display Name. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal HierarchyInformation(string productFamilyName, string productLineName, string productName, string configurationName, string configurationIdDisplayName, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ProductFamilyName = productFamilyName;
             ProductLineName = productLineName;
             ProductName = productName;
             ConfigurationName = configurationName;
+            ConfigurationIdDisplayName = configurationIdDisplayName;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Represents product family name that uniquely identifies product family. </summary>
         public string ProductFamilyName { get; set; }
+
         /// <summary> Represents product line name that uniquely identifies product line. </summary>
         public string ProductLineName { get; set; }
+
         /// <summary> Represents product name that uniquely identifies product. </summary>
         public string ProductName { get; set; }
+
         /// <summary> Represents configuration name that uniquely identifies configuration. </summary>
         public string ConfigurationName { get; set; }
+
+        /// <summary> Represents Model Display Name. </summary>
+        public string ConfigurationIdDisplayName { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
     /// <summary> A copy activity Dynamics CRM sink. </summary>
     public partial class DynamicsCrmSink : CopySink
     {
-        /// <summary> Initializes a new instance of DynamicsCrmSink. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynamicsCrmSink"/>. </summary>
         /// <param name="writeBehavior"> The write behavior for the operation. </param>
         public DynamicsCrmSink(DynamicsSinkWriteBehavior writeBehavior)
         {
@@ -20,7 +20,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             Type = "DynamicsCrmSink";
         }
 
-        /// <summary> Initializes a new instance of DynamicsCrmSink. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynamicsCrmSink"/>. </summary>
         /// <param name="type"> Copy sink type. </param>
         /// <param name="writeBatchSize"> Write batch size. Type: integer (or Expression with resultType integer), minimum: 0. </param>
         /// <param name="writeBatchTimeout"> Write batch timeout. Type: string (or Expression with resultType string), pattern: ((\d+)\.)?(\d\d):(60|([0-5][0-9])):(60|([0-5][0-9])). </param>
@@ -31,11 +31,15 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         /// <param name="writeBehavior"> The write behavior for the operation. </param>
         /// <param name="ignoreNullValues"> The flag indicating whether to ignore null values from input dataset (except key fields) during write operation. Default is false. Type: boolean (or Expression with resultType boolean). </param>
         /// <param name="alternateKeyName"> The logical name of the alternate key which will be used when upserting records. Type: string (or Expression with resultType string). </param>
-        internal DynamicsCrmSink(string type, object writeBatchSize, object writeBatchTimeout, object sinkRetryCount, object sinkRetryWait, object maxConcurrentConnections, IDictionary<string, object> additionalProperties, DynamicsSinkWriteBehavior writeBehavior, object ignoreNullValues, object alternateKeyName) : base(type, writeBatchSize, writeBatchTimeout, sinkRetryCount, sinkRetryWait, maxConcurrentConnections, additionalProperties)
+        /// <param name="bypassBusinessLogicExecution"> Controls the bypass of Dataverse custom business logic. Type: string (or Expression with resultType string). Type: string (or Expression with resultType string). </param>
+        /// <param name="bypassPowerAutomateFlows"> Controls the bypass of Power Automate flows. Default is false. Type: boolean (or Expression with resultType boolean). </param>
+        internal DynamicsCrmSink(string type, object writeBatchSize, object writeBatchTimeout, object sinkRetryCount, object sinkRetryWait, object maxConcurrentConnections, IDictionary<string, object> additionalProperties, DynamicsSinkWriteBehavior writeBehavior, object ignoreNullValues, object alternateKeyName, object bypassBusinessLogicExecution, object bypassPowerAutomateFlows) : base(type, writeBatchSize, writeBatchTimeout, sinkRetryCount, sinkRetryWait, maxConcurrentConnections, additionalProperties)
         {
             WriteBehavior = writeBehavior;
             IgnoreNullValues = ignoreNullValues;
             AlternateKeyName = alternateKeyName;
+            BypassBusinessLogicExecution = bypassBusinessLogicExecution;
+            BypassPowerAutomateFlows = bypassPowerAutomateFlows;
             Type = type ?? "DynamicsCrmSink";
         }
 
@@ -45,5 +49,9 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         public object IgnoreNullValues { get; set; }
         /// <summary> The logical name of the alternate key which will be used when upserting records. Type: string (or Expression with resultType string). </summary>
         public object AlternateKeyName { get; set; }
+        /// <summary> Controls the bypass of Dataverse custom business logic. Type: string (or Expression with resultType string). Type: string (or Expression with resultType string). </summary>
+        public object BypassBusinessLogicExecution { get; set; }
+        /// <summary> Controls the bypass of Power Automate flows. Default is false. Type: boolean (or Expression with resultType boolean). </summary>
+        public object BypassPowerAutomateFlows { get; set; }
     }
 }

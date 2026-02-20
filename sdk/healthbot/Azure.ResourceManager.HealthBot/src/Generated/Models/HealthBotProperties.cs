@@ -6,33 +6,46 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.HealthBot.Models
 {
     /// <summary> The properties of a Azure Health Bot. The Health Bot Service is a cloud platform that empowers developers in Healthcare organizations to build and deploy their compliant, AI-powered virtual health assistants and health bots, that help them improve processes and reduce costs. </summary>
     public partial class HealthBotProperties
     {
-        /// <summary> Initializes a new instance of HealthBotProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="HealthBotProperties"/>. </summary>
         public HealthBotProperties()
         {
         }
 
-        /// <summary> Initializes a new instance of HealthBotProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="HealthBotProperties"/>. </summary>
         /// <param name="provisioningState"> The provisioning state of the Azure Health Bot resource. </param>
         /// <param name="botManagementPortalLink"> The link. </param>
         /// <param name="keyVaultProperties"> KeyVault properties for the resource encryption. </param>
-        internal HealthBotProperties(string provisioningState, Uri botManagementPortalLink, HealthBotKeyVaultProperties keyVaultProperties)
+        /// <param name="accessControlMethod"> The access control method for the Azure Health Bot resource. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal HealthBotProperties(string provisioningState, Uri botManagementPortalLink, HealthBotKeyVaultProperties keyVaultProperties, string accessControlMethod, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ProvisioningState = provisioningState;
             BotManagementPortalLink = botManagementPortalLink;
             KeyVaultProperties = keyVaultProperties;
+            AccessControlMethod = accessControlMethod;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The provisioning state of the Azure Health Bot resource. </summary>
         public string ProvisioningState { get; }
+
         /// <summary> The link. </summary>
         public Uri BotManagementPortalLink { get; }
+
         /// <summary> KeyVault properties for the resource encryption. </summary>
         public HealthBotKeyVaultProperties KeyVaultProperties { get; set; }
+
+        /// <summary> The access control method for the Azure Health Bot resource. </summary>
+        public string AccessControlMethod { get; }
     }
 }

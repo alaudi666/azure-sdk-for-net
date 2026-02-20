@@ -5,43 +5,151 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class DataBoxDiskCopyLogDetails
+    /// <summary> Copy Log Details for a disk. </summary>
+    public partial class DataBoxDiskCopyLogDetails : CopyLogDetails, IJsonModel<DataBoxDiskCopyLogDetails>
     {
-        internal static DataBoxDiskCopyLogDetails DeserializeDataBoxDiskCopyLogDetails(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override CopyLogDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<string> diskSerialNumber = default;
-            Optional<string> errorLogLink = default;
-            Optional<string> verboseLogLink = default;
-            DataBoxOrderType copyLogDetailsType = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxDiskCopyLogDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("diskSerialNumber"))
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDataBoxDiskCopyLogDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxDiskCopyLogDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DataBoxDiskCopyLogDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxDiskCopyLogDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DataBoxDiskCopyLogDetails)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
+            if (options.Format != "W" && Optional.IsDefined(DiskSerialNumber))
+            {
+                writer.WritePropertyName("diskSerialNumber"u8);
+                writer.WriteStringValue(DiskSerialNumber);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ErrorLogLink))
+            {
+                writer.WritePropertyName("errorLogLink"u8);
+                writer.WriteStringValue(ErrorLogLink);
+            }
+            if (options.Format != "W" && Optional.IsDefined(VerboseLogLink))
+            {
+                writer.WritePropertyName("verboseLogLink"u8);
+                writer.WriteStringValue(VerboseLogLink);
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxDiskCopyLogDetails IJsonModel<DataBoxDiskCopyLogDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (DataBoxDiskCopyLogDetails)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override CopyLogDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxDiskCopyLogDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DataBoxDiskCopyLogDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDataBoxDiskCopyLogDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DataBoxDiskCopyLogDetails DeserializeDataBoxDiskCopyLogDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DataBoxOrderType copyLogDetailsType = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            string diskSerialNumber = default;
+            string errorLogLink = default;
+            string verboseLogLink = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("copyLogDetailsType"u8))
                 {
-                    diskSerialNumber = property.Value.GetString();
+                    copyLogDetailsType = prop.Value.GetString().ToDataBoxOrderType();
                     continue;
                 }
-                if (property.NameEquals("errorLogLink"))
+                if (prop.NameEquals("diskSerialNumber"u8))
                 {
-                    errorLogLink = property.Value.GetString();
+                    diskSerialNumber = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("verboseLogLink"))
+                if (prop.NameEquals("errorLogLink"u8))
                 {
-                    verboseLogLink = property.Value.GetString();
+                    errorLogLink = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("copyLogDetailsType"))
+                if (prop.NameEquals("verboseLogLink"u8))
                 {
-                    copyLogDetailsType = property.Value.GetString().ToDataBoxOrderType();
+                    verboseLogLink = prop.Value.GetString();
                     continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new DataBoxDiskCopyLogDetails(copyLogDetailsType, diskSerialNumber.Value, errorLogLink.Value, verboseLogLink.Value);
+            return new DataBoxDiskCopyLogDetails(copyLogDetailsType, additionalBinaryDataProperties, diskSerialNumber, errorLogLink, verboseLogLink);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DataBoxDiskCopyLogDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataBoxDiskCopyLogDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DataBoxDiskCopyLogDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataBoxDiskCopyLogDetails IPersistableModel<DataBoxDiskCopyLogDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => (DataBoxDiskCopyLogDetails)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DataBoxDiskCopyLogDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

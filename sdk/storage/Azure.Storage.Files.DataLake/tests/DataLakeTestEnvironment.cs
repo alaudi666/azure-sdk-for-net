@@ -5,8 +5,11 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Azure.Core.TestFramework;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
+using Azure.Storage.Files.DataLake.Models;
 using Azure.Storage.Sas;
 using Azure.Storage.Test;
 using Azure.Storage.Test.Shared;
@@ -32,8 +35,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                     // Check flat account. For some reason we observe failures if that one doesn't work before we start datalake run.
                     {
                         BlobServiceClient serviceClient = new BlobServiceClient(
-                            new Uri(TestConfigurations.DefaultTargetOAuthTenant.BlobServiceEndpoint),
-                            GetOAuthCredential(TestConfigurations.DefaultTargetOAuthTenant));
+                            new Uri(TestConfigurations.DefaultTargetOAuthTenant.BlobServiceEndpoint), Credential);
                         await serviceClient.GetPropertiesAsync();
                         var containerName = Guid.NewGuid().ToString();
                         var containerClient = serviceClient.GetBlobContainerClient(containerName);
@@ -46,7 +48,9 @@ namespace Azure.Storage.Files.DataLake.Tests
                             await blobClient.CreateIfNotExistsAsync();
                             await blobClient.GetPropertiesAsync();
 
-                            var userDelegationKey = await serviceClient.GetUserDelegationKeyAsync(startsOn: null, expiresOn: DateTimeOffset.UtcNow.AddHours(1));
+                            BlobGetUserDelegationKeyOptions getUserDelegationKeyOptions = new BlobGetUserDelegationKeyOptions(expiresOn: DateTimeOffset.UtcNow.AddHours(1));
+                            var userDelegationKey = await serviceClient.GetUserDelegationKeyAsync(
+                                options: getUserDelegationKeyOptions);
                             var sasBuilder = new BlobSasBuilder(BlobSasPermissions.All, DateTimeOffset.UtcNow.AddHours(1))
                             {
                                 BlobContainerName = containerName,
@@ -64,8 +68,7 @@ namespace Azure.Storage.Files.DataLake.Tests
                     // Check hierarchical account.
                     {
                         DataLakeServiceClient serviceClient = new DataLakeServiceClient(
-                          new Uri(TestConfigurations.DefaultTargetHierarchicalNamespaceTenant.BlobServiceEndpoint),
-                          GetOAuthCredential(TestConfigurations.DefaultTargetHierarchicalNamespaceTenant));
+                          new Uri(TestConfigurations.DefaultTargetHierarchicalNamespaceTenant.BlobServiceEndpoint), Credential);
                         await serviceClient.GetPropertiesAsync();
                         var fileSystemName = Guid.NewGuid().ToString();
                         var fileSystemClient = serviceClient.GetFileSystemClient(fileSystemName);
@@ -84,7 +87,9 @@ namespace Azure.Storage.Files.DataLake.Tests
                             await fileClient.AppendAsync(new MemoryStream(new byte[] { 1 }), 0);
                             await fileClient.GetAccessControlAsync();
 
-                            var userDelegationKey = await serviceClient.GetUserDelegationKeyAsync(startsOn: null, expiresOn: DateTimeOffset.UtcNow.AddHours(1));
+                            DataLakeGetUserDelegationKeyOptions getUserDelegationKeyOptions = new DataLakeGetUserDelegationKeyOptions(expiresOn: DateTimeOffset.UtcNow.AddHours(1));
+                            var userDelegationKey = await serviceClient.GetUserDelegationKeyAsync(
+                                options: getUserDelegationKeyOptions);
                             var sasBuilder = new DataLakeSasBuilder(DataLakeSasPermissions.All, DateTimeOffset.UtcNow.AddHours(1))
                             {
                                 FileSystemName = fileSystemName,

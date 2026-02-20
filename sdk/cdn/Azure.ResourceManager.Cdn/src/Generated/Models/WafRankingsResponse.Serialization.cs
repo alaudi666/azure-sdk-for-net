@@ -6,47 +6,133 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
-    public partial class WafRankingsResponse
+    public partial class WafRankingsResponse : IUtf8JsonSerializable, IJsonModel<WafRankingsResponse>
     {
-        internal static WafRankingsResponse DeserializeWafRankingsResponse(JsonElement element)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<WafRankingsResponse>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<WafRankingsResponse>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<DateTimeOffset> dateTimeBegin = default;
-            Optional<DateTimeOffset> dateTimeEnd = default;
-            Optional<IReadOnlyList<string>> groups = default;
-            Optional<IReadOnlyList<WafRankingsResponseDataItem>> data = default;
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<WafRankingsResponse>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(WafRankingsResponse)} does not support writing '{format}' format.");
+            }
+
+            if (Optional.IsDefined(DateTimeBegin))
+            {
+                writer.WritePropertyName("dateTimeBegin"u8);
+                writer.WriteStringValue(DateTimeBegin.Value, "O");
+            }
+            if (Optional.IsDefined(DateTimeEnd))
+            {
+                writer.WritePropertyName("dateTimeEnd"u8);
+                writer.WriteStringValue(DateTimeEnd.Value, "O");
+            }
+            if (Optional.IsCollectionDefined(Groups))
+            {
+                writer.WritePropertyName("groups"u8);
+                writer.WriteStartArray();
+                foreach (var item in Groups)
+                {
+                    writer.WriteStringValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(Data))
+            {
+                writer.WritePropertyName("data"u8);
+                writer.WriteStartArray();
+                foreach (var item in Data)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        WafRankingsResponse IJsonModel<WafRankingsResponse>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<WafRankingsResponse>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(WafRankingsResponse)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeWafRankingsResponse(document.RootElement, options);
+        }
+
+        internal static WafRankingsResponse DeserializeWafRankingsResponse(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DateTimeOffset? dateTimeBegin = default;
+            DateTimeOffset? dateTimeEnd = default;
+            IReadOnlyList<string> groups = default;
+            IReadOnlyList<WafRankingsResponseDataItem> data = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("dateTimeBegin"))
+                if (property.NameEquals("dateTimeBegin"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     dateTimeBegin = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("dateTimeEnd"))
+                if (property.NameEquals("dateTimeEnd"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     dateTimeEnd = property.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("groups"))
+                if (property.NameEquals("groups"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -57,23 +143,166 @@ namespace Azure.ResourceManager.Cdn.Models
                     groups = array;
                     continue;
                 }
-                if (property.NameEquals("data"))
+                if (property.NameEquals("data"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<WafRankingsResponseDataItem> array = new List<WafRankingsResponseDataItem>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(WafRankingsResponseDataItem.DeserializeWafRankingsResponseDataItem(item));
+                        array.Add(WafRankingsResponseDataItem.DeserializeWafRankingsResponseDataItem(item, options));
                     }
                     data = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new WafRankingsResponse(Optional.ToNullable(dateTimeBegin), Optional.ToNullable(dateTimeEnd), Optional.ToList(groups), Optional.ToList(data));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new WafRankingsResponse(dateTimeBegin, dateTimeEnd, groups ?? new ChangeTrackingList<string>(), data ?? new ChangeTrackingList<WafRankingsResponseDataItem>(), serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DateTimeBegin), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  dateTimeBegin: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DateTimeBegin))
+                {
+                    builder.Append("  dateTimeBegin: ");
+                    var formattedDateTimeString = TypeFormatters.ToString(DateTimeBegin.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DateTimeEnd), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  dateTimeEnd: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DateTimeEnd))
+                {
+                    builder.Append("  dateTimeEnd: ");
+                    var formattedDateTimeString = TypeFormatters.ToString(DateTimeEnd.Value, "o");
+                    builder.AppendLine($"'{formattedDateTimeString}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Groups), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  groups: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(Groups))
+                {
+                    if (Groups.Any())
+                    {
+                        builder.Append("  groups: ");
+                        builder.AppendLine("[");
+                        foreach (var item in Groups)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("    '''");
+                                builder.AppendLine($"{item}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"    '{item}'");
+                            }
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Data), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  data: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(Data))
+                {
+                    if (Data.Any())
+                    {
+                        builder.Append("  data: ");
+                        builder.AppendLine("[");
+                        foreach (var item in Data)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  data: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<WafRankingsResponse>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<WafRankingsResponse>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerCdnContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(WafRankingsResponse)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        WafRankingsResponse IPersistableModel<WafRankingsResponse>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<WafRankingsResponse>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeWafRankingsResponse(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(WafRankingsResponse)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<WafRankingsResponse>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

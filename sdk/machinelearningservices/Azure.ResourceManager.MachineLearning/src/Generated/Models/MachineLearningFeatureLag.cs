@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Flag for generating lags for the numeric features.
-    /// Serialized Name: FeatureLags
-    /// </summary>
+    /// <summary> Flag for generating lags for the numeric features. </summary>
     public readonly partial struct MachineLearningFeatureLag : IEquatable<MachineLearningFeatureLag>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string NoneValue = "None";
         private const string AutoValue = "Auto";
 
-        /// <summary>
-        /// No feature lags generated.
-        /// Serialized Name: FeatureLags.None
-        /// </summary>
+        /// <summary> No feature lags generated. </summary>
         public static MachineLearningFeatureLag None { get; } = new MachineLearningFeatureLag(NoneValue);
-        /// <summary>
-        /// System auto-generates feature lags.
-        /// Serialized Name: FeatureLags.Auto
-        /// </summary>
+        /// <summary> System auto-generates feature lags. </summary>
         public static MachineLearningFeatureLag Auto { get; } = new MachineLearningFeatureLag(AutoValue);
         /// <summary> Determines if two <see cref="MachineLearningFeatureLag"/> values are the same. </summary>
         public static bool operator ==(MachineLearningFeatureLag left, MachineLearningFeatureLag right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningFeatureLag"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningFeatureLag left, MachineLearningFeatureLag right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningFeatureLag"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningFeatureLag"/>. </summary>
         public static implicit operator MachineLearningFeatureLag(string value) => new MachineLearningFeatureLag(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

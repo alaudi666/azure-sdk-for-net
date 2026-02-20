@@ -6,28 +6,35 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Returns link related to the product. </summary>
     public partial class ProductLink
     {
-        /// <summary> Initializes a new instance of ProductLink. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ProductLink"/>. </summary>
         internal ProductLink()
         {
         }
 
-        /// <summary> Initializes a new instance of ProductLink. </summary>
+        /// <summary> Initializes a new instance of <see cref="ProductLink"/>. </summary>
         /// <param name="linkType"> Type of link. </param>
         /// <param name="linkUri"> Url of the link. </param>
-        internal ProductLink(ProductLinkType? linkType, Uri linkUri)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ProductLink(ProductLinkType? linkType, Uri linkUri, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             LinkType = linkType;
             LinkUri = linkUri;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Type of link. </summary>
         public ProductLinkType? LinkType { get; }
+
         /// <summary> Url of the link. </summary>
         public Uri LinkUri { get; }
     }

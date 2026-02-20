@@ -2,12 +2,12 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Azure.Core.TestFramework;
 using Azure.Containers.ContainerRegistry;
+using Azure.Core.TestFramework;
 using Azure.Identity;
 using NUnit.Framework;
-using System.Collections.Generic;
 
 namespace Azure.Containers.ContainerRegistry.Tests.Samples
 {
@@ -27,11 +27,7 @@ namespace Azure.Containers.ContainerRegistry.Tests.Samples
             Uri endpoint = new Uri(Environment.GetEnvironmentVariable("REGISTRY_ENDPOINT"));
 
             // Create a new ContainerRegistryClient and RegistryArtifact to access image operations
-            ContainerRegistryClient client = new ContainerRegistryClient(endpoint, new DefaultAzureCredential(),
-                new ContainerRegistryClientOptions()
-                {
-                    Audience = ContainerRegistryAudience.AzureResourceManagerPublicCloud
-                });
+            ContainerRegistryClient client = new ContainerRegistryClient(endpoint, new DefaultAzureCredential());
             RegistryArtifact image = client.GetArtifact("library/hello-world", "latest");
 
             // Set permissions on the v1 image's "latest" tag
@@ -66,10 +62,7 @@ namespace Azure.Containers.ContainerRegistry.Tests.Samples
             Uri endpoint = new Uri(Environment.GetEnvironmentVariable("REGISTRY_ENDPOINT"));
 
             // Create a new ContainerRegistryClient and RegistryArtifact to access image operations
-            ContainerRegistryClient client = new ContainerRegistryClient(endpoint, new DefaultAzureCredential(),
-                new ContainerRegistryClientOptions() {
-                    Audience = ContainerRegistryAudience.AzureResourceManagerPublicCloud
-                });
+            ContainerRegistryClient client = new ContainerRegistryClient(endpoint, new DefaultAzureCredential());
             RegistryArtifact image = client.GetArtifact("library/hello-world", "v1");
 
             // Set permissions on the image's "latest" tag

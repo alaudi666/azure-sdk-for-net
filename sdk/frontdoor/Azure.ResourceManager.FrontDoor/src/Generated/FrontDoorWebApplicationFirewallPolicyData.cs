@@ -5,8 +5,8 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.FrontDoor.Models;
 using Azure.ResourceManager.Models;
@@ -14,10 +14,45 @@ using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.FrontDoor
 {
-    /// <summary> A class representing the FrontDoorWebApplicationFirewallPolicy data model. </summary>
+    /// <summary>
+    /// A class representing the FrontDoorWebApplicationFirewallPolicy data model.
+    /// Defines web application firewall policy.
+    /// </summary>
     public partial class FrontDoorWebApplicationFirewallPolicyData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of FrontDoorWebApplicationFirewallPolicyData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="FrontDoorWebApplicationFirewallPolicyData"/>. </summary>
         /// <param name="location"> The location. </param>
         public FrontDoorWebApplicationFirewallPolicyData(AzureLocation location) : base(location)
         {
@@ -26,7 +61,7 @@ namespace Azure.ResourceManager.FrontDoor
             SecurityPolicyLinks = new ChangeTrackingList<SubResource>();
         }
 
-        /// <summary> Initializes a new instance of FrontDoorWebApplicationFirewallPolicyData. </summary>
+        /// <summary> Initializes a new instance of <see cref="FrontDoorWebApplicationFirewallPolicyData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
@@ -43,7 +78,8 @@ namespace Azure.ResourceManager.FrontDoor
         /// <param name="securityPolicyLinks"> Describes Security Policy associated with this Web Application Firewall policy. </param>
         /// <param name="provisioningState"> Provisioning state of the policy. </param>
         /// <param name="resourceState"> Resource status of the policy. </param>
-        internal FrontDoorWebApplicationFirewallPolicyData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, ETag? etag, FrontDoorSku sku, FrontDoorWebApplicationFirewallPolicySettings policySettings, CustomRuleList customRuleList, ManagedRuleSetList managedRules, IReadOnlyList<SubResource> frontendEndpointLinks, IReadOnlyList<SubResource> routingRuleLinks, IReadOnlyList<SubResource> securityPolicyLinks, string provisioningState, FrontDoorWebApplicationFirewallPolicyResourceState? resourceState) : base(id, name, resourceType, systemData, tags, location)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal FrontDoorWebApplicationFirewallPolicyData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, ETag? etag, FrontDoorSku sku, FrontDoorWebApplicationFirewallPolicySettings policySettings, CustomRuleList customRuleList, ManagedRuleSetList managedRules, IReadOnlyList<SubResource> frontendEndpointLinks, IReadOnlyList<SubResource> routingRuleLinks, IReadOnlyList<SubResource> securityPolicyLinks, string provisioningState, FrontDoorWebApplicationFirewallPolicyResourceState? resourceState, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData, tags, location)
         {
             ETag = etag;
             Sku = sku;
@@ -55,13 +91,21 @@ namespace Azure.ResourceManager.FrontDoor
             SecurityPolicyLinks = securityPolicyLinks;
             ProvisioningState = provisioningState;
             ResourceState = resourceState;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="FrontDoorWebApplicationFirewallPolicyData"/> for deserialization. </summary>
+        internal FrontDoorWebApplicationFirewallPolicyData()
+        {
         }
 
         /// <summary> Gets a unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; set; }
         /// <summary> The pricing tier of web application firewall policy. Defaults to Classic_AzureFrontDoor if not specified. </summary>
         internal FrontDoorSku Sku { get; set; }
         /// <summary> Name of the pricing tier. </summary>
+        [WirePath("sku.name")]
         public FrontDoorSkuName? SkuName
         {
             get => Sku is null ? default : Sku.Name;
@@ -74,10 +118,12 @@ namespace Azure.ResourceManager.FrontDoor
         }
 
         /// <summary> Describes settings for the policy. </summary>
+        [WirePath("properties.policySettings")]
         public FrontDoorWebApplicationFirewallPolicySettings PolicySettings { get; set; }
         /// <summary> Describes custom rules inside the policy. </summary>
         internal CustomRuleList CustomRuleList { get; set; }
         /// <summary> List of rules. </summary>
+        [WirePath("properties.customRules.rules")]
         public IList<WebApplicationCustomRule> Rules
         {
             get
@@ -91,6 +137,7 @@ namespace Azure.ResourceManager.FrontDoor
         /// <summary> Describes managed rules inside the policy. </summary>
         internal ManagedRuleSetList ManagedRules { get; set; }
         /// <summary> List of rule sets. </summary>
+        [WirePath("properties.managedRules.managedRuleSets")]
         public IList<ManagedRuleSet> ManagedRuleSets
         {
             get
@@ -102,14 +149,19 @@ namespace Azure.ResourceManager.FrontDoor
         }
 
         /// <summary> Describes Frontend Endpoints associated with this Web Application Firewall policy. </summary>
+        [WirePath("properties.frontendEndpointLinks")]
         public IReadOnlyList<SubResource> FrontendEndpointLinks { get; }
         /// <summary> Describes Routing Rules associated with this Web Application Firewall policy. </summary>
+        [WirePath("properties.routingRuleLinks")]
         public IReadOnlyList<SubResource> RoutingRuleLinks { get; }
         /// <summary> Describes Security Policy associated with this Web Application Firewall policy. </summary>
+        [WirePath("properties.securityPolicyLinks")]
         public IReadOnlyList<SubResource> SecurityPolicyLinks { get; }
         /// <summary> Provisioning state of the policy. </summary>
+        [WirePath("properties.provisioningState")]
         public string ProvisioningState { get; }
         /// <summary> Resource status of the policy. </summary>
+        [WirePath("properties.resourceState")]
         public FrontDoorWebApplicationFirewallPolicyResourceState? ResourceState { get; }
     }
 }

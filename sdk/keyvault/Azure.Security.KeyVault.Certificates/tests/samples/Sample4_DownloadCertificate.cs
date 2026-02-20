@@ -14,7 +14,9 @@ namespace Azure.Security.KeyVault.Certificates.Samples
 {
     public partial class DownloadCertificate
     {
-#if !NET461
+// Need to exclude actual TFMs since SNIPPET is always passed during CIs, such that the following will fail:
+// NET472_OR_GREATER || NETSTANDARD2_1_OR_GREATER || SNIPPET
+#if !NET462 && !NET47
         [Test]
         public void DownloadCertificateSync()
         {
@@ -55,8 +57,9 @@ namespace Azure.Security.KeyVault.Certificates.Samples
 
             byte[] signature = key.SignHash(hash, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             Debug.WriteLine($"Signature: {Convert.ToBase64String(signature)}");
-        #endregion
+            #endregion
 
+#pragma warning disable SYSLIB0057 // New APIs are not supported on all versions of .NET
         #region Snippet:CertificatesSample4PublicKey
             Response<KeyVaultCertificateWithPolicy> certificateResponse = client.GetCertificate(certificateName);
             using X509Certificate2 publicCertificate = new X509Certificate2(certificateResponse.Value.Cer);
@@ -65,6 +68,7 @@ namespace Azure.Security.KeyVault.Certificates.Samples
             bool verified = publicKey.VerifyHash(hash, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
             Debug.WriteLine($"Signature verified: {verified}");
         #endregion
+#pragma warning restore SYSLIB0057 // New APIs are not supported on all versions of .NET
 
             Assert.IsTrue(verified);
 

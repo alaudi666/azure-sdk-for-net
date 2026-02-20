@@ -5,20 +5,39 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.Search.Documents.Indexes.Models
 {
-    internal partial class EntityRecognitionSkillV3 : IUtf8JsonSerializable
+    internal partial class EntityRecognitionSkillV3 : IUtf8JsonSerializable, IJsonModel<EntityRecognitionSkillV3>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<EntityRecognitionSkillV3>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<EntityRecognitionSkillV3>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<EntityRecognitionSkillV3>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(EntityRecognitionSkillV3)} does not support writing '{format}' format.");
+            }
+
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsCollectionDefined(Categories))
             {
-                writer.WritePropertyName("categories");
+                writer.WritePropertyName("categories"u8);
                 writer.WriteStartArray();
                 foreach (var item in Categories)
                 {
@@ -30,7 +49,7 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 if (DefaultLanguageCode != null)
                 {
-                    writer.WritePropertyName("defaultLanguageCode");
+                    writer.WritePropertyName("defaultLanguageCode"u8);
                     writer.WriteStringValue(DefaultLanguageCode);
                 }
                 else
@@ -42,7 +61,7 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 if (MinimumPrecision != null)
                 {
-                    writer.WritePropertyName("minimumPrecision");
+                    writer.WritePropertyName("minimumPrecision"u8);
                     writer.WriteNumberValue(MinimumPrecision.Value);
                 }
                 else
@@ -54,7 +73,7 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 if (ModelVersion != null)
                 {
-                    writer.WritePropertyName("modelVersion");
+                    writer.WritePropertyName("modelVersion"u8);
                     writer.WriteStringValue(ModelVersion);
                 }
                 else
@@ -62,59 +81,46 @@ namespace Azure.Search.Documents.Indexes.Models
                     writer.WriteNull("modelVersion");
                 }
             }
-            writer.WritePropertyName("@odata.type");
-            writer.WriteStringValue(ODataType);
-            if (Optional.IsDefined(Name))
-            {
-                writer.WritePropertyName("name");
-                writer.WriteStringValue(Name);
-            }
-            if (Optional.IsDefined(Description))
-            {
-                writer.WritePropertyName("description");
-                writer.WriteStringValue(Description);
-            }
-            if (Optional.IsDefined(Context))
-            {
-                writer.WritePropertyName("context");
-                writer.WriteStringValue(Context);
-            }
-            writer.WritePropertyName("inputs");
-            writer.WriteStartArray();
-            foreach (var item in Inputs)
-            {
-                writer.WriteObjectValue(item);
-            }
-            writer.WriteEndArray();
-            writer.WritePropertyName("outputs");
-            writer.WriteStartArray();
-            foreach (var item in Outputs)
-            {
-                writer.WriteObjectValue(item);
-            }
-            writer.WriteEndArray();
-            writer.WriteEndObject();
         }
 
-        internal static EntityRecognitionSkillV3 DeserializeEntityRecognitionSkillV3(JsonElement element)
+        EntityRecognitionSkillV3 IJsonModel<EntityRecognitionSkillV3>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<IList<string>> categories = default;
-            Optional<string> defaultLanguageCode = default;
-            Optional<double?> minimumPrecision = default;
-            Optional<string> modelVersion = default;
+            var format = options.Format == "W" ? ((IPersistableModel<EntityRecognitionSkillV3>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(EntityRecognitionSkillV3)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeEntityRecognitionSkillV3(document.RootElement, options);
+        }
+
+        internal static EntityRecognitionSkillV3 DeserializeEntityRecognitionSkillV3(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IList<string> categories = default;
+            string defaultLanguageCode = default;
+            double? minimumPrecision = default;
+            string modelVersion = default;
             string odataType = default;
-            Optional<string> name = default;
-            Optional<string> description = default;
-            Optional<string> context = default;
+            string name = default;
+            string description = default;
+            string context = default;
             IList<InputFieldMappingEntry> inputs = default;
             IList<OutputFieldMappingEntry> outputs = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("categories"))
+                if (property.NameEquals("categories"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -125,7 +131,7 @@ namespace Azure.Search.Documents.Indexes.Models
                     categories = array;
                     continue;
                 }
-                if (property.NameEquals("defaultLanguageCode"))
+                if (property.NameEquals("defaultLanguageCode"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -135,7 +141,7 @@ namespace Azure.Search.Documents.Indexes.Models
                     defaultLanguageCode = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("minimumPrecision"))
+                if (property.NameEquals("minimumPrecision"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -145,7 +151,7 @@ namespace Azure.Search.Documents.Indexes.Models
                     minimumPrecision = property.Value.GetDouble();
                     continue;
                 }
-                if (property.NameEquals("modelVersion"))
+                if (property.NameEquals("modelVersion"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -155,48 +161,111 @@ namespace Azure.Search.Documents.Indexes.Models
                     modelVersion = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("@odata.type"))
+                if (property.NameEquals("@odata.type"u8))
                 {
                     odataType = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("description"))
+                if (property.NameEquals("description"u8))
                 {
                     description = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("context"))
+                if (property.NameEquals("context"u8))
                 {
                     context = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("inputs"))
+                if (property.NameEquals("inputs"u8))
                 {
                     List<InputFieldMappingEntry> array = new List<InputFieldMappingEntry>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(InputFieldMappingEntry.DeserializeInputFieldMappingEntry(item));
+                        array.Add(InputFieldMappingEntry.DeserializeInputFieldMappingEntry(item, options));
                     }
                     inputs = array;
                     continue;
                 }
-                if (property.NameEquals("outputs"))
+                if (property.NameEquals("outputs"u8))
                 {
                     List<OutputFieldMappingEntry> array = new List<OutputFieldMappingEntry>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(OutputFieldMappingEntry.DeserializeOutputFieldMappingEntry(item));
+                        array.Add(OutputFieldMappingEntry.DeserializeOutputFieldMappingEntry(item, options));
                     }
                     outputs = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new EntityRecognitionSkillV3(odataType, name.Value, description.Value, context.Value, inputs, outputs, Optional.ToList(categories), defaultLanguageCode.Value, Optional.ToNullable(minimumPrecision), modelVersion.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new EntityRecognitionSkillV3(
+                odataType,
+                name,
+                description,
+                context,
+                inputs,
+                outputs,
+                serializedAdditionalRawData,
+                categories ?? new ChangeTrackingList<string>(),
+                defaultLanguageCode,
+                minimumPrecision,
+                modelVersion);
+        }
+
+        BinaryData IPersistableModel<EntityRecognitionSkillV3>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<EntityRecognitionSkillV3>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureSearchDocumentsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(EntityRecognitionSkillV3)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        EntityRecognitionSkillV3 IPersistableModel<EntityRecognitionSkillV3>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<EntityRecognitionSkillV3>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeEntityRecognitionSkillV3(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(EntityRecognitionSkillV3)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<EntityRecognitionSkillV3>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static new EntityRecognitionSkillV3 FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeEntityRecognitionSkillV3(document.RootElement);
+        }
+
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
+        internal override RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue(this, ModelSerializationExtensions.WireOptions);
+            return content;
         }
     }
 }

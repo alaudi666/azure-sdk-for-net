@@ -5,28 +5,39 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Nginx.Models
 {
-    /// <summary> The NginxConfigurationFile. </summary>
+    /// <summary> Nginx Configuration File. </summary>
     public partial class NginxConfigurationFile
     {
-        /// <summary> Initializes a new instance of NginxConfigurationFile. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NginxConfigurationFile"/>. </summary>
         public NginxConfigurationFile()
         {
         }
 
-        /// <summary> Initializes a new instance of NginxConfigurationFile. </summary>
+        /// <summary> Initializes a new instance of <see cref="NginxConfigurationFile"/>. </summary>
         /// <param name="content"></param>
         /// <param name="virtualPath"></param>
-        internal NginxConfigurationFile(string content, string virtualPath)
+        /// <param name="contentHash"></param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NginxConfigurationFile(string content, string virtualPath, string contentHash, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Content = content;
             VirtualPath = virtualPath;
+            ContentHash = contentHash;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets or sets the content. </summary>
+        /// <summary> Gets or sets the Content. </summary>
         public string Content { get; set; }
-        /// <summary> Gets or sets the virtual path. </summary>
+
+        /// <summary> Gets or sets the VirtualPath. </summary>
         public string VirtualPath { get; set; }
     }
 }

@@ -5,64 +5,108 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
     /// <summary> Set the connectivity, storage and workload settings. </summary>
     public partial class SqlServerConfigurationsManagementSettings
     {
-        /// <summary> Initializes a new instance of SqlServerConfigurationsManagementSettings. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SqlServerConfigurationsManagementSettings"/>. </summary>
         public SqlServerConfigurationsManagementSettings()
         {
         }
 
-        /// <summary> Initializes a new instance of SqlServerConfigurationsManagementSettings. </summary>
+        /// <summary> Initializes a new instance of <see cref="SqlServerConfigurationsManagementSettings"/>. </summary>
         /// <param name="sqlConnectivityUpdateSettings"> SQL connectivity type settings. </param>
         /// <param name="sqlWorkloadTypeUpdateSettings"> SQL workload type settings. </param>
         /// <param name="sqlStorageUpdateSettings"> SQL storage update settings. </param>
         /// <param name="additionalFeaturesServerConfigurations"> Additional SQL feature settings. </param>
         /// <param name="sqlInstanceSettings"> SQL Instance settings. </param>
-        internal SqlServerConfigurationsManagementSettings(SqlConnectivityUpdateSettings sqlConnectivityUpdateSettings, SqlWorkloadTypeUpdateSettings sqlWorkloadTypeUpdateSettings, SqlStorageUpdateSettings sqlStorageUpdateSettings, AdditionalFeaturesServerConfigurations additionalFeaturesServerConfigurations, SqlInstanceSettings sqlInstanceSettings)
+        /// <param name="azureAdAuthenticationSettings"> Azure AD authentication Settings. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SqlServerConfigurationsManagementSettings(SqlConnectivityUpdateSettings sqlConnectivityUpdateSettings, SqlWorkloadTypeUpdateSettings sqlWorkloadTypeUpdateSettings, SqlStorageUpdateSettings sqlStorageUpdateSettings, AdditionalFeaturesServerConfigurations additionalFeaturesServerConfigurations, SqlInstanceSettings sqlInstanceSettings, AADAuthenticationSettings azureAdAuthenticationSettings, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             SqlConnectivityUpdateSettings = sqlConnectivityUpdateSettings;
             SqlWorkloadTypeUpdateSettings = sqlWorkloadTypeUpdateSettings;
             SqlStorageUpdateSettings = sqlStorageUpdateSettings;
             AdditionalFeaturesServerConfigurations = additionalFeaturesServerConfigurations;
             SqlInstanceSettings = sqlInstanceSettings;
+            AzureAdAuthenticationSettings = azureAdAuthenticationSettings;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> SQL connectivity type settings. </summary>
         public SqlConnectivityUpdateSettings SqlConnectivityUpdateSettings { get; set; }
+
         /// <summary> SQL workload type settings. </summary>
         internal SqlWorkloadTypeUpdateSettings SqlWorkloadTypeUpdateSettings { get; set; }
+
+        /// <summary> SQL storage update settings. </summary>
+        public SqlStorageUpdateSettings SqlStorageUpdateSettings { get; set; }
+
+        /// <summary> Additional SQL feature settings. </summary>
+        internal AdditionalFeaturesServerConfigurations AdditionalFeaturesServerConfigurations { get; set; }
+
+        /// <summary> SQL Instance settings. </summary>
+        public SqlInstanceSettings SqlInstanceSettings { get; set; }
+
+        /// <summary> Azure AD authentication Settings. </summary>
+        internal AADAuthenticationSettings AzureAdAuthenticationSettings { get; set; }
+
         /// <summary> SQL Server workload type. </summary>
         public SqlWorkloadType? SqlWorkloadType
         {
-            get => SqlWorkloadTypeUpdateSettings is null ? default : SqlWorkloadTypeUpdateSettings.SqlWorkloadType;
+            get
+            {
+                return SqlWorkloadTypeUpdateSettings is null ? default : SqlWorkloadTypeUpdateSettings.SqlWorkloadType;
+            }
             set
             {
                 if (SqlWorkloadTypeUpdateSettings is null)
+                {
                     SqlWorkloadTypeUpdateSettings = new SqlWorkloadTypeUpdateSettings();
+                }
                 SqlWorkloadTypeUpdateSettings.SqlWorkloadType = value;
             }
         }
 
-        /// <summary> SQL storage update settings. </summary>
-        public SqlStorageUpdateSettings SqlStorageUpdateSettings { get; set; }
-        /// <summary> Additional SQL feature settings. </summary>
-        internal AdditionalFeaturesServerConfigurations AdditionalFeaturesServerConfigurations { get; set; }
         /// <summary> Enable or disable R services (SQL 2016 onwards). </summary>
         public bool? IsRServicesEnabled
         {
-            get => AdditionalFeaturesServerConfigurations is null ? default : AdditionalFeaturesServerConfigurations.IsRServicesEnabled;
+            get
+            {
+                return AdditionalFeaturesServerConfigurations is null ? default : AdditionalFeaturesServerConfigurations.IsRServicesEnabled;
+            }
             set
             {
                 if (AdditionalFeaturesServerConfigurations is null)
+                {
                     AdditionalFeaturesServerConfigurations = new AdditionalFeaturesServerConfigurations();
+                }
                 AdditionalFeaturesServerConfigurations.IsRServicesEnabled = value;
             }
         }
 
-        /// <summary> SQL Instance settings. </summary>
-        public SqlInstanceSettings SqlInstanceSettings { get; set; }
+        /// <summary> The client Id of the Managed Identity to query Microsoft Graph API. An empty string must be used for the system assigned Managed Identity. </summary>
+        public string AzureAdAuthenticationClientId
+        {
+            get
+            {
+                return AzureAdAuthenticationSettings is null ? default : AzureAdAuthenticationSettings.ClientId;
+            }
+            set
+            {
+                if (AzureAdAuthenticationSettings is null)
+                {
+                    AzureAdAuthenticationSettings = new AADAuthenticationSettings();
+                }
+                AzureAdAuthenticationSettings.ClientId = value;
+            }
+        }
     }
 }

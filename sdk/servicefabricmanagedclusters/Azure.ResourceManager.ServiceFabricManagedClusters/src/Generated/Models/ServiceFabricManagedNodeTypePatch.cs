@@ -5,22 +5,38 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Node type update request. </summary>
     public partial class ServiceFabricManagedNodeTypePatch
     {
-        /// <summary> Initializes a new instance of ServiceFabricManagedNodeTypePatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedNodeTypePatch"/>. </summary>
         public ServiceFabricManagedNodeTypePatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedNodeTypePatch"/>. </summary>
+        /// <param name="tags"> Node type update parameters. </param>
+        /// <param name="sku"> The node type sku. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ServiceFabricManagedNodeTypePatch(IDictionary<string, string> tags, NodeTypeSku sku, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Tags = tags;
+            Sku = sku;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> Node type update parameters. </summary>
         public IDictionary<string, string> Tags { get; }
+
         /// <summary> The node type sku. </summary>
         public NodeTypeSku Sku { get; set; }
     }

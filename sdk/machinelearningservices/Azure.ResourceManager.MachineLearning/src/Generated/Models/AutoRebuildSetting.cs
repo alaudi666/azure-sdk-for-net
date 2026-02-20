@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// AutoRebuild setting for the derived image
-    /// Serialized Name: AutoRebuildSetting
-    /// </summary>
+    /// <summary> AutoRebuild setting for the derived image. </summary>
     public readonly partial struct AutoRebuildSetting : IEquatable<AutoRebuildSetting>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string DisabledValue = "Disabled";
         private const string OnBaseImageUpdateValue = "OnBaseImageUpdate";
 
-        /// <summary>
-        /// Disabled
-        /// Serialized Name: AutoRebuildSetting.Disabled
-        /// </summary>
+        /// <summary> Disabled. </summary>
         public static AutoRebuildSetting Disabled { get; } = new AutoRebuildSetting(DisabledValue);
-        /// <summary>
-        /// OnBaseImageUpdate
-        /// Serialized Name: AutoRebuildSetting.OnBaseImageUpdate
-        /// </summary>
+        /// <summary> OnBaseImageUpdate. </summary>
         public static AutoRebuildSetting OnBaseImageUpdate { get; } = new AutoRebuildSetting(OnBaseImageUpdateValue);
         /// <summary> Determines if two <see cref="AutoRebuildSetting"/> values are the same. </summary>
         public static bool operator ==(AutoRebuildSetting left, AutoRebuildSetting right) => left.Equals(right);
         /// <summary> Determines if two <see cref="AutoRebuildSetting"/> values are not the same. </summary>
         public static bool operator !=(AutoRebuildSetting left, AutoRebuildSetting right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="AutoRebuildSetting"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="AutoRebuildSetting"/>. </summary>
         public static implicit operator AutoRebuildSetting(string value) => new AutoRebuildSetting(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

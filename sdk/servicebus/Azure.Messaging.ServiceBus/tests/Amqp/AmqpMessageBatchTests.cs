@@ -194,7 +194,59 @@ namespace Azure.Messaging.ServiceBus.Tests.Amqp
                 }
                 else
                 {
-                    Assert.That(batch.TryAddMessage(new ServiceBusMessage(new byte[10])), Is.True, $"The addition for index: { index } should fit and be accepted.");
+                    Assert.That(batch.TryAddMessage(new ServiceBusMessage(new byte[10])), Is.True, $"The addition for index: {index} should fit and be accepted.");
+                }
+            }
+        }
+
+        /// <summary>
+        ///   Verifies functionality of the <see cref="AmqpMessageBatch.TryAddMessage" />
+        ///   method.
+        /// </summary>
+        ///
+        [Test]
+        public void TryAdRespectsTheMaximumMessageCount()
+        {
+            var maximumCount = 5;
+            var currentIndex = -1;
+            var messages = new AmqpMessage[maximumCount + 1];
+            var mockMessage = new Mock<AmqpMessage>();
+
+            var mockMessageConverter = new InjectableMockConverter
+            {
+                BuildBatchFromAmqpMessagesHandler = (_s) => mockMessage.Object,
+                BuildAmqpMessageFromSBMessageHandler = (_s) => messages[++currentIndex]
+            };
+
+            mockMessage
+                .Setup(message => message.SerializedMessageSize)
+                .Returns(40);
+
+            var options = new CreateMessageBatchOptions
+            {
+                MaxSizeInBytes = 50000,
+                MaxMessageCount = maximumCount
+            };
+
+            for (var index = 0; index < messages.Length; ++index)
+            {
+                var size = 40;
+                var messageToAdd = new Mock<AmqpMessage>();
+                messageToAdd.Setup(messageToAdd => messageToAdd.SerializedMessageSize).Returns(size);
+                messages[index] = messageToAdd.Object;
+            }
+
+            var batch = new AmqpMessageBatch(mockMessageConverter, options);
+
+            for (var index = 0; index < messages.Length; ++index)
+            {
+                if (index == messages.Length - 1)
+                {
+                    Assert.That(batch.TryAddMessage(new ServiceBusMessage(new byte[10])), Is.False, "The final addition should not fit in the available space.");
+                }
+                else
+                {
+                    Assert.That(batch.TryAddMessage(new ServiceBusMessage(new byte[10])), Is.True, $"The addition for index: {index} should fit and be accepted.");
                 }
             }
         }
@@ -232,7 +284,7 @@ namespace Azure.Messaging.ServiceBus.Tests.Amqp
 
             for (var index = 0; index < messages.Length; ++index)
             {
-                Assert.That(batch.TryAddMessage(new ServiceBusMessage(Array.Empty<byte>())), Is.True, $"The addition for index: { index } should fit and be accepted.");
+                Assert.That(batch.TryAddMessage(new ServiceBusMessage(Array.Empty<byte>())), Is.True, $"The addition for index: {index} should fit and be accepted.");
             }
 
             Assert.That(batch.Count, Is.EqualTo(messages.Length), "The count should have been set when the batch was updated.");
@@ -300,7 +352,7 @@ namespace Azure.Messaging.ServiceBus.Tests.Amqp
 
             for (var index = 0; index < amqpMessages.Length; ++index)
             {
-                Assert.That(batchReadOnly.Contains(amqpMessages[index]), $"The message at index: { index } was not in the enumerable.");
+                Assert.That(batchReadOnly.Contains(amqpMessages[index]), $"The message at index: {index} was not in the enumerable.");
             }
         }
 
@@ -330,7 +382,7 @@ namespace Azure.Messaging.ServiceBus.Tests.Amqp
 
             for (var index = 0; index < messages.Length; ++index)
             {
-                Assert.That(batch.TryAddMessage(new ServiceBusMessage(Array.Empty<byte>())), Is.True, $"The addition for index: { index } should fit and be accepted.");
+                Assert.That(batch.TryAddMessage(new ServiceBusMessage(Array.Empty<byte>())), Is.True, $"The addition for index: {index} should fit and be accepted.");
             }
 
             Assert.That(batch.Count, Is.EqualTo(messages.Length), "The count should have been set when the batch was updated.");
@@ -365,7 +417,7 @@ namespace Azure.Messaging.ServiceBus.Tests.Amqp
 
             for (var index = 0; index < messages.Length; ++index)
             {
-                Assert.That(batch.TryAddMessage(new ServiceBusMessage(Array.Empty<byte>())), Is.True, $"The addition for index: { index } should fit and be accepted.");
+                Assert.That(batch.TryAddMessage(new ServiceBusMessage(Array.Empty<byte>())), Is.True, $"The addition for index: {index} should fit and be accepted.");
             }
 
             Assert.That(batch.SizeInBytes, Is.GreaterThan(0), "The size should have been set when the batch was updated.");
@@ -407,7 +459,7 @@ namespace Azure.Messaging.ServiceBus.Tests.Amqp
 
             for (var index = 0; index < messages.Length; ++index)
             {
-                Assert.That(batch.TryAddMessage(new ServiceBusMessage(Array.Empty<byte>())), Is.True, $"The addition for index: { index } should fit and be accepted.");
+                Assert.That(batch.TryAddMessage(new ServiceBusMessage(Array.Empty<byte>())), Is.True, $"The addition for index: {index} should fit and be accepted.");
             }
 
             Assert.That(batch.Count, Is.EqualTo(messages.Length), "The count should have been set when the batch was updated.");
@@ -452,7 +504,7 @@ namespace Azure.Messaging.ServiceBus.Tests.Amqp
 
             for (var index = 0; index < messages.Length; ++index)
             {
-                Assert.That(batch.TryAddMessage(new ServiceBusMessage(Array.Empty<byte>())), Is.True, $"The addition for index: { index } should fit and be accepted.");
+                Assert.That(batch.TryAddMessage(new ServiceBusMessage(Array.Empty<byte>())), Is.True, $"The addition for index: {index} should fit and be accepted.");
             }
 
             Assert.That(batch.SizeInBytes, Is.GreaterThan(0), "The size should have been set when the batch was updated.");

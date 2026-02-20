@@ -5,24 +5,37 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Preferences related to the Encryption. </summary>
-    internal partial class DataBoxEncryptionPreferences
+    public partial class DataBoxEncryptionPreferences
     {
-        /// <summary> Initializes a new instance of DataBoxEncryptionPreferences. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DataBoxEncryptionPreferences"/>. </summary>
         public DataBoxEncryptionPreferences()
         {
         }
 
-        /// <summary> Initializes a new instance of DataBoxEncryptionPreferences. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataBoxEncryptionPreferences"/>. </summary>
         /// <param name="doubleEncryption"> Defines secondary layer of software-based encryption enablement. </param>
-        internal DataBoxEncryptionPreferences(DataBoxDoubleEncryption? doubleEncryption)
+        /// <param name="hardwareEncryption"> Defines Hardware level encryption (Only for disk). </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DataBoxEncryptionPreferences(DataBoxDoubleEncryption? doubleEncryption, HardwareEncryption? hardwareEncryption, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             DoubleEncryption = doubleEncryption;
+            HardwareEncryption = hardwareEncryption;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Defines secondary layer of software-based encryption enablement. </summary>
         public DataBoxDoubleEncryption? DoubleEncryption { get; set; }
+
+        /// <summary> Defines Hardware level encryption (Only for disk). </summary>
+        public HardwareEncryption? HardwareEncryption { get; set; }
     }
 }

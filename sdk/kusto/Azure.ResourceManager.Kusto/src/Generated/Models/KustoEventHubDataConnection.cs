@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using Azure.Core;
-using Azure.ResourceManager.Kusto;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Kusto.Models
@@ -16,20 +15,21 @@ namespace Azure.ResourceManager.Kusto.Models
     /// <summary> Class representing an event hub data connection. </summary>
     public partial class KustoEventHubDataConnection : KustoDataConnectionData
     {
-        /// <summary> Initializes a new instance of KustoEventHubDataConnection. </summary>
+        /// <summary> Initializes a new instance of <see cref="KustoEventHubDataConnection"/>. </summary>
         public KustoEventHubDataConnection()
         {
             EventSystemProperties = new ChangeTrackingList<string>();
             Kind = DataConnectionKind.EventHub;
         }
 
-        /// <summary> Initializes a new instance of KustoEventHubDataConnection. </summary>
+        /// <summary> Initializes a new instance of <see cref="KustoEventHubDataConnection"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
         /// <param name="systemData"> The systemData. </param>
         /// <param name="location"> Resource location. </param>
         /// <param name="kind"> Kind of the endpoint for the data connection. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="eventHubResourceId"> The resource ID of the event hub to be used to create a data connection. </param>
         /// <param name="consumerGroup"> The event hub consumer group. </param>
         /// <param name="tableName"> The table where the data should be ingested. Optionally the table information can be added to each message. </param>
@@ -42,7 +42,7 @@ namespace Azure.ResourceManager.Kusto.Models
         /// <param name="managedIdentityObjectId"> The object ID of the managedIdentityResourceId. </param>
         /// <param name="databaseRouting"> Indication for database routing information from the data connection, by default only database routing information is allowed. </param>
         /// <param name="retrievalStartOn"> When defined, the data connection retrieves existing Event hub events created since the Retrieval start date. It can only retrieve events retained by the Event hub, based on its retention period. </param>
-        internal KustoEventHubDataConnection(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, AzureLocation? location, DataConnectionKind kind, ResourceIdentifier eventHubResourceId, string consumerGroup, string tableName, string mappingRuleName, KustoEventHubDataFormat? dataFormat, IList<string> eventSystemProperties, EventHubMessagesCompressionType? compression, KustoProvisioningState? provisioningState, ResourceIdentifier managedIdentityResourceId, Guid? managedIdentityObjectId, KustoDatabaseRouting? databaseRouting, DateTimeOffset? retrievalStartOn) : base(id, name, resourceType, systemData, location, kind)
+        internal KustoEventHubDataConnection(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, AzureLocation? location, DataConnectionKind kind, IDictionary<string, BinaryData> serializedAdditionalRawData, ResourceIdentifier eventHubResourceId, string consumerGroup, string tableName, string mappingRuleName, KustoEventHubDataFormat? dataFormat, IList<string> eventSystemProperties, EventHubMessagesCompressionType? compression, KustoProvisioningState? provisioningState, ResourceIdentifier managedIdentityResourceId, Guid? managedIdentityObjectId, KustoDatabaseRouting? databaseRouting, DateTimeOffset? retrievalStartOn) : base(id, name, resourceType, systemData, location, kind, serializedAdditionalRawData)
         {
             EventHubResourceId = eventHubResourceId;
             ConsumerGroup = consumerGroup;
@@ -60,28 +60,40 @@ namespace Azure.ResourceManager.Kusto.Models
         }
 
         /// <summary> The resource ID of the event hub to be used to create a data connection. </summary>
+        [WirePath("properties.eventHubResourceId")]
         public ResourceIdentifier EventHubResourceId { get; set; }
         /// <summary> The event hub consumer group. </summary>
+        [WirePath("properties.consumerGroup")]
         public string ConsumerGroup { get; set; }
         /// <summary> The table where the data should be ingested. Optionally the table information can be added to each message. </summary>
+        [WirePath("properties.tableName")]
         public string TableName { get; set; }
         /// <summary> The mapping rule to be used to ingest the data. Optionally the mapping information can be added to each message. </summary>
+        [WirePath("properties.mappingRuleName")]
         public string MappingRuleName { get; set; }
         /// <summary> The data format of the message. Optionally the data format can be added to each message. </summary>
+        [WirePath("properties.dataFormat")]
         public KustoEventHubDataFormat? DataFormat { get; set; }
         /// <summary> System properties of the event hub. </summary>
+        [WirePath("properties.eventSystemProperties")]
         public IList<string> EventSystemProperties { get; }
         /// <summary> The event hub messages compression type. </summary>
+        [WirePath("properties.compression")]
         public EventHubMessagesCompressionType? Compression { get; set; }
         /// <summary> The provisioned state of the resource. </summary>
+        [WirePath("properties.provisioningState")]
         public KustoProvisioningState? ProvisioningState { get; }
         /// <summary> The resource ID of a managed identity (system or user assigned) to be used to authenticate with event hub. </summary>
+        [WirePath("properties.managedIdentityResourceId")]
         public ResourceIdentifier ManagedIdentityResourceId { get; set; }
         /// <summary> The object ID of the managedIdentityResourceId. </summary>
+        [WirePath("properties.managedIdentityObjectId")]
         public Guid? ManagedIdentityObjectId { get; }
         /// <summary> Indication for database routing information from the data connection, by default only database routing information is allowed. </summary>
+        [WirePath("properties.databaseRouting")]
         public KustoDatabaseRouting? DatabaseRouting { get; set; }
         /// <summary> When defined, the data connection retrieves existing Event hub events created since the Retrieval start date. It can only retrieve events retained by the Event hub, based on its retention period. </summary>
+        [WirePath("properties.retrievalStartDate")]
         public DateTimeOffset? RetrievalStartOn { get; set; }
     }
 }

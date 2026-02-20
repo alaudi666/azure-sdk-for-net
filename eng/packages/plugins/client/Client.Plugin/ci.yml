@@ -1,0 +1,55 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - eng/packages/plugins/client/Client.Plugin
+      - eng/packages/http-client-csharp
+pr:
+  branches:
+    include:
+      - main
+      - feature/*
+      - hotfix/*
+      - release/*
+  paths:
+    include:
+      - eng/packages/plugins/client/Client.Plugin
+      - eng/packages/http-client-csharp
+
+variables:
+  - template: /eng/pipelines/templates/variables/image.yml
+  - template: /eng/pipelines/templates/variables/globals.yml
+
+extends:
+  template: /eng/pipelines/templates/stages/1es-redirect.yml
+  parameters:
+    stages:
+    - stage: Build
+      displayName: 'Build'
+      pool:
+        name: $(LINUXPOOL)
+        image: $(LINUXVMIMAGE)
+        os: linux
+      jobs:
+      - job: Build
+        steps:
+        - template: /eng/common/pipelines/templates/steps/sparse-checkout.yml
+          parameters:
+            Paths:
+              - "/sdk"
+              - "/common"
+        - template: /eng/pipelines/templates/steps/install-dotnet.yml
+        - pwsh: |
+            dotnet build .
+          displayName: 'Build client plugin'
+          workingDirectory: eng/packages/plugins/client/Client.Plugin
+        - pwsh: |
+            dotnet test . --no-build
+          displayName: 'Test client plugin'
+          workingDirectory: eng/packages/plugins/client/Client.Plugin
+        - pwsh: |
+            ./eng/packages/plugins/client/eng/scripts/Regenerate-Sdk.ps1
+          displayName: 'Regenerate libraries using plugin and verify no diff'
+

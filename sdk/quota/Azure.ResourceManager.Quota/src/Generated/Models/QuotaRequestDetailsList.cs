@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Quota;
 
 namespace Azure.ResourceManager.Quota.Models
@@ -14,24 +15,33 @@ namespace Azure.ResourceManager.Quota.Models
     /// <summary> Quota request information. </summary>
     internal partial class QuotaRequestDetailsList
     {
-        /// <summary> Initializes a new instance of QuotaRequestDetailsList. </summary>
-        internal QuotaRequestDetailsList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="QuotaRequestDetailsList"/>. </summary>
+        /// <param name="value"> The QuotaRequestDetails items on this page. </param>
+        internal QuotaRequestDetailsList(IEnumerable<QuotaRequestDetailData> value)
         {
-            Value = new ChangeTrackingList<QuotaRequestDetailData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of QuotaRequestDetailsList. </summary>
-        /// <param name="value"> Quota request details. </param>
-        /// <param name="nextLink"> The URI for fetching the next page of quota limits. When there are no more pages, this string is null. </param>
-        internal QuotaRequestDetailsList(IReadOnlyList<QuotaRequestDetailData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="QuotaRequestDetailsList"/>. </summary>
+        /// <param name="value"> The QuotaRequestDetails items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal QuotaRequestDetailsList(IList<QuotaRequestDetailData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Quota request details. </summary>
-        public IReadOnlyList<QuotaRequestDetailData> Value { get; }
-        /// <summary> The URI for fetching the next page of quota limits. When there are no more pages, this string is null. </summary>
-        public string NextLink { get; }
+        /// <summary> The QuotaRequestDetails items on this page. </summary>
+        [WirePath("value")]
+        public IList<QuotaRequestDetailData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        [WirePath("nextLink")]
+        public Uri NextLink { get; }
     }
 }

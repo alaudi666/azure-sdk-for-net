@@ -71,8 +71,8 @@ namespace Azure.Communication.PhoneNumbers.SipRouting
 
         internal static SipConfiguration DeserializeSipConfiguration(JsonElement element)
         {
-            Optional<IReadOnlyDictionary<string, SipTrunk>> trunks = default;
-            Optional<IReadOnlyList<SipTrunkRoute>> routes = default;
+            IReadOnlyDictionary<string, SipTrunk> trunks = default;
+            IReadOnlyList<SipTrunkRoute> routes = default;
             foreach (var property in element.EnumerateObject())
             {
                 if (property.NameEquals("trunks"))
@@ -82,7 +82,7 @@ namespace Azure.Communication.PhoneNumbers.SipRouting
                         property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    Dictionary<string,SipTrunk> dictionary = new Dictionary<string, SipTrunk>();
+                    Dictionary<string, SipTrunk> dictionary = new Dictionary<string, SipTrunk>();
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
                         if (property0.Value.ValueKind == JsonValueKind.Null)
@@ -117,7 +117,7 @@ namespace Azure.Communication.PhoneNumbers.SipRouting
                     continue;
                 }
             }
-            return new SipConfiguration(Optional.ToDictionary(trunks), Optional.ToList(routes));
+            return new SipConfiguration(trunks ?? new ChangeTrackingDictionary<string, SipTrunk>(), routes ?? new ChangeTrackingList<SipTrunkRoute>());
         }
     }
 }

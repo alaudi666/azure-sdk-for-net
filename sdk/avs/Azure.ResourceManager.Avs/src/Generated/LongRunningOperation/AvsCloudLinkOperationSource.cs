@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Avs
 {
-    internal class AvsCloudLinkOperationSource : IOperationSource<AvsCloudLinkResource>
+    /// <summary></summary>
+    internal partial class AvsCloudLinkOperationSource : IOperationSource<AvsCloudLinkResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal AvsCloudLinkOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         AvsCloudLinkResource IOperationSource<AvsCloudLinkResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = AvsCloudLinkData.DeserializeAvsCloudLinkData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            AvsCloudLinkData data = AvsCloudLinkData.DeserializeAvsCloudLinkData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new AvsCloudLinkResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<AvsCloudLinkResource> IOperationSource<AvsCloudLinkResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = AvsCloudLinkData.DeserializeAvsCloudLinkData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            AvsCloudLinkData data = AvsCloudLinkData.DeserializeAvsCloudLinkData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new AvsCloudLinkResource(_client, data);
         }
     }

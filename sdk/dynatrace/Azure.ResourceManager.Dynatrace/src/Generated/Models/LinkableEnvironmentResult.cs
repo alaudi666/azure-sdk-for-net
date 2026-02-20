@@ -5,31 +5,41 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Dynatrace.Models
 {
     /// <summary> Response for getting all the linkable environments. </summary>
     public partial class LinkableEnvironmentResult
     {
-        /// <summary> Initializes a new instance of LinkableEnvironmentResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="LinkableEnvironmentResult"/>. </summary>
         internal LinkableEnvironmentResult()
         {
         }
 
-        /// <summary> Initializes a new instance of LinkableEnvironmentResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="LinkableEnvironmentResult"/>. </summary>
         /// <param name="environmentId"> environment id for which user is an admin. </param>
         /// <param name="environmentName"> Name of the environment. </param>
         /// <param name="planData"> Billing plan information. </param>
-        internal LinkableEnvironmentResult(string environmentId, string environmentName, DynatraceBillingPlanInfo planData)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal LinkableEnvironmentResult(string environmentId, string environmentName, DynatraceBillingPlanInfo planData, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             EnvironmentId = environmentId;
             EnvironmentName = environmentName;
             PlanData = planData;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> environment id for which user is an admin. </summary>
         public string EnvironmentId { get; }
+
         /// <summary> Name of the environment. </summary>
         public string EnvironmentName { get; }
+
         /// <summary> Billing plan information. </summary>
         public DynatraceBillingPlanInfo PlanData { get; }
     }

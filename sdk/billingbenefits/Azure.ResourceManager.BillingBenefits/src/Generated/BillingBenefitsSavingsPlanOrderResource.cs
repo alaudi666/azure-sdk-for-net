@@ -9,10 +9,8 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.BillingBenefits.Models;
 using Azure.ResourceManager.Resources;
 
@@ -20,13 +18,14 @@ namespace Azure.ResourceManager.BillingBenefits
 {
     /// <summary>
     /// A Class representing a BillingBenefitsSavingsPlanOrder along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="BillingBenefitsSavingsPlanOrderResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetBillingBenefitsSavingsPlanOrderResource method.
-    /// Otherwise you can get one from its parent resource <see cref="TenantResource" /> using the GetBillingBenefitsSavingsPlanOrder method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="BillingBenefitsSavingsPlanOrderResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetBillingBenefitsSavingsPlanOrderResource method.
+    /// Otherwise you can get one from its parent resource <see cref="TenantResource"/> using the GetBillingBenefitsSavingsPlanOrder method.
     /// </summary>
     public partial class BillingBenefitsSavingsPlanOrderResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="BillingBenefitsSavingsPlanOrderResource"/> instance. </summary>
+        /// <param name="savingsPlanOrderId"> The savingsPlanOrderId. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string savingsPlanOrderId)
         {
             var resourceId = $"/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}";
@@ -37,12 +36,15 @@ namespace Azure.ResourceManager.BillingBenefits
         private readonly SavingsPlanOrderRestOperations _billingBenefitsSavingsPlanOrderSavingsPlanOrderRestClient;
         private readonly BillingBenefitsSavingsPlanOrderData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.BillingBenefits/savingsPlanOrders";
+
         /// <summary> Initializes a new instance of the <see cref="BillingBenefitsSavingsPlanOrderResource"/> class for mocking. </summary>
         protected BillingBenefitsSavingsPlanOrderResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "BillingBenefitsSavingsPlanOrderResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="BillingBenefitsSavingsPlanOrderResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal BillingBenefitsSavingsPlanOrderResource(ArmClient client, BillingBenefitsSavingsPlanOrderData data) : this(client, data.Id)
@@ -63,9 +65,6 @@ namespace Azure.ResourceManager.BillingBenefits
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.BillingBenefits/savingsPlanOrders";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -92,19 +91,35 @@ namespace Azure.ResourceManager.BillingBenefits
         /// <returns> An object representing collection of BillingBenefitsSavingsPlanResources and their operations over a BillingBenefitsSavingsPlanResource. </returns>
         public virtual BillingBenefitsSavingsPlanCollection GetBillingBenefitsSavingsPlans()
         {
-            return GetCachedClient(Client => new BillingBenefitsSavingsPlanCollection(Client, Id));
+            return GetCachedClient(client => new BillingBenefitsSavingsPlanCollection(client, Id));
         }
 
         /// <summary>
         /// Get savings plan.
-        /// Request Path: /providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}
-        /// Operation Id: SavingsPlan_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SavingsPlan_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingBenefitsSavingsPlanResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="savingsPlanId"> ID of the savings plan. </param>
         /// <param name="expand"> May be used to expand the detail information of some properties. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="savingsPlanId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="savingsPlanId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="savingsPlanId"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual async Task<Response<BillingBenefitsSavingsPlanResource>> GetBillingBenefitsSavingsPlanAsync(string savingsPlanId, string expand = null, CancellationToken cancellationToken = default)
         {
@@ -113,14 +128,30 @@ namespace Azure.ResourceManager.BillingBenefits
 
         /// <summary>
         /// Get savings plan.
-        /// Request Path: /providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}
-        /// Operation Id: SavingsPlan_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SavingsPlan_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingBenefitsSavingsPlanResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="savingsPlanId"> ID of the savings plan. </param>
         /// <param name="expand"> May be used to expand the detail information of some properties. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="savingsPlanId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="savingsPlanId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="savingsPlanId"/> is an empty string, and was expected to be non-empty. </exception>
         [ForwardsClientCalls]
         public virtual Response<BillingBenefitsSavingsPlanResource> GetBillingBenefitsSavingsPlan(string savingsPlanId, string expand = null, CancellationToken cancellationToken = default)
         {
@@ -129,8 +160,24 @@ namespace Azure.ResourceManager.BillingBenefits
 
         /// <summary>
         /// Get a savings plan order.
-        /// Request Path: /providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}
-        /// Operation Id: SavingsPlanOrder_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SavingsPlanOrder_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingBenefitsSavingsPlanOrderResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="expand"> May be used to expand the detail information of some properties. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -154,8 +201,24 @@ namespace Azure.ResourceManager.BillingBenefits
 
         /// <summary>
         /// Get a savings plan order.
-        /// Request Path: /providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}
-        /// Operation Id: SavingsPlanOrder_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SavingsPlanOrder_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingBenefitsSavingsPlanOrderResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="expand"> May be used to expand the detail information of some properties. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -179,8 +242,24 @@ namespace Azure.ResourceManager.BillingBenefits
 
         /// <summary>
         /// Elevate as owner on savings plan order based on billing permissions.
-        /// Request Path: /providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/elevate
-        /// Operation Id: SavingsPlanOrder_Elevate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/elevate</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SavingsPlanOrder_Elevate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingBenefitsSavingsPlanOrderResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual async Task<Response<BillingBenefitsRoleAssignmentEntity>> ElevateAsync(CancellationToken cancellationToken = default)
@@ -201,8 +280,24 @@ namespace Azure.ResourceManager.BillingBenefits
 
         /// <summary>
         /// Elevate as owner on savings plan order based on billing permissions.
-        /// Request Path: /providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/elevate
-        /// Operation Id: SavingsPlanOrder_Elevate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/elevate</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SavingsPlanOrder_Elevate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingBenefitsSavingsPlanOrderResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         public virtual Response<BillingBenefitsRoleAssignmentEntity> Elevate(CancellationToken cancellationToken = default)

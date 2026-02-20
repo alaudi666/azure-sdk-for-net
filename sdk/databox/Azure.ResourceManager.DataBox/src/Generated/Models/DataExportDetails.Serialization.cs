@@ -5,57 +5,162 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class DataExportDetails : IUtf8JsonSerializable
+    /// <summary> Details of the data to be used for exporting data from azure. </summary>
+    public partial class DataExportDetails : IJsonModel<DataExportDetails>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="DataExportDetails"/> for deserialization. </summary>
+        internal DataExportDetails()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DataExportDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataExportDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDataExportDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DataExportDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DataExportDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("transferConfiguration");
-            writer.WriteObjectValue(TransferConfiguration);
-            if (Optional.IsDefined(LogCollectionLevel))
-            {
-                writer.WritePropertyName("logCollectionLevel");
-                writer.WriteStringValue(LogCollectionLevel.Value.ToSerialString());
-            }
-            writer.WritePropertyName("accountDetails");
-            writer.WriteObjectValue(AccountDetails);
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static DataExportDetails DeserializeDataExportDetails(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            TransferConfiguration transferConfiguration = default;
-            Optional<LogCollectionLevel> logCollectionLevel = default;
-            DataAccountDetails accountDetails = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DataExportDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("transferConfiguration"))
+                throw new FormatException($"The model {nameof(DataExportDetails)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("transferConfiguration"u8);
+            writer.WriteObjectValue(TransferConfiguration, options);
+            if (Optional.IsDefined(LogCollectionLevel))
+            {
+                writer.WritePropertyName("logCollectionLevel"u8);
+                writer.WriteStringValue(LogCollectionLevel.Value.ToSerialString());
+            }
+            writer.WritePropertyName("accountDetails"u8);
+            writer.WriteObjectValue(AccountDetails, options);
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    transferConfiguration = TransferConfiguration.DeserializeTransferConfiguration(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("logCollectionLevel"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    logCollectionLevel = property.Value.GetString().ToLogCollectionLevel();
-                    continue;
-                }
-                if (property.NameEquals("accountDetails"))
-                {
-                    accountDetails = DataAccountDetails.DeserializeDataAccountDetails(property.Value);
-                    continue;
+#endif
                 }
             }
-            return new DataExportDetails(transferConfiguration, Optional.ToNullable(logCollectionLevel), accountDetails);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataExportDetails IJsonModel<DataExportDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DataExportDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataExportDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DataExportDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDataExportDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DataExportDetails DeserializeDataExportDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            TransferConfiguration transferConfiguration = default;
+            LogCollectionLevel? logCollectionLevel = default;
+            DataAccountDetails accountDetails = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("transferConfiguration"u8))
+                {
+                    transferConfiguration = TransferConfiguration.DeserializeTransferConfiguration(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("logCollectionLevel"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    logCollectionLevel = prop.Value.GetString().ToLogCollectionLevel();
+                    continue;
+                }
+                if (prop.NameEquals("accountDetails"u8))
+                {
+                    accountDetails = DataAccountDetails.DeserializeDataAccountDetails(prop.Value, options);
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new DataExportDetails(transferConfiguration, logCollectionLevel, accountDetails, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DataExportDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DataExportDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DataExportDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DataExportDetails IPersistableModel<DataExportDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DataExportDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

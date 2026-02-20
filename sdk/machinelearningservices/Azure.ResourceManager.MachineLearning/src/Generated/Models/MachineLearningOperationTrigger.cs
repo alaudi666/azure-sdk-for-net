@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Trigger of operation.
-    /// Serialized Name: OperationTrigger
-    /// </summary>
+    /// <summary> Trigger of operation. </summary>
     public readonly partial struct MachineLearningOperationTrigger : IEquatable<MachineLearningOperationTrigger>
     {
         private readonly string _value;
@@ -29,26 +26,17 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string ScheduleValue = "Schedule";
         private const string IdleShutdownValue = "IdleShutdown";
 
-        /// <summary>
-        /// User
-        /// Serialized Name: OperationTrigger.User
-        /// </summary>
+        /// <summary> User. </summary>
         public static MachineLearningOperationTrigger User { get; } = new MachineLearningOperationTrigger(UserValue);
-        /// <summary>
-        /// Schedule
-        /// Serialized Name: OperationTrigger.Schedule
-        /// </summary>
+        /// <summary> Schedule. </summary>
         public static MachineLearningOperationTrigger Schedule { get; } = new MachineLearningOperationTrigger(ScheduleValue);
-        /// <summary>
-        /// IdleShutdown
-        /// Serialized Name: OperationTrigger.IdleShutdown
-        /// </summary>
+        /// <summary> IdleShutdown. </summary>
         public static MachineLearningOperationTrigger IdleShutdown { get; } = new MachineLearningOperationTrigger(IdleShutdownValue);
         /// <summary> Determines if two <see cref="MachineLearningOperationTrigger"/> values are the same. </summary>
         public static bool operator ==(MachineLearningOperationTrigger left, MachineLearningOperationTrigger right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningOperationTrigger"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningOperationTrigger left, MachineLearningOperationTrigger right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningOperationTrigger"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningOperationTrigger"/>. </summary>
         public static implicit operator MachineLearningOperationTrigger(string value) => new MachineLearningOperationTrigger(value);
 
         /// <inheritdoc />
@@ -59,7 +47,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

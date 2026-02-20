@@ -5,44 +5,55 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
+using Azure.ResourceManager.SqlVirtualMachine;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
     /// <summary> A load balancer configuration for an availability group listener. </summary>
     public partial class AvailabilityGroupListenerLoadBalancerConfiguration
     {
-        /// <summary> Initializes a new instance of AvailabilityGroupListenerLoadBalancerConfiguration. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AvailabilityGroupListenerLoadBalancerConfiguration"/>. </summary>
         public AvailabilityGroupListenerLoadBalancerConfiguration()
         {
             SqlVmInstances = new ChangeTrackingList<ResourceIdentifier>();
         }
 
-        /// <summary> Initializes a new instance of AvailabilityGroupListenerLoadBalancerConfiguration. </summary>
+        /// <summary> Initializes a new instance of <see cref="AvailabilityGroupListenerLoadBalancerConfiguration"/>. </summary>
         /// <param name="privateIPAddress"> Private IP address. </param>
         /// <param name="publicIPAddressResourceId"> Resource id of the public IP. </param>
         /// <param name="loadBalancerResourceId"> Resource id of the load balancer. </param>
         /// <param name="probePort"> Probe port. </param>
-        /// <param name="sqlVmInstances"> List of the SQL virtual machine instance resource id&apos;s that are enrolled into the availability group listener. </param>
-        internal AvailabilityGroupListenerLoadBalancerConfiguration(AvailabilityGroupListenerPrivateIPAddress privateIPAddress, ResourceIdentifier publicIPAddressResourceId, ResourceIdentifier loadBalancerResourceId, int? probePort, IList<ResourceIdentifier> sqlVmInstances)
+        /// <param name="sqlVmInstances"> List of the SQL virtual machine instance resource id's that are enrolled into the availability group listener. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal AvailabilityGroupListenerLoadBalancerConfiguration(AvailabilityGroupListenerPrivateIPAddress privateIPAddress, ResourceIdentifier publicIPAddressResourceId, ResourceIdentifier loadBalancerResourceId, int? probePort, IList<ResourceIdentifier> sqlVmInstances, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             PrivateIPAddress = privateIPAddress;
             PublicIPAddressResourceId = publicIPAddressResourceId;
             LoadBalancerResourceId = loadBalancerResourceId;
             ProbePort = probePort;
             SqlVmInstances = sqlVmInstances;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Private IP address. </summary>
         public AvailabilityGroupListenerPrivateIPAddress PrivateIPAddress { get; set; }
+
         /// <summary> Resource id of the public IP. </summary>
         public ResourceIdentifier PublicIPAddressResourceId { get; set; }
+
         /// <summary> Resource id of the load balancer. </summary>
         public ResourceIdentifier LoadBalancerResourceId { get; set; }
+
         /// <summary> Probe port. </summary>
         public int? ProbePort { get; set; }
-        /// <summary> List of the SQL virtual machine instance resource id&apos;s that are enrolled into the availability group listener. </summary>
+
+        /// <summary> List of the SQL virtual machine instance resource id's that are enrolled into the availability group listener. </summary>
         public IList<ResourceIdentifier> SqlVmInstances { get; }
     }
 }

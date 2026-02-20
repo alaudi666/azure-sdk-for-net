@@ -6,25 +6,29 @@
 #nullable disable
 
 using System;
-using Azure;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the PeerExpressRouteCircuitConnection data model. </summary>
+    /// <summary>
+    /// A class representing the PeerExpressRouteCircuitConnection data model.
+    /// Peer Express Route Circuit Connection in an ExpressRouteCircuitPeering resource.
+    /// </summary>
     public partial class PeerExpressRouteCircuitConnectionData : NetworkResourceData
     {
-        /// <summary> Initializes a new instance of PeerExpressRouteCircuitConnectionData. </summary>
+        /// <summary> Initializes a new instance of <see cref="PeerExpressRouteCircuitConnectionData"/>. </summary>
         public PeerExpressRouteCircuitConnectionData()
         {
         }
 
-        /// <summary> Initializes a new instance of PeerExpressRouteCircuitConnectionData. </summary>
+        /// <summary> Initializes a new instance of <see cref="PeerExpressRouteCircuitConnectionData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="expressRouteCircuitPeering"> Reference to Express Route Circuit Private Peering Resource of the circuit. </param>
         /// <param name="peerExpressRouteCircuitPeering"> Reference to Express Route Circuit Private Peering Resource of the peered circuit. </param>
@@ -33,7 +37,7 @@ namespace Azure.ResourceManager.Network
         /// <param name="connectionName"> The name of the express route circuit connection resource. </param>
         /// <param name="authResourceGuid"> The resource guid of the authorization used for the express route circuit connection. </param>
         /// <param name="provisioningState"> The provisioning state of the peer express route circuit connection resource. </param>
-        internal PeerExpressRouteCircuitConnectionData(ResourceIdentifier id, string name, ResourceType? resourceType, ETag? etag, WritableSubResource expressRouteCircuitPeering, WritableSubResource peerExpressRouteCircuitPeering, string addressPrefix, CircuitConnectionStatus? circuitConnectionStatus, string connectionName, Guid? authResourceGuid, NetworkProvisioningState? provisioningState) : base(id, name, resourceType)
+        internal PeerExpressRouteCircuitConnectionData(ResourceIdentifier id, string name, ResourceType? resourceType, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, WritableSubResource expressRouteCircuitPeering, WritableSubResource peerExpressRouteCircuitPeering, string addressPrefix, CircuitConnectionStatus? circuitConnectionStatus, string connectionName, Guid? authResourceGuid, NetworkProvisioningState? provisioningState) : base(id, name, resourceType, serializedAdditionalRawData)
         {
             ETag = etag;
             ExpressRouteCircuitPeering = expressRouteCircuitPeering;
@@ -46,10 +50,12 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> Reference to Express Route Circuit Private Peering Resource of the circuit. </summary>
         internal WritableSubResource ExpressRouteCircuitPeering { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.expressRouteCircuitPeering.id")]
         public ResourceIdentifier ExpressRouteCircuitPeeringId
         {
             get => ExpressRouteCircuitPeering is null ? default : ExpressRouteCircuitPeering.Id;
@@ -64,6 +70,7 @@ namespace Azure.ResourceManager.Network
         /// <summary> Reference to Express Route Circuit Private Peering Resource of the peered circuit. </summary>
         internal WritableSubResource PeerExpressRouteCircuitPeering { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.peerExpressRouteCircuitPeering.id")]
         public ResourceIdentifier PeerExpressRouteCircuitPeeringId
         {
             get => PeerExpressRouteCircuitPeering is null ? default : PeerExpressRouteCircuitPeering.Id;
@@ -76,14 +83,19 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> /29 IP address space to carve out Customer addresses for tunnels. </summary>
+        [WirePath("properties.addressPrefix")]
         public string AddressPrefix { get; set; }
         /// <summary> Express Route Circuit connection state. </summary>
+        [WirePath("properties.circuitConnectionStatus")]
         public CircuitConnectionStatus? CircuitConnectionStatus { get; }
         /// <summary> The name of the express route circuit connection resource. </summary>
+        [WirePath("properties.connectionName")]
         public string ConnectionName { get; set; }
         /// <summary> The resource guid of the authorization used for the express route circuit connection. </summary>
+        [WirePath("properties.authResourceGuid")]
         public Guid? AuthResourceGuid { get; set; }
         /// <summary> The provisioning state of the peer express route circuit connection resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
     }
 }

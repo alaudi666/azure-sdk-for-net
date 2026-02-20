@@ -7,24 +7,29 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Schedule availability for given sku in a region. </summary>
     internal partial class ScheduleAvailabilityResponse
     {
-        /// <summary> Initializes a new instance of ScheduleAvailabilityResponse. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ScheduleAvailabilityResponse"/>. </summary>
         internal ScheduleAvailabilityResponse()
         {
             AvailableDates = new ChangeTrackingList<DateTimeOffset>();
         }
 
-        /// <summary> Initializes a new instance of ScheduleAvailabilityResponse. </summary>
+        /// <summary> Initializes a new instance of <see cref="ScheduleAvailabilityResponse"/>. </summary>
         /// <param name="availableDates"> List of dates available to schedule. </param>
-        internal ScheduleAvailabilityResponse(IReadOnlyList<DateTimeOffset> availableDates)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ScheduleAvailabilityResponse(IReadOnlyList<DateTimeOffset> availableDates, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             AvailableDates = availableDates;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> List of dates available to schedule. </summary>

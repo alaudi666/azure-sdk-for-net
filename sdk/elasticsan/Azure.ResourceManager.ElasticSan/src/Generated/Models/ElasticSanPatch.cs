@@ -5,25 +5,107 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.ElasticSan;
 
 namespace Azure.ResourceManager.ElasticSan.Models
 {
     /// <summary> Response for ElasticSan update request. </summary>
     public partial class ElasticSanPatch
     {
-        /// <summary> Initializes a new instance of ElasticSanPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ElasticSanPatch"/>. </summary>
         public ElasticSanPatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="ElasticSanPatch"/>. </summary>
+        /// <param name="properties"> Properties of ElasticSan. </param>
+        /// <param name="tags"> Update tags. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ElasticSanPatch(ElasticSanUpdateProperties properties, IDictionary<string, string> tags, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Properties = properties;
+            Tags = tags;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> Properties of ElasticSan. </summary>
+        internal ElasticSanUpdateProperties Properties { get; set; }
+
         /// <summary> Update tags. </summary>
         public IDictionary<string, string> Tags { get; }
+
         /// <summary> Base size of the Elastic San appliance in TiB. </summary>
-        public long? BaseSizeTiB { get; set; }
+        public long? BaseSizeTiB
+        {
+            get
+            {
+                return Properties is null ? default : Properties.BaseSizeTiB;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ElasticSanUpdateProperties();
+                }
+                Properties.BaseSizeTiB = value.Value;
+            }
+        }
+
         /// <summary> Extended size of the Elastic San appliance in TiB. </summary>
-        public long? ExtendedCapacitySizeTiB { get; set; }
+        public long? ExtendedCapacitySizeTiB
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ExtendedCapacitySizeTiB;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ElasticSanUpdateProperties();
+                }
+                Properties.ExtendedCapacitySizeTiB = value.Value;
+            }
+        }
+
+        /// <summary> Allow or disallow public network access to ElasticSan Account. Value is optional but if passed in, must be 'Enabled' or 'Disabled'. </summary>
+        public ElasticSanPublicNetworkAccess? PublicNetworkAccess
+        {
+            get
+            {
+                return Properties is null ? default : Properties.PublicNetworkAccess;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ElasticSanUpdateProperties();
+                }
+                Properties.PublicNetworkAccess = value.Value;
+            }
+        }
+
+        /// <summary> Scale up settings on Elastic San Appliance. </summary>
+        public ElasticSanScaleUpProperties ScaleUpProperties
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ScaleUpProperties;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ElasticSanUpdateProperties();
+                }
+                Properties.ScaleUpProperties = value;
+            }
+        }
     }
 }

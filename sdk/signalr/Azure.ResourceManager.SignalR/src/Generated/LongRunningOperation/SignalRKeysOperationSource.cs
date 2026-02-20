@@ -14,18 +14,32 @@ using Azure.ResourceManager.SignalR.Models;
 
 namespace Azure.ResourceManager.SignalR
 {
-    internal class SignalRKeysOperationSource : IOperationSource<SignalRKeys>
+    /// <summary></summary>
+    internal partial class SignalRKeysOperationSource : IOperationSource<SignalRKeys>
     {
-        SignalRKeys IOperationSource<SignalRKeys>.CreateResult(Response response, CancellationToken cancellationToken)
+        /// <summary></summary>
+        internal SignalRKeysOperationSource()
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            return SignalRKeys.DeserializeSignalRKeys(document.RootElement);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
+        SignalRKeys IOperationSource<SignalRKeys>.CreateResult(Response response, CancellationToken cancellationToken)
+        {
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            SignalRKeys result = SignalRKeys.DeserializeSignalRKeys(document.RootElement, ModelSerializationExtensions.WireOptions);
+            return result;
+        }
+
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<SignalRKeys> IOperationSource<SignalRKeys>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            return SignalRKeys.DeserializeSignalRKeys(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            SignalRKeys result = SignalRKeys.DeserializeSignalRKeys(document.RootElement, ModelSerializationExtensions.WireOptions);
+            return result;
         }
     }
 }

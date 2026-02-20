@@ -5,19 +5,26 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.SignalR;
+
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Resource log category configuration of a Microsoft.SignalRService resource. </summary>
     public partial class SignalRResourceLogCategory
     {
-        /// <summary> Initializes a new instance of SignalRResourceLogCategory. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRResourceLogCategory"/>. </summary>
         public SignalRResourceLogCategory()
         {
         }
 
-        /// <summary> Initializes a new instance of SignalRResourceLogCategory. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRResourceLogCategory"/>. </summary>
         /// <param name="name">
-        /// Gets or sets the resource log category&apos;s name.
+        /// Gets or sets the resource log category's name.
         /// Available values: ConnectivityLogs, MessagingLogs.
         /// Case insensitive.
         /// </param>
@@ -26,23 +33,28 @@ namespace Azure.ResourceManager.SignalR.Models
         /// Available values: true, false.
         /// Case insensitive.
         /// </param>
-        internal SignalRResourceLogCategory(string name, string enabled)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRResourceLogCategory(string name, string enabled, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Name = name;
             Enabled = enabled;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary>
-        /// Gets or sets the resource log category&apos;s name.
+        /// Gets or sets the resource log category's name.
         /// Available values: ConnectivityLogs, MessagingLogs.
         /// Case insensitive.
         /// </summary>
+        [WirePath("name")]
         public string Name { get; set; }
+
         /// <summary>
         /// Indicates whether or the resource log category is enabled.
         /// Available values: true, false.
         /// Case insensitive.
         /// </summary>
+        [WirePath("enabled")]
         public string Enabled { get; set; }
     }
 }

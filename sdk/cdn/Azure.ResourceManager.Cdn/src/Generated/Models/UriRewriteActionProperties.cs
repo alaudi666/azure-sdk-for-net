@@ -6,48 +6,54 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
     /// <summary> Defines the parameters for the url rewrite action. </summary>
-    public partial class UriRewriteActionProperties
+    public partial class UriRewriteActionProperties : DeliveryRuleActionProperties
     {
-        /// <summary> Initializes a new instance of UriRewriteActionProperties. </summary>
-        /// <param name="actionType"></param>
+        /// <summary> Initializes a new instance of <see cref="UriRewriteActionProperties"/>. </summary>
         /// <param name="sourcePattern"> define a request URI pattern that identifies the type of requests that may be rewritten. If value is blank, all strings are matched. </param>
         /// <param name="destination"> Define the relative URL to which the above requests will be rewritten by. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="sourcePattern"/> or <paramref name="destination"/> is null. </exception>
-        public UriRewriteActionProperties(UriRewriteActionType actionType, string sourcePattern, string destination)
+        public UriRewriteActionProperties(string sourcePattern, string destination)
         {
             Argument.AssertNotNull(sourcePattern, nameof(sourcePattern));
             Argument.AssertNotNull(destination, nameof(destination));
 
-            ActionType = actionType;
             SourcePattern = sourcePattern;
             Destination = destination;
+            TypeName = DeliveryRuleActionParametersType.DeliveryRuleUriRewriteActionParameters;
         }
 
-        /// <summary> Initializes a new instance of UriRewriteActionProperties. </summary>
-        /// <param name="actionType"></param>
+        /// <summary> Initializes a new instance of <see cref="UriRewriteActionProperties"/>. </summary>
+        /// <param name="typeName"></param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="sourcePattern"> define a request URI pattern that identifies the type of requests that may be rewritten. If value is blank, all strings are matched. </param>
         /// <param name="destination"> Define the relative URL to which the above requests will be rewritten by. </param>
         /// <param name="preserveUnmatchedPath"> Whether to preserve unmatched path. Default value is true. </param>
-        internal UriRewriteActionProperties(UriRewriteActionType actionType, string sourcePattern, string destination, bool? preserveUnmatchedPath)
+        internal UriRewriteActionProperties(DeliveryRuleActionParametersType typeName, IDictionary<string, BinaryData> serializedAdditionalRawData, string sourcePattern, string destination, bool? preserveUnmatchedPath) : base(typeName, serializedAdditionalRawData)
         {
-            ActionType = actionType;
             SourcePattern = sourcePattern;
             Destination = destination;
             PreserveUnmatchedPath = preserveUnmatchedPath;
+            TypeName = typeName;
         }
 
-        /// <summary> Gets or sets the action type. </summary>
-        public UriRewriteActionType ActionType { get; set; }
+        /// <summary> Initializes a new instance of <see cref="UriRewriteActionProperties"/> for deserialization. </summary>
+        internal UriRewriteActionProperties()
+        {
+        }
+
         /// <summary> define a request URI pattern that identifies the type of requests that may be rewritten. If value is blank, all strings are matched. </summary>
+        [WirePath("sourcePattern")]
         public string SourcePattern { get; set; }
         /// <summary> Define the relative URL to which the above requests will be rewritten by. </summary>
+        [WirePath("destination")]
         public string Destination { get; set; }
         /// <summary> Whether to preserve unmatched path. Default value is true. </summary>
+        [WirePath("preserveUnmatchedPath")]
         public bool? PreserveUnmatchedPath { get; set; }
     }
 }

@@ -6,31 +6,24 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Command Job limit class.
-    /// Serialized Name: CommandJobLimits
-    /// </summary>
+    /// <summary> Command Job limit class. </summary>
     public partial class MachineLearningCommandJobLimits : MachineLearningJobLimits
     {
-        /// <summary> Initializes a new instance of MachineLearningCommandJobLimits. </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningCommandJobLimits"/>. </summary>
         public MachineLearningCommandJobLimits()
         {
             JobLimitsType = JobLimitsType.Command;
         }
 
-        /// <summary> Initializes a new instance of MachineLearningCommandJobLimits. </summary>
-        /// <param name="jobLimitsType">
-        /// [Required] JobLimit type.
-        /// Serialized Name: JobLimits.jobLimitsType
-        /// </param>
-        /// <param name="timeout">
-        /// The max run duration in ISO 8601 format, after which the job will be cancelled. Only supports duration with precision as low as Seconds.
-        /// Serialized Name: JobLimits.timeout
-        /// </param>
-        internal MachineLearningCommandJobLimits(JobLimitsType jobLimitsType, TimeSpan? timeout) : base(jobLimitsType, timeout)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningCommandJobLimits"/>. </summary>
+        /// <param name="jobLimitsType"> [Required] JobLimit type. </param>
+        /// <param name="timeout"> The max run duration in ISO 8601 format, after which the job will be cancelled. Only supports duration with precision as low as Seconds. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal MachineLearningCommandJobLimits(JobLimitsType jobLimitsType, TimeSpan? timeout, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(jobLimitsType, timeout, serializedAdditionalRawData)
         {
             JobLimitsType = jobLimitsType;
         }

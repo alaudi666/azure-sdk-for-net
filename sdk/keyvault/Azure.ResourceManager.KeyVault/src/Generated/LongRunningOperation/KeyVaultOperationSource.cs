@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.KeyVault
 {
-    internal class KeyVaultOperationSource : IOperationSource<KeyVaultResource>
+    /// <summary></summary>
+    internal partial class KeyVaultOperationSource : IOperationSource<KeyVaultResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal KeyVaultOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         KeyVaultResource IOperationSource<KeyVaultResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = KeyVaultData.DeserializeKeyVaultData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            KeyVaultData data = KeyVaultData.DeserializeKeyVaultData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new KeyVaultResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<KeyVaultResource> IOperationSource<KeyVaultResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = KeyVaultData.DeserializeKeyVaultData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            KeyVaultData data = KeyVaultData.DeserializeKeyVaultData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new KeyVaultResource(_client, data);
         }
     }

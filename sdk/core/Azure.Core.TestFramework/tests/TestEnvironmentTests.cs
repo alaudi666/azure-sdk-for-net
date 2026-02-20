@@ -7,11 +7,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
-using Azure.Core.Serialization;
-using Azure.Core.TestFramework;
-using Moq;
 using NUnit.Framework;
 
 namespace Azure.Core.TestFramework.Tests
@@ -45,7 +41,9 @@ namespace Azure.Core.TestFramework.Tests
                     { "CORE_TENANT_ID", "7" }
                 };
                 byte[] bytes = JsonSerializer.SerializeToUtf8Bytes(envFile, typeof(Dictionary<string, string>));
+#pragma warning disable CA1416 // Platform is checked in if statement
                 bytes = ProtectedData.Protect(bytes, null, DataProtectionScope.CurrentUser);
+#pragma warning restore CA1416
                 stream.Write(bytes, 0, bytes.Length);
             }
         }

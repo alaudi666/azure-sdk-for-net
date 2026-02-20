@@ -5,31 +5,41 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.StorageSync.Models
 {
     /// <summary> Files not syncing error object. </summary>
     public partial class ServerEndpointFilesNotSyncingError
     {
-        /// <summary> Initializes a new instance of ServerEndpointFilesNotSyncingError. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ServerEndpointFilesNotSyncingError"/>. </summary>
         internal ServerEndpointFilesNotSyncingError()
         {
         }
 
-        /// <summary> Initializes a new instance of ServerEndpointFilesNotSyncingError. </summary>
+        /// <summary> Initializes a new instance of <see cref="ServerEndpointFilesNotSyncingError"/>. </summary>
         /// <param name="errorCode"> Error code (HResult). </param>
         /// <param name="persistentCount"> Count of persistent files not syncing with the specified error code. </param>
         /// <param name="transientCount"> Count of transient files not syncing with the specified error code. </param>
-        internal ServerEndpointFilesNotSyncingError(int? errorCode, long? persistentCount, long? transientCount)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ServerEndpointFilesNotSyncingError(int? errorCode, long? persistentCount, long? transientCount, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ErrorCode = errorCode;
             PersistentCount = persistentCount;
             TransientCount = transientCount;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Error code (HResult). </summary>
         public int? ErrorCode { get; }
+
         /// <summary> Count of persistent files not syncing with the specified error code. </summary>
         public long? PersistentCount { get; }
+
         /// <summary> Count of transient files not syncing with the specified error code. </summary>
         public long? TransientCount { get; }
     }

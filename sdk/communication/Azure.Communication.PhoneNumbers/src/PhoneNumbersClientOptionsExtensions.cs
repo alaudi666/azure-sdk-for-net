@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Azure.Core;
 using Azure.Communication.Pipeline;
+using Azure.Core;
 using Azure.Core.Pipeline;
 
 namespace Azure.Communication.PhoneNumbers
@@ -23,7 +23,8 @@ namespace Azure.Communication.PhoneNumbers
                     new MSUserAgentPolicy()
                 }
             };
-            return HttpPipelineBuilder.Build(pipelineOptions);
+            HttpPipelineTransportOptions httpPipelineTransportOptions = new() { IsClientRedirectEnabled = true };
+            return HttpPipelineBuilder.Build(pipelineOptions, httpPipelineTransportOptions);
         }
 
         public static HttpPipeline BuildPhoneNumbersHttpPipeline(this ClientOptions options, AzureKeyCredential keyCredential)
@@ -37,7 +38,8 @@ namespace Azure.Communication.PhoneNumbers
                     new MSUserAgentPolicy()
                 }
             };
-            return HttpPipelineBuilder.Build(pipelineOptions);
+            HttpPipelineTransportOptions httpPipelineTransportOptions = new() { IsClientRedirectEnabled = true };
+            return HttpPipelineBuilder.Build(pipelineOptions, httpPipelineTransportOptions);
         }
 
         public static HttpPipeline BuildPhoneNumbersHttpPipeline(this ClientOptions options, TokenCredential tokenCredential)

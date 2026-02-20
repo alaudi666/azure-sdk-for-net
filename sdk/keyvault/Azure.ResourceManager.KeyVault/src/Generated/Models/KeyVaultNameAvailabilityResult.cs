@@ -5,32 +5,46 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.KeyVault;
+
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> The CheckNameAvailability operation response. </summary>
     public partial class KeyVaultNameAvailabilityResult
     {
-        /// <summary> Initializes a new instance of KeyVaultNameAvailabilityResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="KeyVaultNameAvailabilityResult"/>. </summary>
         internal KeyVaultNameAvailabilityResult()
         {
         }
 
-        /// <summary> Initializes a new instance of KeyVaultNameAvailabilityResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="KeyVaultNameAvailabilityResult"/>. </summary>
         /// <param name="nameAvailable"> A boolean value that indicates whether the name is available for you to use. If true, the name is available. If false, the name has already been taken or is invalid and cannot be used. </param>
         /// <param name="reason"> The reason that a vault name could not be used. The Reason element is only returned if NameAvailable is false. </param>
         /// <param name="message"> An error message explaining the Reason value in more detail. </param>
-        internal KeyVaultNameAvailabilityResult(bool? nameAvailable, KeyVaultNameUnavailableReason? reason, string message)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal KeyVaultNameAvailabilityResult(bool? nameAvailable, KeyVaultNameUnavailableReason? reason, string message, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             NameAvailable = nameAvailable;
             Reason = reason;
             Message = message;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> A boolean value that indicates whether the name is available for you to use. If true, the name is available. If false, the name has already been taken or is invalid and cannot be used. </summary>
+        [WirePath("nameAvailable")]
         public bool? NameAvailable { get; }
+
         /// <summary> The reason that a vault name could not be used. The Reason element is only returned if NameAvailable is false. </summary>
+        [WirePath("reason")]
         public KeyVaultNameUnavailableReason? Reason { get; }
+
         /// <summary> An error message explaining the Reason value in more detail. </summary>
+        [WirePath("message")]
         public string Message { get; }
     }
 }

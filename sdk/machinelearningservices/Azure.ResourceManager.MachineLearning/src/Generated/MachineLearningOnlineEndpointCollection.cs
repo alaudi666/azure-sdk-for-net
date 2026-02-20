@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.MachineLearning.Models;
 
 namespace Azure.ResourceManager.MachineLearning
 {
     /// <summary>
-    /// A class representing a collection of <see cref="MachineLearningOnlineEndpointResource" /> and their operations.
-    /// Each <see cref="MachineLearningOnlineEndpointResource" /> in the collection will belong to the same instance of <see cref="MachineLearningWorkspaceResource" />.
-    /// To get a <see cref="MachineLearningOnlineEndpointCollection" /> instance call the GetMachineLearningOnlineEndpoints method from an instance of <see cref="MachineLearningWorkspaceResource" />.
+    /// A class representing a collection of <see cref="MachineLearningOnlineEndpointResource"/> and their operations.
+    /// Each <see cref="MachineLearningOnlineEndpointResource"/> in the collection will belong to the same instance of <see cref="MachineLearningWorkspaceResource"/>.
+    /// To get a <see cref="MachineLearningOnlineEndpointCollection"/> instance call the GetMachineLearningOnlineEndpoints method from an instance of <see cref="MachineLearningWorkspaceResource"/>.
     /// </summary>
     public partial class MachineLearningOnlineEndpointCollection : ArmCollection, IEnumerable<MachineLearningOnlineEndpointResource>, IAsyncEnumerable<MachineLearningOnlineEndpointResource>
     {
@@ -56,8 +54,24 @@ namespace Azure.ResourceManager.MachineLearning
 
         /// <summary>
         /// Create or update Online Endpoint (asynchronous).
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}
-        /// Operation Id: OnlineEndpoints_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>OnlineEndpoints_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MachineLearningOnlineEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="endpointName"> Online Endpoint name. </param>
@@ -75,7 +89,7 @@ namespace Azure.ResourceManager.MachineLearning
             try
             {
                 var response = await _machineLearningOnlineEndpointOnlineEndpointsRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, endpointName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new MachineLearningArmOperation<MachineLearningOnlineEndpointResource>(new MachineLearningOnlineEndpointOperationSource(Client), _machineLearningOnlineEndpointOnlineEndpointsClientDiagnostics, Pipeline, _machineLearningOnlineEndpointOnlineEndpointsRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, endpointName, data).Request, response, OperationFinalStateVia.Location);
+                var operation = new MachineLearningArmOperation<MachineLearningOnlineEndpointResource>(new MachineLearningOnlineEndpointOperationSource(Client), _machineLearningOnlineEndpointOnlineEndpointsClientDiagnostics, Pipeline, _machineLearningOnlineEndpointOnlineEndpointsRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, endpointName, data).Request, response, OperationFinalStateVia.OriginalUri);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -89,8 +103,24 @@ namespace Azure.ResourceManager.MachineLearning
 
         /// <summary>
         /// Create or update Online Endpoint (asynchronous).
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}
-        /// Operation Id: OnlineEndpoints_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>OnlineEndpoints_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MachineLearningOnlineEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="endpointName"> Online Endpoint name. </param>
@@ -108,7 +138,7 @@ namespace Azure.ResourceManager.MachineLearning
             try
             {
                 var response = _machineLearningOnlineEndpointOnlineEndpointsRestClient.CreateOrUpdate(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, endpointName, data, cancellationToken);
-                var operation = new MachineLearningArmOperation<MachineLearningOnlineEndpointResource>(new MachineLearningOnlineEndpointOperationSource(Client), _machineLearningOnlineEndpointOnlineEndpointsClientDiagnostics, Pipeline, _machineLearningOnlineEndpointOnlineEndpointsRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, endpointName, data).Request, response, OperationFinalStateVia.Location);
+                var operation = new MachineLearningArmOperation<MachineLearningOnlineEndpointResource>(new MachineLearningOnlineEndpointOperationSource(Client), _machineLearningOnlineEndpointOnlineEndpointsClientDiagnostics, Pipeline, _machineLearningOnlineEndpointOnlineEndpointsRestClient.CreateCreateOrUpdateRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, endpointName, data).Request, response, OperationFinalStateVia.OriginalUri);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -122,8 +152,24 @@ namespace Azure.ResourceManager.MachineLearning
 
         /// <summary>
         /// Get Online Endpoint.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}
-        /// Operation Id: OnlineEndpoints_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>OnlineEndpoints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MachineLearningOnlineEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="endpointName"> Online Endpoint name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -151,8 +197,24 @@ namespace Azure.ResourceManager.MachineLearning
 
         /// <summary>
         /// Get Online Endpoint.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}
-        /// Operation Id: OnlineEndpoints_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>OnlineEndpoints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MachineLearningOnlineEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="endpointName"> Online Endpoint name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -180,106 +242,90 @@ namespace Azure.ResourceManager.MachineLearning
 
         /// <summary>
         /// List Online Endpoints.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints
-        /// Operation Id: OnlineEndpoints_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>OnlineEndpoints_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MachineLearningOnlineEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="name"> Name of the endpoint. </param>
-        /// <param name="count"> Number of endpoints to be retrieved in a page of results. </param>
-        /// <param name="computeType"> EndpointComputeType to be filtered by. </param>
-        /// <param name="skip"> Continuation token for pagination. </param>
-        /// <param name="tags"> A set of tags with which to filter the returned models. It is a comma separated string of tags key or tags key=value. Example: tagKey1,tagKey2,tagKey3=value3 . </param>
-        /// <param name="properties"> A set of properties with which to filter the returned models. It is a comma separated string of properties key and/or properties key=value Example: propKey1,propKey2,propKey3=value3 . </param>
-        /// <param name="orderBy"> The option to order the response. </param>
+        /// <param name="options"> A property bag which contains all the parameters of this method except the LRO qualifier and request context parameter. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="MachineLearningOnlineEndpointResource" /> that may take multiple service requests to iterate over. </returns>
-        public virtual AsyncPageable<MachineLearningOnlineEndpointResource> GetAllAsync(string name = null, int? count = null, MachineLearningEndpointComputeType? computeType = null, string skip = null, string tags = null, string properties = null, MachineLearningOrderString? orderBy = null, CancellationToken cancellationToken = default)
+        /// <returns> An async collection of <see cref="MachineLearningOnlineEndpointResource"/> that may take multiple service requests to iterate over. </returns>
+        public virtual AsyncPageable<MachineLearningOnlineEndpointResource> GetAllAsync(MachineLearningOnlineEndpointCollectionGetAllOptions options, CancellationToken cancellationToken = default)
         {
-            async Task<Page<MachineLearningOnlineEndpointResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _machineLearningOnlineEndpointOnlineEndpointsClientDiagnostics.CreateScope("MachineLearningOnlineEndpointCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _machineLearningOnlineEndpointOnlineEndpointsRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, name, count, computeType, skip, tags, properties, orderBy, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new MachineLearningOnlineEndpointResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<MachineLearningOnlineEndpointResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _machineLearningOnlineEndpointOnlineEndpointsClientDiagnostics.CreateScope("MachineLearningOnlineEndpointCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _machineLearningOnlineEndpointOnlineEndpointsRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, name, count, computeType, skip, tags, properties, orderBy, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new MachineLearningOnlineEndpointResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            options ??= new MachineLearningOnlineEndpointCollectionGetAllOptions();
+
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _machineLearningOnlineEndpointOnlineEndpointsRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, options.Name, options.Count, options.ComputeType, options.Skip, options.Tags, options.Properties, options.OrderBy);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _machineLearningOnlineEndpointOnlineEndpointsRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, options.Name, options.Count, options.ComputeType, options.Skip, options.Tags, options.Properties, options.OrderBy);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new MachineLearningOnlineEndpointResource(Client, MachineLearningOnlineEndpointData.DeserializeMachineLearningOnlineEndpointData(e)), _machineLearningOnlineEndpointOnlineEndpointsClientDiagnostics, Pipeline, "MachineLearningOnlineEndpointCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// List Online Endpoints.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints
-        /// Operation Id: OnlineEndpoints_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>OnlineEndpoints_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MachineLearningOnlineEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="name"> Name of the endpoint. </param>
-        /// <param name="count"> Number of endpoints to be retrieved in a page of results. </param>
-        /// <param name="computeType"> EndpointComputeType to be filtered by. </param>
-        /// <param name="skip"> Continuation token for pagination. </param>
-        /// <param name="tags"> A set of tags with which to filter the returned models. It is a comma separated string of tags key or tags key=value. Example: tagKey1,tagKey2,tagKey3=value3 . </param>
-        /// <param name="properties"> A set of properties with which to filter the returned models. It is a comma separated string of properties key and/or properties key=value Example: propKey1,propKey2,propKey3=value3 . </param>
-        /// <param name="orderBy"> The option to order the response. </param>
+        /// <param name="options"> A property bag which contains all the parameters of this method except the LRO qualifier and request context parameter. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="MachineLearningOnlineEndpointResource" /> that may take multiple service requests to iterate over. </returns>
-        public virtual Pageable<MachineLearningOnlineEndpointResource> GetAll(string name = null, int? count = null, MachineLearningEndpointComputeType? computeType = null, string skip = null, string tags = null, string properties = null, MachineLearningOrderString? orderBy = null, CancellationToken cancellationToken = default)
+        /// <returns> A collection of <see cref="MachineLearningOnlineEndpointResource"/> that may take multiple service requests to iterate over. </returns>
+        public virtual Pageable<MachineLearningOnlineEndpointResource> GetAll(MachineLearningOnlineEndpointCollectionGetAllOptions options, CancellationToken cancellationToken = default)
         {
-            Page<MachineLearningOnlineEndpointResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _machineLearningOnlineEndpointOnlineEndpointsClientDiagnostics.CreateScope("MachineLearningOnlineEndpointCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _machineLearningOnlineEndpointOnlineEndpointsRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, name, count, computeType, skip, tags, properties, orderBy, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new MachineLearningOnlineEndpointResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<MachineLearningOnlineEndpointResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _machineLearningOnlineEndpointOnlineEndpointsClientDiagnostics.CreateScope("MachineLearningOnlineEndpointCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _machineLearningOnlineEndpointOnlineEndpointsRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, name, count, computeType, skip, tags, properties, orderBy, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new MachineLearningOnlineEndpointResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            options ??= new MachineLearningOnlineEndpointCollectionGetAllOptions();
+
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _machineLearningOnlineEndpointOnlineEndpointsRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, options.Name, options.Count, options.ComputeType, options.Skip, options.Tags, options.Properties, options.OrderBy);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _machineLearningOnlineEndpointOnlineEndpointsRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, options.Name, options.Count, options.ComputeType, options.Skip, options.Tags, options.Properties, options.OrderBy);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new MachineLearningOnlineEndpointResource(Client, MachineLearningOnlineEndpointData.DeserializeMachineLearningOnlineEndpointData(e)), _machineLearningOnlineEndpointOnlineEndpointsClientDiagnostics, Pipeline, "MachineLearningOnlineEndpointCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}
-        /// Operation Id: OnlineEndpoints_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>OnlineEndpoints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MachineLearningOnlineEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="endpointName"> Online Endpoint name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -305,8 +351,24 @@ namespace Azure.ResourceManager.MachineLearning
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}
-        /// Operation Id: OnlineEndpoints_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>OnlineEndpoints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MachineLearningOnlineEndpointResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="endpointName"> Online Endpoint name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -330,19 +392,109 @@ namespace Azure.ResourceManager.MachineLearning
             }
         }
 
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>OnlineEndpoints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MachineLearningOnlineEndpointResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="endpointName"> Online Endpoint name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="endpointName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="endpointName"/> is null. </exception>
+        public virtual async Task<NullableResponse<MachineLearningOnlineEndpointResource>> GetIfExistsAsync(string endpointName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(endpointName, nameof(endpointName));
+
+            using var scope = _machineLearningOnlineEndpointOnlineEndpointsClientDiagnostics.CreateScope("MachineLearningOnlineEndpointCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _machineLearningOnlineEndpointOnlineEndpointsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, endpointName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<MachineLearningOnlineEndpointResource>(response.GetRawResponse());
+                return Response.FromValue(new MachineLearningOnlineEndpointResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.MachineLearningServices/workspaces/{workspaceName}/onlineEndpoints/{endpointName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>OnlineEndpoints_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="MachineLearningOnlineEndpointResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="endpointName"> Online Endpoint name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="endpointName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="endpointName"/> is null. </exception>
+        public virtual NullableResponse<MachineLearningOnlineEndpointResource> GetIfExists(string endpointName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(endpointName, nameof(endpointName));
+
+            using var scope = _machineLearningOnlineEndpointOnlineEndpointsClientDiagnostics.CreateScope("MachineLearningOnlineEndpointCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _machineLearningOnlineEndpointOnlineEndpointsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, endpointName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<MachineLearningOnlineEndpointResource>(response.GetRawResponse());
+                return Response.FromValue(new MachineLearningOnlineEndpointResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
         IEnumerator<MachineLearningOnlineEndpointResource> IEnumerable<MachineLearningOnlineEndpointResource>.GetEnumerator()
         {
-            return GetAll().GetEnumerator();
+            return GetAll(options: null).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return GetAll().GetEnumerator();
+            return GetAll(options: null).GetEnumerator();
         }
 
         IAsyncEnumerator<MachineLearningOnlineEndpointResource> IAsyncEnumerable<MachineLearningOnlineEndpointResource>.GetAsyncEnumerator(CancellationToken cancellationToken)
         {
-            return GetAllAsync(cancellationToken: cancellationToken).GetAsyncEnumerator(cancellationToken);
+            return GetAllAsync(options: null, cancellationToken: cancellationToken).GetAsyncEnumerator(cancellationToken);
         }
     }
 }

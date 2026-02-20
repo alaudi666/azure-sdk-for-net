@@ -3,11 +3,11 @@
 
 using System;
 using System.Threading.Tasks;
-using Azure.Core.TestFramework;
+using Azure.Analytics.Synapse.Artifacts.Models;
 using Azure.Analytics.Synapse.Tests;
+using Azure.Core.TestFramework;
 using Azure.Identity;
 using NUnit.Framework;
-using Azure.Analytics.Synapse.Artifacts.Models;
 
 namespace Azure.Analytics.Synapse.Artifacts.Samples
 {
@@ -20,7 +20,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Samples
 #if SNIPPET
             // Replace the string below with your actual endpoint url.
             string endpoint = "<my-endpoint-url>";
-            
+
             // Replace the string below with your actual datalake endpoint url.
             string dataLakeEndpoint = "<my-datalake-url>";
 #else

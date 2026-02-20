@@ -3,6 +3,7 @@
 
 using System;
 using System.Threading.Tasks;
+using Azure.Identity;
 using NUnit.Framework;
 
 namespace Azure.Messaging.ServiceBus.Tests.Samples
@@ -16,20 +17,22 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
             {
                 #region Snippet:ServiceBusCompleteMessage
 #if SNIPPET
-                string connectionString = "<connection_string>";
+                string fullyQualifiedNamespace = "<fully_qualified_namespace>";
                 string queueName = "<queue_name>";
-#else
-                string connectionString = TestEnvironment.ServiceBusConnectionString;
-                string queueName = scope.QueueName;
-#endif
-                // since ServiceBusClient implements IAsyncDisposable we create it with "await using"
-                await using var client = new ServiceBusClient(connectionString);
 
+                // since ServiceBusClient implements IAsyncDisposable we create it with "await using"
+                await using ServiceBusClient client = new(fullyQualifiedNamespace, new DefaultAzureCredential());
+#else
+                string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
+                string queueName = scope.QueueName;
+
+                await using ServiceBusClient client = new(fullyQualifiedNamespace, TestEnvironment.Credential);
+#endif
                 // create the sender
                 ServiceBusSender sender = client.CreateSender(queueName);
 
                 // create a message that we can send
-                ServiceBusMessage message = new ServiceBusMessage("Hello world!");
+                ServiceBusMessage message = new("Hello world!");
 
                 // send the message
                 await sender.SendMessageAsync(message);
@@ -43,7 +46,9 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
                 // complete the message, thereby deleting it from the service
                 await receiver.CompleteMessageAsync(receivedMessage);
                 #endregion
-                Assert.IsNull(await CreateNoRetryClient().CreateReceiver(queueName).ReceiveMessageAsync());
+                await using var noRetryClient = CreateNoRetryClient();
+                await using var receiver2 = noRetryClient.CreateReceiver(queueName);
+                Assert.IsNull(await receiver2.ReceiveMessageAsync());
             }
         }
 
@@ -52,16 +57,16 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
         {
             await using (var scope = await ServiceBusScope.CreateWithQueue(enablePartitioning: false, enableSession: false))
             {
-                string connectionString = TestEnvironment.ServiceBusConnectionString;
+                string fullQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
                 string queueName = scope.QueueName;
                 // since ServiceBusClient implements IAsyncDisposable we create it with "await using"
-                await using var client = new ServiceBusClient(connectionString);
+                await using ServiceBusClient client = new(fullQualifiedNamespace, TestEnvironment.Credential);
 
                 // create the sender
                 ServiceBusSender sender = client.CreateSender(queueName);
 
                 // create a message that we can send
-                ServiceBusMessage message = new ServiceBusMessage("Hello world!");
+                ServiceBusMessage message = new("Hello world!");
 
                 // send the message
                 await sender.SendMessageAsync(message);
@@ -75,7 +80,9 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
                 // abandon the message, thereby releasing the lock and allowing it to be received again by this or other receivers
                 await receiver.AbandonMessageAsync(receivedMessage);
                 #endregion
-                Assert.IsNotNull(CreateNoRetryClient().CreateReceiver(queueName).ReceiveMessageAsync());
+                await using var noRetryClient = CreateNoRetryClient();
+                await using var receiver2 = noRetryClient.CreateReceiver(queueName);
+                Assert.IsNotNull(await receiver2.ReceiveMessageAsync());
             }
         }
 
@@ -84,16 +91,16 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
         {
             await using (var scope = await ServiceBusScope.CreateWithQueue(enablePartitioning: false, enableSession: false))
             {
-                string connectionString = TestEnvironment.ServiceBusConnectionString;
+                string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
                 string queueName = scope.QueueName;
                 // since ServiceBusClient implements IAsyncDisposable we create it with "await using"
-                await using var client = new ServiceBusClient(connectionString);
+                await using var client = new ServiceBusClient(fullyQualifiedNamespace, TestEnvironment.Credential);
 
                 // create the sender
                 ServiceBusSender sender = client.CreateSender(queueName);
 
                 // create a message that we can send
-                ServiceBusMessage message = new ServiceBusMessage("Hello world!");
+                ServiceBusMessage message = new("Hello world!");
 
                 // send the message
                 await sender.SendMessageAsync(message);
@@ -121,16 +128,16 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
         {
             await using (var scope = await ServiceBusScope.CreateWithQueue(enablePartitioning: false, enableSession: false))
             {
-                string connectionString = TestEnvironment.ServiceBusConnectionString;
+                string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
                 string queueName = scope.QueueName;
                 // since ServiceBusClient implements IAsyncDisposable we create it with "await using"
-                await using var client = new ServiceBusClient(connectionString);
+                await using ServiceBusClient client = new(fullyQualifiedNamespace, TestEnvironment.Credential);
 
                 // create the sender
                 ServiceBusSender sender = client.CreateSender(queueName);
 
                 // create a message that we can send
-                ServiceBusMessage message = new ServiceBusMessage("Hello world!");
+                ServiceBusMessage message = new("Hello world!");
 
                 // send the message
                 await sender.SendMessageAsync(message);
@@ -168,16 +175,16 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
         {
             await using (var scope = await ServiceBusScope.CreateWithQueue(enablePartitioning: false, enableSession: false))
             {
-                string connectionString = TestEnvironment.ServiceBusConnectionString;
+                string fullyQualifiedNamespace = TestEnvironment.FullyQualifiedNamespace;
                 string queueName = scope.QueueName;
                 // since ServiceBusClient implements IAsyncDisposable we create it with "await using"
-                await using var client = new ServiceBusClient(connectionString);
+                await using ServiceBusClient client = new(fullyQualifiedNamespace, TestEnvironment.Credential);
 
                 // create the sender
                 ServiceBusSender sender = client.CreateSender(queueName);
 
                 // create a message that we can send
-                ServiceBusMessage message = new ServiceBusMessage("Hello world!");
+                ServiceBusMessage message = new("Hello world!");
 
                 // send the message
                 await sender.SendMessageAsync(message);
@@ -198,7 +205,9 @@ namespace Azure.Messaging.ServiceBus.Tests.Samples
                 // complete the message, thereby deleting it from the service
                 await receiver.CompleteMessageAsync(receivedMessage);
                 #endregion
-                Assert.IsNull(await CreateNoRetryClient().CreateReceiver(queueName).ReceiveMessageAsync());
+                await using var noRetryClient = CreateNoRetryClient();
+                await using var receiver2 = noRetryClient.CreateReceiver(queueName);
+                Assert.IsNull(await receiver2.ReceiveMessageAsync());
             }
         }
     }

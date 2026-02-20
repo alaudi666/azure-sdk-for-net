@@ -174,7 +174,7 @@ namespace Azure.Storage.Files.Shares
             if (!string.IsNullOrEmpty(uri.AbsolutePath))
             {
                 // If path starts with a slash, remove it
-                var path = uri.GetPath();
+                var path = string.Concat(uri.GetPath(), uri.Fragment);
 
                 var startIndex = 0;
 
@@ -232,7 +232,7 @@ namespace Azure.Storage.Files.Shares
 
             if (paramsMap.ContainsKey(Constants.Sas.Parameters.Version))
             {
-                Sas = SasQueryParametersInternals.Create(paramsMap);
+                Sas = new ShareSasQueryParameters(paramsMap);
             }
 
             Query = paramsMap.ToString();
@@ -288,7 +288,7 @@ namespace Azure.Storage.Files.Shares
             if (!string.IsNullOrWhiteSpace(ShareName))
             {
                 path.Append('/').Append(ShareName);
-                if (!string.IsNullOrWhiteSpace(_directoryOrFilePath))
+                if (!string.IsNullOrEmpty(_directoryOrFilePath))
                 {
                     path.Append('/').Append(_directoryOrFilePath.EscapePath());
                 }
@@ -298,13 +298,15 @@ namespace Azure.Storage.Files.Shares
             var query = new StringBuilder(Query);
             if (!string.IsNullOrWhiteSpace(Snapshot))
             {
-                if (query.Length > 0) { query.Append('&'); }
+                if (query.Length > 0)
+                { query.Append('&'); }
                 query.Append(Constants.File.SnapshotParameterName).Append('=').Append(Snapshot);
             }
             var sas = Sas?.ToString();
             if (!string.IsNullOrWhiteSpace(sas))
             {
-                if (query.Length > 0) { query.Append('&'); }
+                if (query.Length > 0)
+                { query.Append('&'); }
                 query.Append(sas);
             }
 

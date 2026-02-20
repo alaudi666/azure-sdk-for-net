@@ -6,113 +6,264 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
-    public partial class ServerEndpointSyncSessionStatus
+    /// <summary> Sync Session status object. </summary>
+    public partial class ServerEndpointSyncSessionStatus : IJsonModel<ServerEndpointSyncSessionStatus>
     {
-        internal static ServerEndpointSyncSessionStatus DeserializeServerEndpointSyncSessionStatus(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServerEndpointSyncSessionStatus PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<int> lastSyncResult = default;
-            Optional<DateTimeOffset> lastSyncTimestamp = default;
-            Optional<DateTimeOffset> lastSyncSuccessTimestamp = default;
-            Optional<long> lastSyncPerItemErrorCount = default;
-            Optional<long> persistentFilesNotSyncingCount = default;
-            Optional<long> transientFilesNotSyncingCount = default;
-            Optional<IReadOnlyList<ServerEndpointFilesNotSyncingError>> filesNotSyncingErrors = default;
-            Optional<ServerEndpointSyncMode> lastSyncMode = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointSyncSessionStatus>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("lastSyncResult"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        return DeserializeServerEndpointSyncSessionStatus(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ServerEndpointSyncSessionStatus)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ServerEndpointSyncSessionStatus>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointSyncSessionStatus>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServerEndpointSyncSessionStatus)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(LastSyncResult))
+            {
+                writer.WritePropertyName("lastSyncResult"u8);
+                writer.WriteNumberValue(LastSyncResult.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(LastSyncTimestamp))
+            {
+                writer.WritePropertyName("lastSyncTimestamp"u8);
+                writer.WriteStringValue(LastSyncTimestamp.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(LastSyncSuccessTimestamp))
+            {
+                writer.WritePropertyName("lastSyncSuccessTimestamp"u8);
+                writer.WriteStringValue(LastSyncSuccessTimestamp.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(LastSyncPerItemErrorCount))
+            {
+                writer.WritePropertyName("lastSyncPerItemErrorCount"u8);
+                writer.WriteNumberValue(LastSyncPerItemErrorCount.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(PersistentFilesNotSyncingCount))
+            {
+                writer.WritePropertyName("persistentFilesNotSyncingCount"u8);
+                writer.WriteNumberValue(PersistentFilesNotSyncingCount.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(TransientFilesNotSyncingCount))
+            {
+                writer.WritePropertyName("transientFilesNotSyncingCount"u8);
+                writer.WriteNumberValue(TransientFilesNotSyncingCount.Value);
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(FilesNotSyncingErrors))
+            {
+                writer.WritePropertyName("filesNotSyncingErrors"u8);
+                writer.WriteStartArray();
+                foreach (ServerEndpointFilesNotSyncingError item in FilesNotSyncingErrors)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && Optional.IsDefined(LastSyncMode))
+            {
+                writer.WritePropertyName("lastSyncMode"u8);
+                writer.WriteStringValue(LastSyncMode.Value.ToString());
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServerEndpointSyncSessionStatus IJsonModel<ServerEndpointSyncSessionStatus>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServerEndpointSyncSessionStatus JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointSyncSessionStatus>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServerEndpointSyncSessionStatus)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeServerEndpointSyncSessionStatus(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ServerEndpointSyncSessionStatus DeserializeServerEndpointSyncSessionStatus(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            int? lastSyncResult = default;
+            DateTimeOffset? lastSyncTimestamp = default;
+            DateTimeOffset? lastSyncSuccessTimestamp = default;
+            long? lastSyncPerItemErrorCount = default;
+            long? persistentFilesNotSyncingCount = default;
+            long? transientFilesNotSyncingCount = default;
+            IReadOnlyList<ServerEndpointFilesNotSyncingError> filesNotSyncingErrors = default;
+            ServerEndpointSyncMode? lastSyncMode = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("lastSyncResult"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
-                    lastSyncResult = property.Value.GetInt32();
+                    lastSyncResult = prop.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("lastSyncTimestamp"))
+                if (prop.NameEquals("lastSyncTimestamp"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    lastSyncTimestamp = property.Value.GetDateTimeOffset("O");
+                    lastSyncTimestamp = prop.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("lastSyncSuccessTimestamp"))
+                if (prop.NameEquals("lastSyncSuccessTimestamp"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    lastSyncSuccessTimestamp = property.Value.GetDateTimeOffset("O");
+                    lastSyncSuccessTimestamp = prop.Value.GetDateTimeOffset("O");
                     continue;
                 }
-                if (property.NameEquals("lastSyncPerItemErrorCount"))
+                if (prop.NameEquals("lastSyncPerItemErrorCount"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    lastSyncPerItemErrorCount = property.Value.GetInt64();
+                    lastSyncPerItemErrorCount = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("persistentFilesNotSyncingCount"))
+                if (prop.NameEquals("persistentFilesNotSyncingCount"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    persistentFilesNotSyncingCount = property.Value.GetInt64();
+                    persistentFilesNotSyncingCount = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("transientFilesNotSyncingCount"))
+                if (prop.NameEquals("transientFilesNotSyncingCount"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    transientFilesNotSyncingCount = property.Value.GetInt64();
+                    transientFilesNotSyncingCount = prop.Value.GetInt64();
                     continue;
                 }
-                if (property.NameEquals("filesNotSyncingErrors"))
+                if (prop.NameEquals("filesNotSyncingErrors"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ServerEndpointFilesNotSyncingError> array = new List<ServerEndpointFilesNotSyncingError>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(ServerEndpointFilesNotSyncingError.DeserializeServerEndpointFilesNotSyncingError(item));
+                        array.Add(ServerEndpointFilesNotSyncingError.DeserializeServerEndpointFilesNotSyncingError(item, options));
                     }
                     filesNotSyncingErrors = array;
                     continue;
                 }
-                if (property.NameEquals("lastSyncMode"))
+                if (prop.NameEquals("lastSyncMode"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    lastSyncMode = new ServerEndpointSyncMode(property.Value.GetString());
+                    lastSyncMode = new ServerEndpointSyncMode(prop.Value.GetString());
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
             }
-            return new ServerEndpointSyncSessionStatus(Optional.ToNullable(lastSyncResult), Optional.ToNullable(lastSyncTimestamp), Optional.ToNullable(lastSyncSuccessTimestamp), Optional.ToNullable(lastSyncPerItemErrorCount), Optional.ToNullable(persistentFilesNotSyncingCount), Optional.ToNullable(transientFilesNotSyncingCount), Optional.ToList(filesNotSyncingErrors), Optional.ToNullable(lastSyncMode));
+            return new ServerEndpointSyncSessionStatus(
+                lastSyncResult,
+                lastSyncTimestamp,
+                lastSyncSuccessTimestamp,
+                lastSyncPerItemErrorCount,
+                persistentFilesNotSyncingCount,
+                transientFilesNotSyncingCount,
+                filesNotSyncingErrors ?? new ChangeTrackingList<ServerEndpointFilesNotSyncingError>(),
+                lastSyncMode,
+                additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ServerEndpointSyncSessionStatus>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointSyncSessionStatus>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerStorageSyncContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ServerEndpointSyncSessionStatus)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServerEndpointSyncSessionStatus IPersistableModel<ServerEndpointSyncSessionStatus>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ServerEndpointSyncSessionStatus>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

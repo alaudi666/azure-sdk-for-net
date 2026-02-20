@@ -5,32 +5,44 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.SqlVirtualMachine;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
     /// <summary> Set disk storage settings for SQL Server. </summary>
     public partial class SqlStorageSettings
     {
-        /// <summary> Initializes a new instance of SqlStorageSettings. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SqlStorageSettings"/>. </summary>
         public SqlStorageSettings()
         {
             Luns = new ChangeTrackingList<int>();
         }
 
-        /// <summary> Initializes a new instance of SqlStorageSettings. </summary>
+        /// <summary> Initializes a new instance of <see cref="SqlStorageSettings"/>. </summary>
         /// <param name="luns"> Logical Unit Numbers for the disks. </param>
         /// <param name="defaultFilePath"> SQL Server default file path. </param>
-        internal SqlStorageSettings(IList<int> luns, string defaultFilePath)
+        /// <param name="useStoragePool"> Use storage pool to build a drive if true or not provided. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SqlStorageSettings(IList<int> luns, string defaultFilePath, bool? useStoragePool, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Luns = luns;
             DefaultFilePath = defaultFilePath;
+            UseStoragePool = useStoragePool;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Logical Unit Numbers for the disks. </summary>
         public IList<int> Luns { get; }
+
         /// <summary> SQL Server default file path. </summary>
         public string DefaultFilePath { get; set; }
+
+        /// <summary> Use storage pool to build a drive if true or not provided. </summary>
+        public bool? UseStoragePool { get; set; }
     }
 }

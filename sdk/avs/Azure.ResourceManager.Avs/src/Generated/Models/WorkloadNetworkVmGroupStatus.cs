@@ -7,45 +7,65 @@
 
 using System;
 using System.ComponentModel;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> VM Group status. </summary>
+    /// <summary> VM group status. </summary>
     public readonly partial struct WorkloadNetworkVmGroupStatus : IEquatable<WorkloadNetworkVmGroupStatus>
     {
         private readonly string _value;
+        /// <summary> is success. </summary>
+        private const string SuccessValue = "SUCCESS";
+        /// <summary> is failure. </summary>
+        private const string FailureValue = "FAILURE";
 
         /// <summary> Initializes a new instance of <see cref="WorkloadNetworkVmGroupStatus"/>. </summary>
+        /// <param name="value"> The value. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
         public WorkloadNetworkVmGroupStatus(string value)
         {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
+            Argument.AssertNotNull(value, nameof(value));
+
+            _value = value;
         }
 
-        private const string SuccessValue = "SUCCESS";
-        private const string FailureValue = "FAILURE";
-
-        /// <summary> SUCCESS. </summary>
+        /// <summary> is success. </summary>
         public static WorkloadNetworkVmGroupStatus Success { get; } = new WorkloadNetworkVmGroupStatus(SuccessValue);
-        /// <summary> FAILURE. </summary>
+
+        /// <summary> is failure. </summary>
         public static WorkloadNetworkVmGroupStatus Failure { get; } = new WorkloadNetworkVmGroupStatus(FailureValue);
+
         /// <summary> Determines if two <see cref="WorkloadNetworkVmGroupStatus"/> values are the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator ==(WorkloadNetworkVmGroupStatus left, WorkloadNetworkVmGroupStatus right) => left.Equals(right);
+
         /// <summary> Determines if two <see cref="WorkloadNetworkVmGroupStatus"/> values are not the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator !=(WorkloadNetworkVmGroupStatus left, WorkloadNetworkVmGroupStatus right) => !left.Equals(right);
+
         /// <summary> Converts a string to a <see cref="WorkloadNetworkVmGroupStatus"/>. </summary>
+        /// <param name="value"> The value. </param>
         public static implicit operator WorkloadNetworkVmGroupStatus(string value) => new WorkloadNetworkVmGroupStatus(value);
 
-        /// <inheritdoc />
+        /// <summary> Converts a string to a <see cref="WorkloadNetworkVmGroupStatus"/>. </summary>
+        /// <param name="value"> The value. </param>
+        public static implicit operator WorkloadNetworkVmGroupStatus?(string value) => value == null ? null : new WorkloadNetworkVmGroupStatus(value);
+
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj) => obj is WorkloadNetworkVmGroupStatus other && Equals(other);
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public bool Equals(WorkloadNetworkVmGroupStatus other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-        /// <inheritdoc />
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
+
+        /// <inheritdoc/>
         public override string ToString() => _value;
     }
 }

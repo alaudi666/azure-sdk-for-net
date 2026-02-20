@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The MachineLearningScheduleListViewType.
-    /// Serialized Name: ScheduleListViewType
-    /// </summary>
+    /// <summary> The MachineLearningScheduleListViewType. </summary>
     public readonly partial struct MachineLearningScheduleListViewType : IEquatable<MachineLearningScheduleListViewType>
     {
         private readonly string _value;
@@ -29,26 +26,17 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string DisabledOnlyValue = "DisabledOnly";
         private const string AllValue = "All";
 
-        /// <summary>
-        /// EnabledOnly
-        /// Serialized Name: ScheduleListViewType.EnabledOnly
-        /// </summary>
+        /// <summary> EnabledOnly. </summary>
         public static MachineLearningScheduleListViewType EnabledOnly { get; } = new MachineLearningScheduleListViewType(EnabledOnlyValue);
-        /// <summary>
-        /// DisabledOnly
-        /// Serialized Name: ScheduleListViewType.DisabledOnly
-        /// </summary>
+        /// <summary> DisabledOnly. </summary>
         public static MachineLearningScheduleListViewType DisabledOnly { get; } = new MachineLearningScheduleListViewType(DisabledOnlyValue);
-        /// <summary>
-        /// All
-        /// Serialized Name: ScheduleListViewType.All
-        /// </summary>
+        /// <summary> All. </summary>
         public static MachineLearningScheduleListViewType All { get; } = new MachineLearningScheduleListViewType(AllValue);
         /// <summary> Determines if two <see cref="MachineLearningScheduleListViewType"/> values are the same. </summary>
         public static bool operator ==(MachineLearningScheduleListViewType left, MachineLearningScheduleListViewType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningScheduleListViewType"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningScheduleListViewType left, MachineLearningScheduleListViewType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningScheduleListViewType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningScheduleListViewType"/>. </summary>
         public static implicit operator MachineLearningScheduleListViewType(string value) => new MachineLearningScheduleListViewType(value);
 
         /// <inheritdoc />
@@ -59,7 +47,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

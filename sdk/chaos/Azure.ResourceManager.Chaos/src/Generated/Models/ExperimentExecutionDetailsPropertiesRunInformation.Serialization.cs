@@ -5,36 +5,151 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Chaos;
 
 namespace Azure.ResourceManager.Chaos.Models
 {
-    internal partial class ExperimentExecutionDetailsPropertiesRunInformation
+    /// <summary> The information of the experiment run. </summary>
+    internal partial class ExperimentExecutionDetailsPropertiesRunInformation : IJsonModel<ExperimentExecutionDetailsPropertiesRunInformation>
     {
-        internal static ExperimentExecutionDetailsPropertiesRunInformation DeserializeExperimentExecutionDetailsPropertiesRunInformation(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ExperimentExecutionDetailsPropertiesRunInformation PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<IReadOnlyList<StepStatus>> steps = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ExperimentExecutionDetailsPropertiesRunInformation>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("steps"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        return DeserializeExperimentExecutionDetailsPropertiesRunInformation(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ExperimentExecutionDetailsPropertiesRunInformation)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ExperimentExecutionDetailsPropertiesRunInformation>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ExperimentExecutionDetailsPropertiesRunInformation>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ExperimentExecutionDetailsPropertiesRunInformation)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(Steps))
+            {
+                writer.WritePropertyName("steps"u8);
+                writer.WriteStartArray();
+                foreach (ChaosExperimentRunStepStatus item in Steps)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ExperimentExecutionDetailsPropertiesRunInformation IJsonModel<ExperimentExecutionDetailsPropertiesRunInformation>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ExperimentExecutionDetailsPropertiesRunInformation JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ExperimentExecutionDetailsPropertiesRunInformation>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ExperimentExecutionDetailsPropertiesRunInformation)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeExperimentExecutionDetailsPropertiesRunInformation(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ExperimentExecutionDetailsPropertiesRunInformation DeserializeExperimentExecutionDetailsPropertiesRunInformation(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IReadOnlyList<ChaosExperimentRunStepStatus> steps = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("steps"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
-                    List<StepStatus> array = new List<StepStatus>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    List<ChaosExperimentRunStepStatus> array = new List<ChaosExperimentRunStepStatus>();
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(StepStatus.DeserializeStepStatus(item));
+                        array.Add(ChaosExperimentRunStepStatus.DeserializeChaosExperimentRunStepStatus(item, options));
                     }
                     steps = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
             }
-            return new ExperimentExecutionDetailsPropertiesRunInformation(Optional.ToList(steps));
+            return new ExperimentExecutionDetailsPropertiesRunInformation(steps ?? new ChangeTrackingList<ChaosExperimentRunStepStatus>(), additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ExperimentExecutionDetailsPropertiesRunInformation>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ExperimentExecutionDetailsPropertiesRunInformation>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerChaosContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ExperimentExecutionDetailsPropertiesRunInformation)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ExperimentExecutionDetailsPropertiesRunInformation IPersistableModel<ExperimentExecutionDetailsPropertiesRunInformation>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ExperimentExecutionDetailsPropertiesRunInformation>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

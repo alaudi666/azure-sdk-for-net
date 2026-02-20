@@ -13,39 +13,21 @@ trigger:
     - sdk/eventhub/Azure.Messaging.EventHubs
     - sdk/eventhub/Azure.Messaging.EventHubs.Processor
     - sdk/eventhub/Azure.Messaging.EventHubs.Shared
-    - sdk/eventhub/Azure.Messaging.EventHubs.Experimental
-    - sdk/eventhub/Microsoft.Azure.WebJobs.Extensions.EventHubs
-
-pr:
-  branches:
-    include:
-    - main
-    - feature/*
-    - hotfix/*
-    - release/*
-  paths:
-    include:
-    - sdk/eventhub/ci.yml
-    - sdk/eventhub/service.projects
-    - sdk/eventhub/Azure.Messaging.EventHubs
-    - sdk/eventhub/Azure.Messaging.EventHubs.Processor
-    - sdk/eventhub/Azure.Messaging.EventHubs.Shared
-    - sdk/eventhub/Azure.Messaging.EventHubs.Experimental
-    - sdk/eventhub/Microsoft.Azure.WebJobs.Extensions.EventHubs
 
 extends:
   template: /eng/pipelines/templates/stages/archetype-sdk-client.yml
   parameters:
     SDKType: client
     ServiceDirectory: eventhub
-    BuildSnippets: true
     ArtifactName: packages
     Artifacts:
     - name: Azure.Messaging.EventHubs
       safeName: AzureMessagingEventHubs
+      directoryName: Azure.Messaging.EventHubs
+      triggeringPaths:
+      - Azure.Messaging.EventHubs.Shared
     - name: Azure.Messaging.EventHubs.Processor
       safeName: AzureMessagingEventHubsProcessor
-    - name: Azure.Messaging.EventHubs.Experimental
-      safeName: AzureMessagingEventHubsExperimental
-    - name: Microsoft.Azure.WebJobs.Extensions.EventHubs
-      safeName: MicrosoftAzureWebJobsExtensionsEventHubs
+      directoryName: Azure.Messaging.EventHubs.Processor
+      triggeringPaths:
+      - Azure.Messaging.EventHubs.Shared

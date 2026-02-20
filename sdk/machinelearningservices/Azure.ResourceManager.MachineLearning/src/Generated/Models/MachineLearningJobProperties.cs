@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 
@@ -12,132 +13,90 @@ namespace Azure.ResourceManager.MachineLearning.Models
 {
     /// <summary>
     /// Base definition for a job.
-    /// Serialized Name: JobBase
     /// Please note <see cref="MachineLearningJobProperties"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-    /// The available derived classes include <see cref="AutoMLJob"/>, <see cref="MachineLearningCommandJob"/>, <see cref="MachineLearningPipelineJob"/> and <see cref="MachineLearningSweepJob"/>.
+    /// The available derived classes include <see cref="AutoMLJob"/>, <see cref="MachineLearningCommandJob"/>, <see cref="MachineLearningPipelineJob"/>, <see cref="SparkJob"/> and <see cref="MachineLearningSweepJob"/>.
     /// </summary>
     public partial class MachineLearningJobProperties : MachineLearningResourceBase
     {
-        /// <summary> Initializes a new instance of MachineLearningJobProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningJobProperties"/>. </summary>
         public MachineLearningJobProperties()
         {
             Services = new ChangeTrackingDictionary<string, MachineLearningJobService>();
         }
 
-        /// <summary> Initializes a new instance of MachineLearningJobProperties. </summary>
-        /// <param name="description">
-        /// The asset description text.
-        /// Serialized Name: ResourceBase.description
-        /// </param>
-        /// <param name="properties">
-        /// The asset property dictionary.
-        /// Serialized Name: ResourceBase.properties
-        /// </param>
-        /// <param name="tags">
-        /// Tag dictionary. Tags can be added, removed, and updated.
-        /// Serialized Name: ResourceBase.tags
-        /// </param>
-        /// <param name="componentId">
-        /// ARM resource ID of the component resource.
-        /// Serialized Name: JobBase.componentId
-        /// </param>
-        /// <param name="computeId">
-        /// ARM resource ID of the compute resource.
-        /// Serialized Name: JobBase.computeId
-        /// </param>
-        /// <param name="displayName">
-        /// Display name of job.
-        /// Serialized Name: JobBase.displayName
-        /// </param>
-        /// <param name="experimentName">
-        /// The name of the experiment the job belongs to. If not set, the job is placed in the &quot;Default&quot; experiment.
-        /// Serialized Name: JobBase.experimentName
-        /// </param>
-        /// <param name="identity">
-        /// Identity configuration. If set, this should be one of AmlToken, ManagedIdentity, UserIdentity or null.
-        /// Defaults to AmlToken if null.
-        /// Serialized Name: JobBase.identity
-        /// Please note <see cref="MachineLearningIdentityConfiguration"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="AmlToken"/>, <see cref="MachineLearningManagedIdentity"/> and <see cref="MachineLearningUserIdentity"/>.
-        /// </param>
-        /// <param name="isArchived">
-        /// Is the asset archived?
-        /// Serialized Name: JobBase.isArchived
-        /// </param>
-        /// <param name="jobType">
-        /// [Required] Specifies the type of job.
-        /// Serialized Name: JobBase.jobType
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningJobProperties"/>. </summary>
+        /// <param name="description"> The asset description text. </param>
+        /// <param name="tags"> Tag dictionary. Tags can be added, removed, and updated. </param>
+        /// <param name="properties"> The asset property dictionary. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="jobType"> [Required] Specifies the type of job. </param>
+        /// <param name="displayName"> Display name of job. </param>
+        /// <param name="status"> Status of the job. </param>
+        /// <param name="experimentName"> The name of the experiment the job belongs to. If not set, the job is placed in the "Default" experiment. </param>
         /// <param name="services">
         /// List of JobEndpoints.
         /// For local jobs, a job endpoint will have an endpoint value of FileStreamObject.
-        /// Serialized Name: JobBase.services
         /// </param>
-        /// <param name="status">
-        /// Status of the job.
-        /// Serialized Name: JobBase.status
-        /// </param>
-        internal MachineLearningJobProperties(string description, IDictionary<string, string> properties, IDictionary<string, string> tags, string componentId, string computeId, string displayName, string experimentName, MachineLearningIdentityConfiguration identity, bool? isArchived, JobType jobType, IDictionary<string, MachineLearningJobService> services, MachineLearningJobStatus? status) : base(description, properties, tags)
-        {
-            ComponentId = componentId;
-            ComputeId = computeId;
-            DisplayName = displayName;
-            ExperimentName = experimentName;
-            Identity = identity;
-            IsArchived = isArchived;
-            JobType = jobType;
-            Services = services;
-            Status = status;
-        }
-
-        /// <summary>
-        /// ARM resource ID of the component resource.
-        /// Serialized Name: JobBase.componentId
-        /// </summary>
-        public string ComponentId { get; set; }
-        /// <summary>
-        /// ARM resource ID of the compute resource.
-        /// Serialized Name: JobBase.computeId
-        /// </summary>
-        public string ComputeId { get; set; }
-        /// <summary>
-        /// Display name of job.
-        /// Serialized Name: JobBase.displayName
-        /// </summary>
-        public string DisplayName { get; set; }
-        /// <summary>
-        /// The name of the experiment the job belongs to. If not set, the job is placed in the &quot;Default&quot; experiment.
-        /// Serialized Name: JobBase.experimentName
-        /// </summary>
-        public string ExperimentName { get; set; }
-        /// <summary>
+        /// <param name="computeId"> ARM resource ID of the compute resource. </param>
+        /// <param name="isArchived"> Is the asset archived?. </param>
+        /// <param name="identity">
         /// Identity configuration. If set, this should be one of AmlToken, ManagedIdentity, UserIdentity or null.
         /// Defaults to AmlToken if null.
-        /// Serialized Name: JobBase.identity
         /// Please note <see cref="MachineLearningIdentityConfiguration"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
         /// The available derived classes include <see cref="AmlToken"/>, <see cref="MachineLearningManagedIdentity"/> and <see cref="MachineLearningUserIdentity"/>.
-        /// </summary>
-        public MachineLearningIdentityConfiguration Identity { get; set; }
-        /// <summary>
-        /// Is the asset archived?
-        /// Serialized Name: JobBase.isArchived
-        /// </summary>
-        public bool? IsArchived { get; set; }
-        /// <summary>
-        /// [Required] Specifies the type of job.
-        /// Serialized Name: JobBase.jobType
-        /// </summary>
+        /// </param>
+        /// <param name="componentId"> ARM resource ID of the component resource. </param>
+        /// <param name="notificationSetting"> Notification setting for the job. </param>
+        internal MachineLearningJobProperties(string description, IDictionary<string, string> tags, IDictionary<string, string> properties, IDictionary<string, BinaryData> serializedAdditionalRawData, JobType jobType, string displayName, MachineLearningJobStatus? status, string experimentName, IDictionary<string, MachineLearningJobService> services, ResourceIdentifier computeId, bool? isArchived, MachineLearningIdentityConfiguration identity, ResourceIdentifier componentId, NotificationSetting notificationSetting) : base(description, tags, properties, serializedAdditionalRawData)
+        {
+            JobType = jobType;
+            DisplayName = displayName;
+            Status = status;
+            ExperimentName = experimentName;
+            Services = services;
+            ComputeId = computeId;
+            IsArchived = isArchived;
+            Identity = identity;
+            ComponentId = componentId;
+            NotificationSetting = notificationSetting;
+        }
+
+        /// <summary> [Required] Specifies the type of job. </summary>
         internal JobType JobType { get; set; }
+        /// <summary> Display name of job. </summary>
+        [WirePath("displayName")]
+        public string DisplayName { get; set; }
+        /// <summary> Status of the job. </summary>
+        [WirePath("status")]
+        public MachineLearningJobStatus? Status { get; }
+        /// <summary> The name of the experiment the job belongs to. If not set, the job is placed in the "Default" experiment. </summary>
+        [WirePath("experimentName")]
+        public string ExperimentName { get; set; }
         /// <summary>
         /// List of JobEndpoints.
         /// For local jobs, a job endpoint will have an endpoint value of FileStreamObject.
-        /// Serialized Name: JobBase.services
         /// </summary>
+        [WirePath("services")]
         public IDictionary<string, MachineLearningJobService> Services { get; set; }
+        /// <summary> ARM resource ID of the compute resource. </summary>
+        [WirePath("computeId")]
+        public ResourceIdentifier ComputeId { get; set; }
+        /// <summary> Is the asset archived?. </summary>
+        [WirePath("isArchived")]
+        public bool? IsArchived { get; set; }
         /// <summary>
-        /// Status of the job.
-        /// Serialized Name: JobBase.status
+        /// Identity configuration. If set, this should be one of AmlToken, ManagedIdentity, UserIdentity or null.
+        /// Defaults to AmlToken if null.
+        /// Please note <see cref="MachineLearningIdentityConfiguration"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="AmlToken"/>, <see cref="MachineLearningManagedIdentity"/> and <see cref="MachineLearningUserIdentity"/>.
         /// </summary>
-        public MachineLearningJobStatus? Status { get; }
+        [WirePath("identity")]
+        public MachineLearningIdentityConfiguration Identity { get; set; }
+        /// <summary> ARM resource ID of the component resource. </summary>
+        [WirePath("componentId")]
+        public ResourceIdentifier ComponentId { get; set; }
+        /// <summary> Notification setting for the job. </summary>
+        [WirePath("notificationSetting")]
+        public NotificationSetting NotificationSetting { get; set; }
     }
 }

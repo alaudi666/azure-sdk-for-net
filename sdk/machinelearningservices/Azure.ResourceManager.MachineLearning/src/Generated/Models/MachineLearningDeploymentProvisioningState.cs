@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Possible values for DeploymentProvisioningState.
-    /// Serialized Name: DeploymentProvisioningState
-    /// </summary>
+    /// <summary> Possible values for DeploymentProvisioningState. </summary>
     public readonly partial struct MachineLearningDeploymentProvisioningState : IEquatable<MachineLearningDeploymentProvisioningState>
     {
         private readonly string _value;
@@ -33,46 +30,25 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string FailedValue = "Failed";
         private const string CanceledValue = "Canceled";
 
-        /// <summary>
-        /// Creating
-        /// Serialized Name: DeploymentProvisioningState.Creating
-        /// </summary>
+        /// <summary> Creating. </summary>
         public static MachineLearningDeploymentProvisioningState Creating { get; } = new MachineLearningDeploymentProvisioningState(CreatingValue);
-        /// <summary>
-        /// Deleting
-        /// Serialized Name: DeploymentProvisioningState.Deleting
-        /// </summary>
+        /// <summary> Deleting. </summary>
         public static MachineLearningDeploymentProvisioningState Deleting { get; } = new MachineLearningDeploymentProvisioningState(DeletingValue);
-        /// <summary>
-        /// Scaling
-        /// Serialized Name: DeploymentProvisioningState.Scaling
-        /// </summary>
+        /// <summary> Scaling. </summary>
         public static MachineLearningDeploymentProvisioningState Scaling { get; } = new MachineLearningDeploymentProvisioningState(ScalingValue);
-        /// <summary>
-        /// Updating
-        /// Serialized Name: DeploymentProvisioningState.Updating
-        /// </summary>
+        /// <summary> Updating. </summary>
         public static MachineLearningDeploymentProvisioningState Updating { get; } = new MachineLearningDeploymentProvisioningState(UpdatingValue);
-        /// <summary>
-        /// Succeeded
-        /// Serialized Name: DeploymentProvisioningState.Succeeded
-        /// </summary>
+        /// <summary> Succeeded. </summary>
         public static MachineLearningDeploymentProvisioningState Succeeded { get; } = new MachineLearningDeploymentProvisioningState(SucceededValue);
-        /// <summary>
-        /// Failed
-        /// Serialized Name: DeploymentProvisioningState.Failed
-        /// </summary>
+        /// <summary> Failed. </summary>
         public static MachineLearningDeploymentProvisioningState Failed { get; } = new MachineLearningDeploymentProvisioningState(FailedValue);
-        /// <summary>
-        /// Canceled
-        /// Serialized Name: DeploymentProvisioningState.Canceled
-        /// </summary>
+        /// <summary> Canceled. </summary>
         public static MachineLearningDeploymentProvisioningState Canceled { get; } = new MachineLearningDeploymentProvisioningState(CanceledValue);
         /// <summary> Determines if two <see cref="MachineLearningDeploymentProvisioningState"/> values are the same. </summary>
         public static bool operator ==(MachineLearningDeploymentProvisioningState left, MachineLearningDeploymentProvisioningState right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningDeploymentProvisioningState"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningDeploymentProvisioningState left, MachineLearningDeploymentProvisioningState right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningDeploymentProvisioningState"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningDeploymentProvisioningState"/>. </summary>
         public static implicit operator MachineLearningDeploymentProvisioningState(string value) => new MachineLearningDeploymentProvisioningState(value);
 
         /// <inheritdoc />
@@ -83,7 +59,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

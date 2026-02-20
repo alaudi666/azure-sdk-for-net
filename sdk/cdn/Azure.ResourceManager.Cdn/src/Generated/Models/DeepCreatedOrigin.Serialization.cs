@@ -5,30 +5,50 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
-    public partial class DeepCreatedOrigin : IUtf8JsonSerializable
+    public partial class DeepCreatedOrigin : IUtf8JsonSerializable, IJsonModel<DeepCreatedOrigin>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<DeepCreatedOrigin>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<DeepCreatedOrigin>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("name");
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DeepCreatedOrigin>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DeepCreatedOrigin)} does not support writing '{format}' format.");
+            }
+
+            writer.WritePropertyName("name"u8);
             writer.WriteStringValue(Name);
-            writer.WritePropertyName("properties");
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsDefined(HostName))
             {
-                writer.WritePropertyName("hostName");
+                writer.WritePropertyName("hostName"u8);
                 writer.WriteStringValue(HostName);
             }
             if (Optional.IsDefined(HttpPort))
             {
                 if (HttpPort != null)
                 {
-                    writer.WritePropertyName("httpPort");
+                    writer.WritePropertyName("httpPort"u8);
                     writer.WriteNumberValue(HttpPort.Value);
                 }
                 else
@@ -40,7 +60,7 @@ namespace Azure.ResourceManager.Cdn.Models
             {
                 if (HttpsPort != null)
                 {
-                    writer.WritePropertyName("httpsPort");
+                    writer.WritePropertyName("httpsPort"u8);
                     writer.WriteNumberValue(HttpsPort.Value);
                 }
                 else
@@ -50,14 +70,14 @@ namespace Azure.ResourceManager.Cdn.Models
             }
             if (Optional.IsDefined(OriginHostHeader))
             {
-                writer.WritePropertyName("originHostHeader");
+                writer.WritePropertyName("originHostHeader"u8);
                 writer.WriteStringValue(OriginHostHeader);
             }
             if (Optional.IsDefined(Priority))
             {
                 if (Priority != null)
                 {
-                    writer.WritePropertyName("priority");
+                    writer.WritePropertyName("priority"u8);
                     writer.WriteNumberValue(Priority.Value);
                 }
                 else
@@ -69,7 +89,7 @@ namespace Azure.ResourceManager.Cdn.Models
             {
                 if (Weight != null)
                 {
-                    writer.WritePropertyName("weight");
+                    writer.WritePropertyName("weight"u8);
                     writer.WriteNumberValue(Weight.Value);
                 }
                 else
@@ -79,19 +99,19 @@ namespace Azure.ResourceManager.Cdn.Models
             }
             if (Optional.IsDefined(Enabled))
             {
-                writer.WritePropertyName("enabled");
+                writer.WritePropertyName("enabled"u8);
                 writer.WriteBooleanValue(Enabled.Value);
             }
             if (Optional.IsDefined(PrivateLinkAlias))
             {
-                writer.WritePropertyName("privateLinkAlias");
+                writer.WritePropertyName("privateLinkAlias"u8);
                 writer.WriteStringValue(PrivateLinkAlias);
             }
             if (Optional.IsDefined(PrivateLinkResourceId))
             {
                 if (PrivateLinkResourceId != null)
                 {
-                    writer.WritePropertyName("privateLinkResourceId");
+                    writer.WritePropertyName("privateLinkResourceId"u8);
                     writer.WriteStringValue(PrivateLinkResourceId);
                 }
                 else
@@ -101,41 +121,87 @@ namespace Azure.ResourceManager.Cdn.Models
             }
             if (Optional.IsDefined(PrivateLinkLocation))
             {
-                writer.WritePropertyName("privateLinkLocation");
+                writer.WritePropertyName("privateLinkLocation"u8);
                 writer.WriteStringValue(PrivateLinkLocation);
             }
             if (Optional.IsDefined(PrivateLinkApprovalMessage))
             {
-                writer.WritePropertyName("privateLinkApprovalMessage");
+                writer.WritePropertyName("privateLinkApprovalMessage"u8);
                 writer.WriteStringValue(PrivateLinkApprovalMessage);
             }
+            if (options.Format != "W" && Optional.IsDefined(PrivateEndpointStatus))
+            {
+                if (PrivateEndpointStatus != null)
+                {
+                    writer.WritePropertyName("privateEndpointStatus"u8);
+                    writer.WriteStringValue(PrivateEndpointStatus.Value.ToString());
+                }
+                else
+                {
+                    writer.WriteNull("privateEndpointStatus");
+                }
+            }
             writer.WriteEndObject();
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static DeepCreatedOrigin DeserializeDeepCreatedOrigin(JsonElement element)
+        DeepCreatedOrigin IJsonModel<DeepCreatedOrigin>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<DeepCreatedOrigin>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DeepCreatedOrigin)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDeepCreatedOrigin(document.RootElement, options);
+        }
+
+        internal static DeepCreatedOrigin DeserializeDeepCreatedOrigin(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string name = default;
-            Optional<string> hostName = default;
-            Optional<int?> httpPort = default;
-            Optional<int?> httpsPort = default;
-            Optional<string> originHostHeader = default;
-            Optional<int?> priority = default;
-            Optional<int?> weight = default;
-            Optional<bool> enabled = default;
-            Optional<string> privateLinkAlias = default;
-            Optional<ResourceIdentifier> privateLinkResourceId = default;
-            Optional<string> privateLinkLocation = default;
-            Optional<string> privateLinkApprovalMessage = default;
-            Optional<PrivateEndpointStatus?> privateEndpointStatus = default;
+            string hostName = default;
+            int? httpPort = default;
+            int? httpsPort = default;
+            string originHostHeader = default;
+            int? priority = default;
+            int? weight = default;
+            bool? enabled = default;
+            string privateLinkAlias = default;
+            ResourceIdentifier privateLinkResourceId = default;
+            string privateLinkLocation = default;
+            string privateLinkApprovalMessage = default;
+            PrivateEndpointStatus? privateEndpointStatus = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -144,12 +210,12 @@ namespace Azure.ResourceManager.Cdn.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("hostName"))
+                        if (property0.NameEquals("hostName"u8))
                         {
                             hostName = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("httpPort"))
+                        if (property0.NameEquals("httpPort"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
@@ -159,7 +225,7 @@ namespace Azure.ResourceManager.Cdn.Models
                             httpPort = property0.Value.GetInt32();
                             continue;
                         }
-                        if (property0.NameEquals("httpsPort"))
+                        if (property0.NameEquals("httpsPort"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
@@ -169,12 +235,12 @@ namespace Azure.ResourceManager.Cdn.Models
                             httpsPort = property0.Value.GetInt32();
                             continue;
                         }
-                        if (property0.NameEquals("originHostHeader"))
+                        if (property0.NameEquals("originHostHeader"u8))
                         {
                             originHostHeader = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("priority"))
+                        if (property0.NameEquals("priority"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
@@ -184,7 +250,7 @@ namespace Azure.ResourceManager.Cdn.Models
                             priority = property0.Value.GetInt32();
                             continue;
                         }
-                        if (property0.NameEquals("weight"))
+                        if (property0.NameEquals("weight"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
@@ -194,22 +260,21 @@ namespace Azure.ResourceManager.Cdn.Models
                             weight = property0.Value.GetInt32();
                             continue;
                         }
-                        if (property0.NameEquals("enabled"))
+                        if (property0.NameEquals("enabled"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             enabled = property0.Value.GetBoolean();
                             continue;
                         }
-                        if (property0.NameEquals("privateLinkAlias"))
+                        if (property0.NameEquals("privateLinkAlias"u8))
                         {
                             privateLinkAlias = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("privateLinkResourceId"))
+                        if (property0.NameEquals("privateLinkResourceId"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
@@ -219,17 +284,17 @@ namespace Azure.ResourceManager.Cdn.Models
                             privateLinkResourceId = new ResourceIdentifier(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("privateLinkLocation"))
+                        if (property0.NameEquals("privateLinkLocation"u8))
                         {
                             privateLinkLocation = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("privateLinkApprovalMessage"))
+                        if (property0.NameEquals("privateLinkApprovalMessage"u8))
                         {
                             privateLinkApprovalMessage = property0.Value.GetString();
                             continue;
                         }
-                        if (property0.NameEquals("privateEndpointStatus"))
+                        if (property0.NameEquals("privateEndpointStatus"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
@@ -242,8 +307,322 @@ namespace Azure.ResourceManager.Cdn.Models
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new DeepCreatedOrigin(name, hostName.Value, Optional.ToNullable(httpPort), Optional.ToNullable(httpsPort), originHostHeader.Value, Optional.ToNullable(priority), Optional.ToNullable(weight), Optional.ToNullable(enabled), privateLinkAlias.Value, privateLinkResourceId.Value, privateLinkLocation.Value, privateLinkApprovalMessage.Value, Optional.ToNullable(privateEndpointStatus));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new DeepCreatedOrigin(
+                name,
+                hostName,
+                httpPort,
+                httpsPort,
+                originHostHeader,
+                priority,
+                weight,
+                enabled,
+                privateLinkAlias,
+                privateLinkResourceId,
+                privateLinkLocation,
+                privateLinkApprovalMessage,
+                privateEndpointStatus,
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Name))
+                {
+                    builder.Append("  name: ");
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            builder.Append("  properties:");
+            builder.AppendLine(" {");
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(HostName), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    hostName: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(HostName))
+                {
+                    builder.Append("    hostName: ");
+                    if (HostName.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{HostName}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{HostName}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(HttpPort), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    httpPort: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(HttpPort))
+                {
+                    builder.Append("    httpPort: ");
+                    builder.AppendLine($"{HttpPort.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(HttpsPort), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    httpsPort: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(HttpsPort))
+                {
+                    builder.Append("    httpsPort: ");
+                    builder.AppendLine($"{HttpsPort.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(OriginHostHeader), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    originHostHeader: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(OriginHostHeader))
+                {
+                    builder.Append("    originHostHeader: ");
+                    if (OriginHostHeader.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{OriginHostHeader}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{OriginHostHeader}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Priority), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    priority: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Priority))
+                {
+                    builder.Append("    priority: ");
+                    builder.AppendLine($"{Priority.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Weight), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    weight: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Weight))
+                {
+                    builder.Append("    weight: ");
+                    builder.AppendLine($"{Weight.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Enabled), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    enabled: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Enabled))
+                {
+                    builder.Append("    enabled: ");
+                    var boolValue = Enabled.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PrivateLinkAlias), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    privateLinkAlias: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(PrivateLinkAlias))
+                {
+                    builder.Append("    privateLinkAlias: ");
+                    if (PrivateLinkAlias.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{PrivateLinkAlias}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{PrivateLinkAlias}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PrivateLinkResourceId), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    privateLinkResourceId: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(PrivateLinkResourceId))
+                {
+                    builder.Append("    privateLinkResourceId: ");
+                    builder.AppendLine($"'{PrivateLinkResourceId.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PrivateLinkLocation), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    privateLinkLocation: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(PrivateLinkLocation))
+                {
+                    builder.Append("    privateLinkLocation: ");
+                    if (PrivateLinkLocation.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{PrivateLinkLocation}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{PrivateLinkLocation}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PrivateLinkApprovalMessage), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    privateLinkApprovalMessage: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(PrivateLinkApprovalMessage))
+                {
+                    builder.Append("    privateLinkApprovalMessage: ");
+                    if (PrivateLinkApprovalMessage.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{PrivateLinkApprovalMessage}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{PrivateLinkApprovalMessage}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PrivateEndpointStatus), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    privateEndpointStatus: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(PrivateEndpointStatus))
+                {
+                    builder.Append("    privateEndpointStatus: ");
+                    builder.AppendLine($"'{PrivateEndpointStatus.Value.ToString()}'");
+                }
+            }
+
+            builder.AppendLine("  }");
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<DeepCreatedOrigin>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DeepCreatedOrigin>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerCdnContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(DeepCreatedOrigin)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        DeepCreatedOrigin IPersistableModel<DeepCreatedOrigin>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DeepCreatedOrigin>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeDeepCreatedOrigin(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DeepCreatedOrigin)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<DeepCreatedOrigin>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

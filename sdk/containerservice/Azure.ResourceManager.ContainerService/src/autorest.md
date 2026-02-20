@@ -8,16 +8,21 @@ azure-arm: true
 csharp: true
 library-name: ContainerService
 namespace: Azure.ResourceManager.ContainerService
-require: https://github.com/Azure/azure-rest-api-specs/blob/495363bc011ce917f579adc1a5209073565d37f4/specification/containerservice/resource-manager/readme.md
-tag: package-2022-09
+require: https://github.com/Azure/azure-rest-api-specs/blob/18609d68cf243ee3ce35d7c005ff3c7dd2cd9477/specification/containerservice/resource-manager/Microsoft.ContainerService/aks/readme.md
+#tag: package-2025-10
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
+sample-gen:
+  output-folder: $(this-folder)/../tests/Generated
+  clear-output-folder: true
 skip-csproj: true
 modelerfour:
   flatten-payloads: false
+use-model-reader-writer: true
+enable-bicep-serialization: true
 
-request-path-to-singleton-resource:
-  /subscriptions/{subscriptionId}/providers/Microsoft.ContainerService/locations/{location}/osOptions/default: osOptions/default
+mgmt-debug:
+  show-serialized-names: true
 
 rename-mapping:
   ManagedClusterPodIdentityProvisioningError.error: 'ErrorDetail'
@@ -38,7 +43,6 @@ rename-mapping:
   PrivateLinkResource: ContainerServicePrivateLinkResourceData
   ManagedClusterAddonProfile.enabled: IsEnabled
   ManagedClusterPodIdentityProfile.enabled: IsEnabled
-  ManagedClusterSecurityProfileAzureDefender.enabled: IsEnabled
   WindowsGmsaProfile.enabled: IsEnabled
   TimeSpan.start: StartOn
   TimeSpan.end: EndOn
@@ -53,16 +57,67 @@ rename-mapping:
   RunCommandResult: ManagedClusterRunCommandResult
   UserAssignedIdentity.objectId: -|uuid
   UserAssignedIdentity.clientId: -|uuid
-#   ManagedClusterServicePrincipalProfile.clientId: -|uuid
   ManagedClusterAADProfile.serverAppID: -|uuid
   ManagedClusterAADProfile.clientAppID: -|uuid
-#   ManagedClusterAADProfile.adminGroupObjectIDs.items: -|uuid
   ManagedClusterSecurityProfileDefenderSecurityMonitoring.enabled: IsSecurityMonitoringEnabled
   AzureKeyVaultKms: ManagedClusterSecurityProfileKeyVaultKms
   AzureKeyVaultKms.enabled: IsEnabled
   KeyVaultNetworkAccessTypes: ManagedClusterKeyVaultNetworkAccessType
   ManagedClusterOidcIssuerProfile.enabled: IsEnabled
   ManagedClusterOidcIssuerProfile.issuerURL: IssuerUriInfo
+  AbsoluteMonthlySchedule: ContainerServiceMaintenanceAbsoluteMonthlySchedule
+  RelativeMonthlySchedule: ContainerServiceMaintenanceRelativeMonthlySchedule
+  Type: ContainerServiceMaintenanceRelativeMonthlyScheduleWeekIndex
+  Schedule: ContainerServiceMaintenanceSchedule
+  WeeklySchedule: ContainerServiceMaintenanceWeeklySchedule
+  BackendPoolType: ManagedClusterLoadBalancerBackendPoolType
+  ManagedClusterAzureMonitorProfileKubeStateMetrics: ManagedClusterMonitorProfileKubeStateMetrics
+  ManagedClusterAzureMonitorProfileMetrics: ManagedClusterMonitorProfileMetrics
+  ManagedClusterAzureMonitorProfileMetrics.enabled: IsEnabled
+  ManagedClusterSecurityProfileImageCleaner.enabled: IsEnabled
+  ManagedClusterWorkloadAutoScalerProfileVerticalPodAutoscaler: ManagedClusterVerticalPodAutoscaler
+  ManagedClusterWorkloadAutoScalerProfileVerticalPodAutoscaler.enabled: IsVpaEnabled
+  NodeOSUpgradeChannel: ManagedClusterNodeOSUpgradeChannel
+  PortRange: AgentPoolNetworkPortRange
+  Protocol: AgentPoolNetworkPortProtocol
+  AgentPool.properties.capacityReservationGroupID: -|arm-id
+  ManagedClusterAgentPoolProfileProperties.capacityReservationGroupID: -|arm-id
+  MaintenanceWindow.startDate: -|string
+  ManagedCluster.identity: ClusterIdentity
+  DelegatedResource: ManagedClusterDelegatedIdentity
+  ManagedCluster.properties.resourceUID: ResourceID|arm-id
+  IstioEgressGateway.enabled: IsEnabled
+  IstioIngressGateway.enabled: IsEnabled
+  ManagedClusterWorkloadAutoScalerProfileKeda.enabled: IsKedaEnabled
+  ManagedClusterSecurityProfileWorkloadIdentity.enabled: IsWorkloadIdentityEnabled
+  AgentPoolWindowsProfile.disableOutboundNat: IsOutboundNatDisabled
+  ManagedNamespace: ManagedClusterNamespace
+  NamespaceProperties: ManagedClusterNamespaceProperties
+  AdoptionPolicy: NamespaceAdoptionPolicy
+  AdvancedNetworking: ManagedClusterAdvancedNetworking
+  AdvancedNetworking.enabled: IsEnabled
+  AdvancedNetworkingSecurity: ManagedClusterAdvancedNetworkingSecurity
+  AdvancedNetworkPolicies: ManagedClusterAdvancedNetworkPolicy
+  AdvancedNetworkingObservability.enabled: IsObservabilityEnabled
+  AgentPoolDeleteMachinesParameter: AgentPoolDeleteMachinesContent
+  AgentPoolSecurityProfile.enableVTPM: IsVtpmEnabled
+  AgentPoolSecurityProfile.enableSecureBoot: IsSecureBootEnabled
+  AgentPoolSSHAccess: AgentPoolSshAccess
+  ManagedClusterStaticEgressGatewayProfile.enabled: IsStaticEgressGatewayAddonEnabled
+  DeletePolicy: NamespaceDeletePolicy
+  GPUProfile: AgentPoolGpuProfile
+  GPUDriver: AgentPoolGpuDriver
+  NamespaceProvisioningState: ManagedClusterNamespaceProvisioningState
+  NetworkPolicies: NamespaceNetworkPolicies
+  PolicyRule: NamespaceNetworkPolicyRule
+  ResourceQuota: NamespaceResourceQuota
+  RestrictionLevel:  ManagedClusterNodeResourceGroupRestrictionLevel
+  VirtualMachineNodes: AgentPoolVirtualMachineNodes
+  ManagedClusterAIToolchainOperatorProfile.enabled: IsAIToolchainOperatorEnabled
+  ManagedClusterCostAnalysis.enabled: IsCostAnalysisEnabled
+  AdvancedNetworkingSecurity.enabled: IsEnabled
+  ManagedClusterIngressProfileWebAppRouting.enabled: IsEnabled
+  ContainerServiceNetworkProfile.ipFamilies: NetworkIPFamilies
 
 format-by-name-rules:
   'tenantId': 'uuid'
@@ -80,12 +135,14 @@ format-by-name-rules:
   'PrincipalId': 'uuid'
   'IPAddress': 'ip-address'
 
-rename-rules:
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS
   Ip: IP
   Ips: IPs|ips
+  Iptables: IPTables
+  Ipvs: IPVS
   ID: Id
   IDs: Ids
   VM: Vm
@@ -100,6 +157,8 @@ rename-rules:
   Ipsec: IPsec|ipsec
   SSO: Sso
   URI: Uri
+  URL: Url
+  URLs: Urls
   Etag: ETag|etag
   SSD: Ssd
   GPU: Gpu
@@ -116,9 +175,11 @@ rename-rules:
   MIG4G: Mig4G
   MIG7G: Mig7G
   Tcpkeepalive: TcpKeepalive
+  TCP: Tcp
+  UDP: Udp
 
 override-operation-name:
-  ResolvePrivateLinkServiceId_POST: ResolvePrivateLinkServiceId
+  ResolvePrivateLinkServiceId_Post: ResolvePrivateLinkServiceId
   AgentPools_GetAvailableAgentPoolVersions: GetAvailableAgentPoolVersions
 
 prepend-rp-prefix:
@@ -127,7 +188,6 @@ prepend-rp-prefix:
   - WeekDay
   - OSType
   - OSDiskType
-  - OSOptionProperty
   - OSSku
   - UserAssignedIdentity
   - AgentPool
@@ -148,6 +208,19 @@ prepend-rp-prefix:
   - PrivateLinkResourcesListResult
   - TagsObject
   - PowerState
+  - DateSpan
+  - IPTag
+  - MaintenanceWindow
+  - NetworkPluginMode
+  - TrustedAccessRole
+  - TrustedAccessRoleBinding
+  - TrustedAccessRoleRule
+  - TrustedAccessRoleBindingProvisioningState
+  - Machine
+  - MachineProperties
+  - ArtifactSource
+  - MachineIpAddress
+  - IpFamily
 
 directive:
   - from: managedClusters.json

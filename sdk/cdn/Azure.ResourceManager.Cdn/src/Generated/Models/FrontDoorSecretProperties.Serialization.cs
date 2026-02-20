@@ -5,34 +5,147 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
-    public partial class FrontDoorSecretProperties : IUtf8JsonSerializable
+    [PersistableModelProxy(typeof(UnknownSecretProperties))]
+    public partial class FrontDoorSecretProperties : IUtf8JsonSerializable, IJsonModel<FrontDoorSecretProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<FrontDoorSecretProperties>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<FrontDoorSecretProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("type");
-            writer.WriteStringValue(SecretType.ToString());
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static FrontDoorSecretProperties DeserializeFrontDoorSecretProperties(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<FrontDoorSecretProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(FrontDoorSecretProperties)} does not support writing '{format}' format.");
+            }
+
+            writer.WritePropertyName("type"u8);
+            writer.WriteStringValue(SecretType.ToString());
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        FrontDoorSecretProperties IJsonModel<FrontDoorSecretProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<FrontDoorSecretProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(FrontDoorSecretProperties)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeFrontDoorSecretProperties(document.RootElement, options);
+        }
+
+        internal static FrontDoorSecretProperties DeserializeFrontDoorSecretProperties(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             if (element.TryGetProperty("type", out JsonElement discriminator))
             {
                 switch (discriminator.GetString())
                 {
-                    case "AzureFirstPartyManagedCertificate": return AzureFirstPartyManagedCertificateProperties.DeserializeAzureFirstPartyManagedCertificateProperties(element);
-                    case "CustomerCertificate": return CustomerCertificateProperties.DeserializeCustomerCertificateProperties(element);
-                    case "ManagedCertificate": return ManagedCertificateProperties.DeserializeManagedCertificateProperties(element);
-                    case "UrlSigningKey": return UriSigningKeyProperties.DeserializeUriSigningKeyProperties(element);
+                    case "AzureFirstPartyManagedCertificate": return AzureFirstPartyManagedCertificateProperties.DeserializeAzureFirstPartyManagedCertificateProperties(element, options);
+                    case "CustomerCertificate": return CustomerCertificateProperties.DeserializeCustomerCertificateProperties(element, options);
+                    case "ManagedCertificate": return ManagedCertificateProperties.DeserializeManagedCertificateProperties(element, options);
+                    case "UrlSigningKey": return UriSigningKeyProperties.DeserializeUriSigningKeyProperties(element, options);
                 }
             }
-            return UnknownSecretProperties.DeserializeUnknownSecretProperties(element);
+            return UnknownSecretProperties.DeserializeUnknownSecretProperties(element, options);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SecretType), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  type: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  type: ");
+                builder.AppendLine($"'{SecretType.ToString()}'");
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<FrontDoorSecretProperties>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<FrontDoorSecretProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerCdnContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(FrontDoorSecretProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        FrontDoorSecretProperties IPersistableModel<FrontDoorSecretProperties>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<FrontDoorSecretProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeFrontDoorSecretProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(FrontDoorSecretProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<FrontDoorSecretProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

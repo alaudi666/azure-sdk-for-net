@@ -5,224 +5,371 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
 using Azure.ResourceManager.DeviceProvisioningServices;
 
 namespace Azure.ResourceManager.DeviceProvisioningServices.Models
 {
-    public partial class DeviceProvisioningServiceProperties : IUtf8JsonSerializable
+    /// <summary> the service specific properties of a provisioning service, including keys, linked iot hubs, current state, and system generated properties such as hostname and idScope. </summary>
+    public partial class DeviceProvisioningServiceProperties : IJsonModel<DeviceProvisioningServiceProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DeviceProvisioningServiceProperties PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DeviceProvisioningServiceProperties>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDeviceProvisioningServiceProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DeviceProvisioningServiceProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DeviceProvisioningServiceProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DeviceProvisioningServiceProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DeviceProvisioningServiceProperties)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(State))
             {
-                writer.WritePropertyName("state");
+                writer.WritePropertyName("state"u8);
                 writer.WriteStringValue(State.Value.ToString());
             }
             if (Optional.IsDefined(PublicNetworkAccess))
             {
-                writer.WritePropertyName("publicNetworkAccess");
+                writer.WritePropertyName("publicNetworkAccess"u8);
                 writer.WriteStringValue(PublicNetworkAccess.Value.ToString());
             }
             if (Optional.IsCollectionDefined(IPFilterRules))
             {
-                writer.WritePropertyName("ipFilterRules");
+                writer.WritePropertyName("ipFilterRules"u8);
                 writer.WriteStartArray();
-                foreach (var item in IPFilterRules)
+                foreach (DeviceProvisioningServicesIPFilterRule item in IPFilterRules)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(PrivateEndpointConnections))
             {
-                writer.WritePropertyName("privateEndpointConnections");
+                writer.WritePropertyName("privateEndpointConnections"u8);
                 writer.WriteStartArray();
-                foreach (var item in PrivateEndpointConnections)
+                foreach (DeviceProvisioningServicesPrivateEndpointConnectionData item in PrivateEndpointConnections)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(ProvisioningState))
             {
-                writer.WritePropertyName("provisioningState");
+                writer.WritePropertyName("provisioningState"u8);
                 writer.WriteStringValue(ProvisioningState);
             }
             if (Optional.IsCollectionDefined(IotHubs))
             {
-                writer.WritePropertyName("iotHubs");
+                writer.WritePropertyName("iotHubs"u8);
                 writer.WriteStartArray();
-                foreach (var item in IotHubs)
+                foreach (IotHubDefinitionDescription item in IotHubs)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
+            if (Optional.IsDefined(DeviceRegistryNamespace))
+            {
+                writer.WritePropertyName("deviceRegistryNamespace"u8);
+                writer.WriteObjectValue(DeviceRegistryNamespace, options);
+            }
             if (Optional.IsDefined(AllocationPolicy))
             {
-                writer.WritePropertyName("allocationPolicy");
+                writer.WritePropertyName("allocationPolicy"u8);
                 writer.WriteStringValue(AllocationPolicy.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(ServiceOperationsHostName))
+            {
+                writer.WritePropertyName("serviceOperationsHostName"u8);
+                writer.WriteStringValue(ServiceOperationsHostName);
+            }
+            if (options.Format != "W" && Optional.IsDefined(DeviceProvisioningHostName))
+            {
+                writer.WritePropertyName("deviceProvisioningHostName"u8);
+                writer.WriteStringValue(DeviceProvisioningHostName);
+            }
+            if (options.Format != "W" && Optional.IsDefined(IdScope))
+            {
+                writer.WritePropertyName("idScope"u8);
+                writer.WriteStringValue(IdScope);
             }
             if (Optional.IsCollectionDefined(AuthorizationPolicies))
             {
-                writer.WritePropertyName("authorizationPolicies");
+                writer.WritePropertyName("authorizationPolicies"u8);
                 writer.WriteStartArray();
-                foreach (var item in AuthorizationPolicies)
+                foreach (DeviceProvisioningServicesSharedAccessKey item in AuthorizationPolicies)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(IsDataResidencyEnabled))
             {
-                writer.WritePropertyName("enableDataResidency");
+                writer.WritePropertyName("enableDataResidency"u8);
                 writer.WriteBooleanValue(IsDataResidencyEnabled.Value);
             }
-            writer.WriteEndObject();
+            if (Optional.IsDefined(PortalOperationsHostName))
+            {
+                writer.WritePropertyName("portalOperationsHostName"u8);
+                writer.WriteStringValue(PortalOperationsHostName);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static DeviceProvisioningServiceProperties DeserializeDeviceProvisioningServiceProperties(JsonElement element)
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DeviceProvisioningServiceProperties IJsonModel<DeviceProvisioningServiceProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DeviceProvisioningServiceProperties JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<DeviceProvisioningServicesState> state = default;
-            Optional<DeviceProvisioningServicesPublicNetworkAccess> publicNetworkAccess = default;
-            Optional<IList<DeviceProvisioningServicesIPFilterRule>> ipFilterRules = default;
-            Optional<IList<DeviceProvisioningServicesPrivateEndpointConnectionData>> privateEndpointConnections = default;
-            Optional<string> provisioningState = default;
-            Optional<IList<IotHubDefinitionDescription>> iotHubs = default;
-            Optional<DeviceProvisioningServicesAllocationPolicy> allocationPolicy = default;
-            Optional<string> serviceOperationsHostName = default;
-            Optional<string> deviceProvisioningHostName = default;
-            Optional<string> idScope = default;
-            Optional<IList<DeviceProvisioningServicesSharedAccessKey>> authorizationPolicies = default;
-            Optional<bool> enableDataResidency = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DeviceProvisioningServiceProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("state"))
+                throw new FormatException($"The model {nameof(DeviceProvisioningServiceProperties)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDeviceProvisioningServiceProperties(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DeviceProvisioningServiceProperties DeserializeDeviceProvisioningServiceProperties(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DeviceProvisioningServicesState? state = default;
+            DeviceProvisioningServicesPublicNetworkAccess? publicNetworkAccess = default;
+            IList<DeviceProvisioningServicesIPFilterRule> ipFilterRules = default;
+            IList<DeviceProvisioningServicesPrivateEndpointConnectionData> privateEndpointConnections = default;
+            string provisioningState = default;
+            IList<IotHubDefinitionDescription> iotHubs = default;
+            DeviceRegistryNamespaceDescription deviceRegistryNamespace = default;
+            DeviceProvisioningServicesAllocationPolicy? allocationPolicy = default;
+            string serviceOperationsHostName = default;
+            string deviceProvisioningHostName = default;
+            string idScope = default;
+            IList<DeviceProvisioningServicesSharedAccessKey> authorizationPolicies = default;
+            bool? isDataResidencyEnabled = default;
+            string portalOperationsHostName = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("state"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    state = new DeviceProvisioningServicesState(property.Value.GetString());
+                    state = new DeviceProvisioningServicesState(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("publicNetworkAccess"))
+                if (prop.NameEquals("publicNetworkAccess"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    publicNetworkAccess = new DeviceProvisioningServicesPublicNetworkAccess(property.Value.GetString());
+                    publicNetworkAccess = new DeviceProvisioningServicesPublicNetworkAccess(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("ipFilterRules"))
+                if (prop.NameEquals("ipFilterRules"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<DeviceProvisioningServicesIPFilterRule> array = new List<DeviceProvisioningServicesIPFilterRule>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(DeviceProvisioningServicesIPFilterRule.DeserializeDeviceProvisioningServicesIPFilterRule(item));
+                        array.Add(DeviceProvisioningServicesIPFilterRule.DeserializeDeviceProvisioningServicesIPFilterRule(item, options));
                     }
                     ipFilterRules = array;
                     continue;
                 }
-                if (property.NameEquals("privateEndpointConnections"))
+                if (prop.NameEquals("privateEndpointConnections"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<DeviceProvisioningServicesPrivateEndpointConnectionData> array = new List<DeviceProvisioningServicesPrivateEndpointConnectionData>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(DeviceProvisioningServicesPrivateEndpointConnectionData.DeserializeDeviceProvisioningServicesPrivateEndpointConnectionData(item));
+                        array.Add(DeviceProvisioningServicesPrivateEndpointConnectionData.DeserializeDeviceProvisioningServicesPrivateEndpointConnectionData(item, options));
                     }
                     privateEndpointConnections = array;
                     continue;
                 }
-                if (property.NameEquals("provisioningState"))
+                if (prop.NameEquals("provisioningState"u8))
                 {
-                    provisioningState = property.Value.GetString();
+                    provisioningState = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("iotHubs"))
+                if (prop.NameEquals("iotHubs"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<IotHubDefinitionDescription> array = new List<IotHubDefinitionDescription>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(IotHubDefinitionDescription.DeserializeIotHubDefinitionDescription(item));
+                        array.Add(IotHubDefinitionDescription.DeserializeIotHubDefinitionDescription(item, options));
                     }
                     iotHubs = array;
                     continue;
                 }
-                if (property.NameEquals("allocationPolicy"))
+                if (prop.NameEquals("deviceRegistryNamespace"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    allocationPolicy = new DeviceProvisioningServicesAllocationPolicy(property.Value.GetString());
+                    deviceRegistryNamespace = DeviceRegistryNamespaceDescription.DeserializeDeviceRegistryNamespaceDescription(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("serviceOperationsHostName"))
+                if (prop.NameEquals("allocationPolicy"u8))
                 {
-                    serviceOperationsHostName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("deviceProvisioningHostName"))
-                {
-                    deviceProvisioningHostName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("idScope"))
-                {
-                    idScope = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("authorizationPolicies"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    allocationPolicy = new DeviceProvisioningServicesAllocationPolicy(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("serviceOperationsHostName"u8))
+                {
+                    serviceOperationsHostName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("deviceProvisioningHostName"u8))
+                {
+                    deviceProvisioningHostName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("idScope"u8))
+                {
+                    idScope = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("authorizationPolicies"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
                     List<DeviceProvisioningServicesSharedAccessKey> array = new List<DeviceProvisioningServicesSharedAccessKey>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(DeviceProvisioningServicesSharedAccessKey.DeserializeDeviceProvisioningServicesSharedAccessKey(item));
+                        array.Add(DeviceProvisioningServicesSharedAccessKey.DeserializeDeviceProvisioningServicesSharedAccessKey(item, options));
                     }
                     authorizationPolicies = array;
                     continue;
                 }
-                if (property.NameEquals("enableDataResidency"))
+                if (prop.NameEquals("enableDataResidency"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    enableDataResidency = property.Value.GetBoolean();
+                    isDataResidencyEnabled = prop.Value.GetBoolean();
                     continue;
                 }
+                if (prop.NameEquals("portalOperationsHostName"u8))
+                {
+                    portalOperationsHostName = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
             }
-            return new DeviceProvisioningServiceProperties(Optional.ToNullable(state), Optional.ToNullable(publicNetworkAccess), Optional.ToList(ipFilterRules), Optional.ToList(privateEndpointConnections), provisioningState.Value, Optional.ToList(iotHubs), Optional.ToNullable(allocationPolicy), serviceOperationsHostName.Value, deviceProvisioningHostName.Value, idScope.Value, Optional.ToList(authorizationPolicies), Optional.ToNullable(enableDataResidency));
+            return new DeviceProvisioningServiceProperties(
+                state,
+                publicNetworkAccess,
+                ipFilterRules ?? new ChangeTrackingList<DeviceProvisioningServicesIPFilterRule>(),
+                privateEndpointConnections ?? new ChangeTrackingList<DeviceProvisioningServicesPrivateEndpointConnectionData>(),
+                provisioningState,
+                iotHubs ?? new ChangeTrackingList<IotHubDefinitionDescription>(),
+                deviceRegistryNamespace,
+                allocationPolicy,
+                serviceOperationsHostName,
+                deviceProvisioningHostName,
+                idScope,
+                authorizationPolicies ?? new ChangeTrackingList<DeviceProvisioningServicesSharedAccessKey>(),
+                isDataResidencyEnabled,
+                portalOperationsHostName,
+                additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DeviceProvisioningServiceProperties>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DeviceProvisioningServiceProperties>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDeviceProvisioningServicesContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DeviceProvisioningServiceProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DeviceProvisioningServiceProperties IPersistableModel<DeviceProvisioningServiceProperties>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DeviceProvisioningServiceProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

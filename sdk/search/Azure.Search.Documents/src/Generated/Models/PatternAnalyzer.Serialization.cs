@@ -5,35 +5,54 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.Search.Documents.Indexes.Models
 {
-    public partial class PatternAnalyzer : IUtf8JsonSerializable
+    public partial class PatternAnalyzer : IUtf8JsonSerializable, IJsonModel<PatternAnalyzer>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<PatternAnalyzer>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<PatternAnalyzer>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<PatternAnalyzer>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(PatternAnalyzer)} does not support writing '{format}' format.");
+            }
+
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(LowerCaseTerms))
             {
-                writer.WritePropertyName("lowercase");
+                writer.WritePropertyName("lowercase"u8);
                 writer.WriteBooleanValue(LowerCaseTerms.Value);
             }
             if (Optional.IsDefined(Pattern))
             {
-                writer.WritePropertyName("pattern");
+                writer.WritePropertyName("pattern"u8);
                 writer.WriteStringValue(Pattern);
             }
             if (Optional.IsDefined(FlagsInternal))
             {
-                writer.WritePropertyName("flags");
+                writer.WritePropertyName("flags"u8);
                 writer.WriteStringValue(FlagsInternal);
             }
             if (Optional.IsCollectionDefined(Stopwords))
             {
-                writer.WritePropertyName("stopwords");
+                writer.WritePropertyName("stopwords"u8);
                 writer.WriteStartArray();
                 foreach (var item in Stopwords)
                 {
@@ -41,48 +60,61 @@ namespace Azure.Search.Documents.Indexes.Models
                 }
                 writer.WriteEndArray();
             }
-            writer.WritePropertyName("@odata.type");
-            writer.WriteStringValue(ODataType);
-            writer.WritePropertyName("name");
-            writer.WriteStringValue(Name);
-            writer.WriteEndObject();
         }
 
-        internal static PatternAnalyzer DeserializePatternAnalyzer(JsonElement element)
+        PatternAnalyzer IJsonModel<PatternAnalyzer>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<bool> lowercase = default;
-            Optional<string> pattern = default;
-            Optional<string> flags = default;
-            Optional<IList<string>> stopwords = default;
+            var format = options.Format == "W" ? ((IPersistableModel<PatternAnalyzer>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(PatternAnalyzer)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializePatternAnalyzer(document.RootElement, options);
+        }
+
+        internal static PatternAnalyzer DeserializePatternAnalyzer(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            bool? lowercase = default;
+            string pattern = default;
+            string flags = default;
+            IList<string> stopwords = default;
             string odataType = default;
             string name = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("lowercase"))
+                if (property.NameEquals("lowercase"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     lowercase = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("pattern"))
+                if (property.NameEquals("pattern"u8))
                 {
                     pattern = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("flags"))
+                if (property.NameEquals("flags"u8))
                 {
                     flags = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("stopwords"))
+                if (property.NameEquals("stopwords"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -93,18 +125,77 @@ namespace Azure.Search.Documents.Indexes.Models
                     stopwords = array;
                     continue;
                 }
-                if (property.NameEquals("@odata.type"))
+                if (property.NameEquals("@odata.type"u8))
                 {
                     odataType = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new PatternAnalyzer(odataType, name, Optional.ToNullable(lowercase), pattern.Value, flags.Value, Optional.ToList(stopwords));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new PatternAnalyzer(
+                odataType,
+                name,
+                serializedAdditionalRawData,
+                lowercase,
+                pattern,
+                flags,
+                stopwords ?? new ChangeTrackingList<string>());
+        }
+
+        BinaryData IPersistableModel<PatternAnalyzer>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<PatternAnalyzer>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureSearchDocumentsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(PatternAnalyzer)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        PatternAnalyzer IPersistableModel<PatternAnalyzer>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<PatternAnalyzer>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializePatternAnalyzer(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(PatternAnalyzer)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<PatternAnalyzer>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static new PatternAnalyzer FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializePatternAnalyzer(document.RootElement);
+        }
+
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
+        internal override RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue(this, ModelSerializationExtensions.WireOptions);
+            return content;
         }
     }
 }

@@ -48,10 +48,20 @@ namespace Azure.Storage
             => new ArgumentException($"Invalid service: '{s}'");
 
         public static ArgumentException InsufficientStorageTransferOptions(long streamLength, long statedMaxBlockSize, long necessaryMinBlockSize)
-            => new ArgumentException($"Cannot upload {streamLength} bytes with a maximum transfer size of {statedMaxBlockSize} bytes per block. Please increase the StorageTransferOptions.MaximumTransferSize to at least {necessaryMinBlockSize}.");
+            => new ArgumentException($"Cannot transfer {streamLength} bytes with a maximum transfer size of {statedMaxBlockSize} bytes per block. Please increase the TransferOptions.MaximumTransferChunkSize to at least {necessaryMinBlockSize}.");
 
         public static InvalidDataException HashMismatch(string hashHeaderName)
             => new InvalidDataException($"{hashHeaderName} did not match hash of recieved data.");
+
+        public static InvalidDataException ChecksumMismatch(ReadOnlySpan<byte> left, ReadOnlySpan<byte> right)
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+            => new InvalidDataException($"Compared checksums did not match. Invalid data may have been written to the destination. Left: {Convert.ToBase64String(left)} Right: {Convert.ToBase64String(right)}");
+#else
+            => new InvalidDataException($"Compared checksums did not match. Invalid data may have been written to the destination. Left: {Convert.ToBase64String(left.ToArray())} Right: {Convert.ToBase64String(right.ToArray())}");
+#endif
+
+        public static InvalidDataException HashMismatchOnStreamedDownload(string mismatchedRange)
+            => new InvalidDataException($"Detected invalid data while streaming to the destination. Range {mismatchedRange} produced mismatched checksum.");
 
         public static ArgumentException PrecalculatedHashNotSupportedOnSplit()
             => new ArgumentException("Precalculated checksum not supported when potentially partitioning an upload.");
@@ -59,11 +69,33 @@ namespace Azure.Storage
         public static ArgumentException CannotDeferTransactionalHashVerification()
             => new ArgumentException("Cannot defer transactional hash verification. Returned hash is unavailable to caller.");
 
+        public static ArgumentException CannotInitializeWriteStreamWithData()
+            => new ArgumentException("Initialized buffer for StorageWriteStream must be empty.");
+
+        public static InvalidDataException InvalidStructuredMessage(string optionalMessage = default)
+            => new InvalidDataException(("Invalid structured message data. " + optionalMessage ?? "").Trim());
+
         internal static void VerifyStreamPosition(Stream stream, string streamName)
         {
             if (stream != null && stream.CanSeek && stream.Length > 0 && stream.Position >= stream.Length)
             {
                 throw new ArgumentException($"{streamName}.{nameof(stream.Position)} must be less than {streamName}.{nameof(stream.Length)}. Please set {streamName}.{nameof(stream.Position)} to the start of the data to upload.");
+            }
+        }
+
+        internal static void AssertBufferMinimumSize(ReadOnlySpan<byte> buffer, int minSize, string paramName)
+        {
+            if (buffer.Length < minSize)
+            {
+                throw new ArgumentException($"Expected buffer Length of at least {minSize} bytes. Got {buffer.Length}.", paramName);
+            }
+        }
+
+        internal static void AssertBufferExactSize(ReadOnlySpan<byte> buffer, int size, string paramName)
+        {
+            if (buffer.Length != size)
+            {
+                throw new ArgumentException($"Expected buffer Length of exactly {size} bytes. Got {buffer.Length}.", paramName);
             }
         }
 

@@ -5,18 +5,47 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The MachineLearningDiagnoseResultValue.
-    /// Serialized Name: DiagnoseResponseResultValue
-    /// </summary>
+    /// <summary> The MachineLearningDiagnoseResultValue. </summary>
     public partial class MachineLearningDiagnoseResultValue
     {
-        /// <summary> Initializes a new instance of MachineLearningDiagnoseResultValue. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="MachineLearningDiagnoseResultValue"/>. </summary>
         internal MachineLearningDiagnoseResultValue()
         {
             UserDefinedRouteResults = new ChangeTrackingList<MachineLearningDiagnoseResult>();
@@ -30,17 +59,18 @@ namespace Azure.ResourceManager.MachineLearning.Models
             OtherResults = new ChangeTrackingList<MachineLearningDiagnoseResult>();
         }
 
-        /// <summary> Initializes a new instance of MachineLearningDiagnoseResultValue. </summary>
-        /// <param name="userDefinedRouteResults"> Serialized Name: DiagnoseResponseResultValue.userDefinedRouteResults. </param>
-        /// <param name="networkSecurityRuleResults"> Serialized Name: DiagnoseResponseResultValue.networkSecurityRuleResults. </param>
-        /// <param name="resourceLockResults"> Serialized Name: DiagnoseResponseResultValue.resourceLockResults. </param>
-        /// <param name="dnsResolutionResults"> Serialized Name: DiagnoseResponseResultValue.dnsResolutionResults. </param>
-        /// <param name="storageAccountResults"> Serialized Name: DiagnoseResponseResultValue.storageAccountResults. </param>
-        /// <param name="keyVaultResults"> Serialized Name: DiagnoseResponseResultValue.keyVaultResults. </param>
-        /// <param name="containerRegistryResults"> Serialized Name: DiagnoseResponseResultValue.containerRegistryResults. </param>
-        /// <param name="applicationInsightsResults"> Serialized Name: DiagnoseResponseResultValue.applicationInsightsResults. </param>
-        /// <param name="otherResults"> Serialized Name: DiagnoseResponseResultValue.otherResults. </param>
-        internal MachineLearningDiagnoseResultValue(IReadOnlyList<MachineLearningDiagnoseResult> userDefinedRouteResults, IReadOnlyList<MachineLearningDiagnoseResult> networkSecurityRuleResults, IReadOnlyList<MachineLearningDiagnoseResult> resourceLockResults, IReadOnlyList<MachineLearningDiagnoseResult> dnsResolutionResults, IReadOnlyList<MachineLearningDiagnoseResult> storageAccountResults, IReadOnlyList<MachineLearningDiagnoseResult> keyVaultResults, IReadOnlyList<MachineLearningDiagnoseResult> containerRegistryResults, IReadOnlyList<MachineLearningDiagnoseResult> applicationInsightsResults, IReadOnlyList<MachineLearningDiagnoseResult> otherResults)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningDiagnoseResultValue"/>. </summary>
+        /// <param name="userDefinedRouteResults"></param>
+        /// <param name="networkSecurityRuleResults"></param>
+        /// <param name="resourceLockResults"></param>
+        /// <param name="dnsResolutionResults"></param>
+        /// <param name="storageAccountResults"></param>
+        /// <param name="keyVaultResults"></param>
+        /// <param name="containerRegistryResults"></param>
+        /// <param name="applicationInsightsResults"></param>
+        /// <param name="otherResults"></param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal MachineLearningDiagnoseResultValue(IReadOnlyList<MachineLearningDiagnoseResult> userDefinedRouteResults, IReadOnlyList<MachineLearningDiagnoseResult> networkSecurityRuleResults, IReadOnlyList<MachineLearningDiagnoseResult> resourceLockResults, IReadOnlyList<MachineLearningDiagnoseResult> dnsResolutionResults, IReadOnlyList<MachineLearningDiagnoseResult> storageAccountResults, IReadOnlyList<MachineLearningDiagnoseResult> keyVaultResults, IReadOnlyList<MachineLearningDiagnoseResult> containerRegistryResults, IReadOnlyList<MachineLearningDiagnoseResult> applicationInsightsResults, IReadOnlyList<MachineLearningDiagnoseResult> otherResults, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             UserDefinedRouteResults = userDefinedRouteResults;
             NetworkSecurityRuleResults = networkSecurityRuleResults;
@@ -51,25 +81,35 @@ namespace Azure.ResourceManager.MachineLearning.Models
             ContainerRegistryResults = containerRegistryResults;
             ApplicationInsightsResults = applicationInsightsResults;
             OtherResults = otherResults;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary> Serialized Name: DiagnoseResponseResultValue.userDefinedRouteResults. </summary>
+        /// <summary> Gets the user defined route results. </summary>
+        [WirePath("userDefinedRouteResults")]
         public IReadOnlyList<MachineLearningDiagnoseResult> UserDefinedRouteResults { get; }
-        /// <summary> Serialized Name: DiagnoseResponseResultValue.networkSecurityRuleResults. </summary>
+        /// <summary> Gets the network security rule results. </summary>
+        [WirePath("networkSecurityRuleResults")]
         public IReadOnlyList<MachineLearningDiagnoseResult> NetworkSecurityRuleResults { get; }
-        /// <summary> Serialized Name: DiagnoseResponseResultValue.resourceLockResults. </summary>
+        /// <summary> Gets the resource lock results. </summary>
+        [WirePath("resourceLockResults")]
         public IReadOnlyList<MachineLearningDiagnoseResult> ResourceLockResults { get; }
-        /// <summary> Serialized Name: DiagnoseResponseResultValue.dnsResolutionResults. </summary>
+        /// <summary> Gets the dns resolution results. </summary>
+        [WirePath("dnsResolutionResults")]
         public IReadOnlyList<MachineLearningDiagnoseResult> DnsResolutionResults { get; }
-        /// <summary> Serialized Name: DiagnoseResponseResultValue.storageAccountResults. </summary>
+        /// <summary> Gets the storage account results. </summary>
+        [WirePath("storageAccountResults")]
         public IReadOnlyList<MachineLearningDiagnoseResult> StorageAccountResults { get; }
-        /// <summary> Serialized Name: DiagnoseResponseResultValue.keyVaultResults. </summary>
+        /// <summary> Gets the key vault results. </summary>
+        [WirePath("keyVaultResults")]
         public IReadOnlyList<MachineLearningDiagnoseResult> KeyVaultResults { get; }
-        /// <summary> Serialized Name: DiagnoseResponseResultValue.containerRegistryResults. </summary>
+        /// <summary> Gets the container registry results. </summary>
+        [WirePath("containerRegistryResults")]
         public IReadOnlyList<MachineLearningDiagnoseResult> ContainerRegistryResults { get; }
-        /// <summary> Serialized Name: DiagnoseResponseResultValue.applicationInsightsResults. </summary>
+        /// <summary> Gets the application insights results. </summary>
+        [WirePath("applicationInsightsResults")]
         public IReadOnlyList<MachineLearningDiagnoseResult> ApplicationInsightsResults { get; }
-        /// <summary> Serialized Name: DiagnoseResponseResultValue.otherResults. </summary>
+        /// <summary> Gets the other results. </summary>
+        [WirePath("otherResults")]
         public IReadOnlyList<MachineLearningDiagnoseResult> OtherResults { get; }
     }
 }

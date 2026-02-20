@@ -5,6 +5,8 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure;
 
 namespace Azure.ResourceManager.DataBox.Models
@@ -12,20 +14,19 @@ namespace Azure.ResourceManager.DataBox.Models
     /// <summary> Properties of create order limit for subscription validation response. </summary>
     public partial class CreateOrderLimitForSubscriptionValidationResult : DataBoxValidationInputResult
     {
-        /// <summary> Initializes a new instance of CreateOrderLimitForSubscriptionValidationResult. </summary>
-        internal CreateOrderLimitForSubscriptionValidationResult()
+        /// <summary> Initializes a new instance of <see cref="CreateOrderLimitForSubscriptionValidationResult"/>. </summary>
+        internal CreateOrderLimitForSubscriptionValidationResult() : base(DataBoxValidationInputDiscriminator.ValidateCreateOrderLimit)
         {
-            ValidationType = DataBoxValidationInputDiscriminator.ValidateCreateOrderLimit;
         }
 
-        /// <summary> Initializes a new instance of CreateOrderLimitForSubscriptionValidationResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="CreateOrderLimitForSubscriptionValidationResult"/>. </summary>
         /// <param name="validationType"> Identifies the type of validation response. </param>
         /// <param name="error"> Error code and message of validation response. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
         /// <param name="status"> Create order limit validation status. </param>
-        internal CreateOrderLimitForSubscriptionValidationResult(DataBoxValidationInputDiscriminator validationType, ResponseError error, DataBoxValidationStatus? status) : base(validationType, error)
+        internal CreateOrderLimitForSubscriptionValidationResult(DataBoxValidationInputDiscriminator validationType, ResponseError error, IDictionary<string, BinaryData> additionalBinaryDataProperties, DataBoxValidationStatus? status) : base(validationType, error, additionalBinaryDataProperties)
         {
             Status = status;
-            ValidationType = validationType;
         }
 
         /// <summary> Create order limit validation status. </summary>

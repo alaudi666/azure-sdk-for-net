@@ -5,27 +5,134 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.StorageSync.Models
 {
     /// <summary> Parameters for updating an Server Endpoint. </summary>
     public partial class StorageSyncServerEndpointPatch
     {
-        /// <summary> Initializes a new instance of StorageSyncServerEndpointPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="StorageSyncServerEndpointPatch"/>. </summary>
         public StorageSyncServerEndpointPatch()
         {
         }
 
+        /// <summary> Initializes a new instance of <see cref="StorageSyncServerEndpointPatch"/>. </summary>
+        /// <param name="properties"> The properties of the server endpoint. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal StorageSyncServerEndpointPatch(ServerEndpointUpdateProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> The properties of the server endpoint. </summary>
+        internal ServerEndpointUpdateProperties Properties { get; set; }
+
         /// <summary> Cloud Tiering. </summary>
-        public StorageSyncFeatureStatus? CloudTiering { get; set; }
+        public StorageSyncFeatureStatus? CloudTiering
+        {
+            get
+            {
+                return Properties is null ? default : Properties.CloudTiering;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ServerEndpointUpdateProperties();
+                }
+                Properties.CloudTiering = value.Value;
+            }
+        }
+
         /// <summary> Level of free space to be maintained by Cloud Tiering if it is enabled. </summary>
-        public int? VolumeFreeSpacePercent { get; set; }
+        public int? VolumeFreeSpacePercent
+        {
+            get
+            {
+                return Properties is null ? default : Properties.VolumeFreeSpacePercent;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ServerEndpointUpdateProperties();
+                }
+                Properties.VolumeFreeSpacePercent = value.Value;
+            }
+        }
+
         /// <summary> Tier files older than days. </summary>
-        public int? TierFilesOlderThanDays { get; set; }
+        public int? TierFilesOlderThanDays
+        {
+            get
+            {
+                return Properties is null ? default : Properties.TierFilesOlderThanDays;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ServerEndpointUpdateProperties();
+                }
+                Properties.TierFilesOlderThanDays = value.Value;
+            }
+        }
+
         /// <summary> Offline data transfer. </summary>
-        public StorageSyncFeatureStatus? OfflineDataTransfer { get; set; }
+        public StorageSyncFeatureStatus? OfflineDataTransfer
+        {
+            get
+            {
+                return Properties is null ? default : Properties.OfflineDataTransfer;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ServerEndpointUpdateProperties();
+                }
+                Properties.OfflineDataTransfer = value.Value;
+            }
+        }
+
         /// <summary> Offline data transfer share name. </summary>
-        public string OfflineDataTransferShareName { get; set; }
+        public string OfflineDataTransferShareName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.OfflineDataTransferShareName;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ServerEndpointUpdateProperties();
+                }
+                Properties.OfflineDataTransferShareName = value;
+            }
+        }
+
         /// <summary> Policy for enabling follow-the-sun business models: link local cache to cloud behavior to pre-populate before local access. </summary>
-        public LocalCacheMode? LocalCacheMode { get; set; }
+        public LocalCacheMode? LocalCacheMode
+        {
+            get
+            {
+                return Properties is null ? default : Properties.LocalCacheMode;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ServerEndpointUpdateProperties();
+                }
+                Properties.LocalCacheMode = value.Value;
+            }
+        }
     }
 }

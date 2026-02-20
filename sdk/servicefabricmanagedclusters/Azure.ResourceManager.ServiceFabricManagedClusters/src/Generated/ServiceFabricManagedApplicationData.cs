@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
@@ -12,59 +13,111 @@ using Azure.ResourceManager.ServiceFabricManagedClusters.Models;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters
 {
-    /// <summary> A class representing the ServiceFabricManagedApplication data model. </summary>
+    /// <summary> The application resource. </summary>
     public partial class ServiceFabricManagedApplicationData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of ServiceFabricManagedApplicationData. </summary>
-        /// <param name="location"> The location. </param>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedApplicationData"/>. </summary>
+        /// <param name="location"> The geo-location where the resource lives. </param>
         public ServiceFabricManagedApplicationData(AzureLocation location) : base(location)
         {
-            Parameters = new ChangeTrackingDictionary<string, string>();
-            ManagedIdentities = new ChangeTrackingList<ApplicationUserAssignedIdentityInfo>();
         }
 
-        /// <summary> Initializes a new instance of ServiceFabricManagedApplicationData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="tags"> The tags. </param>
-        /// <param name="location"> The location. </param>
+        /// <summary> Initializes a new instance of <see cref="ServiceFabricManagedApplicationData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="location"> The geo-location where the resource lives. </param>
+        /// <param name="properties"> The application resource properties. </param>
+        /// <param name="tags"> Resource tags. </param>
         /// <param name="identity"> Describes the managed identities for an Azure resource. </param>
-        /// <param name="provisioningState"> The current deployment or provisioning state, which only appears in the response. </param>
-        /// <param name="version">
-        /// The version of the application type as defined in the application manifest.
-        /// This name must be the full Arm Resource ID for the referenced application type version.
-        /// 
-        /// </param>
-        /// <param name="parameters"> List of application parameters with overridden values from their default values specified in the application manifest. </param>
-        /// <param name="upgradePolicy"> Describes the policy for a monitored application upgrade. </param>
-        /// <param name="managedIdentities"> List of user assigned identities for the application, each mapped to a friendly name. </param>
-        internal ServiceFabricManagedApplicationData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, ManagedServiceIdentity identity, string provisioningState, string version, IDictionary<string, string> parameters, ApplicationUpgradePolicy upgradePolicy, IList<ApplicationUserAssignedIdentityInfo> managedIdentities) : base(id, name, resourceType, systemData, tags, location)
+        internal ServiceFabricManagedApplicationData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, AzureLocation location, ApplicationResourceProperties properties, IDictionary<string, string> tags, ManagedServiceIdentity identity) : base(id, name, resourceType, systemData, tags, location)
         {
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
             Identity = identity;
-            ProvisioningState = provisioningState;
-            Version = version;
-            Parameters = parameters;
-            UpgradePolicy = upgradePolicy;
-            ManagedIdentities = managedIdentities;
         }
+
+        /// <summary> The application resource properties. </summary>
+        internal ApplicationResourceProperties Properties { get; set; }
 
         /// <summary> Describes the managed identities for an Azure resource. </summary>
         public ManagedServiceIdentity Identity { get; set; }
+
+        /// <summary> List of user assigned identities for the application, each mapped to a friendly name. </summary>
+        public IList<ApplicationUserAssignedIdentityInfo> ManagedIdentities
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new ApplicationResourceProperties();
+                }
+                return Properties.ManagedIdentities;
+            }
+        }
+
         /// <summary> The current deployment or provisioning state, which only appears in the response. </summary>
-        public string ProvisioningState { get; }
+        public string ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+        }
+
         /// <summary>
         /// The version of the application type as defined in the application manifest.
         /// This name must be the full Arm Resource ID for the referenced application type version.
-        /// 
         /// </summary>
-        public string Version { get; set; }
+        public string Version
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Version;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ApplicationResourceProperties();
+                }
+                Properties.Version = value;
+            }
+        }
+
         /// <summary> List of application parameters with overridden values from their default values specified in the application manifest. </summary>
-        public IDictionary<string, string> Parameters { get; }
+        public IDictionary<string, string> Parameters
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new ApplicationResourceProperties();
+                }
+                return Properties.Parameters;
+            }
+        }
+
         /// <summary> Describes the policy for a monitored application upgrade. </summary>
-        public ApplicationUpgradePolicy UpgradePolicy { get; set; }
-        /// <summary> List of user assigned identities for the application, each mapped to a friendly name. </summary>
-        public IList<ApplicationUserAssignedIdentityInfo> ManagedIdentities { get; }
+        public ApplicationUpgradePolicy UpgradePolicy
+        {
+            get
+            {
+                return Properties is null ? default : Properties.UpgradePolicy;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ApplicationResourceProperties();
+                }
+                Properties.UpgradePolicy = value;
+            }
+        }
     }
 }

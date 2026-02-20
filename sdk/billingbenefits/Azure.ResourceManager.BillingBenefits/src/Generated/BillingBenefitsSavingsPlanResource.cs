@@ -9,23 +9,24 @@ using System;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.BillingBenefits.Models;
 
 namespace Azure.ResourceManager.BillingBenefits
 {
     /// <summary>
     /// A Class representing a BillingBenefitsSavingsPlan along with the instance operations that can be performed on it.
-    /// If you have a <see cref="ResourceIdentifier" /> you can construct a <see cref="BillingBenefitsSavingsPlanResource" />
-    /// from an instance of <see cref="ArmClient" /> using the GetBillingBenefitsSavingsPlanResource method.
-    /// Otherwise you can get one from its parent resource <see cref="BillingBenefitsSavingsPlanOrderResource" /> using the GetBillingBenefitsSavingsPlan method.
+    /// If you have a <see cref="ResourceIdentifier"/> you can construct a <see cref="BillingBenefitsSavingsPlanResource"/>
+    /// from an instance of <see cref="ArmClient"/> using the GetBillingBenefitsSavingsPlanResource method.
+    /// Otherwise you can get one from its parent resource <see cref="BillingBenefitsSavingsPlanOrderResource"/> using the GetBillingBenefitsSavingsPlan method.
     /// </summary>
     public partial class BillingBenefitsSavingsPlanResource : ArmResource
     {
         /// <summary> Generate the resource identifier of a <see cref="BillingBenefitsSavingsPlanResource"/> instance. </summary>
+        /// <param name="savingsPlanOrderId"> The savingsPlanOrderId. </param>
+        /// <param name="savingsPlanId"> The savingsPlanId. </param>
         public static ResourceIdentifier CreateResourceIdentifier(string savingsPlanOrderId, string savingsPlanId)
         {
             var resourceId = $"/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}";
@@ -36,12 +37,15 @@ namespace Azure.ResourceManager.BillingBenefits
         private readonly SavingsPlanRestOperations _billingBenefitsSavingsPlanSavingsPlanRestClient;
         private readonly BillingBenefitsSavingsPlanData _data;
 
+        /// <summary> Gets the resource type for the operations. </summary>
+        public static readonly ResourceType ResourceType = "Microsoft.BillingBenefits/savingsPlanOrders/savingsPlans";
+
         /// <summary> Initializes a new instance of the <see cref="BillingBenefitsSavingsPlanResource"/> class for mocking. </summary>
         protected BillingBenefitsSavingsPlanResource()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref = "BillingBenefitsSavingsPlanResource"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="BillingBenefitsSavingsPlanResource"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
         /// <param name="data"> The resource that is the target of operations. </param>
         internal BillingBenefitsSavingsPlanResource(ArmClient client, BillingBenefitsSavingsPlanData data) : this(client, data.Id)
@@ -62,9 +66,6 @@ namespace Azure.ResourceManager.BillingBenefits
 			ValidateResourceId(Id);
 #endif
         }
-
-        /// <summary> Gets the resource type for the operations. </summary>
-        public static readonly ResourceType ResourceType = "Microsoft.BillingBenefits/savingsPlanOrders/savingsPlans";
 
         /// <summary> Gets whether or not the current instance has data. </summary>
         public virtual bool HasData { get; }
@@ -89,8 +90,24 @@ namespace Azure.ResourceManager.BillingBenefits
 
         /// <summary>
         /// Get savings plan.
-        /// Request Path: /providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}
-        /// Operation Id: SavingsPlan_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SavingsPlan_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingBenefitsSavingsPlanResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="expand"> May be used to expand the detail information of some properties. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -114,8 +131,24 @@ namespace Azure.ResourceManager.BillingBenefits
 
         /// <summary>
         /// Get savings plan.
-        /// Request Path: /providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}
-        /// Operation Id: SavingsPlan_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SavingsPlan_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingBenefitsSavingsPlanResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="expand"> May be used to expand the detail information of some properties. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -139,8 +172,24 @@ namespace Azure.ResourceManager.BillingBenefits
 
         /// <summary>
         /// Update savings plan.
-        /// Request Path: /providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}
-        /// Operation Id: SavingsPlan_Update
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SavingsPlan_Update</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingBenefitsSavingsPlanResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="patch"> Request body for patching a savings plan order alias. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -165,8 +214,24 @@ namespace Azure.ResourceManager.BillingBenefits
 
         /// <summary>
         /// Update savings plan.
-        /// Request Path: /providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}
-        /// Operation Id: SavingsPlan_Update
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SavingsPlan_Update</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingBenefitsSavingsPlanResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="patch"> Request body for patching a savings plan order alias. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -191,94 +256,70 @@ namespace Azure.ResourceManager.BillingBenefits
 
         /// <summary>
         /// Validate savings plan patch.
-        /// Request Path: /providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}/validate
-        /// Operation Id: SavingsPlan_ValidateUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}/validate</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SavingsPlan_ValidateUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingBenefitsSavingsPlanResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="content"> Request body for validating a savings plan patch request. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
-        /// <returns> An async collection of <see cref="SavingsPlanValidateResult" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SavingsPlanValidateResult"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SavingsPlanValidateResult> ValidateUpdateAsync(SavingsPlanUpdateValidateContent content, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(content, nameof(content));
 
-            async Task<Page<SavingsPlanValidateResult>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _billingBenefitsSavingsPlanSavingsPlanClientDiagnostics.CreateScope("BillingBenefitsSavingsPlanResource.ValidateUpdate");
-                scope.Start();
-                try
-                {
-                    var response = await _billingBenefitsSavingsPlanSavingsPlanRestClient.ValidateUpdateAsync(Id.Parent.Name, Id.Name, content, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Benefits, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<SavingsPlanValidateResult>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _billingBenefitsSavingsPlanSavingsPlanClientDiagnostics.CreateScope("BillingBenefitsSavingsPlanResource.ValidateUpdate");
-                scope.Start();
-                try
-                {
-                    var response = await _billingBenefitsSavingsPlanSavingsPlanRestClient.ValidateUpdateNextPageAsync(nextLink, Id.Parent.Name, Id.Name, content, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Benefits, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _billingBenefitsSavingsPlanSavingsPlanRestClient.CreateValidateUpdateRequest(Id.Parent.Name, Id.Name, content);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _billingBenefitsSavingsPlanSavingsPlanRestClient.CreateValidateUpdateNextPageRequest(nextLink, Id.Parent.Name, Id.Name, content);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => SavingsPlanValidateResult.DeserializeSavingsPlanValidateResult(e), _billingBenefitsSavingsPlanSavingsPlanClientDiagnostics, Pipeline, "BillingBenefitsSavingsPlanResource.ValidateUpdate", "benefits", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Validate savings plan patch.
-        /// Request Path: /providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}/validate
-        /// Operation Id: SavingsPlan_ValidateUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.BillingBenefits/savingsPlanOrders/{savingsPlanOrderId}/savingsPlans/{savingsPlanId}/validate</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>SavingsPlan_ValidateUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-11-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingBenefitsSavingsPlanResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="content"> Request body for validating a savings plan patch request. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="content"/> is null. </exception>
-        /// <returns> A collection of <see cref="SavingsPlanValidateResult" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SavingsPlanValidateResult"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SavingsPlanValidateResult> ValidateUpdate(SavingsPlanUpdateValidateContent content, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(content, nameof(content));
 
-            Page<SavingsPlanValidateResult> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _billingBenefitsSavingsPlanSavingsPlanClientDiagnostics.CreateScope("BillingBenefitsSavingsPlanResource.ValidateUpdate");
-                scope.Start();
-                try
-                {
-                    var response = _billingBenefitsSavingsPlanSavingsPlanRestClient.ValidateUpdate(Id.Parent.Name, Id.Name, content, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Benefits, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<SavingsPlanValidateResult> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _billingBenefitsSavingsPlanSavingsPlanClientDiagnostics.CreateScope("BillingBenefitsSavingsPlanResource.ValidateUpdate");
-                scope.Start();
-                try
-                {
-                    var response = _billingBenefitsSavingsPlanSavingsPlanRestClient.ValidateUpdateNextPage(nextLink, Id.Parent.Name, Id.Name, content, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Benefits, response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _billingBenefitsSavingsPlanSavingsPlanRestClient.CreateValidateUpdateRequest(Id.Parent.Name, Id.Name, content);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _billingBenefitsSavingsPlanSavingsPlanRestClient.CreateValidateUpdateNextPageRequest(nextLink, Id.Parent.Name, Id.Name, content);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => SavingsPlanValidateResult.DeserializeSavingsPlanValidateResult(e), _billingBenefitsSavingsPlanSavingsPlanClientDiagnostics, Pipeline, "BillingBenefitsSavingsPlanResource.ValidateUpdate", "benefits", "nextLink", cancellationToken);
         }
     }
 }

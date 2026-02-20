@@ -5,8 +5,8 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
@@ -14,24 +14,30 @@ namespace Azure.ResourceManager.EdgeOrder.Models
     /// <summary> List of orders. </summary>
     internal partial class OrderResourceList
     {
-        /// <summary> Initializes a new instance of OrderResourceList. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="OrderResourceList"/>. </summary>
         internal OrderResourceList()
         {
             Value = new ChangeTrackingList<EdgeOrderData>();
         }
 
-        /// <summary> Initializes a new instance of OrderResourceList. </summary>
-        /// <param name="value"> List of order resources. </param>
-        /// <param name="nextLink"> Link for the next set of order resources. </param>
-        internal OrderResourceList(IReadOnlyList<EdgeOrderData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="OrderResourceList"/>. </summary>
+        /// <param name="value"> The OrderResource items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal OrderResourceList(IReadOnlyList<EdgeOrderData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of order resources. </summary>
+        /// <summary> The OrderResource items on this page. </summary>
         public IReadOnlyList<EdgeOrderData> Value { get; }
-        /// <summary> Link for the next set of order resources. </summary>
-        public string NextLink { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

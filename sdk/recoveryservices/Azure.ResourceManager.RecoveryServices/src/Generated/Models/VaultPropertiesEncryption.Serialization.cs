@@ -5,73 +5,171 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.RecoveryServices;
 
 namespace Azure.ResourceManager.RecoveryServices.Models
 {
-    public partial class VaultPropertiesEncryption : IUtf8JsonSerializable
+    /// <summary> Customer Managed Key details of the resource. </summary>
+    public partial class VaultPropertiesEncryption : IJsonModel<VaultPropertiesEncryption>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual VaultPropertiesEncryption PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<VaultPropertiesEncryption>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeVaultPropertiesEncryption(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(VaultPropertiesEncryption)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<VaultPropertiesEncryption>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(KeyVaultProperties))
-            {
-                writer.WritePropertyName("keyVaultProperties");
-                writer.WriteObjectValue(KeyVaultProperties);
-            }
-            if (Optional.IsDefined(KekIdentity))
-            {
-                writer.WritePropertyName("kekIdentity");
-                writer.WriteObjectValue(KekIdentity);
-            }
-            if (Optional.IsDefined(InfrastructureEncryption))
-            {
-                writer.WritePropertyName("infrastructureEncryption");
-                writer.WriteStringValue(InfrastructureEncryption.Value.ToString());
-            }
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static VaultPropertiesEncryption DeserializeVaultPropertiesEncryption(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<CmkKeyVaultProperties> keyVaultProperties = default;
-            Optional<CmkKekIdentity> kekIdentity = default;
-            Optional<InfrastructureEncryptionState> infrastructureEncryption = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<VaultPropertiesEncryption>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("keyVaultProperties"))
+                throw new FormatException($"The model {nameof(VaultPropertiesEncryption)} does not support writing '{format}' format.");
+            }
+            if (Optional.IsDefined(KeyVaultProperties))
+            {
+                writer.WritePropertyName("keyVaultProperties"u8);
+                writer.WriteObjectValue(KeyVaultProperties, options);
+            }
+            if (Optional.IsDefined(KekIdentity))
+            {
+                writer.WritePropertyName("kekIdentity"u8);
+                writer.WriteObjectValue(KekIdentity, options);
+            }
+            if (Optional.IsDefined(InfrastructureEncryption))
+            {
+                writer.WritePropertyName("infrastructureEncryption"u8);
+                writer.WriteStringValue(InfrastructureEncryption.Value.ToString());
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    keyVaultProperties = CmkKeyVaultProperties.DeserializeCmkKeyVaultProperties(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("kekIdentity"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    kekIdentity = CmkKekIdentity.DeserializeCmkKekIdentity(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("infrastructureEncryption"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    infrastructureEncryption = new InfrastructureEncryptionState(property.Value.GetString());
-                    continue;
+#endif
                 }
             }
-            return new VaultPropertiesEncryption(keyVaultProperties.Value, kekIdentity.Value, Optional.ToNullable(infrastructureEncryption));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        VaultPropertiesEncryption IJsonModel<VaultPropertiesEncryption>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual VaultPropertiesEncryption JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<VaultPropertiesEncryption>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(VaultPropertiesEncryption)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeVaultPropertiesEncryption(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static VaultPropertiesEncryption DeserializeVaultPropertiesEncryption(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            CmkKeyVaultProperties keyVaultProperties = default;
+            CmkKekIdentity kekIdentity = default;
+            InfrastructureEncryptionState? infrastructureEncryption = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("keyVaultProperties"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    keyVaultProperties = CmkKeyVaultProperties.DeserializeCmkKeyVaultProperties(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("kekIdentity"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    kekIdentity = CmkKekIdentity.DeserializeCmkKekIdentity(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("infrastructureEncryption"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    infrastructureEncryption = new InfrastructureEncryptionState(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new VaultPropertiesEncryption(keyVaultProperties, kekIdentity, infrastructureEncryption, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<VaultPropertiesEncryption>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<VaultPropertiesEncryption>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerRecoveryServicesContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(VaultPropertiesEncryption)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        VaultPropertiesEncryption IPersistableModel<VaultPropertiesEncryption>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<VaultPropertiesEncryption>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

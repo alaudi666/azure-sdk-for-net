@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The SamplingAlgorithmType.
-    /// Serialized Name: SamplingAlgorithmType
-    /// </summary>
+    /// <summary> The SamplingAlgorithmType. </summary>
     public readonly partial struct SamplingAlgorithmType : IEquatable<SamplingAlgorithmType>
     {
         private readonly string _value;
@@ -29,26 +26,17 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string RandomValue = "Random";
         private const string BayesianValue = "Bayesian";
 
-        /// <summary>
-        /// Grid
-        /// Serialized Name: SamplingAlgorithmType.Grid
-        /// </summary>
+        /// <summary> Grid. </summary>
         public static SamplingAlgorithmType Grid { get; } = new SamplingAlgorithmType(GridValue);
-        /// <summary>
-        /// Random
-        /// Serialized Name: SamplingAlgorithmType.Random
-        /// </summary>
+        /// <summary> Random. </summary>
         public static SamplingAlgorithmType Random { get; } = new SamplingAlgorithmType(RandomValue);
-        /// <summary>
-        /// Bayesian
-        /// Serialized Name: SamplingAlgorithmType.Bayesian
-        /// </summary>
+        /// <summary> Bayesian. </summary>
         public static SamplingAlgorithmType Bayesian { get; } = new SamplingAlgorithmType(BayesianValue);
         /// <summary> Determines if two <see cref="SamplingAlgorithmType"/> values are the same. </summary>
         public static bool operator ==(SamplingAlgorithmType left, SamplingAlgorithmType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="SamplingAlgorithmType"/> values are not the same. </summary>
         public static bool operator !=(SamplingAlgorithmType left, SamplingAlgorithmType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="SamplingAlgorithmType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="SamplingAlgorithmType"/>. </summary>
         public static implicit operator SamplingAlgorithmType(string value) => new SamplingAlgorithmType(value);
 
         /// <inheritdoc />
@@ -59,7 +47,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

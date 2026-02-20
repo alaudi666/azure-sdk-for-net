@@ -5,12 +5,19 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.KeyVault;
+
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> SKU details. </summary>
     public partial class KeyVaultSku
     {
-        /// <summary> Initializes a new instance of KeyVaultSku. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="KeyVaultSku"/>. </summary>
         /// <param name="family"> SKU family name. </param>
         /// <param name="name"> SKU name to specify whether the key vault is a standard vault or a premium vault. </param>
         public KeyVaultSku(KeyVaultSkuFamily family, KeyVaultSkuName name)
@@ -19,9 +26,23 @@ namespace Azure.ResourceManager.KeyVault.Models
             Name = name;
         }
 
+        /// <summary> Initializes a new instance of <see cref="KeyVaultSku"/>. </summary>
+        /// <param name="family"> SKU family name. </param>
+        /// <param name="name"> SKU name to specify whether the key vault is a standard vault or a premium vault. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal KeyVaultSku(KeyVaultSkuFamily family, KeyVaultSkuName name, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Family = family;
+            Name = name;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> SKU family name. </summary>
+        [WirePath("family")]
         public KeyVaultSkuFamily Family { get; set; }
+
         /// <summary> SKU name to specify whether the key vault is a standard vault or a premium vault. </summary>
+        [WirePath("name")]
         public KeyVaultSkuName Name { get; set; }
     }
 }

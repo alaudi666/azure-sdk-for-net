@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
 using Azure.ResourceManager.Dynatrace;
 
 namespace Azure.ResourceManager.Dynatrace.Models
@@ -16,28 +15,31 @@ namespace Azure.ResourceManager.Dynatrace.Models
     /// <summary> The response of a TagRule list operation. </summary>
     internal partial class TagRuleListResult
     {
-        /// <summary> Initializes a new instance of TagRuleListResult. </summary>
-        /// <param name="value"> The items on this page. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="TagRuleListResult"/>. </summary>
+        /// <param name="value"> The TagRule items on this page. </param>
         internal TagRuleListResult(IEnumerable<DynatraceTagRuleData> value)
         {
-            Argument.AssertNotNull(value, nameof(value));
-
             Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of TagRuleListResult. </summary>
-        /// <param name="value"> The items on this page. </param>
+        /// <summary> Initializes a new instance of <see cref="TagRuleListResult"/>. </summary>
+        /// <param name="value"> The TagRule items on this page. </param>
         /// <param name="nextLink"> The link to the next page of items. </param>
-        internal TagRuleListResult(IReadOnlyList<DynatraceTagRuleData> value, string nextLink)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal TagRuleListResult(IList<DynatraceTagRuleData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The items on this page. </summary>
-        public IReadOnlyList<DynatraceTagRuleData> Value { get; }
+        /// <summary> The TagRule items on this page. </summary>
+        public IList<DynatraceTagRuleData> Value { get; }
+
         /// <summary> The link to the next page of items. </summary>
-        public string NextLink { get; }
+        public Uri NextLink { get; }
     }
 }

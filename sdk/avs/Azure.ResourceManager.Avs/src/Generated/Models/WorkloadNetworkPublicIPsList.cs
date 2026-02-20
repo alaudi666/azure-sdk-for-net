@@ -5,33 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> A list of NSX Public IP Blocks. </summary>
+    /// <summary> The response of a WorkloadNetworkPublicIP list operation. </summary>
     internal partial class WorkloadNetworkPublicIPsList
     {
-        /// <summary> Initializes a new instance of WorkloadNetworkPublicIPsList. </summary>
-        internal WorkloadNetworkPublicIPsList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkPublicIPsList"/>. </summary>
+        /// <param name="value"> The WorkloadNetworkPublicIP items on this page. </param>
+        internal WorkloadNetworkPublicIPsList(IEnumerable<WorkloadNetworkPublicIPData> value)
         {
-            Value = new ChangeTrackingList<WorkloadNetworkPublicIPData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of WorkloadNetworkPublicIPsList. </summary>
-        /// <param name="value"> The items on the page. </param>
-        /// <param name="nextLink"> URL to get the next page if any. </param>
-        internal WorkloadNetworkPublicIPsList(IReadOnlyList<WorkloadNetworkPublicIPData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkPublicIPsList"/>. </summary>
+        /// <param name="value"> The WorkloadNetworkPublicIP items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal WorkloadNetworkPublicIPsList(IList<WorkloadNetworkPublicIPData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The items on the page. </summary>
-        public IReadOnlyList<WorkloadNetworkPublicIPData> Value { get; }
-        /// <summary> URL to get the next page if any. </summary>
-        public string NextLink { get; }
+        /// <summary> The WorkloadNetworkPublicIP items on this page. </summary>
+        public IList<WorkloadNetworkPublicIPData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

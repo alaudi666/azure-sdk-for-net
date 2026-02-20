@@ -6,14 +6,18 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Creates a particular correlation between services. </summary>
     public partial class ManagedServiceCorrelation
     {
-        /// <summary> Initializes a new instance of ManagedServiceCorrelation. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedServiceCorrelation"/>. </summary>
         /// <param name="scheme"> The ServiceCorrelationScheme which describes the relationship between this service and the service specified via ServiceName. </param>
         /// <param name="serviceName"> The Arm Resource ID of the service that the correlation relationship is established with. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="serviceName"/> is null. </exception>
@@ -25,8 +29,20 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
             ServiceName = serviceName;
         }
 
+        /// <summary> Initializes a new instance of <see cref="ManagedServiceCorrelation"/>. </summary>
+        /// <param name="scheme"> The ServiceCorrelationScheme which describes the relationship between this service and the service specified via ServiceName. </param>
+        /// <param name="serviceName"> The Arm Resource ID of the service that the correlation relationship is established with. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedServiceCorrelation(ManagedServiceCorrelationScheme scheme, string serviceName, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Scheme = scheme;
+            ServiceName = serviceName;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> The ServiceCorrelationScheme which describes the relationship between this service and the service specified via ServiceName. </summary>
         public ManagedServiceCorrelationScheme Scheme { get; set; }
+
         /// <summary> The Arm Resource ID of the service that the correlation relationship is established with. </summary>
         public string ServiceName { get; set; }
     }

@@ -5,28 +5,42 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Capacity of the sku. </summary>
     public partial class DataBoxSkuCapacity
     {
-        /// <summary> Initializes a new instance of DataBoxSkuCapacity. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DataBoxSkuCapacity"/>. </summary>
         internal DataBoxSkuCapacity()
         {
         }
 
-        /// <summary> Initializes a new instance of DataBoxSkuCapacity. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataBoxSkuCapacity"/>. </summary>
         /// <param name="usable"> Usable capacity in TB. </param>
         /// <param name="maximum"> Maximum capacity in TB. </param>
-        internal DataBoxSkuCapacity(string usable, string maximum)
+        /// <param name="individualSkuUsable"> Maximum capacity per device in TB. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DataBoxSkuCapacity(string usable, string maximum, string individualSkuUsable, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Usable = usable;
             Maximum = maximum;
+            IndividualSkuUsable = individualSkuUsable;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Usable capacity in TB. </summary>
         public string Usable { get; }
+
         /// <summary> Maximum capacity in TB. </summary>
         public string Maximum { get; }
+
+        /// <summary> Maximum capacity per device in TB. </summary>
+        public string IndividualSkuUsable { get; }
     }
 }

@@ -6,24 +6,35 @@
 #nullable disable
 
 using System.Text.Json;
-using Azure.Core;
 
 namespace Azure.Containers.ContainerRegistry
 {
-    internal partial class AcrAccessToken
+    public partial class AcrAccessToken
     {
         internal static AcrAccessToken DeserializeAcrAccessToken(JsonElement element)
         {
-            Optional<string> accessToken = default;
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string accessToken = default;
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("access_token"))
+                if (property.NameEquals("access_token"u8))
                 {
                     accessToken = property.Value.GetString();
                     continue;
                 }
             }
-            return new AcrAccessToken(accessToken.Value);
+            return new AcrAccessToken(accessToken);
+        }
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static AcrAccessToken FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeAcrAccessToken(document.RootElement);
         }
     }
 }

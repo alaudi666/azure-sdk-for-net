@@ -8,8 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
@@ -20,63 +19,90 @@ using Azure.ResourceManager;
 namespace Azure.ResourceManager.Avs
 {
     /// <summary>
-    /// A class representing a collection of <see cref="WorkloadNetworkPublicIPResource" /> and their operations.
-    /// Each <see cref="WorkloadNetworkPublicIPResource" /> in the collection will belong to the same instance of <see cref="AvsPrivateCloudResource" />.
-    /// To get a <see cref="WorkloadNetworkPublicIPCollection" /> instance call the GetWorkloadNetworkPublicIPs method from an instance of <see cref="AvsPrivateCloudResource" />.
+    /// A class representing a collection of <see cref="WorkloadNetworkPublicIPResource"/> and their operations.
+    /// Each <see cref="WorkloadNetworkPublicIPResource"/> in the collection will belong to the same instance of <see cref="WorkloadNetworkResource"/>.
+    /// To get a <see cref="WorkloadNetworkPublicIPCollection"/> instance call the GetWorkloadNetworkPublicIPs method from an instance of <see cref="WorkloadNetworkResource"/>.
     /// </summary>
     public partial class WorkloadNetworkPublicIPCollection : ArmCollection, IEnumerable<WorkloadNetworkPublicIPResource>, IAsyncEnumerable<WorkloadNetworkPublicIPResource>
     {
-        private readonly ClientDiagnostics _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics;
-        private readonly WorkloadNetworksRestOperations _workloadNetworkPublicIPWorkloadNetworksRestClient;
+        private readonly ClientDiagnostics _workloadNetworksClientDiagnostics;
+        private readonly WorkloadNetworks _workloadNetworksRestClient;
 
-        /// <summary> Initializes a new instance of the <see cref="WorkloadNetworkPublicIPCollection"/> class for mocking. </summary>
+        /// <summary> Initializes a new instance of WorkloadNetworkPublicIPCollection for mocking. </summary>
         protected WorkloadNetworkPublicIPCollection()
         {
         }
 
-        /// <summary> Initializes a new instance of the <see cref="WorkloadNetworkPublicIPCollection"/> class. </summary>
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkPublicIPCollection"/> class. </summary>
         /// <param name="client"> The client parameters to use in these operations. </param>
-        /// <param name="id"> The identifier of the parent resource that is the target of operations. </param>
+        /// <param name="id"> The identifier of the resource that is the target of operations. </param>
         internal WorkloadNetworkPublicIPCollection(ArmClient client, ResourceIdentifier id) : base(client, id)
         {
-            _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Avs", WorkloadNetworkPublicIPResource.ResourceType.Namespace, Diagnostics);
-            TryGetApiVersion(WorkloadNetworkPublicIPResource.ResourceType, out string workloadNetworkPublicIPWorkloadNetworksApiVersion);
-            _workloadNetworkPublicIPWorkloadNetworksRestClient = new WorkloadNetworksRestOperations(Pipeline, Diagnostics.ApplicationId, Endpoint, workloadNetworkPublicIPWorkloadNetworksApiVersion);
-#if DEBUG
-			ValidateResourceId(Id);
-#endif
+            TryGetApiVersion(WorkloadNetworkPublicIPResource.ResourceType, out string workloadNetworkPublicIPApiVersion);
+            _workloadNetworksClientDiagnostics = new ClientDiagnostics("Azure.ResourceManager.Avs", WorkloadNetworkPublicIPResource.ResourceType.Namespace, Diagnostics);
+            _workloadNetworksRestClient = new WorkloadNetworks(_workloadNetworksClientDiagnostics, Pipeline, Endpoint, workloadNetworkPublicIPApiVersion ?? "2025-09-01");
+            ValidateResourceId(id);
         }
 
+        /// <param name="id"></param>
+        [Conditional("DEBUG")]
         internal static void ValidateResourceId(ResourceIdentifier id)
         {
-            if (id.ResourceType != AvsPrivateCloudResource.ResourceType)
-                throw new ArgumentException(string.Format(CultureInfo.CurrentCulture, "Invalid resource type {0} expected {1}", id.ResourceType, AvsPrivateCloudResource.ResourceType), nameof(id));
+            if (id.ResourceType != WorkloadNetworkResource.ResourceType)
+            {
+                throw new ArgumentException(string.Format("Invalid resource type {0} expected {1}", id.ResourceType, WorkloadNetworkResource.ResourceType), id);
+            }
         }
 
         /// <summary>
-        /// Create a Public IP Block by id in a private cloud workload network.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}
-        /// Operation Id: WorkloadNetworks_CreatePublicIP
+        /// Create a WorkloadNetworkPublicIP
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> WorkloadNetworkPublicIps_Create. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="publicIPId"> NSX Public IP Block identifier. Generally the same as the Public IP Block&apos;s display name. </param>
-        /// <param name="data"> NSX Public IP Block. </param>
+        /// <param name="publicIPId"> ID of the DNS zone. </param>
+        /// <param name="data"> Resource create parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="publicIPId"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<ArmOperation<WorkloadNetworkPublicIPResource>> CreateOrUpdateAsync(WaitUntil waitUntil, string publicIPId, WorkloadNetworkPublicIPData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(publicIPId, nameof(publicIPId));
             Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.CreateOrUpdate");
+            using DiagnosticScope scope = _workloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = await _workloadNetworkPublicIPWorkloadNetworksRestClient.CreatePublicIPAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, publicIPId, data, cancellationToken).ConfigureAwait(false);
-                var operation = new AvsArmOperation<WorkloadNetworkPublicIPResource>(new WorkloadNetworkPublicIPOperationSource(Client), _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics, Pipeline, _workloadNetworkPublicIPWorkloadNetworksRestClient.CreateCreatePublicIPRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, publicIPId, data).Request, response, OperationFinalStateVia.Location);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _workloadNetworksRestClient.CreateCreatePublicIPRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, publicIPId, WorkloadNetworkPublicIPData.ToRequestContent(data), context);
+                Response response = await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                AvsArmOperation<WorkloadNetworkPublicIPResource> operation = new AvsArmOperation<WorkloadNetworkPublicIPResource>(
+                    new WorkloadNetworkPublicIPOperationSource(Client),
+                    _workloadNetworksClientDiagnostics,
+                    Pipeline,
+                    message.Request,
+                    response,
+                    OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
+                {
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
+                }
                 return operation;
             }
             catch (Exception e)
@@ -87,29 +113,54 @@ namespace Azure.ResourceManager.Avs
         }
 
         /// <summary>
-        /// Create a Public IP Block by id in a private cloud workload network.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}
-        /// Operation Id: WorkloadNetworks_CreatePublicIP
+        /// Create a WorkloadNetworkPublicIP
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> WorkloadNetworkPublicIps_Create. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
-        /// <param name="publicIPId"> NSX Public IP Block identifier. Generally the same as the Public IP Block&apos;s display name. </param>
-        /// <param name="data"> NSX Public IP Block. </param>
+        /// <param name="publicIPId"> ID of the DNS zone. </param>
+        /// <param name="data"> Resource create parameters. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="publicIPId"/> or <paramref name="data"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual ArmOperation<WorkloadNetworkPublicIPResource> CreateOrUpdate(WaitUntil waitUntil, string publicIPId, WorkloadNetworkPublicIPData data, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(publicIPId, nameof(publicIPId));
             Argument.AssertNotNull(data, nameof(data));
 
-            using var scope = _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.CreateOrUpdate");
+            using DiagnosticScope scope = _workloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.CreateOrUpdate");
             scope.Start();
             try
             {
-                var response = _workloadNetworkPublicIPWorkloadNetworksRestClient.CreatePublicIP(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, publicIPId, data, cancellationToken);
-                var operation = new AvsArmOperation<WorkloadNetworkPublicIPResource>(new WorkloadNetworkPublicIPOperationSource(Client), _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics, Pipeline, _workloadNetworkPublicIPWorkloadNetworksRestClient.CreateCreatePublicIPRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, publicIPId, data).Request, response, OperationFinalStateVia.Location);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _workloadNetworksRestClient.CreateCreatePublicIPRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, publicIPId, WorkloadNetworkPublicIPData.ToRequestContent(data), context);
+                Response response = Pipeline.ProcessMessage(message, context);
+                AvsArmOperation<WorkloadNetworkPublicIPResource> operation = new AvsArmOperation<WorkloadNetworkPublicIPResource>(
+                    new WorkloadNetworkPublicIPOperationSource(Client),
+                    _workloadNetworksClientDiagnostics,
+                    Pipeline,
+                    message.Request,
+                    response,
+                    OperationFinalStateVia.AzureAsyncOperation);
                 if (waitUntil == WaitUntil.Completed)
+                {
                     operation.WaitForCompletion(cancellationToken);
+                }
                 return operation;
             }
             catch (Exception e)
@@ -120,25 +171,45 @@ namespace Azure.ResourceManager.Avs
         }
 
         /// <summary>
-        /// Get a Public IP Block by id in a private cloud workload network.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}
-        /// Operation Id: WorkloadNetworks_GetPublicIP
+        /// Get a WorkloadNetworkPublicIP
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> WorkloadNetworkPublicIps_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="publicIPId"> NSX Public IP Block identifier. Generally the same as the Public IP Block&apos;s display name. </param>
+        /// <param name="publicIPId"> ID of the DNS zone. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="publicIPId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<WorkloadNetworkPublicIPResource>> GetAsync(string publicIPId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(publicIPId, nameof(publicIPId));
 
-            using var scope = _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.Get");
+            using DiagnosticScope scope = _workloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.Get");
             scope.Start();
             try
             {
-                var response = await _workloadNetworkPublicIPWorkloadNetworksRestClient.GetPublicIPAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, publicIPId, cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _workloadNetworksRestClient.CreateGetPublicIPRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, publicIPId, context);
+                Response result = await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                Response<WorkloadNetworkPublicIPData> response = Response.FromValue(WorkloadNetworkPublicIPData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new WorkloadNetworkPublicIPResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -149,25 +220,45 @@ namespace Azure.ResourceManager.Avs
         }
 
         /// <summary>
-        /// Get a Public IP Block by id in a private cloud workload network.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}
-        /// Operation Id: WorkloadNetworks_GetPublicIP
+        /// Get a WorkloadNetworkPublicIP
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> WorkloadNetworkPublicIps_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="publicIPId"> NSX Public IP Block identifier. Generally the same as the Public IP Block&apos;s display name. </param>
+        /// <param name="publicIPId"> ID of the DNS zone. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="publicIPId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<WorkloadNetworkPublicIPResource> Get(string publicIPId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(publicIPId, nameof(publicIPId));
 
-            using var scope = _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.Get");
+            using DiagnosticScope scope = _workloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.Get");
             scope.Start();
             try
             {
-                var response = _workloadNetworkPublicIPWorkloadNetworksRestClient.GetPublicIP(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, publicIPId, cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _workloadNetworksRestClient.CreateGetPublicIPRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, publicIPId, context);
+                Response result = Pipeline.ProcessMessage(message, context);
+                Response<WorkloadNetworkPublicIPData> response = Response.FromValue(WorkloadNetworkPublicIPData.FromResponse(result), result);
                 if (response.Value == null)
+                {
                     throw new RequestFailedException(response.GetRawResponse());
+                }
                 return Response.FromValue(new WorkloadNetworkPublicIPResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
@@ -178,107 +269,109 @@ namespace Azure.ResourceManager.Avs
         }
 
         /// <summary>
-        /// List of Public IP Blocks in a private cloud workload network.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs
-        /// Operation Id: WorkloadNetworks_ListPublicIPs
+        /// List WorkloadNetworkPublicIP resources by WorkloadNetwork
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> WorkloadNetworkPublicIps_List. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="WorkloadNetworkPublicIPResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="WorkloadNetworkPublicIPResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<WorkloadNetworkPublicIPResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<WorkloadNetworkPublicIPResource>> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _workloadNetworkPublicIPWorkloadNetworksRestClient.ListPublicIPsAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new WorkloadNetworkPublicIPResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<WorkloadNetworkPublicIPResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _workloadNetworkPublicIPWorkloadNetworksRestClient.ListPublicIPsNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new WorkloadNetworkPublicIPResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new AsyncPageableWrapper<WorkloadNetworkPublicIPData, WorkloadNetworkPublicIPResource>(new WorkloadNetworksGetPublicIPsAsyncCollectionResultOfT(_workloadNetworksRestClient, Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, context), data => new WorkloadNetworkPublicIPResource(Client, data));
         }
 
         /// <summary>
-        /// List of Public IP Blocks in a private cloud workload network.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs
-        /// Operation Id: WorkloadNetworks_ListPublicIPs
+        /// List WorkloadNetworkPublicIP resources by WorkloadNetwork
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> WorkloadNetworkPublicIps_List. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="WorkloadNetworkPublicIPResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="WorkloadNetworkPublicIPResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<WorkloadNetworkPublicIPResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<WorkloadNetworkPublicIPResource> FirstPageFunc(int? pageSizeHint)
+            RequestContext context = new RequestContext
             {
-                using var scope = _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _workloadNetworkPublicIPWorkloadNetworksRestClient.ListPublicIPs(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new WorkloadNetworkPublicIPResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<WorkloadNetworkPublicIPResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _workloadNetworkPublicIPWorkloadNetworksRestClient.ListPublicIPsNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new WorkloadNetworkPublicIPResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+                CancellationToken = cancellationToken
+            };
+            return new PageableWrapper<WorkloadNetworkPublicIPData, WorkloadNetworkPublicIPResource>(new WorkloadNetworksGetPublicIPsCollectionResultOfT(_workloadNetworksRestClient, Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, context), data => new WorkloadNetworkPublicIPResource(Client, data));
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}
-        /// Operation Id: WorkloadNetworks_GetPublicIP
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> WorkloadNetworkPublicIps_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="publicIPId"> NSX Public IP Block identifier. Generally the same as the Public IP Block&apos;s display name. </param>
+        /// <param name="publicIPId"> ID of the DNS zone. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="publicIPId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual async Task<Response<bool>> ExistsAsync(string publicIPId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(publicIPId, nameof(publicIPId));
 
-            using var scope = _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.Exists");
+            using DiagnosticScope scope = _workloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.Exists");
             scope.Start();
             try
             {
-                var response = await _workloadNetworkPublicIPWorkloadNetworksRestClient.GetPublicIPAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, publicIPId, cancellationToken: cancellationToken).ConfigureAwait(false);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _workloadNetworksRestClient.CreateGetPublicIPRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, publicIPId, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<WorkloadNetworkPublicIPData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(WorkloadNetworkPublicIPData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((WorkloadNetworkPublicIPData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
             }
             catch (Exception e)
@@ -290,23 +383,175 @@ namespace Azure.ResourceManager.Avs
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}
-        /// Operation Id: WorkloadNetworks_GetPublicIP
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> WorkloadNetworkPublicIps_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
         /// </summary>
-        /// <param name="publicIPId"> NSX Public IP Block identifier. Generally the same as the Public IP Block&apos;s display name. </param>
+        /// <param name="publicIPId"> ID of the DNS zone. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="ArgumentNullException"> <paramref name="publicIPId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
         public virtual Response<bool> Exists(string publicIPId, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(publicIPId, nameof(publicIPId));
 
-            using var scope = _workloadNetworkPublicIPWorkloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.Exists");
+            using DiagnosticScope scope = _workloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.Exists");
             scope.Start();
             try
             {
-                var response = _workloadNetworkPublicIPWorkloadNetworksRestClient.GetPublicIP(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, publicIPId, cancellationToken: cancellationToken);
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _workloadNetworksRestClient.CreateGetPublicIPRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, publicIPId, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<WorkloadNetworkPublicIPData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(WorkloadNetworkPublicIPData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((WorkloadNetworkPublicIPData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> WorkloadNetworkPublicIps_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="publicIPId"> ID of the DNS zone. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="publicIPId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual async Task<NullableResponse<WorkloadNetworkPublicIPResource>> GetIfExistsAsync(string publicIPId, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(publicIPId, nameof(publicIPId));
+
+            using DiagnosticScope scope = _workloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _workloadNetworksRestClient.CreateGetPublicIPRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, publicIPId, context);
+                await Pipeline.SendAsync(message, context.CancellationToken).ConfigureAwait(false);
+                Response result = message.Response;
+                Response<WorkloadNetworkPublicIPData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(WorkloadNetworkPublicIPData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((WorkloadNetworkPublicIPData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<WorkloadNetworkPublicIPResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new WorkloadNetworkPublicIPResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term> Request Path. </term>
+        /// <description> /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.AVS/privateClouds/{privateCloudName}/workloadNetworks/default/publicIPs/{publicIPId}. </description>
+        /// </item>
+        /// <item>
+        /// <term> Operation Id. </term>
+        /// <description> WorkloadNetworkPublicIps_Get. </description>
+        /// </item>
+        /// <item>
+        /// <term> Default Api Version. </term>
+        /// <description> 2025-09-01. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="publicIPId"> ID of the DNS zone. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="publicIPId"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="publicIPId"/> is an empty string, and was expected to be non-empty. </exception>
+        public virtual NullableResponse<WorkloadNetworkPublicIPResource> GetIfExists(string publicIPId, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(publicIPId, nameof(publicIPId));
+
+            using DiagnosticScope scope = _workloadNetworksClientDiagnostics.CreateScope("WorkloadNetworkPublicIPCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                RequestContext context = new RequestContext
+                {
+                    CancellationToken = cancellationToken
+                };
+                HttpMessage message = _workloadNetworksRestClient.CreateGetPublicIPRequest(Guid.Parse(Id.SubscriptionId), Id.ResourceGroupName, Id.Parent.Name, publicIPId, context);
+                Pipeline.Send(message, context.CancellationToken);
+                Response result = message.Response;
+                Response<WorkloadNetworkPublicIPData> response = default;
+                switch (result.Status)
+                {
+                    case 200:
+                        response = Response.FromValue(WorkloadNetworkPublicIPData.FromResponse(result), result);
+                        break;
+                    case 404:
+                        response = Response.FromValue((WorkloadNetworkPublicIPData)null, result);
+                        break;
+                    default:
+                        throw new RequestFailedException(result);
+                }
+                if (response.Value == null)
+                {
+                    return new NoValueResponse<WorkloadNetworkPublicIPResource>(response.GetRawResponse());
+                }
+                return Response.FromValue(new WorkloadNetworkPublicIPResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {
@@ -325,6 +570,7 @@ namespace Azure.ResourceManager.Avs
             return GetAll().GetEnumerator();
         }
 
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
         IAsyncEnumerator<WorkloadNetworkPublicIPResource> IAsyncEnumerable<WorkloadNetworkPublicIPResource>.GetAsyncEnumerator(CancellationToken cancellationToken)
         {
             return GetAllAsync(cancellationToken: cancellationToken).GetAsyncEnumerator(cancellationToken);

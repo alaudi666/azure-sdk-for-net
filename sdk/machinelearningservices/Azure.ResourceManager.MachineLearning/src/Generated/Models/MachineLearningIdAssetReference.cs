@@ -6,21 +6,16 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Reference to an asset via its ARM resource ID.
-    /// Serialized Name: IdAssetReference
-    /// </summary>
+    /// <summary> Reference to an asset via its ARM resource ID. </summary>
     public partial class MachineLearningIdAssetReference : MachineLearningAssetReferenceBase
     {
-        /// <summary> Initializes a new instance of MachineLearningIdAssetReference. </summary>
-        /// <param name="assetId">
-        /// [Required] ARM resource ID of the asset.
-        /// Serialized Name: IdAssetReference.assetId
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningIdAssetReference"/>. </summary>
+        /// <param name="assetId"> [Required] ARM resource ID of the asset. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="assetId"/> is null. </exception>
         public MachineLearningIdAssetReference(ResourceIdentifier assetId)
         {
@@ -30,25 +25,23 @@ namespace Azure.ResourceManager.MachineLearning.Models
             ReferenceType = ReferenceType.Id;
         }
 
-        /// <summary> Initializes a new instance of MachineLearningIdAssetReference. </summary>
-        /// <param name="referenceType">
-        /// [Required] Specifies the type of asset reference.
-        /// Serialized Name: AssetReferenceBase.referenceType
-        /// </param>
-        /// <param name="assetId">
-        /// [Required] ARM resource ID of the asset.
-        /// Serialized Name: IdAssetReference.assetId
-        /// </param>
-        internal MachineLearningIdAssetReference(ReferenceType referenceType, ResourceIdentifier assetId) : base(referenceType)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningIdAssetReference"/>. </summary>
+        /// <param name="referenceType"> [Required] Specifies the type of asset reference. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="assetId"> [Required] ARM resource ID of the asset. </param>
+        internal MachineLearningIdAssetReference(ReferenceType referenceType, IDictionary<string, BinaryData> serializedAdditionalRawData, ResourceIdentifier assetId) : base(referenceType, serializedAdditionalRawData)
         {
             AssetId = assetId;
             ReferenceType = referenceType;
         }
 
-        /// <summary>
-        /// [Required] ARM resource ID of the asset.
-        /// Serialized Name: IdAssetReference.assetId
-        /// </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningIdAssetReference"/> for deserialization. </summary>
+        internal MachineLearningIdAssetReference()
+        {
+        }
+
+        /// <summary> [Required] ARM resource ID of the asset. </summary>
+        [WirePath("assetId")]
         public ResourceIdentifier AssetId { get; set; }
     }
 }

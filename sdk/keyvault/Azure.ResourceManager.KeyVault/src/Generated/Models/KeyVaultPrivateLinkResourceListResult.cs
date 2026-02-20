@@ -5,28 +5,35 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> A list of private link resources. </summary>
     internal partial class KeyVaultPrivateLinkResourceListResult
     {
-        /// <summary> Initializes a new instance of KeyVaultPrivateLinkResourceListResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="KeyVaultPrivateLinkResourceListResult"/>. </summary>
         internal KeyVaultPrivateLinkResourceListResult()
         {
             Value = new ChangeTrackingList<KeyVaultPrivateLinkResourceData>();
         }
 
-        /// <summary> Initializes a new instance of KeyVaultPrivateLinkResourceListResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="KeyVaultPrivateLinkResourceListResult"/>. </summary>
         /// <param name="value"> Array of private link resources. </param>
-        internal KeyVaultPrivateLinkResourceListResult(IReadOnlyList<KeyVaultPrivateLinkResourceData> value)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal KeyVaultPrivateLinkResourceListResult(IList<KeyVaultPrivateLinkResourceData> value, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Array of private link resources. </summary>
-        public IReadOnlyList<KeyVaultPrivateLinkResourceData> Value { get; }
+        [WirePath("value")]
+        public IList<KeyVaultPrivateLinkResourceData> Value { get; }
     }
 }

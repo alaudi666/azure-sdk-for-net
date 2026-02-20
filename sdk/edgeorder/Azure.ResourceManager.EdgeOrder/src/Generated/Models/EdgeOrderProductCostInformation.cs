@@ -7,30 +7,36 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Cost information for the product system. </summary>
     public partial class EdgeOrderProductCostInformation
     {
-        /// <summary> Initializes a new instance of EdgeOrderProductCostInformation. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderProductCostInformation"/>. </summary>
         internal EdgeOrderProductCostInformation()
         {
             BillingMeterDetails = new ChangeTrackingList<EdgeOrderProductBillingMeterDetails>();
         }
 
-        /// <summary> Initializes a new instance of EdgeOrderProductCostInformation. </summary>
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderProductCostInformation"/>. </summary>
         /// <param name="billingMeterDetails"> Details on the various billing aspects for the product system. </param>
         /// <param name="billingInfoUri"> Default url to display billing information. </param>
-        internal EdgeOrderProductCostInformation(IReadOnlyList<EdgeOrderProductBillingMeterDetails> billingMeterDetails, Uri billingInfoUri)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EdgeOrderProductCostInformation(IReadOnlyList<EdgeOrderProductBillingMeterDetails> billingMeterDetails, Uri billingInfoUri, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             BillingMeterDetails = billingMeterDetails;
             BillingInfoUri = billingInfoUri;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Details on the various billing aspects for the product system. </summary>
         public IReadOnlyList<EdgeOrderProductBillingMeterDetails> BillingMeterDetails { get; }
+
         /// <summary> Default url to display billing information. </summary>
         public Uri BillingInfoUri { get; }
     }

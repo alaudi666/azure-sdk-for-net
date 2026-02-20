@@ -1,20 +1,20 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
-using NUnit.Framework;
 using Azure.ResourceManager.Chaos.Tests.TestDependencies;
-using System.Linq;
+using NUnit.Framework;
 
 namespace Azure.ResourceManager.Chaos.Tests
 {
     public class TargetTests : ChaosManagementTestBase
     {
         public TargetTests(bool isAsync)
-            : base(isAsync)//, RecordedTestMode.Record)
+            : base(isAsync, RecordedTestMode.Playback)
         {
         }
 
@@ -32,14 +32,14 @@ namespace Azure.ResourceManager.Chaos.Tests
         [RecordedTest]
         public async Task CreateOrUpdate()
         {
-            var targetCollection = this.ResourceGroupResource.GetTargets(
+            var targetCollection = this.ResourceGroupResource.GetChaosTargets(
                 TestConstants.ComputeNamespace,
                 TestConstants.VmssResourceName,
                 this.VmssName);
             var createUpdateTargetResponse = await targetCollection.CreateOrUpdateAsync(
                 WaitUntil.Completed,
                 TestConstants.VmssTargetName,
-                new TargetData(new Dictionary<string, BinaryData>()));
+                new ChaosTargetData(new Dictionary<string, BinaryData>()));
             Assert.AreEqual(200, createUpdateTargetResponse.GetRawResponse().Status);
         }
 
@@ -47,7 +47,7 @@ namespace Azure.ResourceManager.Chaos.Tests
         [RecordedTest]
         public async Task Get()
         {
-            var targetResponse = await this.ResourceGroupResource.GetTargetAsync(
+            var targetResponse = await this.ResourceGroupResource.GetChaosTargetAsync(
                 TestConstants.ComputeNamespace,
                 TestConstants.VmssResourceName,
                 this.VmssName,
@@ -60,7 +60,7 @@ namespace Azure.ResourceManager.Chaos.Tests
         [RecordedTest]
         public async Task List()
         {
-            var targetCollection = this.ResourceGroupResource.GetTargets(
+            var targetCollection = this.ResourceGroupResource.GetChaosTargets(
                 TestConstants.ComputeNamespace,
                 TestConstants.VmssResourceName,
                 this.VmssName);

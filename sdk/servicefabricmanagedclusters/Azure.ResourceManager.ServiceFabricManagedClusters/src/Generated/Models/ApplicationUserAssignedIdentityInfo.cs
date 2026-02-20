@@ -6,14 +6,18 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    /// <summary> The ApplicationUserAssignedIdentityInfo. </summary>
+    /// <summary> User assigned identity for the application. </summary>
     public partial class ApplicationUserAssignedIdentityInfo
     {
-        /// <summary> Initializes a new instance of ApplicationUserAssignedIdentityInfo. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ApplicationUserAssignedIdentityInfo"/>. </summary>
         /// <param name="name"> The friendly name of user assigned identity. </param>
         /// <param name="principalId"> The principal id of user assigned identity. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="name"/> or <paramref name="principalId"/> is null. </exception>
@@ -26,8 +30,20 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
             PrincipalId = principalId;
         }
 
+        /// <summary> Initializes a new instance of <see cref="ApplicationUserAssignedIdentityInfo"/>. </summary>
+        /// <param name="name"> The friendly name of user assigned identity. </param>
+        /// <param name="principalId"> The principal id of user assigned identity. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ApplicationUserAssignedIdentityInfo(string name, string principalId, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Name = name;
+            PrincipalId = principalId;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> The friendly name of user assigned identity. </summary>
         public string Name { get; set; }
+
         /// <summary> The principal id of user assigned identity. </summary>
         public string PrincipalId { get; set; }
     }

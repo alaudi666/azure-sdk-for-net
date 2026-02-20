@@ -88,7 +88,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     isEmpty : true,
                     beginningSequenceNumber: 1000,
                     lastSequenceNumber : 1100,
-                    lastOffset : 500,
+                    lastOffsetString : "500:1:7863",
                     lastEnqueuedTime : DateTime.UtcNow) },
 
                 // Empty partition
@@ -98,7 +98,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     isEmpty : false,
                     beginningSequenceNumber : 2000,
                     lastSequenceNumber : 2000,
-                    lastOffset : 760,
+                    lastOffsetString : "760:1:8800",
                     lastEnqueuedTime : DateTime.UtcNow) }
             };
 
@@ -182,9 +182,9 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             int batchCountThreshold = 3;
 
             EventDataBatch dataBatchMock = EventHubsModelFactory.EventDataBatch(
-                    batchSizeBytes : batchSizeInBytes,
-                    batchEventStore : backingList,
-                    batchOptions : new CreateBatchOptions(),
+                    batchSizeBytes: batchSizeInBytes,
+                    batchEventStore: backingList,
+                    batchOptions: new CreateBatchOptions(),
                     // The model factory allows a custom TryAdd callback, allowing control of what
                     // events the batch accepts.
                     eventData =>
@@ -359,10 +359,10 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
             // This creates a mock LastEnqueuedEventProperties using the model factory.
 
             LastEnqueuedEventProperties lastEnqueueEventProperties = EventHubsModelFactory.LastEnqueuedEventProperties(
-                lastSequenceNumber : 1234,
-                lastOffset : 234,
-                lastEnqueuedTime : DateTimeOffset.Parse("1:24 AM"),
-                lastReceivedTime : DateTimeOffset.Parse("1:26 AM"));
+                lastSequenceNumber: 1234,
+                lastOffsetString: "234:1:954-2",
+                lastEnqueuedTime: DateTimeOffset.Parse("1:24 AM"),
+                lastReceivedTime: DateTimeOffset.Parse("1:26 AM"));
 
             // This creates a mock of PartitionContext using the model factory.
 
@@ -370,8 +370,8 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                 fullyQualifiedNamespace: "sample-hub.servicebus.windows.net",
                 eventHubName: "sample-event-hub",
                 consumerGroup: "$Default",
-                partitionId : "0",
-                lastEnqueuedEventProperties : lastEnqueueEventProperties);
+                partitionId: "0",
+                lastEnqueuedEventProperties: lastEnqueueEventProperties);
 
             // This is a simple local method that returns an IAsyncEnumerable to use as the return for
             // ReadEventsAsync below, since IAsyncEnumerables cannot be created directly.
@@ -386,7 +386,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     systemProperties: new Dictionary<string, object>(), //arbitrary value
                     partitionKey: "sample-key",
                     sequenceNumber: 1000,
-                    offset: 1500,
+                    offsetString: "1500:44:59492",
                     enqueuedTime: DateTimeOffset.Parse("11:36 PM"));
 
                 EventData eventData2 = EventHubsModelFactory.EventData(
@@ -394,7 +394,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     systemProperties: new Dictionary<string, object>(), //arbitrary value
                     partitionKey: "sample-key",
                     sequenceNumber: 1000,
-                    offset: 1500,
+                    offsetString: "1500:2:1111",
                     enqueuedTime: DateTimeOffset.Parse("11:36 PM"));
 
                 // This creates a mock PartitionEvent to return from the consumer client.
@@ -480,7 +480,7 @@ namespace Azure.Messaging.EventHubs.Tests.Snippets
                     systemProperties: new Dictionary<string, object>(), //arbitrary value
                     partitionKey: $"sample-key-{index}",
                     sequenceNumber: 1234,
-                    offset: 234,
+                    offsetString: "234:5:93928381.1",
                     enqueuedTime: DateTimeOffset.Parse("9:25 AM"));
 
                 receivedEvents.Add(eventData);

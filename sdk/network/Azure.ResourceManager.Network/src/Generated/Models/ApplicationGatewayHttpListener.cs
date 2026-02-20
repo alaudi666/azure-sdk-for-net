@@ -5,8 +5,8 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Resources.Models;
 
@@ -15,17 +15,18 @@ namespace Azure.ResourceManager.Network.Models
     /// <summary> Http listener of an application gateway. </summary>
     public partial class ApplicationGatewayHttpListener : NetworkResourceData
     {
-        /// <summary> Initializes a new instance of ApplicationGatewayHttpListener. </summary>
+        /// <summary> Initializes a new instance of <see cref="ApplicationGatewayHttpListener"/>. </summary>
         public ApplicationGatewayHttpListener()
         {
             CustomErrorConfigurations = new ChangeTrackingList<ApplicationGatewayCustomError>();
             HostNames = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of ApplicationGatewayHttpListener. </summary>
+        /// <summary> Initializes a new instance of <see cref="ApplicationGatewayHttpListener"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="frontendIPConfiguration"> Frontend IP configuration resource of an application gateway. </param>
         /// <param name="frontendPort"> Frontend port resource of an application gateway. </param>
@@ -38,7 +39,7 @@ namespace Azure.ResourceManager.Network.Models
         /// <param name="customErrorConfigurations"> Custom error configurations of the HTTP listener. </param>
         /// <param name="firewallPolicy"> Reference to the FirewallPolicy resource. </param>
         /// <param name="hostNames"> List of Host names for HTTP Listener that allows special wildcard characters as well. </param>
-        internal ApplicationGatewayHttpListener(ResourceIdentifier id, string name, ResourceType? resourceType, ETag? etag, WritableSubResource frontendIPConfiguration, WritableSubResource frontendPort, ApplicationGatewayProtocol? protocol, string hostName, WritableSubResource sslCertificate, WritableSubResource sslProfile, bool? requireServerNameIndication, NetworkProvisioningState? provisioningState, IList<ApplicationGatewayCustomError> customErrorConfigurations, WritableSubResource firewallPolicy, IList<string> hostNames) : base(id, name, resourceType)
+        internal ApplicationGatewayHttpListener(ResourceIdentifier id, string name, ResourceType? resourceType, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, WritableSubResource frontendIPConfiguration, WritableSubResource frontendPort, ApplicationGatewayProtocol? protocol, string hostName, WritableSubResource sslCertificate, WritableSubResource sslProfile, bool? requireServerNameIndication, NetworkProvisioningState? provisioningState, IList<ApplicationGatewayCustomError> customErrorConfigurations, WritableSubResource firewallPolicy, IList<string> hostNames) : base(id, name, resourceType, serializedAdditionalRawData)
         {
             ETag = etag;
             FrontendIPConfiguration = frontendIPConfiguration;
@@ -55,10 +56,12 @@ namespace Azure.ResourceManager.Network.Models
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> Frontend IP configuration resource of an application gateway. </summary>
         internal WritableSubResource FrontendIPConfiguration { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.frontendIPConfiguration.id")]
         public ResourceIdentifier FrontendIPConfigurationId
         {
             get => FrontendIPConfiguration is null ? default : FrontendIPConfiguration.Id;
@@ -73,6 +76,7 @@ namespace Azure.ResourceManager.Network.Models
         /// <summary> Frontend port resource of an application gateway. </summary>
         internal WritableSubResource FrontendPort { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.frontendPort.id")]
         public ResourceIdentifier FrontendPortId
         {
             get => FrontendPort is null ? default : FrontendPort.Id;
@@ -85,12 +89,15 @@ namespace Azure.ResourceManager.Network.Models
         }
 
         /// <summary> Protocol of the HTTP listener. </summary>
+        [WirePath("properties.protocol")]
         public ApplicationGatewayProtocol? Protocol { get; set; }
         /// <summary> Host name of HTTP listener. </summary>
+        [WirePath("properties.hostName")]
         public string HostName { get; set; }
         /// <summary> SSL certificate resource of an application gateway. </summary>
         internal WritableSubResource SslCertificate { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.sslCertificate.id")]
         public ResourceIdentifier SslCertificateId
         {
             get => SslCertificate is null ? default : SslCertificate.Id;
@@ -105,6 +112,7 @@ namespace Azure.ResourceManager.Network.Models
         /// <summary> SSL profile resource of the application gateway. </summary>
         internal WritableSubResource SslProfile { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.sslProfile.id")]
         public ResourceIdentifier SslProfileId
         {
             get => SslProfile is null ? default : SslProfile.Id;
@@ -117,14 +125,18 @@ namespace Azure.ResourceManager.Network.Models
         }
 
         /// <summary> Applicable only if protocol is https. Enables SNI for multi-hosting. </summary>
+        [WirePath("properties.requireServerNameIndication")]
         public bool? RequireServerNameIndication { get; set; }
         /// <summary> The provisioning state of the HTTP listener resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
         /// <summary> Custom error configurations of the HTTP listener. </summary>
+        [WirePath("properties.customErrorConfigurations")]
         public IList<ApplicationGatewayCustomError> CustomErrorConfigurations { get; }
         /// <summary> Reference to the FirewallPolicy resource. </summary>
         internal WritableSubResource FirewallPolicy { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.firewallPolicy.id")]
         public ResourceIdentifier FirewallPolicyId
         {
             get => FirewallPolicy is null ? default : FirewallPolicy.Id;
@@ -137,6 +149,7 @@ namespace Azure.ResourceManager.Network.Models
         }
 
         /// <summary> List of Host names for HTTP Listener that allows special wildcard characters as well. </summary>
+        [WirePath("properties.hostNames")]
         public IList<string> HostNames { get; }
     }
 }

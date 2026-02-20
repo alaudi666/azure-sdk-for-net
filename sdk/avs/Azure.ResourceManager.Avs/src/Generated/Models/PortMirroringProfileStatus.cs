@@ -7,45 +7,65 @@
 
 using System;
 using System.ComponentModel;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> Port Mirroring Status. </summary>
+    /// <summary> Port Mirroring status. </summary>
     public readonly partial struct PortMirroringProfileStatus : IEquatable<PortMirroringProfileStatus>
     {
         private readonly string _value;
+        /// <summary> is success. </summary>
+        private const string SuccessValue = "SUCCESS";
+        /// <summary> is failure. </summary>
+        private const string FailureValue = "FAILURE";
 
         /// <summary> Initializes a new instance of <see cref="PortMirroringProfileStatus"/>. </summary>
+        /// <param name="value"> The value. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
         public PortMirroringProfileStatus(string value)
         {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
+            Argument.AssertNotNull(value, nameof(value));
+
+            _value = value;
         }
 
-        private const string SuccessValue = "SUCCESS";
-        private const string FailureValue = "FAILURE";
-
-        /// <summary> SUCCESS. </summary>
+        /// <summary> is success. </summary>
         public static PortMirroringProfileStatus Success { get; } = new PortMirroringProfileStatus(SuccessValue);
-        /// <summary> FAILURE. </summary>
+
+        /// <summary> is failure. </summary>
         public static PortMirroringProfileStatus Failure { get; } = new PortMirroringProfileStatus(FailureValue);
+
         /// <summary> Determines if two <see cref="PortMirroringProfileStatus"/> values are the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator ==(PortMirroringProfileStatus left, PortMirroringProfileStatus right) => left.Equals(right);
+
         /// <summary> Determines if two <see cref="PortMirroringProfileStatus"/> values are not the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator !=(PortMirroringProfileStatus left, PortMirroringProfileStatus right) => !left.Equals(right);
+
         /// <summary> Converts a string to a <see cref="PortMirroringProfileStatus"/>. </summary>
+        /// <param name="value"> The value. </param>
         public static implicit operator PortMirroringProfileStatus(string value) => new PortMirroringProfileStatus(value);
 
-        /// <inheritdoc />
+        /// <summary> Converts a string to a <see cref="PortMirroringProfileStatus"/>. </summary>
+        /// <param name="value"> The value. </param>
+        public static implicit operator PortMirroringProfileStatus?(string value) => value == null ? null : new PortMirroringProfileStatus(value);
+
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj) => obj is PortMirroringProfileStatus other && Equals(other);
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public bool Equals(PortMirroringProfileStatus other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-        /// <inheritdoc />
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
+
+        /// <inheritdoc/>
         public override string ToString() => _value;
     }
 }

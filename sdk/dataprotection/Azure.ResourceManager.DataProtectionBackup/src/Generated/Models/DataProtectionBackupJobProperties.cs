@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure;
 using Azure.Core;
 
 namespace Azure.ResourceManager.DataProtectionBackup.Models
@@ -16,7 +15,39 @@ namespace Azure.ResourceManager.DataProtectionBackup.Models
     /// <summary> AzureBackup Job Class. </summary>
     public partial class DataProtectionBackupJobProperties
     {
-        /// <summary> Initializes a new instance of DataProtectionBackupJobProperties. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="DataProtectionBackupJobProperties"/>. </summary>
         /// <param name="activityId"> Job Activity Id. </param>
         /// <param name="backupInstanceFriendlyName"> Name of the Backup Instance. </param>
         /// <param name="dataSourceId"> ARM ID of the DataSource. </param>
@@ -30,7 +61,7 @@ namespace Azure.ResourceManager.DataProtectionBackup.Models
         /// <param name="sourceResourceGroup"> Resource Group Name of the Datasource. </param>
         /// <param name="sourceSubscriptionId"> SubscriptionId corresponding to the DataSource. </param>
         /// <param name="startOn"> StartTime of the job(in UTC). </param>
-        /// <param name="status"> Status of the job like InProgress/Success/Failed/Cancelled/SuccessWithWarning. </param>
+        /// <param name="status"> Status of the job like InProgress/Completed/Failed/Cancelled/CompletedWithWarnings/Cancelling/Paused. </param>
         /// <param name="subscriptionId"> Subscription Id of the corresponding backup vault. </param>
         /// <param name="supportedActions"> List of supported actions. </param>
         /// <param name="vaultName"> Name of the vault. </param>
@@ -71,7 +102,7 @@ namespace Azure.ResourceManager.DataProtectionBackup.Models
             VaultName = vaultName;
         }
 
-        /// <summary> Initializes a new instance of DataProtectionBackupJobProperties. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataProtectionBackupJobProperties"/>. </summary>
         /// <param name="activityId"> Job Activity Id. </param>
         /// <param name="backupInstanceFriendlyName"> Name of the Backup Instance. </param>
         /// <param name="backupInstanceId"> ARM ID of the Backup Instance. </param>
@@ -90,19 +121,21 @@ namespace Azure.ResourceManager.DataProtectionBackup.Models
         /// <param name="policyId"> ARM ID of the policy. </param>
         /// <param name="policyName"> Name of the policy. </param>
         /// <param name="isProgressEnabled"> Indicated whether progress is enabled for the job. </param>
-        /// <param name="progressUri"> Url which contains job&apos;s progress. </param>
+        /// <param name="progressUri"> Url which contains job's progress. </param>
+        /// <param name="rehydrationPriority"> Priority to be used for rehydration. </param>
         /// <param name="restoreType"> It indicates the sub type of operation i.e. in case of Restore it can be ALR/OLR. </param>
         /// <param name="sourceResourceGroup"> Resource Group Name of the Datasource. </param>
         /// <param name="sourceSubscriptionId"> SubscriptionId corresponding to the DataSource. </param>
         /// <param name="startOn"> StartTime of the job(in UTC). </param>
-        /// <param name="status"> Status of the job like InProgress/Success/Failed/Cancelled/SuccessWithWarning. </param>
+        /// <param name="status"> Status of the job like InProgress/Completed/Failed/Cancelled/CompletedWithWarnings/Cancelling/Paused. </param>
         /// <param name="subscriptionId"> Subscription Id of the corresponding backup vault. </param>
         /// <param name="supportedActions"> List of supported actions. </param>
         /// <param name="vaultName"> Name of the vault. </param>
         /// <param name="eTag"></param>
         /// <param name="sourceDataStoreName"></param>
         /// <param name="destinationDataStoreName"></param>
-        internal DataProtectionBackupJobProperties(string activityId, string backupInstanceFriendlyName, ResourceIdentifier backupInstanceId, ResourceIdentifier dataSourceId, AzureLocation dataSourceLocation, string dataSourceName, string dataSourceSetName, string dataSourceType, TimeSpan? duration, DateTimeOffset? endOn, IReadOnlyList<ResponseError> errorDetails, BackupJobExtendedInfo extendedInfo, bool isUserTriggered, string operation, string operationCategory, ResourceIdentifier policyId, string policyName, bool isProgressEnabled, Uri progressUri, string restoreType, string sourceResourceGroup, string sourceSubscriptionId, DateTimeOffset startOn, string status, string subscriptionId, IList<string> supportedActions, string vaultName, ETag? eTag, string sourceDataStoreName, string destinationDataStoreName)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal DataProtectionBackupJobProperties(string activityId, string backupInstanceFriendlyName, ResourceIdentifier backupInstanceId, ResourceIdentifier dataSourceId, AzureLocation dataSourceLocation, string dataSourceName, string dataSourceSetName, string dataSourceType, TimeSpan? duration, DateTimeOffset? endOn, IReadOnlyList<ResponseError> errorDetails, BackupJobExtendedInfo extendedInfo, bool isUserTriggered, string operation, string operationCategory, ResourceIdentifier policyId, string policyName, bool isProgressEnabled, Uri progressUri, string rehydrationPriority, string restoreType, string sourceResourceGroup, string sourceSubscriptionId, DateTimeOffset startOn, string status, string subscriptionId, IList<string> supportedActions, string vaultName, ETag? eTag, string sourceDataStoreName, string destinationDataStoreName, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             ActivityId = activityId;
             BackupInstanceFriendlyName = backupInstanceFriendlyName;
@@ -123,6 +156,7 @@ namespace Azure.ResourceManager.DataProtectionBackup.Models
             PolicyName = policyName;
             IsProgressEnabled = isProgressEnabled;
             ProgressUri = progressUri;
+            RehydrationPriority = rehydrationPriority;
             RestoreType = restoreType;
             SourceResourceGroup = sourceResourceGroup;
             SourceSubscriptionId = sourceSubscriptionId;
@@ -134,6 +168,12 @@ namespace Azure.ResourceManager.DataProtectionBackup.Models
             ETag = eTag;
             SourceDataStoreName = sourceDataStoreName;
             DestinationDataStoreName = destinationDataStoreName;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="DataProtectionBackupJobProperties"/> for deserialization. </summary>
+        internal DataProtectionBackupJobProperties()
+        {
         }
 
         /// <summary> Job Activity Id. </summary>
@@ -172,8 +212,10 @@ namespace Azure.ResourceManager.DataProtectionBackup.Models
         public string PolicyName { get; }
         /// <summary> Indicated whether progress is enabled for the job. </summary>
         public bool IsProgressEnabled { get; set; }
-        /// <summary> Url which contains job&apos;s progress. </summary>
+        /// <summary> Url which contains job's progress. </summary>
         public Uri ProgressUri { get; }
+        /// <summary> Priority to be used for rehydration. </summary>
+        public string RehydrationPriority { get; }
         /// <summary> It indicates the sub type of operation i.e. in case of Restore it can be ALR/OLR. </summary>
         public string RestoreType { get; }
         /// <summary> Resource Group Name of the Datasource. </summary>
@@ -182,7 +224,7 @@ namespace Azure.ResourceManager.DataProtectionBackup.Models
         public string SourceSubscriptionId { get; set; }
         /// <summary> StartTime of the job(in UTC). </summary>
         public DateTimeOffset StartOn { get; set; }
-        /// <summary> Status of the job like InProgress/Success/Failed/Cancelled/SuccessWithWarning. </summary>
+        /// <summary> Status of the job like InProgress/Completed/Failed/Cancelled/CompletedWithWarnings/Cancelling/Paused. </summary>
         public string Status { get; set; }
         /// <summary> Subscription Id of the corresponding backup vault. </summary>
         public string SubscriptionId { get; set; }

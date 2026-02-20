@@ -23,12 +23,19 @@ namespace Azure.Security.KeyVault.Keys.Tests
                 case SignatureAlgorithm.RS512Value:
                     return CreateRsaKey(includePrivateParameters, keyOps);
 
+                case SignatureAlgorithm.HS256Value:
+                    return CreateAesKey(256 >> 3, keyOps ?? [KeyOperation.Sign, KeyOperation.Verify]);
+                case SignatureAlgorithm.HS384Value:
+                    return CreateAesKey(512 >> 3, keyOps ?? [KeyOperation.Sign, KeyOperation.Verify]);
+                case SignatureAlgorithm.HS512Value:
+                    return CreateAesKey(512 >> 3, keyOps ?? [KeyOperation.Sign, KeyOperation.Verify]);
+
                 case SignatureAlgorithm.ES256Value:
                 case SignatureAlgorithm.ES256KValue:
                 case SignatureAlgorithm.ES384Value:
                 case SignatureAlgorithm.ES512Value:
-#if NET461
-                    throw new IgnoreException("Creating JsonWebKey with ECDsa is not supported on net461.");
+#if NET462
+                    throw new IgnoreException("Creating JsonWebKey with ECDsa is not supported on net462.");
 #else
                     KeyCurveName curveName = algorithm.GetEcKeyCurveName();
                     ECCurve curve = ECCurve.CreateFromOid(curveName.Oid);
@@ -46,11 +53,6 @@ namespace Azure.Security.KeyVault.Keys.Tests
                         }
                     }
 #endif
-
-                case SignatureAlgorithm.EdDsaValue:
-                    // TODO: Support OKP keys and Ed25519 curves: https://github.com/Azure/azure-sdk-for-net/issues/32232
-                    throw new IgnoreException("Creating client-side OKP keys is not supported.");
-
                 default:
                     throw new ArgumentException("Invalid Algorithm", nameof(algorithm));
             }
@@ -63,6 +65,8 @@ namespace Azure.Security.KeyVault.Keys.Tests
                 case KeyWrapAlgorithm.A128KWValue:
                 case KeyWrapAlgorithm.A192KWValue:
                 case KeyWrapAlgorithm.A256KWValue:
+                case KeyWrapAlgorithm.CkmAesKeyWrapValue:
+                case KeyWrapAlgorithm.CkmAesKeyWrapPadValue:
                     return CreateAesKey(algorithm.GetAesKeyWrapAlgorithm().KeySizeInBytes, keyOps);
 
                 case KeyWrapAlgorithm.Rsa15Value:
@@ -77,9 +81,17 @@ namespace Azure.Security.KeyVault.Keys.Tests
 
         public static JsonWebKey CreateAesKey(int sizeInBytes, IEnumerable<KeyOperation> keyOps = null)
         {
-            byte[] k = new byte[] { 0xA4, 0x16, 0x55, 0x00, 0xB3, 0xDC, 0xB4, 0x38, 0x2E, 0xD9, 0xE5, 0x5D, 0x56, 0xB0, 0x60, 0x35,
-                         0x09, 0x59, 0xDB, 0xE7, 0x08, 0x20, 0xDF, 0x26, 0x4F, 0x42, 0x43, 0x30, 0x43, 0x4C, 0x0F, 0x6F }
-                .Take(sizeInBytes);
+            byte[] k = new byte[]
+            {
+                0xA4, 0x16, 0x55, 0x00, 0xB3, 0xDC, 0xB4, 0x38,
+                0x2E, 0xD9, 0xE5, 0x5D, 0x56, 0xB0, 0x60, 0x35,
+                0x09, 0x59, 0xDB, 0xE7, 0x08, 0x20, 0xDF, 0x26,
+                0x4F, 0x42, 0x43, 0x30, 0x43, 0x4C, 0x0F, 0x6F,
+                0x4F, 0x42, 0x43, 0x30, 0x43, 0x4C, 0x0F, 0x6F,
+                0x09, 0x59, 0xDB, 0xE7, 0x08, 0x20, 0xDF, 0x26,
+                0x2E, 0xD9, 0xE5, 0x5D, 0x56, 0xB0, 0x60, 0x35,
+                0xA4, 0x16, 0x55, 0x00, 0xB3, 0xDC, 0xB4, 0x38
+            }.Take(sizeInBytes);
 
             return new JsonWebKey(keyOps ?? new[] { KeyOperation.WrapKey, KeyOperation.UnwrapKey })
             {

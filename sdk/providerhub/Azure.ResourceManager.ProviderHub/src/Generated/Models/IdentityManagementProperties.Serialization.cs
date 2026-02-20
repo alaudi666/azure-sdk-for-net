@@ -5,52 +5,190 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.ProviderHub.Models
 {
-    public partial class IdentityManagementProperties : IUtf8JsonSerializable
+    public partial class IdentityManagementProperties : IUtf8JsonSerializable, IJsonModel<IdentityManagementProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<IdentityManagementProperties>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<IdentityManagementProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IdentityManagementProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(IdentityManagementProperties)} does not support writing '{format}' format.");
+            }
+
             if (Optional.IsDefined(ManagementType))
             {
-                writer.WritePropertyName("type");
+                writer.WritePropertyName("type"u8);
                 writer.WriteStringValue(ManagementType.Value.ToString());
             }
             if (Optional.IsDefined(ApplicationId))
             {
-                writer.WritePropertyName("applicationId");
+                writer.WritePropertyName("applicationId"u8);
                 writer.WriteStringValue(ApplicationId);
             }
-            writer.WriteEndObject();
+            if (Optional.IsCollectionDefined(ApplicationIds))
+            {
+                writer.WritePropertyName("applicationIds"u8);
+                writer.WriteStartArray();
+                foreach (var item in ApplicationIds)
+                {
+                    writer.WriteStringValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (Optional.IsCollectionDefined(DelegationAppIds))
+            {
+                writer.WritePropertyName("delegationAppIds"u8);
+                writer.WriteStartArray();
+                foreach (var item in DelegationAppIds)
+                {
+                    writer.WriteStringValue(item);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static IdentityManagementProperties DeserializeIdentityManagementProperties(JsonElement element)
+        IdentityManagementProperties IJsonModel<IdentityManagementProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<IdentityManagementType> type = default;
-            Optional<string> applicationId = default;
+            var format = options.Format == "W" ? ((IPersistableModel<IdentityManagementProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(IdentityManagementProperties)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeIdentityManagementProperties(document.RootElement, options);
+        }
+
+        internal static IdentityManagementProperties DeserializeIdentityManagementProperties(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            IdentityManagementType? type = default;
+            string applicationId = default;
+            IList<string> applicationIds = default;
+            IList<string> delegationAppIds = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     type = new IdentityManagementType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("applicationId"))
+                if (property.NameEquals("applicationId"u8))
                 {
                     applicationId = property.Value.GetString();
                     continue;
                 }
+                if (property.NameEquals("applicationIds"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<string> array = new List<string>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(item.GetString());
+                    }
+                    applicationIds = array;
+                    continue;
+                }
+                if (property.NameEquals("delegationAppIds"u8))
+                {
+                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    List<string> array = new List<string>();
+                    foreach (var item in property.Value.EnumerateArray())
+                    {
+                        array.Add(item.GetString());
+                    }
+                    delegationAppIds = array;
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new IdentityManagementProperties(Optional.ToNullable(type), applicationId.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new IdentityManagementProperties(type, applicationId, applicationIds ?? new ChangeTrackingList<string>(), delegationAppIds ?? new ChangeTrackingList<string>(), serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<IdentityManagementProperties>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IdentityManagementProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerProviderHubContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(IdentityManagementProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        IdentityManagementProperties IPersistableModel<IdentityManagementProperties>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IdentityManagementProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeIdentityManagementProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(IdentityManagementProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<IdentityManagementProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

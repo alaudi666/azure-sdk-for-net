@@ -6,36 +6,45 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.Dynatrace.Models
 {
     /// <summary> Dynatrace Environment Information. </summary>
     public partial class DynatraceEnvironmentInfo
     {
-        /// <summary> Initializes a new instance of DynatraceEnvironmentInfo. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DynatraceEnvironmentInfo"/>. </summary>
         public DynatraceEnvironmentInfo()
         {
         }
 
-        /// <summary> Initializes a new instance of DynatraceEnvironmentInfo. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynatraceEnvironmentInfo"/>. </summary>
         /// <param name="environmentId"> Id of the environment created. </param>
         /// <param name="ingestionKey"> Ingestion key of the environment. </param>
         /// <param name="logsIngestionEndpoint"> Ingestion endpoint used for sending logs. </param>
         /// <param name="landingUri"> Landing URL for Dynatrace environment. </param>
-        internal DynatraceEnvironmentInfo(string environmentId, string ingestionKey, Uri logsIngestionEndpoint, Uri landingUri)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DynatraceEnvironmentInfo(string environmentId, string ingestionKey, Uri logsIngestionEndpoint, Uri landingUri, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             EnvironmentId = environmentId;
             IngestionKey = ingestionKey;
             LogsIngestionEndpoint = logsIngestionEndpoint;
             LandingUri = landingUri;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Id of the environment created. </summary>
         public string EnvironmentId { get; set; }
+
         /// <summary> Ingestion key of the environment. </summary>
         public string IngestionKey { get; set; }
+
         /// <summary> Ingestion endpoint used for sending logs. </summary>
         public Uri LogsIngestionEndpoint { get; set; }
+
         /// <summary> Landing URL for Dynatrace environment. </summary>
         public Uri LandingUri { get; set; }
     }

@@ -6,14 +6,18 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.PowerBIDedicated;
 
 namespace Azure.ResourceManager.PowerBIDedicated.Models
 {
     /// <summary> Represents the SKU name and Azure pricing tier for auto scale v-core resource. </summary>
     public partial class AutoScaleVCoreSku
     {
-        /// <summary> Initializes a new instance of AutoScaleVCoreSku. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AutoScaleVCoreSku"/>. </summary>
         /// <param name="name"> Name of the SKU level. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="name"/> is null. </exception>
         public AutoScaleVCoreSku(string name)
@@ -23,21 +27,25 @@ namespace Azure.ResourceManager.PowerBIDedicated.Models
             Name = name;
         }
 
-        /// <summary> Initializes a new instance of AutoScaleVCoreSku. </summary>
+        /// <summary> Initializes a new instance of <see cref="AutoScaleVCoreSku"/>. </summary>
         /// <param name="name"> Name of the SKU level. </param>
         /// <param name="tier"> The name of the Azure pricing tier to which the SKU applies. </param>
         /// <param name="capacity"> The capacity of an auto scale v-core resource. </param>
-        internal AutoScaleVCoreSku(string name, VCoreSkuTier? tier, int? capacity)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal AutoScaleVCoreSku(string name, VCoreSkuTier? tier, int? capacity, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Name = name;
             Tier = tier;
             Capacity = capacity;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Name of the SKU level. </summary>
         public string Name { get; set; }
+
         /// <summary> The name of the Azure pricing tier to which the SKU applies. </summary>
         public VCoreSkuTier? Tier { get; set; }
+
         /// <summary> The capacity of an auto scale v-core resource. </summary>
         public int? Capacity { get; set; }
     }

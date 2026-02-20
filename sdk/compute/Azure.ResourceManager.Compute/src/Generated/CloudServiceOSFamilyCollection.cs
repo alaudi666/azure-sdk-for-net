@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.Compute
 {
     /// <summary>
-    /// A class representing a collection of <see cref="CloudServiceOSFamilyResource" /> and their operations.
-    /// Each <see cref="CloudServiceOSFamilyResource" /> in the collection will belong to the same instance of <see cref="SubscriptionResource" />.
-    /// To get a <see cref="CloudServiceOSFamilyCollection" /> instance call the GetCloudServiceOSFamilies method from an instance of <see cref="SubscriptionResource" />.
+    /// A class representing a collection of <see cref="CloudServiceOSFamilyResource"/> and their operations.
+    /// Each <see cref="CloudServiceOSFamilyResource"/> in the collection will belong to the same instance of <see cref="SubscriptionResource"/>.
+    /// To get a <see cref="CloudServiceOSFamilyCollection"/> instance call the GetCloudServiceOSFamilies method from an instance of <see cref="SubscriptionResource"/>.
     /// </summary>
     public partial class CloudServiceOSFamilyCollection : ArmCollection, IEnumerable<CloudServiceOSFamilyResource>, IAsyncEnumerable<CloudServiceOSFamilyResource>
     {
@@ -59,8 +57,24 @@ namespace Azure.ResourceManager.Compute
 
         /// <summary>
         /// Gets properties of a guest operating system family that can be specified in the XML service configuration (.cscfg) for a cloud service.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies/{osFamilyName}
-        /// Operation Id: CloudServiceOperatingSystems_GetOSFamily
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies/{osFamilyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CloudServiceOperatingSystems_GetOSFamily</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-04</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CloudServiceOSFamilyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="osFamilyName"> Name of the OS family. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -88,8 +102,24 @@ namespace Azure.ResourceManager.Compute
 
         /// <summary>
         /// Gets properties of a guest operating system family that can be specified in the XML service configuration (.cscfg) for a cloud service.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies/{osFamilyName}
-        /// Operation Id: CloudServiceOperatingSystems_GetOSFamily
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies/{osFamilyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CloudServiceOperatingSystems_GetOSFamily</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-04</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CloudServiceOSFamilyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="osFamilyName"> Name of the OS family. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -117,92 +147,84 @@ namespace Azure.ResourceManager.Compute
 
         /// <summary>
         /// Gets a list of all guest operating system families available to be specified in the XML service configuration (.cscfg) for a cloud service. Use nextLink property in the response to get the next page of OS Families. Do this till nextLink is null to fetch all the OS Families.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies
-        /// Operation Id: CloudServiceOperatingSystems_ListOSFamilies
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CloudServiceOperatingSystems_ListOSFamilies</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-04</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CloudServiceOSFamilyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="CloudServiceOSFamilyResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="CloudServiceOSFamilyResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<CloudServiceOSFamilyResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<CloudServiceOSFamilyResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _cloudServiceOSFamilyCloudServiceOperatingSystemsClientDiagnostics.CreateScope("CloudServiceOSFamilyCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _cloudServiceOSFamilyCloudServiceOperatingSystemsRestClient.ListOSFamiliesAsync(Id.SubscriptionId, new AzureLocation(_location), cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new CloudServiceOSFamilyResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<CloudServiceOSFamilyResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _cloudServiceOSFamilyCloudServiceOperatingSystemsClientDiagnostics.CreateScope("CloudServiceOSFamilyCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _cloudServiceOSFamilyCloudServiceOperatingSystemsRestClient.ListOSFamiliesNextPageAsync(nextLink, Id.SubscriptionId, new AzureLocation(_location), cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new CloudServiceOSFamilyResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _cloudServiceOSFamilyCloudServiceOperatingSystemsRestClient.CreateListOSFamiliesRequest(Id.SubscriptionId, new AzureLocation(_location));
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _cloudServiceOSFamilyCloudServiceOperatingSystemsRestClient.CreateListOSFamiliesNextPageRequest(nextLink, Id.SubscriptionId, new AzureLocation(_location));
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new CloudServiceOSFamilyResource(Client, CloudServiceOSFamilyData.DeserializeCloudServiceOSFamilyData(e)), _cloudServiceOSFamilyCloudServiceOperatingSystemsClientDiagnostics, Pipeline, "CloudServiceOSFamilyCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Gets a list of all guest operating system families available to be specified in the XML service configuration (.cscfg) for a cloud service. Use nextLink property in the response to get the next page of OS Families. Do this till nextLink is null to fetch all the OS Families.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies
-        /// Operation Id: CloudServiceOperatingSystems_ListOSFamilies
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CloudServiceOperatingSystems_ListOSFamilies</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-04</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CloudServiceOSFamilyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="CloudServiceOSFamilyResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="CloudServiceOSFamilyResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<CloudServiceOSFamilyResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<CloudServiceOSFamilyResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _cloudServiceOSFamilyCloudServiceOperatingSystemsClientDiagnostics.CreateScope("CloudServiceOSFamilyCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _cloudServiceOSFamilyCloudServiceOperatingSystemsRestClient.ListOSFamilies(Id.SubscriptionId, new AzureLocation(_location), cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new CloudServiceOSFamilyResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<CloudServiceOSFamilyResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _cloudServiceOSFamilyCloudServiceOperatingSystemsClientDiagnostics.CreateScope("CloudServiceOSFamilyCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _cloudServiceOSFamilyCloudServiceOperatingSystemsRestClient.ListOSFamiliesNextPage(nextLink, Id.SubscriptionId, new AzureLocation(_location), cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new CloudServiceOSFamilyResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _cloudServiceOSFamilyCloudServiceOperatingSystemsRestClient.CreateListOSFamiliesRequest(Id.SubscriptionId, new AzureLocation(_location));
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _cloudServiceOSFamilyCloudServiceOperatingSystemsRestClient.CreateListOSFamiliesNextPageRequest(nextLink, Id.SubscriptionId, new AzureLocation(_location));
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new CloudServiceOSFamilyResource(Client, CloudServiceOSFamilyData.DeserializeCloudServiceOSFamilyData(e)), _cloudServiceOSFamilyCloudServiceOperatingSystemsClientDiagnostics, Pipeline, "CloudServiceOSFamilyCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies/{osFamilyName}
-        /// Operation Id: CloudServiceOperatingSystems_GetOSFamily
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies/{osFamilyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CloudServiceOperatingSystems_GetOSFamily</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-04</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CloudServiceOSFamilyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="osFamilyName"> Name of the OS family. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -228,8 +250,24 @@ namespace Azure.ResourceManager.Compute
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies/{osFamilyName}
-        /// Operation Id: CloudServiceOperatingSystems_GetOSFamily
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies/{osFamilyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CloudServiceOperatingSystems_GetOSFamily</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-04</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CloudServiceOSFamilyResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="osFamilyName"> Name of the OS family. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -245,6 +283,96 @@ namespace Azure.ResourceManager.Compute
             {
                 var response = _cloudServiceOSFamilyCloudServiceOperatingSystemsRestClient.GetOSFamily(Id.SubscriptionId, new AzureLocation(_location), osFamilyName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies/{osFamilyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CloudServiceOperatingSystems_GetOSFamily</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-04</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CloudServiceOSFamilyResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="osFamilyName"> Name of the OS family. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="osFamilyName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="osFamilyName"/> is null. </exception>
+        public virtual async Task<NullableResponse<CloudServiceOSFamilyResource>> GetIfExistsAsync(string osFamilyName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(osFamilyName, nameof(osFamilyName));
+
+            using var scope = _cloudServiceOSFamilyCloudServiceOperatingSystemsClientDiagnostics.CreateScope("CloudServiceOSFamilyCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _cloudServiceOSFamilyCloudServiceOperatingSystemsRestClient.GetOSFamilyAsync(Id.SubscriptionId, new AzureLocation(_location), osFamilyName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<CloudServiceOSFamilyResource>(response.GetRawResponse());
+                return Response.FromValue(new CloudServiceOSFamilyResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Compute/locations/{location}/cloudServiceOsFamilies/{osFamilyName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>CloudServiceOperatingSystems_GetOSFamily</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-11-04</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="CloudServiceOSFamilyResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="osFamilyName"> Name of the OS family. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="osFamilyName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="osFamilyName"/> is null. </exception>
+        public virtual NullableResponse<CloudServiceOSFamilyResource> GetIfExists(string osFamilyName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(osFamilyName, nameof(osFamilyName));
+
+            using var scope = _cloudServiceOSFamilyCloudServiceOperatingSystemsClientDiagnostics.CreateScope("CloudServiceOSFamilyCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _cloudServiceOSFamilyCloudServiceOperatingSystemsRestClient.GetOSFamily(Id.SubscriptionId, new AzureLocation(_location), osFamilyName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<CloudServiceOSFamilyResource>(response.GetRawResponse());
+                return Response.FromValue(new CloudServiceOSFamilyResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

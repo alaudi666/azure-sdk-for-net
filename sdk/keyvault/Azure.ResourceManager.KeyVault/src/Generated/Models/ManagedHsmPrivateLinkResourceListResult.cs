@@ -5,28 +5,35 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
     /// <summary> A list of private link resources. </summary>
     internal partial class ManagedHsmPrivateLinkResourceListResult
     {
-        /// <summary> Initializes a new instance of ManagedHsmPrivateLinkResourceListResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmPrivateLinkResourceListResult"/>. </summary>
         internal ManagedHsmPrivateLinkResourceListResult()
         {
             Value = new ChangeTrackingList<ManagedHsmPrivateLinkResourceData>();
         }
 
-        /// <summary> Initializes a new instance of ManagedHsmPrivateLinkResourceListResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="ManagedHsmPrivateLinkResourceListResult"/>. </summary>
         /// <param name="value"> Array of private link resources. </param>
-        internal ManagedHsmPrivateLinkResourceListResult(IReadOnlyList<ManagedHsmPrivateLinkResourceData> value)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedHsmPrivateLinkResourceListResult(IList<ManagedHsmPrivateLinkResourceData> value, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Array of private link resources. </summary>
-        public IReadOnlyList<ManagedHsmPrivateLinkResourceData> Value { get; }
+        [WirePath("value")]
+        public IList<ManagedHsmPrivateLinkResourceData> Value { get; }
     }
 }

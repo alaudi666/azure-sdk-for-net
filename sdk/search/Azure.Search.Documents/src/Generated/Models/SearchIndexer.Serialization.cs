@@ -5,39 +5,57 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.Search.Documents.Indexes.Models
 {
-    public partial class SearchIndexer : IUtf8JsonSerializable
+    public partial class SearchIndexer : IUtf8JsonSerializable, IJsonModel<SearchIndexer>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<SearchIndexer>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<SearchIndexer>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("name");
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SearchIndexer>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SearchIndexer)} does not support writing '{format}' format.");
+            }
+
+            writer.WritePropertyName("name"u8);
             writer.WriteStringValue(Name);
             if (Optional.IsDefined(Description))
             {
-                writer.WritePropertyName("description");
+                writer.WritePropertyName("description"u8);
                 writer.WriteStringValue(Description);
             }
-            writer.WritePropertyName("dataSourceName");
+            writer.WritePropertyName("dataSourceName"u8);
             writer.WriteStringValue(DataSourceName);
             if (Optional.IsDefined(SkillsetName))
             {
-                writer.WritePropertyName("skillsetName");
+                writer.WritePropertyName("skillsetName"u8);
                 writer.WriteStringValue(SkillsetName);
             }
-            writer.WritePropertyName("targetIndexName");
+            writer.WritePropertyName("targetIndexName"u8);
             writer.WriteStringValue(TargetIndexName);
             if (Optional.IsDefined(Schedule))
             {
                 if (Schedule != null)
                 {
-                    writer.WritePropertyName("schedule");
-                    writer.WriteObjectValue(Schedule);
+                    writer.WritePropertyName("schedule"u8);
+                    writer.WriteObjectValue(Schedule, options);
                 }
                 else
                 {
@@ -48,8 +66,8 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 if (Parameters != null)
                 {
-                    writer.WritePropertyName("parameters");
-                    writer.WriteObjectValue(Parameters);
+                    writer.WritePropertyName("parameters"u8);
+                    writer.WriteObjectValue(Parameters, options);
                 }
                 else
                 {
@@ -58,21 +76,21 @@ namespace Azure.Search.Documents.Indexes.Models
             }
             if (Optional.IsCollectionDefined(FieldMappings))
             {
-                writer.WritePropertyName("fieldMappings");
+                writer.WritePropertyName("fieldMappings"u8);
                 writer.WriteStartArray();
                 foreach (var item in FieldMappings)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<FieldMapping>(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(OutputFieldMappings))
             {
-                writer.WritePropertyName("outputFieldMappings");
+                writer.WritePropertyName("outputFieldMappings"u8);
                 writer.WriteStartArray();
                 foreach (var item in OutputFieldMappings)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue<FieldMapping>(item, options);
                 }
                 writer.WriteEndArray();
             }
@@ -80,7 +98,7 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 if (IsDisabled != null)
                 {
-                    writer.WritePropertyName("disabled");
+                    writer.WritePropertyName("disabled"u8);
                     writer.WriteBooleanValue(IsDisabled.Value);
                 }
                 else
@@ -90,15 +108,15 @@ namespace Azure.Search.Documents.Indexes.Models
             }
             if (Optional.IsDefined(_etag))
             {
-                writer.WritePropertyName("@odata.etag");
+                writer.WritePropertyName("@odata.etag"u8);
                 writer.WriteStringValue(_etag);
             }
             if (Optional.IsDefined(EncryptionKey))
             {
                 if (EncryptionKey != null)
                 {
-                    writer.WritePropertyName("encryptionKey");
-                    writer.WriteObjectValue(EncryptionKey);
+                    writer.WritePropertyName("encryptionKey"u8);
+                    writer.WriteObjectValue(EncryptionKey, options);
                 }
                 else
                 {
@@ -109,110 +127,142 @@ namespace Azure.Search.Documents.Indexes.Models
             {
                 if (Cache != null)
                 {
-                    writer.WritePropertyName("cache");
-                    writer.WriteObjectValue(Cache);
+                    writer.WritePropertyName("cache"u8);
+                    writer.WriteObjectValue(Cache, options);
                 }
                 else
                 {
                     writer.WriteNull("cache");
                 }
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static SearchIndexer DeserializeSearchIndexer(JsonElement element)
+        SearchIndexer IJsonModel<SearchIndexer>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<SearchIndexer>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(SearchIndexer)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeSearchIndexer(document.RootElement, options);
+        }
+
+        internal static SearchIndexer DeserializeSearchIndexer(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string name = default;
-            Optional<string> description = default;
+            string description = default;
             string dataSourceName = default;
-            Optional<string> skillsetName = default;
+            string skillsetName = default;
             string targetIndexName = default;
-            Optional<IndexingSchedule> schedule = default;
-            Optional<IndexingParameters> parameters = default;
-            Optional<IList<FieldMapping>> fieldMappings = default;
-            Optional<IList<FieldMapping>> outputFieldMappings = default;
-            Optional<bool?> disabled = default;
-            Optional<string> odataEtag = default;
-            Optional<SearchResourceEncryptionKey> encryptionKey = default;
-            Optional<SearchIndexerCache> cache = default;
+            IndexingSchedule schedule = default;
+            IndexingParameters parameters = default;
+            IList<FieldMapping> fieldMappings = default;
+            IList<FieldMapping> outputFieldMappings = default;
+            bool? disabled = default;
+            string odataEtag = default;
+            SearchResourceEncryptionKey encryptionKey = default;
+            SearchIndexerCache cache = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("description"))
+                if (property.NameEquals("description"u8))
                 {
                     description = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("dataSourceName"))
+                if (property.NameEquals("dataSourceName"u8))
                 {
                     dataSourceName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("skillsetName"))
+                if (property.NameEquals("skillsetName"u8))
                 {
                     skillsetName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("targetIndexName"))
+                if (property.NameEquals("targetIndexName"u8))
                 {
                     targetIndexName = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("schedule"))
+                if (property.NameEquals("schedule"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
                         schedule = null;
                         continue;
                     }
-                    schedule = IndexingSchedule.DeserializeIndexingSchedule(property.Value);
+                    schedule = IndexingSchedule.DeserializeIndexingSchedule(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("parameters"))
+                if (property.NameEquals("parameters"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
                         parameters = null;
                         continue;
                     }
-                    parameters = IndexingParameters.DeserializeIndexingParameters(property.Value);
+                    parameters = IndexingParameters.DeserializeIndexingParameters(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("fieldMappings"))
+                if (property.NameEquals("fieldMappings"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<FieldMapping> array = new List<FieldMapping>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(FieldMapping.DeserializeFieldMapping(item));
+                        array.Add(FieldMapping.DeserializeFieldMapping(item, options));
                     }
                     fieldMappings = array;
                     continue;
                 }
-                if (property.NameEquals("outputFieldMappings"))
+                if (property.NameEquals("outputFieldMappings"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<FieldMapping> array = new List<FieldMapping>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(FieldMapping.DeserializeFieldMapping(item));
+                        array.Add(FieldMapping.DeserializeFieldMapping(item, options));
                     }
                     outputFieldMappings = array;
                     continue;
                 }
-                if (property.NameEquals("disabled"))
+                if (property.NameEquals("disabled"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -222,33 +272,99 @@ namespace Azure.Search.Documents.Indexes.Models
                     disabled = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("@odata.etag"))
+                if (property.NameEquals("@odata.etag"u8))
                 {
                     odataEtag = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("encryptionKey"))
+                if (property.NameEquals("encryptionKey"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
                         encryptionKey = null;
                         continue;
                     }
-                    encryptionKey = SearchResourceEncryptionKey.DeserializeSearchResourceEncryptionKey(property.Value);
+                    encryptionKey = SearchResourceEncryptionKey.DeserializeSearchResourceEncryptionKey(property.Value, options);
                     continue;
                 }
-                if (property.NameEquals("cache"))
+                if (property.NameEquals("cache"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
                         cache = null;
                         continue;
                     }
-                    cache = SearchIndexerCache.DeserializeSearchIndexerCache(property.Value);
+                    cache = SearchIndexerCache.DeserializeSearchIndexerCache(property.Value, options);
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new SearchIndexer(name, description.Value, dataSourceName, skillsetName.Value, targetIndexName, schedule.Value, parameters.Value, Optional.ToList(fieldMappings), Optional.ToList(outputFieldMappings), Optional.ToNullable(disabled), odataEtag.Value, encryptionKey.Value, cache.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new SearchIndexer(
+                name,
+                description,
+                dataSourceName,
+                skillsetName,
+                targetIndexName,
+                schedule,
+                parameters,
+                fieldMappings ?? new ChangeTrackingList<FieldMapping>(),
+                outputFieldMappings ?? new ChangeTrackingList<FieldMapping>(),
+                disabled,
+                odataEtag,
+                encryptionKey,
+                cache,
+                serializedAdditionalRawData);
+        }
+
+        BinaryData IPersistableModel<SearchIndexer>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SearchIndexer>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureSearchDocumentsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(SearchIndexer)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        SearchIndexer IPersistableModel<SearchIndexer>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<SearchIndexer>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeSearchIndexer(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(SearchIndexer)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<SearchIndexer>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static SearchIndexer FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeSearchIndexer(document.RootElement);
+        }
+
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
+        internal virtual RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue(this, ModelSerializationExtensions.WireOptions);
+            return content;
         }
     }
 }

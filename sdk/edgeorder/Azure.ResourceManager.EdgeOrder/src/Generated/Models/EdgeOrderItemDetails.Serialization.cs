@@ -5,217 +5,426 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
-    public partial class EdgeOrderItemDetails : IUtf8JsonSerializable
+    /// <summary> Order item details. </summary>
+    public partial class EdgeOrderItemDetails : IJsonModel<EdgeOrderItemDetails>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderItemDetails"/> for deserialization. </summary>
+        internal EdgeOrderItemDetails()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual EdgeOrderItemDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<EdgeOrderItemDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeEdgeOrderItemDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(EdgeOrderItemDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<EdgeOrderItemDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("productDetails");
-            writer.WriteObjectValue(ProductDetails);
-            writer.WritePropertyName("orderItemType");
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<EdgeOrderItemDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(EdgeOrderItemDetails)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("productDetails"u8);
+            writer.WriteObjectValue(ProductDetails, options);
+            writer.WritePropertyName("orderItemType"u8);
             writer.WriteStringValue(OrderItemType.ToString());
+            if (Optional.IsDefined(OrderItemMode))
+            {
+                writer.WritePropertyName("orderItemMode"u8);
+                writer.WriteStringValue(OrderItemMode.Value.ToString());
+            }
+            if (Optional.IsDefined(SiteDetails))
+            {
+                writer.WritePropertyName("siteDetails"u8);
+                writer.WriteObjectValue(SiteDetails, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(CurrentStage))
+            {
+                writer.WritePropertyName("currentStage"u8);
+                writer.WriteObjectValue(CurrentStage, options);
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(OrderItemStageHistory))
+            {
+                writer.WritePropertyName("orderItemStageHistory"u8);
+                writer.WriteStartArray();
+                foreach (EdgeOrderStageDetails item in OrderItemStageHistory)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
             if (Optional.IsDefined(Preferences))
             {
-                writer.WritePropertyName("preferences");
-                writer.WriteObjectValue(Preferences);
+                writer.WritePropertyName("preferences"u8);
+                writer.WriteObjectValue(Preferences, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ForwardShippingDetails))
+            {
+                writer.WritePropertyName("forwardShippingDetails"u8);
+                writer.WriteObjectValue(ForwardShippingDetails, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ReverseShippingDetails))
+            {
+                writer.WritePropertyName("reverseShippingDetails"u8);
+                writer.WriteObjectValue(ReverseShippingDetails, options);
             }
             if (Optional.IsCollectionDefined(NotificationEmailList))
             {
-                writer.WritePropertyName("notificationEmailList");
+                writer.WritePropertyName("notificationEmailList"u8);
                 writer.WriteStartArray();
-                foreach (var item in NotificationEmailList)
+                foreach (string item in NotificationEmailList)
                 {
+                    if (item == null)
+                    {
+                        writer.WriteNullValue();
+                        continue;
+                    }
                     writer.WriteStringValue(item);
                 }
                 writer.WriteEndArray();
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && Optional.IsDefined(CancellationReason))
+            {
+                writer.WritePropertyName("cancellationReason"u8);
+                writer.WriteStringValue(CancellationReason);
+            }
+            if (options.Format != "W" && Optional.IsDefined(CancellationStatus))
+            {
+                writer.WritePropertyName("cancellationStatus"u8);
+                writer.WriteStringValue(CancellationStatus.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(DeletionStatus))
+            {
+                writer.WritePropertyName("deletionStatus"u8);
+                writer.WriteStringValue(DeletionStatus.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(ReturnReason))
+            {
+                writer.WritePropertyName("returnReason"u8);
+                writer.WriteStringValue(ReturnReason);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ReturnStatus))
+            {
+                writer.WritePropertyName("returnStatus"u8);
+                writer.WriteStringValue(ReturnStatus.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsCollectionDefined(ManagementRPDetailsList))
+            {
+                writer.WritePropertyName("managementRpDetailsList"u8);
+                writer.WriteStartArray();
+                foreach (ResourceProviderDetails item in ManagementRPDetailsList)
+                {
+                    writer.WriteObjectValue(item, options);
+                }
+                writer.WriteEndArray();
+            }
+            if (options.Format != "W" && Optional.IsDefined(Error))
+            {
+                writer.WritePropertyName("error"u8);
+                ((IJsonModel<ResponseError>)Error).Write(writer, options);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static EdgeOrderItemDetails DeserializeEdgeOrderItemDetails(JsonElement element)
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        EdgeOrderItemDetails IJsonModel<EdgeOrderItemDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual EdgeOrderItemDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            string format = options.Format == "W" ? ((IPersistableModel<EdgeOrderItemDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(EdgeOrderItemDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeEdgeOrderItemDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static EdgeOrderItemDetails DeserializeEdgeOrderItemDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             ProductDetails productDetails = default;
             OrderItemType orderItemType = default;
-            Optional<EdgeOrderStageDetails> currentStage = default;
-            Optional<IReadOnlyList<EdgeOrderStageDetails>> orderItemStageHistory = default;
-            Optional<OrderItemPreferences> preferences = default;
-            Optional<ForwardShippingDetails> forwardShippingDetails = default;
-            Optional<ReverseShippingDetails> reverseShippingDetails = default;
-            Optional<IList<string>> notificationEmailList = default;
-            Optional<string> cancellationReason = default;
-            Optional<OrderItemCancellationStatus> cancellationStatus = default;
-            Optional<EdgeOrderActionStatus> deletionStatus = default;
-            Optional<string> returnReason = default;
-            Optional<OrderItemReturnStatus> returnStatus = default;
-            Optional<ResourceProviderDetails> managementRPDetails = default;
-            Optional<IReadOnlyList<ResourceProviderDetails>> managementRPDetailsList = default;
-            Optional<ResponseError> error = default;
-            foreach (var property in element.EnumerateObject())
+            EdgeOrderOrderMode? orderItemMode = default;
+            SiteDetails siteDetails = default;
+            EdgeOrderStageDetails currentStage = default;
+            IReadOnlyList<EdgeOrderStageDetails> orderItemStageHistory = default;
+            OrderItemPreferences preferences = default;
+            ForwardShippingDetails forwardShippingDetails = default;
+            ReverseShippingDetails reverseShippingDetails = default;
+            IList<string> notificationEmailList = default;
+            string cancellationReason = default;
+            OrderItemCancellationStatus? cancellationStatus = default;
+            EdgeOrderActionStatus? deletionStatus = default;
+            string returnReason = default;
+            OrderItemReturnStatus? returnStatus = default;
+            IReadOnlyList<ResourceProviderDetails> managementRPDetailsList = default;
+            ResponseError error = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
             {
-                if (property.NameEquals("productDetails"))
+                if (prop.NameEquals("productDetails"u8))
                 {
-                    productDetails = ProductDetails.DeserializeProductDetails(property.Value);
+                    productDetails = ProductDetails.DeserializeProductDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("orderItemType"))
+                if (prop.NameEquals("orderItemType"u8))
                 {
-                    orderItemType = new OrderItemType(property.Value.GetString());
+                    orderItemType = new OrderItemType(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("currentStage"))
+                if (prop.NameEquals("orderItemMode"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    currentStage = EdgeOrderStageDetails.DeserializeEdgeOrderStageDetails(property.Value);
+                    orderItemMode = new EdgeOrderOrderMode(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("orderItemStageHistory"))
+                if (prop.NameEquals("siteDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
+                        continue;
+                    }
+                    siteDetails = SiteDetails.DeserializeSiteDetails(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("currentStage"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    currentStage = EdgeOrderStageDetails.DeserializeEdgeOrderStageDetails(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("orderItemStageHistory"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
                         continue;
                     }
                     List<EdgeOrderStageDetails> array = new List<EdgeOrderStageDetails>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(EdgeOrderStageDetails.DeserializeEdgeOrderStageDetails(item));
+                        array.Add(EdgeOrderStageDetails.DeserializeEdgeOrderStageDetails(item, options));
                     }
                     orderItemStageHistory = array;
                     continue;
                 }
-                if (property.NameEquals("preferences"))
+                if (prop.NameEquals("preferences"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    preferences = OrderItemPreferences.DeserializeOrderItemPreferences(property.Value);
+                    preferences = OrderItemPreferences.DeserializeOrderItemPreferences(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("forwardShippingDetails"))
+                if (prop.NameEquals("forwardShippingDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    forwardShippingDetails = ForwardShippingDetails.DeserializeForwardShippingDetails(property.Value);
+                    forwardShippingDetails = ForwardShippingDetails.DeserializeForwardShippingDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("reverseShippingDetails"))
+                if (prop.NameEquals("reverseShippingDetails"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    reverseShippingDetails = ReverseShippingDetails.DeserializeReverseShippingDetails(property.Value);
+                    reverseShippingDetails = ReverseShippingDetails.DeserializeReverseShippingDetails(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("notificationEmailList"))
+                if (prop.NameEquals("notificationEmailList"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(item.GetString());
+                        if (item.ValueKind == JsonValueKind.Null)
+                        {
+                            array.Add(null);
+                        }
+                        else
+                        {
+                            array.Add(item.GetString());
+                        }
                     }
                     notificationEmailList = array;
                     continue;
                 }
-                if (property.NameEquals("cancellationReason"))
+                if (prop.NameEquals("cancellationReason"u8))
                 {
-                    cancellationReason = property.Value.GetString();
+                    cancellationReason = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("cancellationStatus"))
+                if (prop.NameEquals("cancellationStatus"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    cancellationStatus = new OrderItemCancellationStatus(property.Value.GetString());
+                    cancellationStatus = new OrderItemCancellationStatus(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("deletionStatus"))
+                if (prop.NameEquals("deletionStatus"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    deletionStatus = new EdgeOrderActionStatus(property.Value.GetString());
+                    deletionStatus = new EdgeOrderActionStatus(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("returnReason"))
+                if (prop.NameEquals("returnReason"u8))
                 {
-                    returnReason = property.Value.GetString();
+                    returnReason = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("returnStatus"))
+                if (prop.NameEquals("returnStatus"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    returnStatus = new OrderItemReturnStatus(property.Value.GetString());
+                    returnStatus = new OrderItemReturnStatus(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("managementRpDetails"))
+                if (prop.NameEquals("managementRpDetailsList"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    managementRPDetails = ResourceProviderDetails.DeserializeResourceProviderDetails(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("managementRpDetailsList"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ResourceProviderDetails> array = new List<ResourceProviderDetails>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(ResourceProviderDetails.DeserializeResourceProviderDetails(item));
+                        array.Add(ResourceProviderDetails.DeserializeResourceProviderDetails(item, options));
                     }
                     managementRPDetailsList = array;
                     continue;
                 }
-                if (property.NameEquals("error"))
+                if (prop.NameEquals("error"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    error = JsonSerializer.Deserialize<ResponseError>(property.Value.GetRawText());
+                    error = ModelReaderWriter.Read<ResponseError>(new BinaryData(Encoding.UTF8.GetBytes(prop.Value.GetRawText())), ModelSerializationExtensions.WireOptions, AzureResourceManagerEdgeOrderContext.Default);
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
             }
-            return new EdgeOrderItemDetails(productDetails, orderItemType, currentStage.Value, Optional.ToList(orderItemStageHistory), preferences.Value, forwardShippingDetails.Value, reverseShippingDetails.Value, Optional.ToList(notificationEmailList), cancellationReason.Value, Optional.ToNullable(cancellationStatus), Optional.ToNullable(deletionStatus), returnReason.Value, Optional.ToNullable(returnStatus), managementRPDetails.Value, Optional.ToList(managementRPDetailsList), error.Value);
+            return new EdgeOrderItemDetails(
+                productDetails,
+                orderItemType,
+                orderItemMode,
+                siteDetails,
+                currentStage,
+                orderItemStageHistory ?? new ChangeTrackingList<EdgeOrderStageDetails>(),
+                preferences,
+                forwardShippingDetails,
+                reverseShippingDetails,
+                notificationEmailList ?? new ChangeTrackingList<string>(),
+                cancellationReason,
+                cancellationStatus,
+                deletionStatus,
+                returnReason,
+                returnStatus,
+                managementRPDetailsList ?? new ChangeTrackingList<ResourceProviderDetails>(),
+                error,
+                additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<EdgeOrderItemDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<EdgeOrderItemDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerEdgeOrderContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(EdgeOrderItemDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        EdgeOrderItemDetails IPersistableModel<EdgeOrderItemDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<EdgeOrderItemDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

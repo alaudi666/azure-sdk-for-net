@@ -1,12 +1,14 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-using System.Linq;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Azure.Core;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.CosmosDB.Models;
+using Azure.ResourceManager.Models;
 using NUnit.Framework;
-using Azure.Core;
 
 namespace Azure.ResourceManager.CosmosDB.Tests
 {
@@ -29,7 +31,7 @@ namespace Azure.ResourceManager.CosmosDB.Tests
             _resourceGroup = await GlobalClient.GetResourceGroupResource(_resourceGroupIdentifier).GetAsync();
 
             List<CosmosDBAccountCapability> capabilities = new List<CosmosDBAccountCapability>();
-            capabilities.Add(new CosmosDBAccountCapability("EnableGremlin"));
+            capabilities.Add(new CosmosDBAccountCapability("EnableGremlin", null));
             _databaseAccountIdentifier = (await CreateDatabaseAccount(SessionRecording.GenerateAssetName("dbaccount-"), CosmosDBAccountKind.GlobalDocumentDB, capabilities)).Id;
             await StopSessionRecordingAsync();
         }
@@ -37,9 +39,12 @@ namespace Azure.ResourceManager.CosmosDB.Tests
         [OneTimeTearDown]
         public async Task GlobalTeardown()
         {
-            if (_databaseAccountIdentifier != null)
+            if (Mode != RecordedTestMode.Playback)
             {
-                await ArmClient.GetCosmosDBAccountResource(_databaseAccountIdentifier).DeleteAsync(WaitUntil.Completed);
+                if (_databaseAccountIdentifier != null)
+                {
+                    await ArmClient.GetCosmosDBAccountResource(_databaseAccountIdentifier).DeleteAsync(WaitUntil.Completed);
+                }
             }
         }
 
@@ -52,12 +57,15 @@ namespace Azure.ResourceManager.CosmosDB.Tests
         [TearDown]
         public async Task TearDown()
         {
-            if (await GremlinDatabaseCollection.ExistsAsync(_databaseName))
+            if (Mode != RecordedTestMode.Playback)
             {
-                var id = GremlinDatabaseCollection.Id;
-                id = GremlinDatabaseResource.CreateResourceIdentifier(id.SubscriptionId, id.ResourceGroupName, id.Name, _databaseName);
-                GremlinDatabaseResource database = ArmClient.GetGremlinDatabaseResource(id);
-                await database.DeleteAsync(WaitUntil.Completed);
+                if (await GremlinDatabaseCollection.ExistsAsync(_databaseName))
+                {
+                    var id = GremlinDatabaseCollection.Id;
+                    id = GremlinDatabaseResource.CreateResourceIdentifier(id.SubscriptionId, id.ResourceGroupName, id.Name, _databaseName);
+                    GremlinDatabaseResource database = ArmClient.GetGremlinDatabaseResource(id);
+                    await database.DeleteAsync(WaitUntil.Completed);
+                }
             }
         }
 
@@ -83,7 +91,7 @@ namespace Azure.ResourceManager.CosmosDB.Tests
 
             var updateOptions = new GremlinDatabaseCreateOrUpdateContent(database.Id, _databaseName, database.Data.ResourceType, null,
                 new Dictionary<string, string>(),// TODO: use original tags see defect: https://github.com/Azure/autorest.csharp/issues/1590
-                AzureLocation.WestUS, database.Data.Resource, new CosmosDBCreateUpdateConfig { Throughput = TestThroughput2 });
+                AzureLocation.WestUS, database.Data.Resource, new CosmosDBCreateUpdateConfig { Throughput = TestThroughput2 }, null);
 
             database = await (await GremlinDatabaseCollection.CreateOrUpdateAsync(WaitUntil.Started, _databaseName, updateOptions)).WaitForCompletionAsync();
             Assert.AreEqual(_databaseName, database.Data.Resource.DatabaseName);
@@ -114,7 +122,10 @@ namespace Azure.ResourceManager.CosmosDB.Tests
             Assert.AreEqual(TestThroughput1, throughput.Data.Resource.Throughput);
 
             GremlinDatabaseThroughputSettingResource throughput2 = (await throughput.CreateOrUpdateAsync(WaitUntil.Completed, new ThroughputSettingsUpdateData(AzureLocation.WestUS,
-                new ThroughputSettingsResourceInfo(TestThroughput2, null, null, null)))).Value;
+                new ThroughputSettingsResourceInfo()
+                {
+                    Throughput = TestThroughput2
+                }))).Value;
 
             Assert.AreEqual(TestThroughput2, throughput2.Data.Resource.Throughput);
         }

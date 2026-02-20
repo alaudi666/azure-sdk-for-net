@@ -5,37 +5,199 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    public partial class AvsPrivateCloudEndpoints
+    /// <summary> Endpoint addresses. </summary>
+    public partial class AvsPrivateCloudEndpoints : IJsonModel<AvsPrivateCloudEndpoints>
     {
-        internal static AvsPrivateCloudEndpoints DeserializeAvsPrivateCloudEndpoints(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual AvsPrivateCloudEndpoints PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<string> nsxtManager = default;
-            Optional<string> vcsa = default;
-            Optional<string> hcxCloudManager = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<AvsPrivateCloudEndpoints>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("nsxtManager"))
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeAvsPrivateCloudEndpoints(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AvsPrivateCloudEndpoints)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<AvsPrivateCloudEndpoints>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvsPrivateCloudEndpoints>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AvsPrivateCloudEndpoints)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(NsxtManager))
+            {
+                writer.WritePropertyName("nsxtManager"u8);
+                writer.WriteStringValue(NsxtManager);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Vcsa))
+            {
+                writer.WritePropertyName("vcsa"u8);
+                writer.WriteStringValue(Vcsa);
+            }
+            if (options.Format != "W" && Optional.IsDefined(HcxCloudManager))
+            {
+                writer.WritePropertyName("hcxCloudManager"u8);
+                writer.WriteStringValue(HcxCloudManager);
+            }
+            if (options.Format != "W" && Optional.IsDefined(NsxtManagerIP))
+            {
+                writer.WritePropertyName("nsxtManagerIp"u8);
+                writer.WriteStringValue(NsxtManagerIP);
+            }
+            if (options.Format != "W" && Optional.IsDefined(VcenterIP))
+            {
+                writer.WritePropertyName("vcenterIp"u8);
+                writer.WriteStringValue(VcenterIP);
+            }
+            if (options.Format != "W" && Optional.IsDefined(HcxCloudManagerIP))
+            {
+                writer.WritePropertyName("hcxCloudManagerIp"u8);
+                writer.WriteStringValue(HcxCloudManagerIP);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    nsxtManager = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("vcsa"))
-                {
-                    vcsa = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("hcxCloudManager"))
-                {
-                    hcxCloudManager = property.Value.GetString();
-                    continue;
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
                 }
             }
-            return new AvsPrivateCloudEndpoints(nsxtManager.Value, vcsa.Value, hcxCloudManager.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AvsPrivateCloudEndpoints IJsonModel<AvsPrivateCloudEndpoints>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual AvsPrivateCloudEndpoints JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvsPrivateCloudEndpoints>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AvsPrivateCloudEndpoints)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAvsPrivateCloudEndpoints(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static AvsPrivateCloudEndpoints DeserializeAvsPrivateCloudEndpoints(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string nsxtManager = default;
+            string vcsa = default;
+            string hcxCloudManager = default;
+            string nsxtManagerIP = default;
+            string vcenterIP = default;
+            string hcxCloudManagerIP = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("nsxtManager"u8))
+                {
+                    nsxtManager = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("vcsa"u8))
+                {
+                    vcsa = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("hcxCloudManager"u8))
+                {
+                    hcxCloudManager = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("nsxtManagerIp"u8))
+                {
+                    nsxtManagerIP = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("vcenterIp"u8))
+                {
+                    vcenterIP = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("hcxCloudManagerIp"u8))
+                {
+                    hcxCloudManagerIP = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new AvsPrivateCloudEndpoints(
+                nsxtManager,
+                vcsa,
+                hcxCloudManager,
+                nsxtManagerIP,
+                vcenterIP,
+                hcxCloudManagerIP,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<AvsPrivateCloudEndpoints>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvsPrivateCloudEndpoints>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerAvsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(AvsPrivateCloudEndpoints)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AvsPrivateCloudEndpoints IPersistableModel<AvsPrivateCloudEndpoints>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<AvsPrivateCloudEndpoints>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

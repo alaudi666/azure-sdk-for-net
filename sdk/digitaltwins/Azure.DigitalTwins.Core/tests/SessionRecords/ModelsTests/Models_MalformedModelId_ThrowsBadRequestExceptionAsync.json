@@ -1,14 +1,14 @@
 {
   "Entries": [
     {
-      "RequestUri": "https://fakeHost.api.wus2.digitaltwins.azure.net/models/thisIsNotAValidModelId?includeModelDefinition=true\u0026api-version=2022-05-31",
+      "RequestUri": "https://fakeHost.api.wus2.digitaltwins.azure.net/models/thisIsNotAValidModelId?includeModelDefinition=true&api-version=2023-10-31",
       "RequestMethod": "GET",
       "RequestHeaders": {
         "Accept": "application/json",
         "Authorization": "Sanitized",
-        "traceparent": "00-43352a66c7f13f42a34e804922cff755-a7f7b0d21402f441-00",
-        "User-Agent": "azsdk-net-DigitalTwins.Core/1.4.0-alpha.20220629.1 (.NET Core 3.1.26; Microsoft Windows 10.0.19044)",
-        "x-ms-client-request-id": "3c9444623cc64004f566e485319b2599",
+        "traceparent": "00-6bc55bed27539faeae565bbb95faa430-51c2d5d88c626c7e-00",
+        "User-Agent": "azsdk-net-DigitalTwins.Core/1.6.0-alpha.20250501.1 (.NET Framework 4.8.9300.0; Microsoft Windows 10.0.26100 )",
+        "x-ms-client-request-id": "Sanitized",
         "x-ms-return-client-request-id": "true"
       },
       "RequestBody": null,
@@ -16,10 +16,11 @@
       "ResponseHeaders": {
         "Content-Length": "199",
         "Content-Type": "application/json; charset=utf-8",
-        "Date": "Wed, 29 Jun 2022 09:17:44 GMT",
-        "mise-correlation-id": "d0a21858-0557-4062-bdbb-53853cbc6a12",
+        "Date": "Fri, 02 May 2025 14:58:44 GMT",
+        "mise-correlation-id": "0611a00e-e646-45e9-8202-1dde366ca959",
         "Strict-Transport-Security": "max-age=2592000",
-        "traceresponse": "00-43352a66c7f13f42a34e804922cff755-e2213a6bb50fca13-01"
+        "traceresponse": "00-6bc55bed27539faeae565bbb95faa430-f2eef1c8c8122bb2-01",
+        "x-ms-error-code": "InvalidArgument"
       },
       "ResponseBody": {
         "error": {
@@ -30,8 +31,7 @@
     }
   ],
   "Variables": {
-    "AZURE_AUTHORITY_HOST": "https://login.microsoftonline.com/",
     "DIGITALTWINS_URL": "https://fakeHost.api.wus2.digitaltwins.azure.net",
-    "RandomSeed": "2020436570"
+    "RandomSeed": "2050331779"
   }
 }

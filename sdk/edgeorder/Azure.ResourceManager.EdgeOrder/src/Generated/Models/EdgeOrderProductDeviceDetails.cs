@@ -5,32 +5,57 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Device details. </summary>
     public partial class EdgeOrderProductDeviceDetails
     {
-        /// <summary> Initializes a new instance of EdgeOrderProductDeviceDetails. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderProductDeviceDetails"/>. </summary>
         internal EdgeOrderProductDeviceDetails()
         {
         }
 
-        /// <summary> Initializes a new instance of EdgeOrderProductDeviceDetails. </summary>
-        /// <param name="serialNumber"> device serial number. </param>
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderProductDeviceDetails"/>. </summary>
+        /// <param name="serialNumber"> Device serial number. </param>
+        /// <param name="displaySerialNumber"> Device serial number to be displayed. </param>
         /// <param name="managementResourceId"> Management Resource Id. </param>
         /// <param name="managementResourceTenantId"> Management Resource Tenant ID. </param>
-        internal EdgeOrderProductDeviceDetails(string serialNumber, string managementResourceId, string managementResourceTenantId)
+        /// <param name="provisioningSupport"> Determining nature of provisioning that the configuration supports. </param>
+        /// <param name="provisioningDetails"> Provisioning Details for the device. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EdgeOrderProductDeviceDetails(string serialNumber, string displaySerialNumber, string managementResourceId, string managementResourceTenantId, EdgeOrderProvisioningSupport? provisioningSupport, EdgeOrderProvisioningDetails provisioningDetails, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             SerialNumber = serialNumber;
+            DisplaySerialNumber = displaySerialNumber;
             ManagementResourceId = managementResourceId;
             ManagementResourceTenantId = managementResourceTenantId;
+            ProvisioningSupport = provisioningSupport;
+            ProvisioningDetails = provisioningDetails;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> device serial number. </summary>
+        /// <summary> Device serial number. </summary>
         public string SerialNumber { get; }
+
+        /// <summary> Device serial number to be displayed. </summary>
+        public string DisplaySerialNumber { get; }
+
         /// <summary> Management Resource Id. </summary>
         public string ManagementResourceId { get; }
+
         /// <summary> Management Resource Tenant ID. </summary>
         public string ManagementResourceTenantId { get; }
+
+        /// <summary> Determining nature of provisioning that the configuration supports. </summary>
+        public EdgeOrderProvisioningSupport? ProvisioningSupport { get; }
+
+        /// <summary> Provisioning Details for the device. </summary>
+        public EdgeOrderProvisioningDetails ProvisioningDetails { get; }
     }
 }

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Azure;
 using Azure.Core;
 using Azure.ResourceManager;
+using Azure.ResourceManager.Nginx.Mocking;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.Nginx
@@ -18,145 +19,203 @@ namespace Azure.ResourceManager.Nginx
     /// <summary> A class to add extension methods to Azure.ResourceManager.Nginx. </summary>
     public static partial class NginxExtensions
     {
-        private static SubscriptionResourceExtensionClient GetExtensionClient(SubscriptionResource subscriptionResource)
+        /// <param name="client"></param>
+        private static MockableNginxArmClient GetMockableNginxArmClient(ArmClient client)
         {
-            return subscriptionResource.GetCachedClient((client) =>
-            {
-                return new SubscriptionResourceExtensionClient(client, subscriptionResource.Id);
-            }
-            );
+            return client.GetCachedClient(client0 => new MockableNginxArmClient(client0, ResourceIdentifier.Root));
+        }
+
+        /// <param name="resourceGroupResource"></param>
+        private static MockableNginxResourceGroupResource GetMockableNginxResourceGroupResource(ResourceGroupResource resourceGroupResource)
+        {
+            return resourceGroupResource.GetCachedClient(client => new MockableNginxResourceGroupResource(client, resourceGroupResource.Id));
+        }
+
+        /// <param name="subscriptionResource"></param>
+        private static MockableNginxSubscriptionResource GetMockableNginxSubscriptionResource(SubscriptionResource subscriptionResource)
+        {
+            return subscriptionResource.GetCachedClient(client => new MockableNginxSubscriptionResource(client, subscriptionResource.Id));
         }
 
         /// <summary>
-        /// List the Nginx deployments resources
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Nginx.NginxPlus/nginxDeployments
-        /// Operation Id: Deployments_List
+        /// Gets an object representing a <see cref="NginxDeploymentApiKeyResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableNginxArmClient.GetNginxDeploymentApiKeyResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="NginxDeploymentResource" /> that may take multiple service requests to iterate over. </returns>
-        public static AsyncPageable<NginxDeploymentResource> GetNginxDeploymentsAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="NginxDeploymentApiKeyResource"/> object. </returns>
+        public static NginxDeploymentApiKeyResource GetNginxDeploymentApiKeyResource(this ArmClient client, ResourceIdentifier id)
         {
-            return GetExtensionClient(subscriptionResource).GetNginxDeploymentsAsync(cancellationToken);
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableNginxArmClient(client).GetNginxDeploymentApiKeyResource(id);
         }
 
         /// <summary>
-        /// List the Nginx deployments resources
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Nginx.NginxPlus/nginxDeployments
-        /// Operation Id: Deployments_List
+        /// Gets an object representing a <see cref="NginxDeploymentResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableNginxArmClient.GetNginxDeploymentResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource" /> instance the method will execute against. </param>
-        /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="NginxDeploymentResource" /> that may take multiple service requests to iterate over. </returns>
-        public static Pageable<NginxDeploymentResource> GetNginxDeployments(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="NginxDeploymentResource"/> object. </returns>
+        public static NginxDeploymentResource GetNginxDeploymentResource(this ArmClient client, ResourceIdentifier id)
         {
-            return GetExtensionClient(subscriptionResource).GetNginxDeployments(cancellationToken);
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableNginxArmClient(client).GetNginxDeploymentResource(id);
         }
 
-        private static ResourceGroupResourceExtensionClient GetExtensionClient(ResourceGroupResource resourceGroupResource)
+        /// <summary>
+        /// Gets an object representing a <see cref="NginxCertificateResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableNginxArmClient.GetNginxCertificateResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="NginxCertificateResource"/> object. </returns>
+        public static NginxCertificateResource GetNginxCertificateResource(this ArmClient client, ResourceIdentifier id)
         {
-            return resourceGroupResource.GetCachedClient((client) =>
-            {
-                return new ResourceGroupResourceExtensionClient(client, resourceGroupResource.Id);
-            }
-            );
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableNginxArmClient(client).GetNginxCertificateResource(id);
         }
 
-        /// <summary> Gets a collection of NginxDeploymentResources in the ResourceGroupResource. </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
-        /// <returns> An object representing collection of NginxDeploymentResources and their operations over a NginxDeploymentResource. </returns>
+        /// <summary>
+        /// Gets an object representing a <see cref="NginxConfigurationResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableNginxArmClient.GetNginxConfigurationResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="NginxConfigurationResource"/> object. </returns>
+        public static NginxConfigurationResource GetNginxConfigurationResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableNginxArmClient(client).GetNginxConfigurationResource(id);
+        }
+
+        /// <summary>
+        /// Gets an object representing a <see cref="NginxDeploymentWafPolicyResource"/> along with the instance operations that can be performed on it but with no data.
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableNginxArmClient.GetNginxDeploymentWafPolicyResource(ResourceIdentifier)"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="client"> The <see cref="ArmClient"/> the method will execute against. </param>
+        /// <param name="id"> The resource ID of the resource to get. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="client"/> is null. </exception>
+        /// <returns> Returns a <see cref="NginxDeploymentWafPolicyResource"/> object. </returns>
+        public static NginxDeploymentWafPolicyResource GetNginxDeploymentWafPolicyResource(this ArmClient client, ResourceIdentifier id)
+        {
+            Argument.AssertNotNull(client, nameof(client));
+
+            return GetMockableNginxArmClient(client).GetNginxDeploymentWafPolicyResource(id);
+        }
+
+        /// <summary>
+        /// Gets a collection of NginxDeployments in the <see cref="ResourceGroupResource"/>
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableNginxResourceGroupResource.GetNginxDeployments()"/> instead. </description>
+        /// </item>
+        /// </summary>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
+        /// <returns> An object representing collection of NginxDeployments and their operations over a NginxDeploymentResource. </returns>
         public static NginxDeploymentCollection GetNginxDeployments(this ResourceGroupResource resourceGroupResource)
         {
-            return GetExtensionClient(resourceGroupResource).GetNginxDeployments();
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableNginxResourceGroupResource(resourceGroupResource).GetNginxDeployments();
         }
 
         /// <summary>
-        /// Get the Nginx deployment
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}
-        /// Operation Id: Deployments_Get
+        /// Get the NGINX deployment
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableNginxResourceGroupResource.GetNginxDeploymentAsync(string, CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
-        /// <param name="deploymentName"> The name of targeted Nginx deployment. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <param name="deploymentName"> The name of targeted NGINX deployment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="deploymentName"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
         [ForwardsClientCalls]
         public static async Task<Response<NginxDeploymentResource>> GetNginxDeploymentAsync(this ResourceGroupResource resourceGroupResource, string deploymentName, CancellationToken cancellationToken = default)
         {
-            return await resourceGroupResource.GetNginxDeployments().GetAsync(deploymentName, cancellationToken).ConfigureAwait(false);
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return await GetMockableNginxResourceGroupResource(resourceGroupResource).GetNginxDeploymentAsync(deploymentName, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Get the Nginx deployment
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Nginx.NginxPlus/nginxDeployments/{deploymentName}
-        /// Operation Id: Deployments_Get
+        /// Get the NGINX deployment
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableNginxResourceGroupResource.GetNginxDeployment(string, CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource" /> instance the method will execute against. </param>
-        /// <param name="deploymentName"> The name of targeted Nginx deployment. </param>
+        /// <param name="resourceGroupResource"> The <see cref="ResourceGroupResource"/> the method will execute against. </param>
+        /// <param name="deploymentName"> The name of targeted NGINX deployment. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentException"> <paramref name="deploymentName"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="ArgumentNullException"> <paramref name="deploymentName"/> is null. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="resourceGroupResource"/> is null. </exception>
         [ForwardsClientCalls]
         public static Response<NginxDeploymentResource> GetNginxDeployment(this ResourceGroupResource resourceGroupResource, string deploymentName, CancellationToken cancellationToken = default)
         {
-            return resourceGroupResource.GetNginxDeployments().Get(deploymentName, cancellationToken);
+            Argument.AssertNotNull(resourceGroupResource, nameof(resourceGroupResource));
+
+            return GetMockableNginxResourceGroupResource(resourceGroupResource).GetNginxDeployment(deploymentName, cancellationToken);
         }
 
-        #region NginxCertificateResource
         /// <summary>
-        /// Gets an object representing a <see cref="NginxCertificateResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="NginxCertificateResource.CreateResourceIdentifier" /> to create a <see cref="NginxCertificateResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// List the NGINX deployments resources
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableNginxSubscriptionResource.GetNginxDeploymentsAsync(CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="NginxCertificateResource" /> object. </returns>
-        public static NginxCertificateResource GetNginxCertificateResource(this ArmClient client, ResourceIdentifier id)
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="NginxDeploymentResource"/> that may take multiple service requests to iterate over. </returns>
+        public static AsyncPageable<NginxDeploymentResource> GetNginxDeploymentsAsync(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return client.GetResourceClient(() =>
-            {
-                NginxCertificateResource.ValidateResourceId(id);
-                return new NginxCertificateResource(client, id);
-            }
-            );
-        }
-        #endregion
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
 
-        #region NginxConfigurationResource
-        /// <summary>
-        /// Gets an object representing a <see cref="NginxConfigurationResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="NginxConfigurationResource.CreateResourceIdentifier" /> to create a <see cref="NginxConfigurationResource" /> <see cref="ResourceIdentifier" /> from its components.
-        /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="NginxConfigurationResource" /> object. </returns>
-        public static NginxConfigurationResource GetNginxConfigurationResource(this ArmClient client, ResourceIdentifier id)
-        {
-            return client.GetResourceClient(() =>
-            {
-                NginxConfigurationResource.ValidateResourceId(id);
-                return new NginxConfigurationResource(client, id);
-            }
-            );
+            return GetMockableNginxSubscriptionResource(subscriptionResource).GetNginxDeploymentsAsync(cancellationToken);
         }
-        #endregion
 
-        #region NginxDeploymentResource
         /// <summary>
-        /// Gets an object representing a <see cref="NginxDeploymentResource" /> along with the instance operations that can be performed on it but with no data.
-        /// You can use <see cref="NginxDeploymentResource.CreateResourceIdentifier" /> to create a <see cref="NginxDeploymentResource" /> <see cref="ResourceIdentifier" /> from its components.
+        /// List the NGINX deployments resources
+        /// <item>
+        /// <term> Mocking. </term>
+        /// <description> To mock this method, please mock <see cref="MockableNginxSubscriptionResource.GetNginxDeployments(CancellationToken)"/> instead. </description>
+        /// </item>
         /// </summary>
-        /// <param name="client"> The <see cref="ArmClient" /> instance the method will execute against. </param>
-        /// <param name="id"> The resource ID of the resource to get. </param>
-        /// <returns> Returns a <see cref="NginxDeploymentResource" /> object. </returns>
-        public static NginxDeploymentResource GetNginxDeploymentResource(this ArmClient client, ResourceIdentifier id)
+        /// <param name="subscriptionResource"> The <see cref="SubscriptionResource"/> the method will execute against. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="subscriptionResource"/> is null. </exception>
+        /// <returns> A collection of <see cref="NginxDeploymentResource"/> that may take multiple service requests to iterate over. </returns>
+        public static Pageable<NginxDeploymentResource> GetNginxDeployments(this SubscriptionResource subscriptionResource, CancellationToken cancellationToken = default)
         {
-            return client.GetResourceClient(() =>
-            {
-                NginxDeploymentResource.ValidateResourceId(id);
-                return new NginxDeploymentResource(client, id);
-            }
-            );
+            Argument.AssertNotNull(subscriptionResource, nameof(subscriptionResource));
+
+            return GetMockableNginxSubscriptionResource(subscriptionResource).GetNginxDeployments(cancellationToken);
         }
-        #endregion
     }
 }

@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.StorageSync
 {
-    internal class StorageSyncServiceOperationSource : IOperationSource<StorageSyncServiceResource>
+    /// <summary></summary>
+    internal partial class StorageSyncServiceOperationSource : IOperationSource<StorageSyncServiceResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal StorageSyncServiceOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         StorageSyncServiceResource IOperationSource<StorageSyncServiceResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = StorageSyncServiceData.DeserializeStorageSyncServiceData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            StorageSyncServiceData data = StorageSyncServiceData.DeserializeStorageSyncServiceData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new StorageSyncServiceResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<StorageSyncServiceResource> IOperationSource<StorageSyncServiceResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = StorageSyncServiceData.DeserializeStorageSyncServiceData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            StorageSyncServiceData data = StorageSyncServiceData.DeserializeStorageSyncServiceData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new StorageSyncServiceResource(_client, data);
         }
     }

@@ -5,35 +5,46 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.Avs.Models
 {
     /// <summary> Administrative credentials for accessing vCenter and NSX-T. </summary>
     public partial class AdminCredentials
     {
-        /// <summary> Initializes a new instance of AdminCredentials. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AdminCredentials"/>. </summary>
         internal AdminCredentials()
         {
         }
 
-        /// <summary> Initializes a new instance of AdminCredentials. </summary>
+        /// <summary> Initializes a new instance of <see cref="AdminCredentials"/>. </summary>
         /// <param name="nsxtUsername"> NSX-T Manager username. </param>
         /// <param name="nsxtPassword"> NSX-T Manager password. </param>
         /// <param name="vCenterUsername"> vCenter admin username. </param>
         /// <param name="vCenterPassword"> vCenter admin password. </param>
-        internal AdminCredentials(string nsxtUsername, string nsxtPassword, string vCenterUsername, string vCenterPassword)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal AdminCredentials(string nsxtUsername, string nsxtPassword, string vCenterUsername, string vCenterPassword, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             NsxtUsername = nsxtUsername;
             NsxtPassword = nsxtPassword;
             VCenterUsername = vCenterUsername;
             VCenterPassword = vCenterPassword;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> NSX-T Manager username. </summary>
         public string NsxtUsername { get; }
+
         /// <summary> NSX-T Manager password. </summary>
         public string NsxtPassword { get; }
+
         /// <summary> vCenter admin username. </summary>
         public string VCenterUsername { get; }
+
         /// <summary> vCenter admin password. </summary>
         public string VCenterPassword { get; }
     }

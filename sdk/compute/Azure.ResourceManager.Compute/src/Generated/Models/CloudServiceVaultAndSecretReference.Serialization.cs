@@ -6,58 +6,145 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Compute.Models
 {
-    public partial class CloudServiceVaultAndSecretReference : IUtf8JsonSerializable
+    public partial class CloudServiceVaultAndSecretReference : IUtf8JsonSerializable, IJsonModel<CloudServiceVaultAndSecretReference>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<CloudServiceVaultAndSecretReference>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<CloudServiceVaultAndSecretReference>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(SourceVault))
-            {
-                writer.WritePropertyName("sourceVault");
-                JsonSerializer.Serialize(writer, SourceVault);
-            }
-            if (Optional.IsDefined(SecretUri))
-            {
-                writer.WritePropertyName("secretUrl");
-                writer.WriteStringValue(SecretUri.AbsoluteUri);
-            }
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static CloudServiceVaultAndSecretReference DeserializeCloudServiceVaultAndSecretReference(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<WritableSubResource> sourceVault = default;
-            Optional<Uri> secretUrl = default;
+            var format = options.Format == "W" ? ((IPersistableModel<CloudServiceVaultAndSecretReference>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(CloudServiceVaultAndSecretReference)} does not support writing '{format}' format.");
+            }
+
+            if (Optional.IsDefined(SourceVault))
+            {
+                writer.WritePropertyName("sourceVault"u8);
+                ((IJsonModel<WritableSubResource>)SourceVault).Write(writer, options);
+            }
+            if (Optional.IsDefined(SecretUri))
+            {
+                writer.WritePropertyName("secretUrl"u8);
+                writer.WriteStringValue(SecretUri.AbsoluteUri);
+            }
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        CloudServiceVaultAndSecretReference IJsonModel<CloudServiceVaultAndSecretReference>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<CloudServiceVaultAndSecretReference>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(CloudServiceVaultAndSecretReference)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeCloudServiceVaultAndSecretReference(document.RootElement, options);
+        }
+
+        internal static CloudServiceVaultAndSecretReference DeserializeCloudServiceVaultAndSecretReference(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            WritableSubResource sourceVault = default;
+            Uri secretUrl = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("sourceVault"))
+                if (property.NameEquals("sourceVault"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    sourceVault = JsonSerializer.Deserialize<WritableSubResource>(property.Value.GetRawText());
+                    sourceVault = ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(property.Value.GetRawText())), options, AzureResourceManagerComputeContext.Default);
                     continue;
                 }
-                if (property.NameEquals("secretUrl"))
+                if (property.NameEquals("secretUrl"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        secretUrl = null;
                         continue;
                     }
                     secretUrl = new Uri(property.Value.GetString());
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new CloudServiceVaultAndSecretReference(sourceVault, secretUrl.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new CloudServiceVaultAndSecretReference(sourceVault, secretUrl, serializedAdditionalRawData);
         }
+
+        BinaryData IPersistableModel<CloudServiceVaultAndSecretReference>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<CloudServiceVaultAndSecretReference>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerComputeContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(CloudServiceVaultAndSecretReference)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        CloudServiceVaultAndSecretReference IPersistableModel<CloudServiceVaultAndSecretReference>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<CloudServiceVaultAndSecretReference>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeCloudServiceVaultAndSecretReference(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(CloudServiceVaultAndSecretReference)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<CloudServiceVaultAndSecretReference>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

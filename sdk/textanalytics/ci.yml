@@ -10,23 +10,13 @@ trigger:
     include:
     - sdk/textanalytics/
 
-pr:
-  branches:
-    include:
-    - main
-    - feature/*
-    - hotfix/*
-    - release/*
-  paths:
-    include:
-    - sdk/textanalytics/
-
 extends:
   template: /eng/pipelines/templates/stages/archetype-sdk-client.yml
   parameters:
     ServiceDirectory: textanalytics
-    BuildSnippets: true
     ArtifactName: packages
     Artifacts:
     - name: Azure.AI.TextAnalytics
       safeName: AzureAITextAnalytics
+      triggeringPaths:
+      - Azure.AI.TextAnalytics.Legacy.Shared

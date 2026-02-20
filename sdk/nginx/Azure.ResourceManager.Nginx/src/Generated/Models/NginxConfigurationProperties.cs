@@ -5,57 +5,55 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Nginx;
 
 namespace Azure.ResourceManager.Nginx.Models
 {
-    /// <summary> The NginxConfigurationProperties. </summary>
+    /// <summary> Nginx Configuration Response Properties. </summary>
     public partial class NginxConfigurationProperties
     {
-        /// <summary> Initializes a new instance of NginxConfigurationProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NginxConfigurationProperties"/>. </summary>
         public NginxConfigurationProperties()
         {
             Files = new ChangeTrackingList<NginxConfigurationFile>();
             ProtectedFiles = new ChangeTrackingList<NginxConfigurationFile>();
         }
 
-        /// <summary> Initializes a new instance of NginxConfigurationProperties. </summary>
-        /// <param name="provisioningState"></param>
+        /// <summary> Initializes a new instance of <see cref="NginxConfigurationProperties"/>. </summary>
+        /// <param name="provisioningState"> Provisioning State. </param>
         /// <param name="files"></param>
         /// <param name="protectedFiles"></param>
-        /// <param name="package"></param>
+        /// <param name="package"> Nginx Configuration Package. </param>
         /// <param name="rootFile"></param>
-        internal NginxConfigurationProperties(ProvisioningState? provisioningState, IList<NginxConfigurationFile> files, IList<NginxConfigurationFile> protectedFiles, NginxConfigurationPackage package, string rootFile)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NginxConfigurationProperties(NginxProvisioningState? provisioningState, IList<NginxConfigurationFile> files, IList<NginxConfigurationFile> protectedFiles, NginxConfigurationPackage package, string rootFile, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ProvisioningState = provisioningState;
             Files = files;
             ProtectedFiles = protectedFiles;
             Package = package;
             RootFile = rootFile;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets the provisioning state. </summary>
-        public ProvisioningState? ProvisioningState { get; }
-        /// <summary> Gets the files. </summary>
+        /// <summary> Provisioning State. </summary>
+        public NginxProvisioningState? ProvisioningState { get; }
+
+        /// <summary> Gets the Files. </summary>
         public IList<NginxConfigurationFile> Files { get; }
-        /// <summary> Gets the protected files. </summary>
-        public IList<NginxConfigurationFile> ProtectedFiles { get; }
-        /// <summary> Gets or sets the package. </summary>
-        internal NginxConfigurationPackage Package { get; set; }
-        /// <summary> Gets or sets the package data. </summary>
-        public string PackageData
-        {
-            get => Package is null ? default : Package.Data;
-            set
-            {
-                if (Package is null)
-                    Package = new NginxConfigurationPackage();
-                Package.Data = value;
-            }
-        }
 
-        /// <summary> Gets or sets the root file. </summary>
+        /// <summary> Gets the ProtectedFiles. </summary>
+        public IList<NginxConfigurationFile> ProtectedFiles { get; }
+
+        /// <summary> Nginx Configuration Package. </summary>
+        public NginxConfigurationPackage Package { get; set; }
+
+        /// <summary> Gets or sets the RootFile. </summary>
         public string RootFile { get; set; }
     }
 }

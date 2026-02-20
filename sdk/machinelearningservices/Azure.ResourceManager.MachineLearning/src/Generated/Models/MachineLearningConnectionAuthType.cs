@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Authentication type of the connection target
-    /// Serialized Name: ConnectionAuthType
-    /// </summary>
+    /// <summary> Authentication type of the connection target. </summary>
     internal readonly partial struct MachineLearningConnectionAuthType : IEquatable<MachineLearningConnectionAuthType>
     {
         private readonly string _value;
@@ -30,37 +27,43 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string UsernamePasswordValue = "UsernamePassword";
         private const string NoneValue = "None";
         private const string SasValue = "SAS";
+        private const string AccountKeyValue = "AccountKey";
+        private const string ServicePrincipalValue = "ServicePrincipal";
+        private const string AccessKeyValue = "AccessKey";
+        private const string ApiKeyValue = "ApiKey";
+        private const string CustomKeysValue = "CustomKeys";
+        private const string OAuth2Value = "OAuth2";
+        private const string AadValue = "AAD";
 
-        /// <summary>
-        /// PAT
-        /// Serialized Name: ConnectionAuthType.PAT
-        /// </summary>
+        /// <summary> PAT. </summary>
         public static MachineLearningConnectionAuthType Pat { get; } = new MachineLearningConnectionAuthType(PatValue);
-        /// <summary>
-        /// ManagedIdentity
-        /// Serialized Name: ConnectionAuthType.ManagedIdentity
-        /// </summary>
+        /// <summary> ManagedIdentity. </summary>
         public static MachineLearningConnectionAuthType ManagedIdentity { get; } = new MachineLearningConnectionAuthType(ManagedIdentityValue);
-        /// <summary>
-        /// UsernamePassword
-        /// Serialized Name: ConnectionAuthType.UsernamePassword
-        /// </summary>
+        /// <summary> UsernamePassword. </summary>
         public static MachineLearningConnectionAuthType UsernamePassword { get; } = new MachineLearningConnectionAuthType(UsernamePasswordValue);
-        /// <summary>
-        /// None
-        /// Serialized Name: ConnectionAuthType.None
-        /// </summary>
+        /// <summary> None. </summary>
         public static MachineLearningConnectionAuthType None { get; } = new MachineLearningConnectionAuthType(NoneValue);
-        /// <summary>
-        /// SAS
-        /// Serialized Name: ConnectionAuthType.SAS
-        /// </summary>
+        /// <summary> SAS. </summary>
         public static MachineLearningConnectionAuthType Sas { get; } = new MachineLearningConnectionAuthType(SasValue);
+        /// <summary> AccountKey. </summary>
+        public static MachineLearningConnectionAuthType AccountKey { get; } = new MachineLearningConnectionAuthType(AccountKeyValue);
+        /// <summary> ServicePrincipal. </summary>
+        public static MachineLearningConnectionAuthType ServicePrincipal { get; } = new MachineLearningConnectionAuthType(ServicePrincipalValue);
+        /// <summary> AccessKey. </summary>
+        public static MachineLearningConnectionAuthType AccessKey { get; } = new MachineLearningConnectionAuthType(AccessKeyValue);
+        /// <summary> ApiKey. </summary>
+        public static MachineLearningConnectionAuthType ApiKey { get; } = new MachineLearningConnectionAuthType(ApiKeyValue);
+        /// <summary> CustomKeys. </summary>
+        public static MachineLearningConnectionAuthType CustomKeys { get; } = new MachineLearningConnectionAuthType(CustomKeysValue);
+        /// <summary> OAuth2. </summary>
+        public static MachineLearningConnectionAuthType OAuth2 { get; } = new MachineLearningConnectionAuthType(OAuth2Value);
+        /// <summary> AAD. </summary>
+        public static MachineLearningConnectionAuthType Aad { get; } = new MachineLearningConnectionAuthType(AadValue);
         /// <summary> Determines if two <see cref="MachineLearningConnectionAuthType"/> values are the same. </summary>
         public static bool operator ==(MachineLearningConnectionAuthType left, MachineLearningConnectionAuthType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningConnectionAuthType"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningConnectionAuthType left, MachineLearningConnectionAuthType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningConnectionAuthType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningConnectionAuthType"/>. </summary>
         public static implicit operator MachineLearningConnectionAuthType(string value) => new MachineLearningConnectionAuthType(value);
 
         /// <inheritdoc />
@@ -71,7 +74,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

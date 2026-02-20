@@ -10,7 +10,10 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.ContainerService.Models
 {
-    /// <summary> Determines the type of workload a node can run. </summary>
+    /// <summary>
+    /// Determines the type of workload a node can run.
+    /// Serialized Name: WorkloadRuntime
+    /// </summary>
     public readonly partial struct WorkloadRuntime : IEquatable<WorkloadRuntime>
     {
         private readonly string _value;
@@ -24,16 +27,28 @@ namespace Azure.ResourceManager.ContainerService.Models
 
         private const string OciContainerValue = "OCIContainer";
         private const string WasmWasiValue = "WasmWasi";
+        private const string KataVmIsolationValue = "KataVmIsolation";
 
-        /// <summary> Nodes will use Kubelet to run standard OCI container workloads. </summary>
+        /// <summary>
+        /// Nodes will use Kubelet to run standard OCI container workloads.
+        /// Serialized Name: WorkloadRuntime.OCIContainer
+        /// </summary>
         public static WorkloadRuntime OciContainer { get; } = new WorkloadRuntime(OciContainerValue);
-        /// <summary> Nodes will use Krustlet to run WASM workloads using the WASI provider (Preview). </summary>
+        /// <summary>
+        /// Nodes will use Krustlet to run WASM workloads using the WASI provider (Preview).
+        /// Serialized Name: WorkloadRuntime.WasmWasi
+        /// </summary>
         public static WorkloadRuntime WasmWasi { get; } = new WorkloadRuntime(WasmWasiValue);
+        /// <summary>
+        /// Nodes can use (Kata + Cloud Hypervisor + Hyper-V) to enable Nested VM-based pods. Due to the use Hyper-V, AKS node OS itself is a nested VM (the root OS) of Hyper-V. Thus it can only be used with VM series that support Nested Virtualization such as Dv3 series.
+        /// Serialized Name: WorkloadRuntime.KataVmIsolation
+        /// </summary>
+        public static WorkloadRuntime KataVmIsolation { get; } = new WorkloadRuntime(KataVmIsolationValue);
         /// <summary> Determines if two <see cref="WorkloadRuntime"/> values are the same. </summary>
         public static bool operator ==(WorkloadRuntime left, WorkloadRuntime right) => left.Equals(right);
         /// <summary> Determines if two <see cref="WorkloadRuntime"/> values are not the same. </summary>
         public static bool operator !=(WorkloadRuntime left, WorkloadRuntime right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="WorkloadRuntime"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="WorkloadRuntime"/>. </summary>
         public static implicit operator WorkloadRuntime(string value) => new WorkloadRuntime(value);
 
         /// <inheritdoc />
@@ -44,7 +59,7 @@ namespace Azure.ResourceManager.ContainerService.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

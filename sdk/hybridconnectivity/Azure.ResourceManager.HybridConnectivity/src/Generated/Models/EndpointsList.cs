@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.HybridConnectivity;
 
 namespace Azure.ResourceManager.HybridConnectivity.Models
@@ -14,24 +15,31 @@ namespace Azure.ResourceManager.HybridConnectivity.Models
     /// <summary> The list of endpoints. </summary>
     internal partial class EndpointsList
     {
-        /// <summary> Initializes a new instance of EndpointsList. </summary>
-        internal EndpointsList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EndpointsList"/>. </summary>
+        /// <param name="value"> The list of endpoint. </param>
+        internal EndpointsList(IEnumerable<HybridConnectivityEndpointData> value)
         {
-            Value = new ChangeTrackingList<EndpointResourceData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of EndpointsList. </summary>
-        /// <param name="nextLink"> The link used to get the next page of endpoints list. </param>
+        /// <summary> Initializes a new instance of <see cref="EndpointsList"/>. </summary>
         /// <param name="value"> The list of endpoint. </param>
-        internal EndpointsList(string nextLink, IReadOnlyList<EndpointResourceData> value)
+        /// <param name="nextLink"> The link used to get the next page of endpoints list. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EndpointsList(IList<HybridConnectivityEndpointData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
-            NextLink = nextLink;
             Value = value;
+            NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
+
+        /// <summary> The list of endpoint. </summary>
+        public IList<HybridConnectivityEndpointData> Value { get; }
 
         /// <summary> The link used to get the next page of endpoints list. </summary>
-        public string NextLink { get; }
-        /// <summary> The list of endpoint. </summary>
-        public IReadOnlyList<EndpointResourceData> Value { get; }
+        public Uri NextLink { get; }
     }
 }

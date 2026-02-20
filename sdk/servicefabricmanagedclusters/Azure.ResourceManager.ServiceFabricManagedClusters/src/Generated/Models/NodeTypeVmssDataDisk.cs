@@ -6,14 +6,18 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Managed data disk description. </summary>
     public partial class NodeTypeVmssDataDisk
     {
-        /// <summary> Initializes a new instance of NodeTypeVmssDataDisk. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NodeTypeVmssDataDisk"/>. </summary>
         /// <param name="lun"> Specifies the logical unit number of the data disk. This value is used to identify data disks within the VM and therefore must be unique for each data disk attached to a VM. Lun 0 is reserved for the service fabric data disk. </param>
         /// <param name="diskSizeInGB"> Disk size for each vm in the node type in GBs. </param>
         /// <param name="diskType"> Managed data disk type. Specifies the storage account type for the managed disk. </param>
@@ -29,12 +33,30 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
             DiskLetter = diskLetter;
         }
 
+        /// <summary> Initializes a new instance of <see cref="NodeTypeVmssDataDisk"/>. </summary>
+        /// <param name="lun"> Specifies the logical unit number of the data disk. This value is used to identify data disks within the VM and therefore must be unique for each data disk attached to a VM. Lun 0 is reserved for the service fabric data disk. </param>
+        /// <param name="diskSizeInGB"> Disk size for each vm in the node type in GBs. </param>
+        /// <param name="diskType"> Managed data disk type. Specifies the storage account type for the managed disk. </param>
+        /// <param name="diskLetter"> Managed data disk letter. It can not use the reserved letter C or D and it can not change after created. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NodeTypeVmssDataDisk(int lun, int diskSizeInGB, ServiceFabricManagedDataDiskType diskType, string diskLetter, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Lun = lun;
+            DiskSizeInGB = diskSizeInGB;
+            DiskType = diskType;
+            DiskLetter = diskLetter;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> Specifies the logical unit number of the data disk. This value is used to identify data disks within the VM and therefore must be unique for each data disk attached to a VM. Lun 0 is reserved for the service fabric data disk. </summary>
         public int Lun { get; set; }
+
         /// <summary> Disk size for each vm in the node type in GBs. </summary>
         public int DiskSizeInGB { get; set; }
+
         /// <summary> Managed data disk type. Specifies the storage account type for the managed disk. </summary>
         public ServiceFabricManagedDataDiskType DiskType { get; set; }
+
         /// <summary> Managed data disk letter. It can not use the reserved letter C or D and it can not change after created. </summary>
         public string DiskLetter { get; set; }
     }

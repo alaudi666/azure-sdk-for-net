@@ -5,44 +5,53 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.SignalR;
 
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Live trace configuration of a Microsoft.SignalRService resource. </summary>
     public partial class SignalRLiveTraceConfiguration
     {
-        /// <summary> Initializes a new instance of SignalRLiveTraceConfiguration. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRLiveTraceConfiguration"/>. </summary>
         public SignalRLiveTraceConfiguration()
         {
             Categories = new ChangeTrackingList<SignalRLiveTraceCategory>();
         }
 
-        /// <summary> Initializes a new instance of SignalRLiveTraceConfiguration. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRLiveTraceConfiguration"/>. </summary>
         /// <param name="enabled">
         /// Indicates whether or not enable live trace.
-        /// When it&apos;s set to true, live trace client can connect to the service.
-        /// Otherwise, live trace client can&apos;t connect to the service, so that you are unable to receive any log, no matter what you configure in &quot;categories&quot;.
+        /// When it's set to true, live trace client can connect to the service.
+        /// Otherwise, live trace client can't connect to the service, so that you are unable to receive any log, no matter what you configure in "categories".
         /// Available values: true, false.
         /// Case insensitive.
         /// </param>
         /// <param name="categories"> Gets or sets the list of category configurations. </param>
-        internal SignalRLiveTraceConfiguration(string enabled, IList<SignalRLiveTraceCategory> categories)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRLiveTraceConfiguration(string enabled, IList<SignalRLiveTraceCategory> categories, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Enabled = enabled;
             Categories = categories;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary>
         /// Indicates whether or not enable live trace.
-        /// When it&apos;s set to true, live trace client can connect to the service.
-        /// Otherwise, live trace client can&apos;t connect to the service, so that you are unable to receive any log, no matter what you configure in &quot;categories&quot;.
+        /// When it's set to true, live trace client can connect to the service.
+        /// Otherwise, live trace client can't connect to the service, so that you are unable to receive any log, no matter what you configure in "categories".
         /// Available values: true, false.
         /// Case insensitive.
         /// </summary>
+        [WirePath("enabled")]
         public string Enabled { get; set; }
+
         /// <summary> Gets or sets the list of category configurations. </summary>
+        [WirePath("categories")]
         public IList<SignalRLiveTraceCategory> Categories { get; }
     }
 }

@@ -5,6 +5,8 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Resources.Models;
 
@@ -13,35 +15,73 @@ namespace Azure.ResourceManager.Network.Models
     /// <summary> Contains IPv6 peering config. </summary>
     public partial class IPv6ExpressRouteCircuitPeeringConfig
     {
-        /// <summary> Initializes a new instance of IPv6ExpressRouteCircuitPeeringConfig. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="IPv6ExpressRouteCircuitPeeringConfig"/>. </summary>
         public IPv6ExpressRouteCircuitPeeringConfig()
         {
         }
 
-        /// <summary> Initializes a new instance of IPv6ExpressRouteCircuitPeeringConfig. </summary>
+        /// <summary> Initializes a new instance of <see cref="IPv6ExpressRouteCircuitPeeringConfig"/>. </summary>
         /// <param name="primaryPeerAddressPrefix"> The primary address prefix. </param>
         /// <param name="secondaryPeerAddressPrefix"> The secondary address prefix. </param>
         /// <param name="microsoftPeeringConfig"> The Microsoft peering configuration. </param>
         /// <param name="routeFilter"> The reference to the RouteFilter resource. </param>
         /// <param name="state"> The state of peering. </param>
-        internal IPv6ExpressRouteCircuitPeeringConfig(string primaryPeerAddressPrefix, string secondaryPeerAddressPrefix, ExpressRouteCircuitPeeringConfig microsoftPeeringConfig, WritableSubResource routeFilter, ExpressRouteCircuitPeeringState? state)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal IPv6ExpressRouteCircuitPeeringConfig(string primaryPeerAddressPrefix, string secondaryPeerAddressPrefix, ExpressRouteCircuitPeeringConfig microsoftPeeringConfig, WritableSubResource routeFilter, ExpressRouteCircuitPeeringState? state, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             PrimaryPeerAddressPrefix = primaryPeerAddressPrefix;
             SecondaryPeerAddressPrefix = secondaryPeerAddressPrefix;
             MicrosoftPeeringConfig = microsoftPeeringConfig;
             RouteFilter = routeFilter;
             State = state;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> The primary address prefix. </summary>
+        [WirePath("primaryPeerAddressPrefix")]
         public string PrimaryPeerAddressPrefix { get; set; }
         /// <summary> The secondary address prefix. </summary>
+        [WirePath("secondaryPeerAddressPrefix")]
         public string SecondaryPeerAddressPrefix { get; set; }
         /// <summary> The Microsoft peering configuration. </summary>
+        [WirePath("microsoftPeeringConfig")]
         public ExpressRouteCircuitPeeringConfig MicrosoftPeeringConfig { get; set; }
         /// <summary> The reference to the RouteFilter resource. </summary>
         internal WritableSubResource RouteFilter { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("routeFilter.id")]
         public ResourceIdentifier RouteFilterId
         {
             get => RouteFilter is null ? default : RouteFilter.Id;
@@ -54,6 +94,7 @@ namespace Azure.ResourceManager.Network.Models
         }
 
         /// <summary> The state of peering. </summary>
+        [WirePath("state")]
         public ExpressRouteCircuitPeeringState? State { get; set; }
     }
 }

@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.PolicyInsights.Models;
@@ -35,6 +34,29 @@ namespace Azure.ResourceManager.PolicyInsights
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
             _apiVersion = apiVersion ?? "2018-07-01-preview";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
+        }
+
+        internal RequestUriBuilder CreateListQueryResultsForManagementGroupRequestUri(string managementGroupName, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath("Microsoft.Management", true);
+            uri.AppendPath("/managementGroups/", false);
+            uri.AppendPath(managementGroupName, true);
+            uri.AppendPath("/providers/Microsoft.PolicyInsights/policyTrackedResources/", false);
+            uri.AppendPath(policyTrackedResourceType.ToString(), true);
+            uri.AppendPath("/queryResults", false);
+            if (policyQuerySettings?.Top != null)
+            {
+                uri.AppendQuery("$top", policyQuerySettings.Top.Value, true);
+            }
+            if (policyQuerySettings?.Filter != null)
+            {
+                uri.AppendQuery("$filter", policyQuerySettings.Filter, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListQueryResultsForManagementGroupRequest(string managementGroupName, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
@@ -68,7 +90,7 @@ namespace Azure.ResourceManager.PolicyInsights
 
         /// <summary> Queries policy tracked resources under the management group. </summary>
         /// <param name="managementGroupName"> Management group name. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="managementGroupName"/> is null. </exception>
@@ -84,7 +106,7 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -95,7 +117,7 @@ namespace Azure.ResourceManager.PolicyInsights
 
         /// <summary> Queries policy tracked resources under the management group. </summary>
         /// <param name="managementGroupName"> Management group name. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="managementGroupName"/> is null. </exception>
@@ -111,13 +133,34 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListQueryResultsForSubscriptionRequestUri(string subscriptionId, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/Microsoft.PolicyInsights/policyTrackedResources/", false);
+            uri.AppendPath(policyTrackedResourceType.ToString(), true);
+            uri.AppendPath("/queryResults", false);
+            if (policyQuerySettings?.Top != null)
+            {
+                uri.AppendQuery("$top", policyQuerySettings.Top.Value, true);
+            }
+            if (policyQuerySettings?.Filter != null)
+            {
+                uri.AppendQuery("$filter", policyQuerySettings.Filter, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListQueryResultsForSubscriptionRequest(string subscriptionId, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
@@ -149,7 +192,7 @@ namespace Azure.ResourceManager.PolicyInsights
 
         /// <summary> Queries policy tracked resources under the subscription. </summary>
         /// <param name="subscriptionId"> Microsoft Azure subscription ID. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
@@ -165,7 +208,7 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -176,7 +219,7 @@ namespace Azure.ResourceManager.PolicyInsights
 
         /// <summary> Queries policy tracked resources under the subscription. </summary>
         /// <param name="subscriptionId"> Microsoft Azure subscription ID. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
@@ -192,13 +235,36 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListQueryResultsForResourceGroupRequestUri(string subscriptionId, string resourceGroupName, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourceGroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/Microsoft.PolicyInsights/policyTrackedResources/", false);
+            uri.AppendPath(policyTrackedResourceType.ToString(), true);
+            uri.AppendPath("/queryResults", false);
+            if (policyQuerySettings?.Top != null)
+            {
+                uri.AppendQuery("$top", policyQuerySettings.Top.Value, true);
+            }
+            if (policyQuerySettings?.Filter != null)
+            {
+                uri.AppendQuery("$filter", policyQuerySettings.Filter, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListQueryResultsForResourceGroupRequest(string subscriptionId, string resourceGroupName, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
@@ -233,7 +299,7 @@ namespace Azure.ResourceManager.PolicyInsights
         /// <summary> Queries policy tracked resources under the resource group. </summary>
         /// <param name="subscriptionId"> Microsoft Azure subscription ID. </param>
         /// <param name="resourceGroupName"> Resource group name. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
@@ -250,7 +316,7 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -262,7 +328,7 @@ namespace Azure.ResourceManager.PolicyInsights
         /// <summary> Queries policy tracked resources under the resource group. </summary>
         /// <param name="subscriptionId"> Microsoft Azure subscription ID. </param>
         /// <param name="resourceGroupName"> Resource group name. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
@@ -279,13 +345,34 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListQueryResultsForResourceRequestUri(string resourceId, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceId, false);
+            uri.AppendPath("/providers/Microsoft.PolicyInsights/policyTrackedResources/", false);
+            uri.AppendPath(policyTrackedResourceType.ToString(), true);
+            uri.AppendPath("/queryResults", false);
+            if (policyQuerySettings?.Top != null)
+            {
+                uri.AppendQuery("$top", policyQuerySettings.Top.Value, true);
+            }
+            if (policyQuerySettings?.Filter != null)
+            {
+                uri.AppendQuery("$filter", policyQuerySettings.Filter, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListQueryResultsForResourceRequest(string resourceId, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
@@ -317,7 +404,7 @@ namespace Azure.ResourceManager.PolicyInsights
 
         /// <summary> Queries policy tracked resources under the resource. </summary>
         /// <param name="resourceId"> Resource ID. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="resourceId"/> is null. </exception>
@@ -332,7 +419,7 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -343,7 +430,7 @@ namespace Azure.ResourceManager.PolicyInsights
 
         /// <summary> Queries policy tracked resources under the resource. </summary>
         /// <param name="resourceId"> Resource ID. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="resourceId"/> is null. </exception>
@@ -358,13 +445,21 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListQueryResultsForManagementGroupNextPageRequestUri(string nextLink, string managementGroupName, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListQueryResultsForManagementGroupNextPageRequest(string nextLink, string managementGroupName, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
@@ -384,7 +479,7 @@ namespace Azure.ResourceManager.PolicyInsights
         /// <summary> Queries policy tracked resources under the management group. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="managementGroupName"> Management group name. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="managementGroupName"/> is null. </exception>
@@ -401,7 +496,7 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -413,7 +508,7 @@ namespace Azure.ResourceManager.PolicyInsights
         /// <summary> Queries policy tracked resources under the management group. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="managementGroupName"> Management group name. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="managementGroupName"/> is null. </exception>
@@ -430,13 +525,21 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListQueryResultsForSubscriptionNextPageRequestUri(string nextLink, string subscriptionId, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListQueryResultsForSubscriptionNextPageRequest(string nextLink, string subscriptionId, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
@@ -456,7 +559,7 @@ namespace Azure.ResourceManager.PolicyInsights
         /// <summary> Queries policy tracked resources under the subscription. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Microsoft Azure subscription ID. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
@@ -473,7 +576,7 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -485,7 +588,7 @@ namespace Azure.ResourceManager.PolicyInsights
         /// <summary> Queries policy tracked resources under the subscription. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Microsoft Azure subscription ID. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
@@ -502,13 +605,21 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListQueryResultsForResourceGroupNextPageRequestUri(string nextLink, string subscriptionId, string resourceGroupName, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListQueryResultsForResourceGroupNextPageRequest(string nextLink, string subscriptionId, string resourceGroupName, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
@@ -529,7 +640,7 @@ namespace Azure.ResourceManager.PolicyInsights
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Microsoft Azure subscription ID. </param>
         /// <param name="resourceGroupName"> Resource group name. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
@@ -547,7 +658,7 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -560,7 +671,7 @@ namespace Azure.ResourceManager.PolicyInsights
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> Microsoft Azure subscription ID. </param>
         /// <param name="resourceGroupName"> Resource group name. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/>, <paramref name="subscriptionId"/> or <paramref name="resourceGroupName"/> is null. </exception>
@@ -578,13 +689,21 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListQueryResultsForResourceNextPageRequestUri(string nextLink, string resourceId, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListQueryResultsForResourceNextPageRequest(string nextLink, string resourceId, PolicyTrackedResourceType policyTrackedResourceType, PolicyQuerySettings policyQuerySettings)
@@ -604,7 +723,7 @@ namespace Azure.ResourceManager.PolicyInsights
         /// <summary> Queries policy tracked resources under the resource. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="resourceId"> Resource ID. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="resourceId"/> is null. </exception>
@@ -620,7 +739,7 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -632,7 +751,7 @@ namespace Azure.ResourceManager.PolicyInsights
         /// <summary> Queries policy tracked resources under the resource. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="resourceId"> Resource ID. </param>
-        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only &quot;default&quot; is allowed. </param>
+        /// <param name="policyTrackedResourceType"> The name of the virtual resource under PolicyTrackedResources resource type; only "default" is allowed. </param>
         /// <param name="policyQuerySettings"> Parameter group. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="resourceId"/> is null. </exception>
@@ -648,7 +767,7 @@ namespace Azure.ResourceManager.PolicyInsights
                 case 200:
                     {
                         PolicyTrackedResourcesQueryResults value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = PolicyTrackedResourcesQueryResults.DeserializePolicyTrackedResourcesQueryResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

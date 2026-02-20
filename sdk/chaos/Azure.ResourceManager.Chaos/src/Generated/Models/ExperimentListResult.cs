@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Chaos;
 
 namespace Azure.ResourceManager.Chaos.Models
@@ -14,24 +15,31 @@ namespace Azure.ResourceManager.Chaos.Models
     /// <summary> Model that represents a list of Experiment resources and a link for pagination. </summary>
     internal partial class ExperimentListResult
     {
-        /// <summary> Initializes a new instance of ExperimentListResult. </summary>
-        internal ExperimentListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ExperimentListResult"/>. </summary>
+        /// <param name="value"> The Experiment items on this page. </param>
+        internal ExperimentListResult(IEnumerable<ChaosExperimentData> value)
         {
-            Value = new ChangeTrackingList<ExperimentData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of ExperimentListResult. </summary>
-        /// <param name="value"> List of Experiment resources. </param>
-        /// <param name="nextLink"> URL to retrieve the next page of Experiment resources. </param>
-        internal ExperimentListResult(IReadOnlyList<ExperimentData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ExperimentListResult"/>. </summary>
+        /// <param name="value"> The Experiment items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ExperimentListResult(IList<ChaosExperimentData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of Experiment resources. </summary>
-        public IReadOnlyList<ExperimentData> Value { get; }
-        /// <summary> URL to retrieve the next page of Experiment resources. </summary>
-        public string NextLink { get; }
+        /// <summary> The Experiment items on this page. </summary>
+        public IList<ChaosExperimentData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

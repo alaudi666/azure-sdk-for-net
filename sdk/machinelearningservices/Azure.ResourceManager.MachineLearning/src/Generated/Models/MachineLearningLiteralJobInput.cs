@@ -6,21 +6,15 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Literal input type.
-    /// Serialized Name: LiteralJobInput
-    /// </summary>
+    /// <summary> Literal input type. </summary>
     public partial class MachineLearningLiteralJobInput : MachineLearningJobInput
     {
-        /// <summary> Initializes a new instance of MachineLearningLiteralJobInput. </summary>
-        /// <param name="value">
-        /// [Required] Literal value for the input.
-        /// Serialized Name: LiteralJobInput.value
-        /// </param>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningLiteralJobInput"/>. </summary>
+        /// <param name="value"> [Required] Literal value for the input. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
         public MachineLearningLiteralJobInput(string value)
         {
@@ -30,29 +24,24 @@ namespace Azure.ResourceManager.MachineLearning.Models
             JobInputType = JobInputType.Literal;
         }
 
-        /// <summary> Initializes a new instance of MachineLearningLiteralJobInput. </summary>
-        /// <param name="description">
-        /// Description for the input.
-        /// Serialized Name: JobInput.description
-        /// </param>
-        /// <param name="jobInputType">
-        /// [Required] Specifies the type of job.
-        /// Serialized Name: JobInput.jobInputType
-        /// </param>
-        /// <param name="value">
-        /// [Required] Literal value for the input.
-        /// Serialized Name: LiteralJobInput.value
-        /// </param>
-        internal MachineLearningLiteralJobInput(string description, JobInputType jobInputType, string value) : base(description, jobInputType)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningLiteralJobInput"/>. </summary>
+        /// <param name="jobInputType"> [Required] Specifies the type of job. </param>
+        /// <param name="description"> Description for the input. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="value"> [Required] Literal value for the input. </param>
+        internal MachineLearningLiteralJobInput(JobInputType jobInputType, string description, IDictionary<string, BinaryData> serializedAdditionalRawData, string value) : base(jobInputType, description, serializedAdditionalRawData)
         {
             Value = value;
             JobInputType = jobInputType;
         }
 
-        /// <summary>
-        /// [Required] Literal value for the input.
-        /// Serialized Name: LiteralJobInput.value
-        /// </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningLiteralJobInput"/> for deserialization. </summary>
+        internal MachineLearningLiteralJobInput()
+        {
+        }
+
+        /// <summary> [Required] Literal value for the input. </summary>
+        [WirePath("value")]
         public string Value { get; set; }
     }
 }

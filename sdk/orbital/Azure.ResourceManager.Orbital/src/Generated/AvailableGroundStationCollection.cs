@@ -7,22 +7,20 @@
 
 using System;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Orbital.Models;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.Orbital
 {
     /// <summary>
-    /// A class representing a collection of <see cref="AvailableGroundStationResource" /> and their operations.
-    /// Each <see cref="AvailableGroundStationResource" /> in the collection will belong to the same instance of <see cref="SubscriptionResource" />.
-    /// To get an <see cref="AvailableGroundStationCollection" /> instance call the GetAvailableGroundStations method from an instance of <see cref="SubscriptionResource" />.
+    /// A class representing a collection of <see cref="AvailableGroundStationResource"/> and their operations.
+    /// Each <see cref="AvailableGroundStationResource"/> in the collection will belong to the same instance of <see cref="SubscriptionResource"/>.
+    /// To get an <see cref="AvailableGroundStationCollection"/> instance call the GetAvailableGroundStations method from an instance of <see cref="SubscriptionResource"/>.
     /// </summary>
     public partial class AvailableGroundStationCollection : ArmCollection
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.Orbital
 
         /// <summary>
         /// Gets the specified available ground station.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations/{groundStationName}
-        /// Operation Id: AvailableGroundStations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations/{groundStationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailableGroundStations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AvailableGroundStationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="groundStationName"> Ground Station name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -84,8 +98,24 @@ namespace Azure.ResourceManager.Orbital
 
         /// <summary>
         /// Gets the specified available ground station.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations/{groundStationName}
-        /// Operation Id: AvailableGroundStations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations/{groundStationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailableGroundStations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AvailableGroundStationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="groundStationName"> Ground Station name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -113,94 +143,86 @@ namespace Azure.ResourceManager.Orbital
 
         /// <summary>
         /// Returns list of available ground stations.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations
-        /// Operation Id: AvailableGroundStations_ListByCapability
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailableGroundStations_ListByCapability</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AvailableGroundStationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="capability"> Ground Station Capability. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="AvailableGroundStationResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="AvailableGroundStationResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<AvailableGroundStationResource> GetAllAsync(GroundStationCapability capability, CancellationToken cancellationToken = default)
         {
-            async Task<Page<AvailableGroundStationResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _availableGroundStationClientDiagnostics.CreateScope("AvailableGroundStationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _availableGroundStationRestClient.ListByCapabilityAsync(Id.SubscriptionId, capability, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new AvailableGroundStationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<AvailableGroundStationResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _availableGroundStationClientDiagnostics.CreateScope("AvailableGroundStationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _availableGroundStationRestClient.ListByCapabilityNextPageAsync(nextLink, Id.SubscriptionId, capability, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new AvailableGroundStationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _availableGroundStationRestClient.CreateListByCapabilityRequest(Id.SubscriptionId, capability);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _availableGroundStationRestClient.CreateListByCapabilityNextPageRequest(nextLink, Id.SubscriptionId, capability);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new AvailableGroundStationResource(Client, AvailableGroundStationData.DeserializeAvailableGroundStationData(e)), _availableGroundStationClientDiagnostics, Pipeline, "AvailableGroundStationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Returns list of available ground stations.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations
-        /// Operation Id: AvailableGroundStations_ListByCapability
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailableGroundStations_ListByCapability</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AvailableGroundStationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="capability"> Ground Station Capability. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="AvailableGroundStationResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="AvailableGroundStationResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<AvailableGroundStationResource> GetAll(GroundStationCapability capability, CancellationToken cancellationToken = default)
         {
-            Page<AvailableGroundStationResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _availableGroundStationClientDiagnostics.CreateScope("AvailableGroundStationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _availableGroundStationRestClient.ListByCapability(Id.SubscriptionId, capability, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new AvailableGroundStationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<AvailableGroundStationResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _availableGroundStationClientDiagnostics.CreateScope("AvailableGroundStationCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _availableGroundStationRestClient.ListByCapabilityNextPage(nextLink, Id.SubscriptionId, capability, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new AvailableGroundStationResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _availableGroundStationRestClient.CreateListByCapabilityRequest(Id.SubscriptionId, capability);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _availableGroundStationRestClient.CreateListByCapabilityNextPageRequest(nextLink, Id.SubscriptionId, capability);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new AvailableGroundStationResource(Client, AvailableGroundStationData.DeserializeAvailableGroundStationData(e)), _availableGroundStationClientDiagnostics, Pipeline, "AvailableGroundStationCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations/{groundStationName}
-        /// Operation Id: AvailableGroundStations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations/{groundStationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailableGroundStations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AvailableGroundStationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="groundStationName"> Ground Station name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -226,8 +248,24 @@ namespace Azure.ResourceManager.Orbital
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations/{groundStationName}
-        /// Operation Id: AvailableGroundStations_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations/{groundStationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailableGroundStations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AvailableGroundStationResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="groundStationName"> Ground Station name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -243,6 +281,96 @@ namespace Azure.ResourceManager.Orbital
             {
                 var response = _availableGroundStationRestClient.Get(Id.SubscriptionId, groundStationName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations/{groundStationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailableGroundStations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AvailableGroundStationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="groundStationName"> Ground Station name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="groundStationName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="groundStationName"/> is null. </exception>
+        public virtual async Task<NullableResponse<AvailableGroundStationResource>> GetIfExistsAsync(string groundStationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(groundStationName, nameof(groundStationName));
+
+            using var scope = _availableGroundStationClientDiagnostics.CreateScope("AvailableGroundStationCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _availableGroundStationRestClient.GetAsync(Id.SubscriptionId, groundStationName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<AvailableGroundStationResource>(response.GetRawResponse());
+                return Response.FromValue(new AvailableGroundStationResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Orbital/availableGroundStations/{groundStationName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>AvailableGroundStations_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="AvailableGroundStationResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="groundStationName"> Ground Station name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="groundStationName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="groundStationName"/> is null. </exception>
+        public virtual NullableResponse<AvailableGroundStationResource> GetIfExists(string groundStationName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(groundStationName, nameof(groundStationName));
+
+            using var scope = _availableGroundStationClientDiagnostics.CreateScope("AvailableGroundStationCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _availableGroundStationRestClient.Get(Id.SubscriptionId, groundStationName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<AvailableGroundStationResource>(response.GetRawResponse());
+                return Response.FromValue(new AvailableGroundStationResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

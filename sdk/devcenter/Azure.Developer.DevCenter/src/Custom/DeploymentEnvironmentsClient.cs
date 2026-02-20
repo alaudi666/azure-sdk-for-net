@@ -1,0 +1,57 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using Azure.Core;
+using Azure.Developer.DevCenter.Models;
+using Microsoft.TypeSpec.Generator.Customizations;
+
+namespace Azure.Developer.DevCenter
+{
+    [CodeGenSuppress("CreateOrUpdateEnvironmentAsync", typeof(WaitUntil), typeof(string), typeof(string), typeof(string), typeof(DevCenterEnvironment), typeof(CancellationToken))]
+    [CodeGenSuppress("CreateOrUpdateEnvironment", typeof(WaitUntil), typeof(string), typeof(string), typeof(string), typeof(DevCenterEnvironment), typeof(CancellationToken))]
+    public partial class DeploymentEnvironmentsClient
+    {
+        /// <summary> Creates or updates an environment. </summary>
+        /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
+        /// <param name="projectName"> The DevCenter Project upon which to execute operations. </param>
+        /// <param name="userId"> The AAD object id of the user. If value is 'me', the identity is taken from the authentication context. </param>
+        /// <param name="environment"> Represents an environment.  </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="projectName"/>, <paramref name="userId"/> or <paramref name="environment"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="projectName"/> or <paramref name="userId"/>  is an empty string, and was expected to be non-empty. </exception>
+        public virtual async Task<Operation<DevCenterEnvironment>> CreateOrUpdateEnvironmentAsync(WaitUntil waitUntil, string projectName, string userId, DevCenterEnvironment environment, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(projectName, nameof(projectName));
+            Argument.AssertNotNullOrEmpty(userId, nameof(userId));
+            Argument.AssertNotNull(environment, nameof(environment));
+
+            RequestContext context = cancellationToken.ToRequestContext();
+            using RequestContent content = environment.ToRequestContent();
+            Operation<BinaryData> response = await CreateOrUpdateEnvironmentAsync(waitUntil, projectName, userId, environment.Name, content, context).ConfigureAwait(false);
+            return ProtocolOperationHelpers.Convert(response, (Response r) => (DevCenterEnvironment)r, ClientDiagnostics, "DeploymentEnvironmentsClient.CreateOrUpdateEnvironment");
+        }
+
+        /// <summary> Creates or updates an environment. </summary>
+        /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
+        /// <param name="projectName"> The DevCenter Project upon which to execute operations. </param>
+        /// <param name="userId"> The AAD object id of the user. If value is 'me', the identity is taken from the authentication context. </param>
+        /// <param name="environment"> Represents an environment.  </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="projectName"/>, <paramref name="userId"/> or <paramref name="environment"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="projectName"/> or <paramref name="userId"/>  is an empty string, and was expected to be non-empty. </exception>
+        public virtual Operation<DevCenterEnvironment> CreateOrUpdateEnvironment(WaitUntil waitUntil, string projectName, string userId, DevCenterEnvironment environment, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(projectName, nameof(projectName));
+            Argument.AssertNotNullOrEmpty(userId, nameof(userId));
+            Argument.AssertNotNull(environment, nameof(environment));
+
+            RequestContext context = cancellationToken.ToRequestContext();
+            using RequestContent content = environment.ToRequestContent();
+            Operation<BinaryData> response = CreateOrUpdateEnvironment(waitUntil, projectName, userId, environment.Name, content, context);
+            return ProtocolOperationHelpers.Convert(response, (Response r) => (DevCenterEnvironment)r, ClientDiagnostics, "DeploymentEnvironmentsClient.CreateOrUpdateEnvironment");
+        }
+    }
+}

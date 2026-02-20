@@ -4,7 +4,17 @@ Run `dotnet build /t:GenerateCode` to generate code.
 
 ``` yaml
 input-file:
-    -  https://github.com/apattath/azure-rest-api-specs-apattath/blob/fd6518a294e6968a77bbad6ce412e736c803337f/specification/communication/data-plane/Email/preview/2021-10-01-preview/CommunicationServicesEmail.json
+- https://github.com/Azure/azure-rest-api-specs/blob/83327afe471d7a2eb923de58b163658d45e0e5a7/specification/communication/data-plane/Email/stable/2025-09-01/CommunicationServicesEmail.json
 generation1-convenience-client: true
 payload-flattening-threshold: 3
+model-namespace: false
+
+directive:
+  from: swagger-document
+  where: "$.definitions.EmailAttachment.properties.contentInBase64"
+  transform: >
+    $["x-ms-client-name"] = "content";
 ```
+
+
+

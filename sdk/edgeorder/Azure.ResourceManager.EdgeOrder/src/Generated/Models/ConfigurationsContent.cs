@@ -7,26 +7,34 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Azure.Core;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Configuration request object. </summary>
     public partial class ConfigurationsContent
     {
-        /// <summary> Initializes a new instance of ConfigurationsContent. </summary>
-        /// <param name="configurationFilters"> Holds details about product hierarchy information and filterable property. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="configurationFilters"/> is null. </exception>
-        public ConfigurationsContent(IEnumerable<ConfigurationFilters> configurationFilters)
-        {
-            Argument.AssertNotNull(configurationFilters, nameof(configurationFilters));
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
-            ConfigurationFilters = configurationFilters.ToList();
+        /// <summary> Initializes a new instance of <see cref="ConfigurationsContent"/>. </summary>
+        public ConfigurationsContent()
+        {
+        }
+
+        /// <summary> Initializes a new instance of <see cref="ConfigurationsContent"/>. </summary>
+        /// <param name="configurationFilter"> Holds details about product hierarchy information and filterable property. </param>
+        /// <param name="customerSubscriptionDetails"> Customer subscription properties. Clients can display available products to unregistered customers by explicitly passing subscription details. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ConfigurationsContent(ConfigurationFilters configurationFilter, CustomerSubscriptionDetails customerSubscriptionDetails, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            ConfigurationFilter = configurationFilter;
+            CustomerSubscriptionDetails = customerSubscriptionDetails;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Holds details about product hierarchy information and filterable property. </summary>
-        public IList<ConfigurationFilters> ConfigurationFilters { get; }
+        public ConfigurationFilters ConfigurationFilter { get; set; }
+
         /// <summary> Customer subscription properties. Clients can display available products to unregistered customers by explicitly passing subscription details. </summary>
         public CustomerSubscriptionDetails CustomerSubscriptionDetails { get; set; }
     }

@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters
 {
-    internal class ServiceFabricManagedNodeTypeOperationSource : IOperationSource<ServiceFabricManagedNodeTypeResource>
+    /// <summary></summary>
+    internal partial class ServiceFabricManagedNodeTypeOperationSource : IOperationSource<ServiceFabricManagedNodeTypeResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal ServiceFabricManagedNodeTypeOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         ServiceFabricManagedNodeTypeResource IOperationSource<ServiceFabricManagedNodeTypeResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = ServiceFabricManagedNodeTypeData.DeserializeServiceFabricManagedNodeTypeData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            ServiceFabricManagedNodeTypeData data = ServiceFabricManagedNodeTypeData.DeserializeServiceFabricManagedNodeTypeData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new ServiceFabricManagedNodeTypeResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<ServiceFabricManagedNodeTypeResource> IOperationSource<ServiceFabricManagedNodeTypeResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = ServiceFabricManagedNodeTypeData.DeserializeServiceFabricManagedNodeTypeData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            ServiceFabricManagedNodeTypeData data = ServiceFabricManagedNodeTypeData.DeserializeServiceFabricManagedNodeTypeData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new ServiceFabricManagedNodeTypeResource(_client, data);
         }
     }

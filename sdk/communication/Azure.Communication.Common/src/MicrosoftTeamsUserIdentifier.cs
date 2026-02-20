@@ -22,26 +22,26 @@ namespace Azure.Communication
                 {
                     if (IsAnonymous)
                     {
-                        _rawId = $"8:teamsvisitor:{UserId}";
+                        _rawId = $"{TeamUserAnonymous}{UserId}";
                     }
                     else if (Cloud == CommunicationCloudEnvironment.Dod)
                     {
-                        _rawId = $"8:dod:{UserId}";
+                        _rawId = $"{TeamUserDodCloud}{UserId}";
                     }
                     else if (Cloud == CommunicationCloudEnvironment.Gcch)
                     {
-                        _rawId = $"8:gcch:{UserId}";
+                        _rawId = $"{TeamUserGcchCloud}{UserId}";
                     }
                     else
                     {
-                        _rawId = $"8:orgid:{UserId}";
+                        _rawId = $"{TeamUserPublicCloud}{UserId}";
                     }
                 }
                 return _rawId;
             }
         }
 
-        /// <summary>The id of the Microsoft Teams user. If the user isn't anonymous, the id is the Azure AD object id of the user.</summary>
+        /// <summary>The id of the Microsoft Teams user. If the user isn't anonymous, the id is the Entra ID object id of the user.</summary>
         public string UserId { get; }
 
         /// <summary>True if the user is anonymous, for example when joining a meeting with a share link.</summary>
@@ -53,7 +53,7 @@ namespace Azure.Communication
         /// <summary>
         /// Initializes a new instance of <see cref="MicrosoftTeamsUserIdentifier"/>.
         /// </summary>
-        /// <param name="userId">Id of the Microsoft Teams user. If the user isn't anonymous, the id is the Azure AD object id of the user.</param>
+        /// <param name="userId">Id of the Microsoft Teams user. If the user isn't anonymous, the id is the Entra ID object id of the user.</param>
         /// <param name="isAnonymous">Set this to true if the user is anonymous, for example when joining a meeting with a share link.</param>
         /// <param name="cloud">The cloud that the Microsoft Team user belongs to. A null value translates to the Public cloud.</param>
         /// <param name="rawId">Raw id of the Microsoft Teams user, optional.</param>

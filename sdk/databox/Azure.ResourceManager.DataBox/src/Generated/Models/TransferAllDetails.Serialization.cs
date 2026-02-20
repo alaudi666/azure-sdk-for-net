@@ -5,65 +5,169 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class TransferAllDetails : IUtf8JsonSerializable
+    /// <summary> Details to transfer all data. </summary>
+    public partial class TransferAllDetails : IJsonModel<TransferAllDetails>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="TransferAllDetails"/> for deserialization. </summary>
+        internal TransferAllDetails()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual TransferAllDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<TransferAllDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeTransferAllDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(TransferAllDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<TransferAllDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("dataAccountType");
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<TransferAllDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(TransferAllDetails)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("dataAccountType"u8);
             writer.WriteStringValue(DataAccountType.ToSerialString());
             if (Optional.IsDefined(TransferAllBlobs))
             {
-                writer.WritePropertyName("transferAllBlobs");
+                writer.WritePropertyName("transferAllBlobs"u8);
                 writer.WriteBooleanValue(TransferAllBlobs.Value);
             }
             if (Optional.IsDefined(TransferAllFiles))
             {
-                writer.WritePropertyName("transferAllFiles");
+                writer.WritePropertyName("transferAllFiles"u8);
                 writer.WriteBooleanValue(TransferAllFiles.Value);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static TransferAllDetails DeserializeTransferAllDetails(JsonElement element)
-        {
-            DataAccountType dataAccountType = default;
-            Optional<bool> transferAllBlobs = default;
-            Optional<bool> transferAllFiles = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("dataAccountType"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    dataAccountType = property.Value.GetString().ToDataAccountType();
-                    continue;
-                }
-                if (property.NameEquals("transferAllBlobs"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    transferAllBlobs = property.Value.GetBoolean();
-                    continue;
-                }
-                if (property.NameEquals("transferAllFiles"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    transferAllFiles = property.Value.GetBoolean();
-                    continue;
+#endif
                 }
             }
-            return new TransferAllDetails(dataAccountType, Optional.ToNullable(transferAllBlobs), Optional.ToNullable(transferAllFiles));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        TransferAllDetails IJsonModel<TransferAllDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual TransferAllDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<TransferAllDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(TransferAllDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeTransferAllDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static TransferAllDetails DeserializeTransferAllDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DataAccountType dataAccountType = default;
+            bool? transferAllBlobs = default;
+            bool? transferAllFiles = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("dataAccountType"u8))
+                {
+                    dataAccountType = prop.Value.GetString().ToDataAccountType();
+                    continue;
+                }
+                if (prop.NameEquals("transferAllBlobs"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    transferAllBlobs = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (prop.NameEquals("transferAllFiles"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    transferAllFiles = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new TransferAllDetails(dataAccountType, transferAllBlobs, transferAllFiles, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<TransferAllDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<TransferAllDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(TransferAllDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        TransferAllDetails IPersistableModel<TransferAllDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<TransferAllDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -4,9 +4,11 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Core.Pipeline;
+using Azure.Core.Shared;
 using Azure.Messaging.ServiceBus.Diagnostics;
 
 namespace Azure.Messaging.ServiceBus
@@ -25,13 +27,17 @@ namespace Azure.Messaging.ServiceBus
         protected readonly TimeSpan? _maxReceiveWaitTime;
         private readonly ServiceBusReceiverOptions _receiverOptions;
         protected readonly ServiceBusProcessorOptions ProcessorOptions;
-        private readonly EntityScopeFactory _scopeFactory;
+        private readonly MessagingClientDiagnostics _clientDiagnostics;
 
-        protected bool AutoRenewLock => ProcessorOptions.MaxAutoLockRenewalDuration > TimeSpan.Zero;
+        private static int s_randomSeed = Environment.TickCount;
+        private static readonly ThreadLocal<Random> RandomNumberGenerator = new ThreadLocal<Random>(() => new Random(Interlocked.Increment(ref s_randomSeed)), false);
+
+        protected bool AutoRenewLock => ProcessorOptions.MaxAutoLockRenewalDuration > TimeSpan.Zero ||
+                                        ProcessorOptions.MaxAutoLockRenewalDuration == Timeout.InfiniteTimeSpan;
 
         public ReceiverManager(
             ServiceBusProcessor processor,
-            EntityScopeFactory scopeFactory,
+            MessagingClientDiagnostics clientDiagnostics,
             bool isSession)
         {
             Processor = processor;
@@ -56,7 +62,7 @@ namespace Azure.Messaging.ServiceBus
                     options: _receiverOptions);
             }
 
-            _scopeFactory = scopeFactory;
+            _clientDiagnostics = clientDiagnostics;
         }
 
         public virtual async Task CloseReceiverIfNeeded(CancellationToken cancellationToken)
@@ -125,15 +131,19 @@ namespace Azure.Messaging.ServiceBus
 
         public virtual void UpdatePrefetchCount(int prefetchCount)
         {
-            if (Receiver != null && Receiver.PrefetchCount != prefetchCount)
+            var capturedReceiver = Receiver;
+
+            // If the Receiver property is set to null after we have captured a non-null instance, the Prefetch setter will essentially
+            // no-op as the underlying link has been closed.
+            if (capturedReceiver != null && capturedReceiver.PrefetchCount != prefetchCount)
             {
-                Receiver.PrefetchCount = prefetchCount;
+                capturedReceiver.PrefetchCount = prefetchCount;
             }
         }
 
         protected async Task ProcessOneMessageWithinScopeAsync(ServiceBusReceivedMessage message, string activityName, CancellationToken cancellationToken)
         {
-            using DiagnosticScope scope = _scopeFactory.CreateScope(activityName, DiagnosticScope.ActivityKind.Consumer);
+            using DiagnosticScope scope = _clientDiagnostics.CreateScope(activityName, ActivityKind.Consumer, MessagingDiagnosticOperation.Process);
             scope.SetMessageAsParent(message);
             scope.Start();
 
@@ -271,15 +281,22 @@ namespace Azure.Messaging.ServiceBus
             Processor.Identifier,
             cancellationToken);
 
-        protected virtual async Task OnMessageHandler(EventArgs args) =>
-            await Processor.OnProcessMessageAsync((ProcessMessageEventArgs) args).ConfigureAwait(false);
+        protected virtual async Task OnMessageHandler(EventArgs args)
+        {
+            var processMessageArgs = (ProcessMessageEventArgs)args;
+            using var registration = processMessageArgs.RegisterMessageLockLostHandler();
+            await Processor.OnProcessMessageAsync((ProcessMessageEventArgs)args).ConfigureAwait(false);
+        }
 
         internal async Task RenewMessageLockAsync(
+            ProcessMessageEventArgs args,
             ServiceBusReceivedMessage message,
             CancellationTokenSource cancellationTokenSource)
         {
             cancellationTokenSource.CancelAfter(ProcessorOptions.MaxAutoLockRenewalDuration);
             CancellationToken cancellationToken = cancellationTokenSource.Token;
+            bool isTriggerMessage = args.Message == message;
+
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
@@ -302,6 +319,13 @@ namespace Azure.Messaging.ServiceBus
                     }
 
                     await Receiver.RenewMessageLockAsync(message, cancellationToken).ConfigureAwait(false);
+
+                    // Currently only the trigger message supports cancellation token for LockedUntil.
+                    if (isTriggerMessage)
+                    {
+                        args.MessageLockLostCancellationSource.CancelAfterLockExpired(message);
+                    }
+
                     ServiceBusEventSource.Log.ProcessorRenewMessageLockComplete(Processor.Identifier, message.LockTokenGuid);
                 }
                 catch (Exception ex) when (!(ex is TaskCanceledException))
@@ -311,6 +335,13 @@ namespace Azure.Messaging.ServiceBus
                     // If the message has already been settled there is no need to raise the lock lost exception to user error handler.
                     if (!message.IsSettled)
                     {
+                        // Currently only the trigger message supports cancellation token for LockedUntil.
+                        if (isTriggerMessage)
+                        {
+                            args.LockLostException = ex;
+                            args.MessageLockLostCancellationSource?.Cancel();
+                        }
+
                         await HandleRenewLockException(ex, cancellationToken).ConfigureAwait(false);
                     }
 
@@ -369,17 +400,15 @@ namespace Azure.Messaging.ServiceBus
 
         protected static TimeSpan CalculateRenewDelay(DateTimeOffset lockedUntil)
         {
+            var shortJitter = TimeSpan.FromMilliseconds(RandomNumberGenerator.Value.Next(0, 50));
+            var longJitter = TimeSpan.FromMilliseconds(RandomNumberGenerator.Value.Next(0, 200));
+
             var remainingTime = lockedUntil - DateTimeOffset.UtcNow;
 
-            if (remainingTime < TimeSpan.FromMilliseconds(400))
-            {
-                return TimeSpan.Zero;
-            }
-
             var buffer = TimeSpan.FromTicks(Math.Min(remainingTime.Ticks / 2, Constants.MaximumRenewBufferDuration.Ticks));
-            var renewAfter = remainingTime - buffer;
+            var renewAfter = remainingTime - buffer - longJitter;
 
-            return renewAfter;
+            return renewAfter < TimeSpan.FromMilliseconds(400) ? shortJitter : renewAfter;
         }
     }
 }

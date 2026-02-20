@@ -5,49 +5,56 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
     /// <summary> Defines the parameters for RequestBody match conditions. </summary>
-    public partial class RequestBodyMatchCondition
+    public partial class RequestBodyMatchCondition : DeliveryRuleConditionProperties
     {
-        /// <summary> Initializes a new instance of RequestBodyMatchCondition. </summary>
-        /// <param name="conditionType"></param>
+        /// <summary> Initializes a new instance of <see cref="RequestBodyMatchCondition"/>. </summary>
         /// <param name="requestBodyOperator"> Describes operator to be matched. </param>
-        public RequestBodyMatchCondition(RequestBodyMatchConditionType conditionType, RequestBodyOperator requestBodyOperator)
+        public RequestBodyMatchCondition(RequestBodyOperator requestBodyOperator)
         {
-            ConditionType = conditionType;
             RequestBodyOperator = requestBodyOperator;
             MatchValues = new ChangeTrackingList<string>();
             Transforms = new ChangeTrackingList<PreTransformCategory>();
+            TypeName = DeliveryRuleConditionParametersType.DeliveryRuleRequestBodyConditionParameters;
         }
 
-        /// <summary> Initializes a new instance of RequestBodyMatchCondition. </summary>
-        /// <param name="conditionType"></param>
+        /// <summary> Initializes a new instance of <see cref="RequestBodyMatchCondition"/>. </summary>
+        /// <param name="typeName"></param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="requestBodyOperator"> Describes operator to be matched. </param>
         /// <param name="negateCondition"> Describes if this is negate condition or not. </param>
         /// <param name="matchValues"> The match value for the condition of the delivery rule. </param>
         /// <param name="transforms"> List of transforms. </param>
-        internal RequestBodyMatchCondition(RequestBodyMatchConditionType conditionType, RequestBodyOperator requestBodyOperator, bool? negateCondition, IList<string> matchValues, IList<PreTransformCategory> transforms)
+        internal RequestBodyMatchCondition(DeliveryRuleConditionParametersType typeName, IDictionary<string, BinaryData> serializedAdditionalRawData, RequestBodyOperator requestBodyOperator, bool? negateCondition, IList<string> matchValues, IList<PreTransformCategory> transforms) : base(typeName, serializedAdditionalRawData)
         {
-            ConditionType = conditionType;
             RequestBodyOperator = requestBodyOperator;
             NegateCondition = negateCondition;
             MatchValues = matchValues;
             Transforms = transforms;
+            TypeName = typeName;
         }
 
-        /// <summary> Gets or sets the condition type. </summary>
-        public RequestBodyMatchConditionType ConditionType { get; set; }
+        /// <summary> Initializes a new instance of <see cref="RequestBodyMatchCondition"/> for deserialization. </summary>
+        internal RequestBodyMatchCondition()
+        {
+        }
+
         /// <summary> Describes operator to be matched. </summary>
+        [WirePath("operator")]
         public RequestBodyOperator RequestBodyOperator { get; set; }
         /// <summary> Describes if this is negate condition or not. </summary>
+        [WirePath("negateCondition")]
         public bool? NegateCondition { get; set; }
         /// <summary> The match value for the condition of the delivery rule. </summary>
+        [WirePath("matchValues")]
         public IList<string> MatchValues { get; }
         /// <summary> List of transforms. </summary>
+        [WirePath("transforms")]
         public IList<PreTransformCategory> Transforms { get; }
     }
 }

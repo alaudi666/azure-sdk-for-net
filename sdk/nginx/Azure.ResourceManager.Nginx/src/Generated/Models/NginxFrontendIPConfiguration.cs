@@ -5,34 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Nginx;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Nginx.Models
 {
-    /// <summary> The NginxFrontendIPConfiguration. </summary>
+    /// <summary> Nginx Frontend IP Configuration. </summary>
     public partial class NginxFrontendIPConfiguration
     {
-        /// <summary> Initializes a new instance of NginxFrontendIPConfiguration. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NginxFrontendIPConfiguration"/>. </summary>
         public NginxFrontendIPConfiguration()
         {
             PublicIPAddresses = new ChangeTrackingList<WritableSubResource>();
             PrivateIPAddresses = new ChangeTrackingList<NginxPrivateIPAddress>();
         }
 
-        /// <summary> Initializes a new instance of NginxFrontendIPConfiguration. </summary>
+        /// <summary> Initializes a new instance of <see cref="NginxFrontendIPConfiguration"/>. </summary>
         /// <param name="publicIPAddresses"></param>
         /// <param name="privateIPAddresses"></param>
-        internal NginxFrontendIPConfiguration(IList<WritableSubResource> publicIPAddresses, IList<NginxPrivateIPAddress> privateIPAddresses)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NginxFrontendIPConfiguration(IList<WritableSubResource> publicIPAddresses, IList<NginxPrivateIPAddress> privateIPAddresses, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             PublicIPAddresses = publicIPAddresses;
             PrivateIPAddresses = privateIPAddresses;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets the public ip addresses. </summary>
+        /// <summary> Gets the PublicIPAddresses. </summary>
         public IList<WritableSubResource> PublicIPAddresses { get; }
-        /// <summary> Gets the private ip addresses. </summary>
+
+        /// <summary> Gets the PrivateIPAddresses. </summary>
         public IList<NginxPrivateIPAddress> PrivateIPAddresses { get; }
     }
 }

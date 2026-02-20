@@ -5,100 +5,196 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Dynatrace;
 
 namespace Azure.ResourceManager.Dynatrace.Models
 {
-    public partial class DynatraceMonitorResourceLogRules : IUtf8JsonSerializable
+    /// <summary> Set of rules for sending logs for the Monitor resource. </summary>
+    public partial class DynatraceMonitorResourceLogRules : IJsonModel<DynatraceMonitorResourceLogRules>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DynatraceMonitorResourceLogRules PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceMonitorResourceLogRules>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeDynatraceMonitorResourceLogRules(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DynatraceMonitorResourceLogRules)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DynatraceMonitorResourceLogRules>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceMonitorResourceLogRules>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DynatraceMonitorResourceLogRules)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(SendAadLogs))
             {
-                writer.WritePropertyName("sendAadLogs");
+                writer.WritePropertyName("sendAadLogs"u8);
                 writer.WriteStringValue(SendAadLogs.Value.ToString());
             }
             if (Optional.IsDefined(SendSubscriptionLogs))
             {
-                writer.WritePropertyName("sendSubscriptionLogs");
+                writer.WritePropertyName("sendSubscriptionLogs"u8);
                 writer.WriteStringValue(SendSubscriptionLogs.Value.ToString());
             }
             if (Optional.IsDefined(SendActivityLogs))
             {
-                writer.WritePropertyName("sendActivityLogs");
+                writer.WritePropertyName("sendActivityLogs"u8);
                 writer.WriteStringValue(SendActivityLogs.Value.ToString());
             }
             if (Optional.IsCollectionDefined(FilteringTags))
             {
-                writer.WritePropertyName("filteringTags");
+                writer.WritePropertyName("filteringTags"u8);
                 writer.WriteStartArray();
-                foreach (var item in FilteringTags)
+                foreach (DynatraceMonitorResourceFilteringTag item in FilteringTags)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static DynatraceMonitorResourceLogRules DeserializeDynatraceMonitorResourceLogRules(JsonElement element)
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DynatraceMonitorResourceLogRules IJsonModel<DynatraceMonitorResourceLogRules>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DynatraceMonitorResourceLogRules JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<AadLogsSendingStatus> sendAadLogs = default;
-            Optional<SubscriptionLogsSendingStatus> sendSubscriptionLogs = default;
-            Optional<ActivityLogsSendingStatus> sendActivityLogs = default;
-            Optional<IList<DynatraceMonitorResourceFilteringTag>> filteringTags = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceMonitorResourceLogRules>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("sendAadLogs"))
+                throw new FormatException($"The model {nameof(DynatraceMonitorResourceLogRules)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDynatraceMonitorResourceLogRules(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DynatraceMonitorResourceLogRules DeserializeDynatraceMonitorResourceLogRules(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            AadLogsSendingStatus? sendAadLogs = default;
+            SubscriptionLogsSendingStatus? sendSubscriptionLogs = default;
+            ActivityLogsSendingStatus? sendActivityLogs = default;
+            IList<DynatraceMonitorResourceFilteringTag> filteringTags = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("sendAadLogs"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    sendAadLogs = new AadLogsSendingStatus(property.Value.GetString());
+                    sendAadLogs = new AadLogsSendingStatus(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("sendSubscriptionLogs"))
+                if (prop.NameEquals("sendSubscriptionLogs"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    sendSubscriptionLogs = new SubscriptionLogsSendingStatus(property.Value.GetString());
+                    sendSubscriptionLogs = new SubscriptionLogsSendingStatus(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("sendActivityLogs"))
+                if (prop.NameEquals("sendActivityLogs"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    sendActivityLogs = new ActivityLogsSendingStatus(property.Value.GetString());
+                    sendActivityLogs = new ActivityLogsSendingStatus(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("filteringTags"))
+                if (prop.NameEquals("filteringTags"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<DynatraceMonitorResourceFilteringTag> array = new List<DynatraceMonitorResourceFilteringTag>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(DynatraceMonitorResourceFilteringTag.DeserializeDynatraceMonitorResourceFilteringTag(item));
+                        array.Add(DynatraceMonitorResourceFilteringTag.DeserializeDynatraceMonitorResourceFilteringTag(item, options));
                     }
                     filteringTags = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
             }
-            return new DynatraceMonitorResourceLogRules(Optional.ToNullable(sendAadLogs), Optional.ToNullable(sendSubscriptionLogs), Optional.ToNullable(sendActivityLogs), Optional.ToList(filteringTags));
+            return new DynatraceMonitorResourceLogRules(sendAadLogs, sendSubscriptionLogs, sendActivityLogs, filteringTags ?? new ChangeTrackingList<DynatraceMonitorResourceFilteringTag>(), additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DynatraceMonitorResourceLogRules>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceMonitorResourceLogRules>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDynatraceContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DynatraceMonitorResourceLogRules)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DynatraceMonitorResourceLogRules IPersistableModel<DynatraceMonitorResourceLogRules>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DynatraceMonitorResourceLogRules>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

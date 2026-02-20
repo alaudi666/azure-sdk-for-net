@@ -6,33 +6,23 @@
 #nullable disable
 
 using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
+using Azure.Developer.DevCenter.Models;
 
 namespace Azure.Developer.DevCenter
 {
-    // Data plane generated client.
-    /// <summary> The DevCenter service client. </summary>
+    /// <summary> The DevCenterClient. </summary>
     public partial class DevCenterClient
     {
-        private static readonly string[] AuthorizationScopes = new string[] { "https://devcenter.azure.com/.default" };
+        private readonly Uri _endpoint;
+        /// <summary> A credential used to authenticate to the service. </summary>
         private readonly TokenCredential _tokenCredential;
-        private readonly HttpPipeline _pipeline;
-        private readonly string _tenantId;
-        private readonly string _devCenter;
-        private readonly string _devCenterDnsSuffix;
+        private static readonly string[] AuthorizationScopes = new string[] { "https://devcenter.azure.com/.default" };
         private readonly string _apiVersion;
-
-        /// <summary> The ClientDiagnostics is used to provide tracing support for the client library. </summary>
-        internal ClientDiagnostics ClientDiagnostics { get; }
-
-        /// <summary> The HTTP pipeline for sending and receiving REST requests and responses. </summary>
-        public virtual HttpPipeline Pipeline => _pipeline;
 
         /// <summary> Initializes a new instance of DevCenterClient for mocking. </summary>
         protected DevCenterClient()
@@ -40,56 +30,123 @@ namespace Azure.Developer.DevCenter
         }
 
         /// <summary> Initializes a new instance of DevCenterClient. </summary>
-        /// <param name="tenantId"> The tenant to operate on. </param>
-        /// <param name="devCenter"> The DevCenter to operate on. </param>
-        /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="tenantId"/>, <paramref name="devCenter"/> or <paramref name="credential"/> is null. </exception>
-        public DevCenterClient(string tenantId, string devCenter, TokenCredential credential) : this(tenantId, devCenter, credential, "devcenter.azure.com", new DevCenterClientOptions())
+        /// <param name="endpoint"> Service endpoint. </param>
+        /// <param name="credential"> A credential used to authenticate to the service. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="endpoint"/> or <paramref name="credential"/> is null. </exception>
+        public DevCenterClient(Uri endpoint, TokenCredential credential) : this(endpoint, credential, new DevCenterClientOptions())
         {
         }
 
-        /// <summary> Initializes a new instance of DevCenterClient. </summary>
-        /// <param name="tenantId"> The tenant to operate on. </param>
-        /// <param name="devCenter"> The DevCenter to operate on. </param>
-        /// <param name="credential"> A credential used to authenticate to an Azure Service. </param>
-        /// <param name="devCenterDnsSuffix"> The DNS suffix used as the base for all devcenter requests. </param>
-        /// <param name="options"> The options for configuring the client. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="tenantId"/>, <paramref name="devCenter"/>, <paramref name="credential"/> or <paramref name="devCenterDnsSuffix"/> is null. </exception>
-        public DevCenterClient(string tenantId, string devCenter, TokenCredential credential, string devCenterDnsSuffix, DevCenterClientOptions options)
-        {
-            Argument.AssertNotNull(tenantId, nameof(tenantId));
-            Argument.AssertNotNull(devCenter, nameof(devCenter));
-            Argument.AssertNotNull(credential, nameof(credential));
-            Argument.AssertNotNull(devCenterDnsSuffix, nameof(devCenterDnsSuffix));
-            options ??= new DevCenterClientOptions();
+        /// <summary> The HTTP pipeline for sending and receiving REST requests and responses. </summary>
+        public virtual HttpPipeline Pipeline { get; }
 
-            ClientDiagnostics = new ClientDiagnostics(options, true);
-            _tokenCredential = credential;
-            _pipeline = HttpPipelineBuilder.Build(options, Array.Empty<HttpPipelinePolicy>(), new HttpPipelinePolicy[] { new BearerTokenAuthenticationPolicy(_tokenCredential, AuthorizationScopes) }, new ResponseClassifier());
-            _tenantId = tenantId;
-            _devCenter = devCenter;
-            _devCenterDnsSuffix = devCenterDnsSuffix;
-            _apiVersion = options.Version;
+        /// <summary> The ClientDiagnostics is used to provide tracing support for the client library. </summary>
+        internal ClientDiagnostics ClientDiagnostics { get; }
+
+        /// <summary>
+        /// [Protocol Method] Lists all projects.
+        /// <list type="bullet">
+        /// <item>
+        /// <description> This <see href="https://aka.ms/azsdk/net/protocol-methods">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="context"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        /// <returns> The response returned from the service. </returns>
+        public virtual Pageable<BinaryData> GetProjects(RequestContext context)
+        {
+            return new DevCenterClientGetProjectsCollectionResult(this, context);
         }
 
-        /// <summary> Gets a project. </summary>
-        /// <param name="projectName"> The DevCenter Project upon which to execute operations. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <summary>
+        /// [Protocol Method] Lists all projects.
+        /// <list type="bullet">
+        /// <item>
+        /// <description> This <see href="https://aka.ms/azsdk/net/protocol-methods">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="context"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        /// <returns> The response returned from the service. </returns>
+        public virtual AsyncPageable<BinaryData> GetProjectsAsync(RequestContext context)
+        {
+            return new DevCenterClientGetProjectsAsyncCollectionResult(this, context);
+        }
+
+        /// <summary> Lists all projects. </summary>
+        /// <param name="cancellationToken"> The cancellation token that can be used to cancel the operation. </param>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        public virtual Pageable<DevCenterProject> GetProjects(CancellationToken cancellationToken = default)
+        {
+            return new DevCenterClientGetProjectsCollectionResultOfT(this, cancellationToken.ToRequestContext());
+        }
+
+        /// <summary> Lists all projects. </summary>
+        /// <param name="cancellationToken"> The cancellation token that can be used to cancel the operation. </param>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        public virtual AsyncPageable<DevCenterProject> GetProjectsAsync(CancellationToken cancellationToken = default)
+        {
+            return new DevCenterClientGetProjectsAsyncCollectionResultOfT(this, cancellationToken.ToRequestContext());
+        }
+
+        /// <summary>
+        /// [Protocol Method] Gets a project.
+        /// <list type="bullet">
+        /// <item>
+        /// <description> This <see href="https://aka.ms/azsdk/net/protocol-methods">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="projectName"> Name of the project. </param>
+        /// <param name="context"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="projectName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="projectName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <include file="Docs/DevCenterClient.xml" path="doc/members/member[@name='GetProjectAsync(String,RequestContext)']/*" />
-        public virtual async Task<Response> GetProjectAsync(string projectName, RequestContext context = null)
+        /// <returns> The response returned from the service. </returns>
+        public virtual Response GetProject(string projectName, RequestContext context)
         {
-            Argument.AssertNotNullOrEmpty(projectName, nameof(projectName));
-
-            using var scope = ClientDiagnostics.CreateScope("DevCenterClient.GetProject");
+            using DiagnosticScope scope = ClientDiagnostics.CreateScope("DevCenterClient.GetProject");
             scope.Start();
             try
             {
+                Argument.AssertNotNullOrEmpty(projectName, nameof(projectName));
+
                 using HttpMessage message = CreateGetProjectRequest(projectName, context);
-                return await _pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
+                return Pipeline.ProcessMessage(message, context);
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// [Protocol Method] Gets a project.
+        /// <list type="bullet">
+        /// <item>
+        /// <description> This <see href="https://aka.ms/azsdk/net/protocol-methods">protocol method</see> allows explicit creation of the request and processing of the response for advanced scenarios. </description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="projectName"> Name of the project. </param>
+        /// <param name="context"> The request options, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="projectName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="projectName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
+        /// <returns> The response returned from the service. </returns>
+        public virtual async Task<Response> GetProjectAsync(string projectName, RequestContext context)
+        {
+            using DiagnosticScope scope = ClientDiagnostics.CreateScope("DevCenterClient.GetProject");
+            scope.Start();
+            try
+            {
+                Argument.AssertNotNullOrEmpty(projectName, nameof(projectName));
+
+                using HttpMessage message = CreateGetProjectRequest(projectName, context);
+                return await Pipeline.ProcessMessageAsync(message, context).ConfigureAwait(false);
             }
             catch (Exception e)
             {
@@ -99,373 +156,31 @@ namespace Azure.Developer.DevCenter
         }
 
         /// <summary> Gets a project. </summary>
-        /// <param name="projectName"> The DevCenter Project upon which to execute operations. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <param name="projectName"> Name of the project. </param>
+        /// <param name="cancellationToken"> The cancellation token that can be used to cancel the operation. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="projectName"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="projectName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The response returned from the service. Details of the response body schema are in the Remarks section below. </returns>
-        /// <include file="Docs/DevCenterClient.xml" path="doc/members/member[@name='GetProject(String,RequestContext)']/*" />
-        public virtual Response GetProject(string projectName, RequestContext context = null)
+        public virtual Response<DevCenterProject> GetProject(string projectName, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(projectName, nameof(projectName));
 
-            using var scope = ClientDiagnostics.CreateScope("DevCenterClient.GetProject");
-            scope.Start();
-            try
-            {
-                using HttpMessage message = CreateGetProjectRequest(projectName, context);
-                return _pipeline.ProcessMessage(message, context);
-            }
-            catch (Exception e)
-            {
-                scope.Failed(e);
-                throw;
-            }
+            Response result = GetProject(projectName, cancellationToken.ToRequestContext());
+            return Response.FromValue((DevCenterProject)result, result);
         }
 
-        /// <summary> Lists all projects. </summary>
-        /// <param name="filter"> An OData filter clause to apply to the operation. </param>
-        /// <param name="maxCount"> The maximum number of resources to return from the operation. Example: &apos;top=10&apos;. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
+        /// <summary> Gets a project. </summary>
+        /// <param name="projectName"> Name of the project. </param>
+        /// <param name="cancellationToken"> The cancellation token that can be used to cancel the operation. </param>
+        /// <exception cref="ArgumentNullException"> <paramref name="projectName"/> is null. </exception>
+        /// <exception cref="ArgumentException"> <paramref name="projectName"/> is an empty string, and was expected to be non-empty. </exception>
         /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
-        /// <include file="Docs/DevCenterClient.xml" path="doc/members/member[@name='GetProjectsAsync(String,Int32,RequestContext)']/*" />
-        public virtual AsyncPageable<BinaryData> GetProjectsAsync(string filter = null, int? maxCount = null, RequestContext context = null)
+        public virtual async Task<Response<DevCenterProject>> GetProjectAsync(string projectName, CancellationToken cancellationToken = default)
         {
-            return GetProjectsImplementationAsync("DevCenterClient.GetProjects", filter, maxCount, context);
+            Argument.AssertNotNullOrEmpty(projectName, nameof(projectName));
+
+            Response result = await GetProjectAsync(projectName, cancellationToken.ToRequestContext()).ConfigureAwait(false);
+            return Response.FromValue((DevCenterProject)result, result);
         }
-
-        private AsyncPageable<BinaryData> GetProjectsImplementationAsync(string diagnosticsScopeName, string filter, int? maxCount, RequestContext context)
-        {
-            return PageableHelpers.CreateAsyncPageable(CreateEnumerableAsync, ClientDiagnostics, diagnosticsScopeName);
-            async IAsyncEnumerable<Page<BinaryData>> CreateEnumerableAsync(string nextLink, int? pageSizeHint, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-            {
-                do
-                {
-                    var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetProjectsRequest(filter, maxCount, context)
-                        : CreateGetProjectsNextPageRequest(nextLink, filter, maxCount, context);
-                    var page = await LowLevelPageableHelpers.ProcessMessageAsync(_pipeline, message, context, "value", "nextLink", cancellationToken).ConfigureAwait(false);
-                    nextLink = page.ContinuationToken;
-                    yield return page;
-                } while (!string.IsNullOrEmpty(nextLink));
-            }
-        }
-
-        /// <summary> Lists all projects. </summary>
-        /// <param name="filter"> An OData filter clause to apply to the operation. </param>
-        /// <param name="maxCount"> The maximum number of resources to return from the operation. Example: &apos;top=10&apos;. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
-        /// <include file="Docs/DevCenterClient.xml" path="doc/members/member[@name='GetProjects(String,Int32,RequestContext)']/*" />
-        public virtual Pageable<BinaryData> GetProjects(string filter = null, int? maxCount = null, RequestContext context = null)
-        {
-            return GetProjectsImplementation("DevCenterClient.GetProjects", filter, maxCount, context);
-        }
-
-        private Pageable<BinaryData> GetProjectsImplementation(string diagnosticsScopeName, string filter, int? maxCount, RequestContext context)
-        {
-            return PageableHelpers.CreatePageable(CreateEnumerable, ClientDiagnostics, diagnosticsScopeName);
-            IEnumerable<Page<BinaryData>> CreateEnumerable(string nextLink, int? pageSizeHint)
-            {
-                do
-                {
-                    var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetProjectsRequest(filter, maxCount, context)
-                        : CreateGetProjectsNextPageRequest(nextLink, filter, maxCount, context);
-                    var page = LowLevelPageableHelpers.ProcessMessage(_pipeline, message, context, "value", "nextLink");
-                    nextLink = page.ContinuationToken;
-                    yield return page;
-                } while (!string.IsNullOrEmpty(nextLink));
-            }
-        }
-
-        /// <summary> Lists Dev Boxes that the caller has access to in the DevCenter. </summary>
-        /// <param name="filter"> An OData filter clause to apply to the operation. </param>
-        /// <param name="maxCount"> The maximum number of resources to return from the operation. Example: &apos;top=10&apos;. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
-        /// <include file="Docs/DevCenterClient.xml" path="doc/members/member[@name='GetAllDevBoxesAsync(String,Int32,RequestContext)']/*" />
-        public virtual AsyncPageable<BinaryData> GetAllDevBoxesAsync(string filter = null, int? maxCount = null, RequestContext context = null)
-        {
-            return GetAllDevBoxesImplementationAsync("DevCenterClient.GetAllDevBoxes", filter, maxCount, context);
-        }
-
-        private AsyncPageable<BinaryData> GetAllDevBoxesImplementationAsync(string diagnosticsScopeName, string filter, int? maxCount, RequestContext context)
-        {
-            return PageableHelpers.CreateAsyncPageable(CreateEnumerableAsync, ClientDiagnostics, diagnosticsScopeName);
-            async IAsyncEnumerable<Page<BinaryData>> CreateEnumerableAsync(string nextLink, int? pageSizeHint, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-            {
-                do
-                {
-                    var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetAllDevBoxesRequest(filter, maxCount, context)
-                        : CreateGetAllDevBoxesNextPageRequest(nextLink, filter, maxCount, context);
-                    var page = await LowLevelPageableHelpers.ProcessMessageAsync(_pipeline, message, context, "value", "nextLink", cancellationToken).ConfigureAwait(false);
-                    nextLink = page.ContinuationToken;
-                    yield return page;
-                } while (!string.IsNullOrEmpty(nextLink));
-            }
-        }
-
-        /// <summary> Lists Dev Boxes that the caller has access to in the DevCenter. </summary>
-        /// <param name="filter"> An OData filter clause to apply to the operation. </param>
-        /// <param name="maxCount"> The maximum number of resources to return from the operation. Example: &apos;top=10&apos;. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
-        /// <include file="Docs/DevCenterClient.xml" path="doc/members/member[@name='GetAllDevBoxes(String,Int32,RequestContext)']/*" />
-        public virtual Pageable<BinaryData> GetAllDevBoxes(string filter = null, int? maxCount = null, RequestContext context = null)
-        {
-            return GetAllDevBoxesImplementation("DevCenterClient.GetAllDevBoxes", filter, maxCount, context);
-        }
-
-        private Pageable<BinaryData> GetAllDevBoxesImplementation(string diagnosticsScopeName, string filter, int? maxCount, RequestContext context)
-        {
-            return PageableHelpers.CreatePageable(CreateEnumerable, ClientDiagnostics, diagnosticsScopeName);
-            IEnumerable<Page<BinaryData>> CreateEnumerable(string nextLink, int? pageSizeHint)
-            {
-                do
-                {
-                    var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetAllDevBoxesRequest(filter, maxCount, context)
-                        : CreateGetAllDevBoxesNextPageRequest(nextLink, filter, maxCount, context);
-                    var page = LowLevelPageableHelpers.ProcessMessage(_pipeline, message, context, "value", "nextLink");
-                    nextLink = page.ContinuationToken;
-                    yield return page;
-                } while (!string.IsNullOrEmpty(nextLink));
-            }
-        }
-
-        /// <summary> Lists Dev Boxes in the Dev Center for a particular user. </summary>
-        /// <param name="userId"> The AAD object id of the user. If value is &apos;me&apos;, the identity is taken from the authentication context. </param>
-        /// <param name="filter"> An OData filter clause to apply to the operation. </param>
-        /// <param name="maxCount"> The maximum number of resources to return from the operation. Example: &apos;top=10&apos;. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="userId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="userId"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The <see cref="AsyncPageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
-        /// <include file="Docs/DevCenterClient.xml" path="doc/members/member[@name='GetAllDevBoxesByUserAsync(String,String,Int32,RequestContext)']/*" />
-        public virtual AsyncPageable<BinaryData> GetAllDevBoxesByUserAsync(string userId = "me", string filter = null, int? maxCount = null, RequestContext context = null)
-        {
-            Argument.AssertNotNullOrEmpty(userId, nameof(userId));
-
-            return GetAllDevBoxesByUserImplementationAsync("DevCenterClient.GetAllDevBoxesByUser", userId, filter, maxCount, context);
-        }
-
-        private AsyncPageable<BinaryData> GetAllDevBoxesByUserImplementationAsync(string diagnosticsScopeName, string userId, string filter, int? maxCount, RequestContext context)
-        {
-            return PageableHelpers.CreateAsyncPageable(CreateEnumerableAsync, ClientDiagnostics, diagnosticsScopeName);
-            async IAsyncEnumerable<Page<BinaryData>> CreateEnumerableAsync(string nextLink, int? pageSizeHint, [EnumeratorCancellation] CancellationToken cancellationToken = default)
-            {
-                do
-                {
-                    var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetAllDevBoxesByUserRequest(userId, filter, maxCount, context)
-                        : CreateGetAllDevBoxesByUserNextPageRequest(nextLink, userId, filter, maxCount, context);
-                    var page = await LowLevelPageableHelpers.ProcessMessageAsync(_pipeline, message, context, "value", "nextLink", cancellationToken).ConfigureAwait(false);
-                    nextLink = page.ContinuationToken;
-                    yield return page;
-                } while (!string.IsNullOrEmpty(nextLink));
-            }
-        }
-
-        /// <summary> Lists Dev Boxes in the Dev Center for a particular user. </summary>
-        /// <param name="userId"> The AAD object id of the user. If value is &apos;me&apos;, the identity is taken from the authentication context. </param>
-        /// <param name="filter"> An OData filter clause to apply to the operation. </param>
-        /// <param name="maxCount"> The maximum number of resources to return from the operation. Example: &apos;top=10&apos;. </param>
-        /// <param name="context"> The request context, which can override default behaviors of the client pipeline on a per-call basis. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="userId"/> is null. </exception>
-        /// <exception cref="ArgumentException"> <paramref name="userId"/> is an empty string, and was expected to be non-empty. </exception>
-        /// <exception cref="RequestFailedException"> Service returned a non-success status code. </exception>
-        /// <returns> The <see cref="Pageable{T}"/> from the service containing a list of <see cref="BinaryData"/> objects. Details of the body schema for each item in the collection are in the Remarks section below. </returns>
-        /// <include file="Docs/DevCenterClient.xml" path="doc/members/member[@name='GetAllDevBoxesByUser(String,String,Int32,RequestContext)']/*" />
-        public virtual Pageable<BinaryData> GetAllDevBoxesByUser(string userId = "me", string filter = null, int? maxCount = null, RequestContext context = null)
-        {
-            Argument.AssertNotNullOrEmpty(userId, nameof(userId));
-
-            return GetAllDevBoxesByUserImplementation("DevCenterClient.GetAllDevBoxesByUser", userId, filter, maxCount, context);
-        }
-
-        private Pageable<BinaryData> GetAllDevBoxesByUserImplementation(string diagnosticsScopeName, string userId, string filter, int? maxCount, RequestContext context)
-        {
-            return PageableHelpers.CreatePageable(CreateEnumerable, ClientDiagnostics, diagnosticsScopeName);
-            IEnumerable<Page<BinaryData>> CreateEnumerable(string nextLink, int? pageSizeHint)
-            {
-                do
-                {
-                    var message = string.IsNullOrEmpty(nextLink)
-                        ? CreateGetAllDevBoxesByUserRequest(userId, filter, maxCount, context)
-                        : CreateGetAllDevBoxesByUserNextPageRequest(nextLink, userId, filter, maxCount, context);
-                    var page = LowLevelPageableHelpers.ProcessMessage(_pipeline, message, context, "value", "nextLink");
-                    nextLink = page.ContinuationToken;
-                    yield return page;
-                } while (!string.IsNullOrEmpty(nextLink));
-            }
-        }
-
-        internal HttpMessage CreateGetProjectsRequest(string filter, int? maxCount, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
-            var request = message.Request;
-            request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
-            uri.AppendRaw("https://", false);
-            uri.AppendRaw(_tenantId, false);
-            uri.AppendRaw("-", false);
-            uri.AppendRaw(_devCenter, false);
-            uri.AppendRaw(".", false);
-            uri.AppendRaw(_devCenterDnsSuffix, false);
-            uri.AppendPath("/projects", false);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            if (filter != null)
-            {
-                uri.AppendQuery("filter", filter, true);
-            }
-            if (maxCount != null)
-            {
-                uri.AppendQuery("top", maxCount.Value, true);
-            }
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
-        internal HttpMessage CreateGetProjectRequest(string projectName, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
-            var request = message.Request;
-            request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
-            uri.AppendRaw("https://", false);
-            uri.AppendRaw(_tenantId, false);
-            uri.AppendRaw("-", false);
-            uri.AppendRaw(_devCenter, false);
-            uri.AppendRaw(".", false);
-            uri.AppendRaw(_devCenterDnsSuffix, false);
-            uri.AppendPath("/projects/", false);
-            uri.AppendPath(projectName, true);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
-        internal HttpMessage CreateGetAllDevBoxesRequest(string filter, int? maxCount, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
-            var request = message.Request;
-            request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
-            uri.AppendRaw("https://", false);
-            uri.AppendRaw(_tenantId, false);
-            uri.AppendRaw("-", false);
-            uri.AppendRaw(_devCenter, false);
-            uri.AppendRaw(".", false);
-            uri.AppendRaw(_devCenterDnsSuffix, false);
-            uri.AppendPath("/devboxes", false);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            if (filter != null)
-            {
-                uri.AppendQuery("filter", filter, true);
-            }
-            if (maxCount != null)
-            {
-                uri.AppendQuery("top", maxCount.Value, true);
-            }
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
-        internal HttpMessage CreateGetAllDevBoxesByUserRequest(string userId, string filter, int? maxCount, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
-            var request = message.Request;
-            request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
-            uri.AppendRaw("https://", false);
-            uri.AppendRaw(_tenantId, false);
-            uri.AppendRaw("-", false);
-            uri.AppendRaw(_devCenter, false);
-            uri.AppendRaw(".", false);
-            uri.AppendRaw(_devCenterDnsSuffix, false);
-            uri.AppendPath("/users/", false);
-            uri.AppendPath(userId, true);
-            uri.AppendPath("/devboxes", false);
-            uri.AppendQuery("api-version", _apiVersion, true);
-            if (filter != null)
-            {
-                uri.AppendQuery("filter", filter, true);
-            }
-            if (maxCount != null)
-            {
-                uri.AppendQuery("top", maxCount.Value, true);
-            }
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
-        internal HttpMessage CreateGetProjectsNextPageRequest(string nextLink, string filter, int? maxCount, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
-            var request = message.Request;
-            request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
-            uri.AppendRaw("https://", false);
-            uri.AppendRaw(_tenantId, false);
-            uri.AppendRaw("-", false);
-            uri.AppendRaw(_devCenter, false);
-            uri.AppendRaw(".", false);
-            uri.AppendRaw(_devCenterDnsSuffix, false);
-            uri.AppendRawNextLink(nextLink, false);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
-        internal HttpMessage CreateGetAllDevBoxesNextPageRequest(string nextLink, string filter, int? maxCount, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
-            var request = message.Request;
-            request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
-            uri.AppendRaw("https://", false);
-            uri.AppendRaw(_tenantId, false);
-            uri.AppendRaw("-", false);
-            uri.AppendRaw(_devCenter, false);
-            uri.AppendRaw(".", false);
-            uri.AppendRaw(_devCenterDnsSuffix, false);
-            uri.AppendRawNextLink(nextLink, false);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
-        internal HttpMessage CreateGetAllDevBoxesByUserNextPageRequest(string nextLink, string userId, string filter, int? maxCount, RequestContext context)
-        {
-            var message = _pipeline.CreateMessage(context, ResponseClassifier200);
-            var request = message.Request;
-            request.Method = RequestMethod.Get;
-            var uri = new RawRequestUriBuilder();
-            uri.AppendRaw("https://", false);
-            uri.AppendRaw(_tenantId, false);
-            uri.AppendRaw("-", false);
-            uri.AppendRaw(_devCenter, false);
-            uri.AppendRaw(".", false);
-            uri.AppendRaw(_devCenterDnsSuffix, false);
-            uri.AppendRawNextLink(nextLink, false);
-            request.Uri = uri;
-            request.Headers.Add("Accept", "application/json");
-            return message;
-        }
-
-        private static ResponseClassifier _responseClassifier200;
-        private static ResponseClassifier ResponseClassifier200 => _responseClassifier200 ??= new StatusCodeClassifier(stackalloc ushort[] { 200 });
     }
 }

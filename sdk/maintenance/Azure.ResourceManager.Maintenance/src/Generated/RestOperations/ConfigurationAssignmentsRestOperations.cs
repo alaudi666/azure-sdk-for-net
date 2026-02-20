@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Maintenance.Models;
@@ -35,6 +34,30 @@ namespace Azure.ResourceManager.Maintenance
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
             _apiVersion = apiVersion ?? "2021-05-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
+        }
+
+        internal RequestUriBuilder CreateCreateOrUpdateParentRequestUri(string subscriptionId, string resourceGroupName, string providerName, string resourceParentType, string resourceParentName, string resourceType, string resourceName, string configurationAssignmentName, MaintenanceConfigurationAssignmentData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourcegroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(providerName, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceParentType, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceParentName, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceName, true);
+            uri.AppendPath("/providers/Microsoft.Maintenance/configurationAssignments/", false);
+            uri.AppendPath(configurationAssignmentName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateCreateOrUpdateParentRequest(string subscriptionId, string resourceGroupName, string providerName, string resourceParentType, string resourceParentName, string resourceType, string resourceName, string configurationAssignmentName, MaintenanceConfigurationAssignmentData data)
@@ -65,7 +88,7 @@ namespace Azure.ResourceManager.Maintenance
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -103,7 +126,7 @@ namespace Azure.ResourceManager.Maintenance
                 case 200:
                     {
                         MaintenanceConfigurationAssignmentData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = MaintenanceConfigurationAssignmentData.DeserializeMaintenanceConfigurationAssignmentData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -144,13 +167,37 @@ namespace Azure.ResourceManager.Maintenance
                 case 200:
                     {
                         MaintenanceConfigurationAssignmentData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = MaintenanceConfigurationAssignmentData.DeserializeMaintenanceConfigurationAssignmentData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateDeleteParentRequestUri(string subscriptionId, string resourceGroupName, string providerName, string resourceParentType, string resourceParentName, string resourceType, string resourceName, string configurationAssignmentName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourcegroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(providerName, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceParentType, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceParentName, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceName, true);
+            uri.AppendPath("/providers/Microsoft.Maintenance/configurationAssignments/", false);
+            uri.AppendPath(configurationAssignmentName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateDeleteParentRequest(string subscriptionId, string resourceGroupName, string providerName, string resourceParentType, string resourceParentName, string resourceType, string resourceName, string configurationAssignmentName)
@@ -213,7 +260,7 @@ namespace Azure.ResourceManager.Maintenance
                 case 200:
                     {
                         MaintenanceConfigurationAssignmentData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = MaintenanceConfigurationAssignmentData.DeserializeMaintenanceConfigurationAssignmentData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -254,7 +301,7 @@ namespace Azure.ResourceManager.Maintenance
                 case 200:
                     {
                         MaintenanceConfigurationAssignmentData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = MaintenanceConfigurationAssignmentData.DeserializeMaintenanceConfigurationAssignmentData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -263,6 +310,26 @@ namespace Azure.ResourceManager.Maintenance
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateCreateOrUpdateRequestUri(string subscriptionId, string resourceGroupName, string providerName, string resourceType, string resourceName, string configurationAssignmentName, MaintenanceConfigurationAssignmentData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourcegroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(providerName, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceName, true);
+            uri.AppendPath("/providers/Microsoft.Maintenance/configurationAssignments/", false);
+            uri.AppendPath(configurationAssignmentName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateCreateOrUpdateRequest(string subscriptionId, string resourceGroupName, string providerName, string resourceType, string resourceName, string configurationAssignmentName, MaintenanceConfigurationAssignmentData data)
@@ -289,7 +356,7 @@ namespace Azure.ResourceManager.Maintenance
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
@@ -323,7 +390,7 @@ namespace Azure.ResourceManager.Maintenance
                 case 200:
                     {
                         MaintenanceConfigurationAssignmentData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = MaintenanceConfigurationAssignmentData.DeserializeMaintenanceConfigurationAssignmentData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -360,13 +427,33 @@ namespace Azure.ResourceManager.Maintenance
                 case 200:
                     {
                         MaintenanceConfigurationAssignmentData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = MaintenanceConfigurationAssignmentData.DeserializeMaintenanceConfigurationAssignmentData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateDeleteRequestUri(string subscriptionId, string resourceGroupName, string providerName, string resourceType, string resourceName, string configurationAssignmentName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourcegroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(providerName, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceName, true);
+            uri.AppendPath("/providers/Microsoft.Maintenance/configurationAssignments/", false);
+            uri.AppendPath(configurationAssignmentName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateDeleteRequest(string subscriptionId, string resourceGroupName, string providerName, string resourceType, string resourceName, string configurationAssignmentName)
@@ -421,7 +508,7 @@ namespace Azure.ResourceManager.Maintenance
                 case 200:
                     {
                         MaintenanceConfigurationAssignmentData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = MaintenanceConfigurationAssignmentData.DeserializeMaintenanceConfigurationAssignmentData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -458,7 +545,7 @@ namespace Azure.ResourceManager.Maintenance
                 case 200:
                     {
                         MaintenanceConfigurationAssignmentData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = MaintenanceConfigurationAssignmentData.DeserializeMaintenanceConfigurationAssignmentData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -467,6 +554,29 @@ namespace Azure.ResourceManager.Maintenance
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListParentRequestUri(string subscriptionId, string resourceGroupName, string providerName, string resourceParentType, string resourceParentName, string resourceType, string resourceName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourcegroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(providerName, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceParentType, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceParentName, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceName, true);
+            uri.AppendPath("/providers/Microsoft.Maintenance/configurationAssignments", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListParentRequest(string subscriptionId, string resourceGroupName, string providerName, string resourceParentType, string resourceParentName, string resourceType, string resourceName)
@@ -526,7 +636,7 @@ namespace Azure.ResourceManager.Maintenance
                 case 200:
                     {
                         MaintenanceConfigurationAssignmentListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = MaintenanceConfigurationAssignmentListResult.DeserializeMaintenanceConfigurationAssignmentListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -563,13 +673,32 @@ namespace Azure.ResourceManager.Maintenance
                 case 200:
                     {
                         MaintenanceConfigurationAssignmentListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = MaintenanceConfigurationAssignmentListResult.DeserializeMaintenanceConfigurationAssignmentListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListRequestUri(string subscriptionId, string resourceGroupName, string providerName, string resourceType, string resourceName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/resourcegroups/", false);
+            uri.AppendPath(resourceGroupName, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(providerName, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceType, true);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceName, true);
+            uri.AppendPath("/providers/Microsoft.Maintenance/configurationAssignments", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListRequest(string subscriptionId, string resourceGroupName, string providerName, string resourceType, string resourceName)
@@ -621,7 +750,7 @@ namespace Azure.ResourceManager.Maintenance
                 case 200:
                     {
                         MaintenanceConfigurationAssignmentListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = MaintenanceConfigurationAssignmentListResult.DeserializeMaintenanceConfigurationAssignmentListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -654,7 +783,7 @@ namespace Azure.ResourceManager.Maintenance
                 case 200:
                     {
                         MaintenanceConfigurationAssignmentListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = MaintenanceConfigurationAssignmentListResult.DeserializeMaintenanceConfigurationAssignmentListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

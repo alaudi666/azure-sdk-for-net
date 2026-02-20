@@ -5,28 +5,34 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.PowerBIDedicated;
 
 namespace Azure.ResourceManager.PowerBIDedicated.Models
 {
     /// <summary> An object that represents enumerating SKUs for new resources. </summary>
     internal partial class SkuEnumerationForNewResourceResult
     {
-        /// <summary> Initializes a new instance of SkuEnumerationForNewResourceResult. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SkuEnumerationForNewResourceResult"/>. </summary>
         internal SkuEnumerationForNewResourceResult()
         {
             Value = new ChangeTrackingList<CapacitySku>();
         }
 
-        /// <summary> Initializes a new instance of SkuEnumerationForNewResourceResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="SkuEnumerationForNewResourceResult"/>. </summary>
         /// <param name="value"> The collection of available SKUs for new resources. </param>
-        internal SkuEnumerationForNewResourceResult(IReadOnlyList<CapacitySku> value)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SkuEnumerationForNewResourceResult(IList<CapacitySku> value, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The collection of available SKUs for new resources. </summary>
-        public IReadOnlyList<CapacitySku> Value { get; }
+        public IList<CapacitySku> Value { get; }
     }
 }

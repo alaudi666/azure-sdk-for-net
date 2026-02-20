@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Azure.Communication.Identity.Models;
 using Azure.Communication.Identity.Tests;
+using Azure.Communication.Tests;
 using Azure.Core;
 using Azure.Core.TestFramework;
 using Azure.Identity;
@@ -33,7 +34,7 @@ namespace Azure.Communication.Identity.Samples
             var client = new CommunicationIdentityClient(connectionString);
             #endregion Snippet:CreateCommunicationIdentityClientAsync
 
-            client = CreateClientWithConnectionString();
+            client = CreateClient();
 
             #region  Snippet:CreateCommunicationUserAsync
             Response<CommunicationUserIdentifier> userResponse = await client.CreateUserAsync();
@@ -68,7 +69,7 @@ namespace Azure.Communication.Identity.Samples
             //@@var connectionString = "<connection_string>";
             var client = new CommunicationIdentityClient(connectionString);
 
-            client = CreateClientWithConnectionString();
+            client = CreateClient();
 
             Response<CommunicationUserIdentifier> userResponse = await client.CreateUserAsync();
             CommunicationUserIdentifier user = userResponse.Value;
@@ -96,7 +97,7 @@ namespace Azure.Communication.Identity.Samples
             //@@var connectionString = "<connection_string>";
             var client = new CommunicationIdentityClient(connectionString);
             #endregion Snippet:CreateCommunicationIdentityClient
-            client = CreateClientWithConnectionString();
+            client = CreateClient();
 
             #region  Snippet:CreateCommunicationUser
             Response<CommunicationUserIdentifier> userResponse = client.CreateUser();
@@ -112,14 +113,6 @@ namespace Azure.Communication.Identity.Samples
             Console.WriteLine($"Token: {token}");
             Console.WriteLine($"Expires On: {expiresOn}");
             #endregion Snippet:CreateCommunicationTokenWithCustomExpiration
-
-            #region Snippet:RevokeCommunicationUserToken
-            Response revokeResponse = client.RevokeTokens(user);
-            #endregion Snippet:RevokeCommunicationUserToken
-
-            #region Snippet:DeleteACommunicationUser
-            Response deleteResponse = client.DeleteUser(user);
-            #endregion Snippet:DeleteACommunicationUser
         }
 
         [Test]
@@ -130,7 +123,7 @@ namespace Azure.Communication.Identity.Samples
             // Get a connection string to our Azure Communication resource.
             //@@var connectionString = "<connection_string>";
             var client = new CommunicationIdentityClient(connectionString);
-            client = CreateClientWithConnectionString();
+            client = CreateClient();
 
             Response<CommunicationUserIdentifier> userResponse = client.CreateUser();
             CommunicationUserIdentifier user = userResponse.Value;
@@ -153,7 +146,7 @@ namespace Azure.Communication.Identity.Samples
         {
             var connectionString = TestEnvironment.LiveTestDynamicConnectionString;
             var client = new CommunicationIdentityClient(connectionString);
-            client = CreateClientWithConnectionString();
+            client = CreateClient();
             #region Snippet:CreateCommunicationUserAndTokenWithCustomExpirationAsync
             TimeSpan tokenExpiresIn = TimeSpan.FromHours(1);
             Response<CommunicationUserIdentifierAndToken> response = await client.CreateUserAndTokenAsync(scopes: new[] { CommunicationTokenScope.Chat }, tokenExpiresIn);
@@ -169,10 +162,10 @@ namespace Azure.Communication.Identity.Samples
         {
             var connectionString = TestEnvironment.LiveTestDynamicConnectionString;
             var client = new CommunicationIdentityClient(connectionString);
-            client = CreateClientWithConnectionString();
+            client = CreateClient();
             #region Snippet:CreateCommunicationUserAndTokenWithCustomExpiration
             TimeSpan tokenExpiresIn = TimeSpan.FromHours(1);
-            Response<CommunicationUserIdentifierAndToken> response = client.CreateUserAndToken(scopes: new[] { CommunicationTokenScope.Chat }, tokenExpiresIn);
+            Response<CommunicationUserIdentifierAndToken> response = client.CreateUserAndToken(customId: "alice@contoso.com", scopes: new[] { CommunicationTokenScope.Chat }, tokenExpiresIn);
             var (user, token) = response.Value;
             Console.WriteLine($"User id: {user.Id}");
             Console.WriteLine($"Token: {token.Token}");
@@ -184,7 +177,7 @@ namespace Azure.Communication.Identity.Samples
         {
             var connectionString = TestEnvironment.LiveTestDynamicConnectionString;
             var client = new CommunicationIdentityClient(connectionString);
-            client = CreateClientWithConnectionString();
+            client = CreateClient();
             #region  Snippet:CreateCommunicationUserAndToken
             Response<CommunicationUserIdentifierAndToken> response = await client.CreateUserAndTokenAsync(scopes: new[] { CommunicationTokenScope.Chat });
             var (user, token) = response.Value;
@@ -194,16 +187,79 @@ namespace Azure.Communication.Identity.Samples
         }
 
         [Test]
+        [SyncOnly]
+        public void CreateCommunicationUserWithCustomId()
+        {
+            var connectionString = TestEnvironment.LiveTestDynamicConnectionString;
+            var client = new CommunicationIdentityClient(connectionString);
+            client = CreateClient();
+            #region  Snippet:CreateCommunicationUserWithCustomId
+            Response<CommunicationUserIdentifier> userResponse = client.CreateUser(customId: "alice@contoso.com");
+            CommunicationUserIdentifier user = userResponse.Value;
+            Console.WriteLine($"User id: {user.Id}");
+            #endregion Snippet:CreateCommunicationUserWithCustomId
+        }
+
+        [Test]
+        [AsyncOnly]
+        public async Task CreateCommunicationUserWithCustomlIdAsync()
+        {
+            var connectionString = TestEnvironment.LiveTestDynamicConnectionString;
+            var client = new CommunicationIdentityClient(connectionString);
+            client = CreateClient();
+            #region  Snippet:CreateCommunicationUserWithCustomIdAsync
+            Response<CommunicationUserIdentifier> userResponse = await client.CreateUserAsync(customId: "alice@contoso.com");
+            CommunicationUserIdentifier user = userResponse.Value;
+            Console.WriteLine($"User id: {user.Id}");
+            #endregion Snippet:CreateCommunicationUserWithCustomIdAsync
+        }
+
+        [Test]
+        [SyncOnly]
+        public async Task GetUserDetail()
+        {
+            var connectionString = TestEnvironment.LiveTestDynamicConnectionString;
+            var client = new CommunicationIdentityClient(connectionString);
+            client = CreateClient();
+            #region  Snippet:GetUserDetail
+            Response<CommunicationUserIdentifier> userResponse = await client.CreateUserAsync(customId: "alice@contoso.com");
+            CommunicationUserIdentifier user = userResponse.Value;
+            var userDetails = client.GetUserDetail(user);
+            Console.WriteLine($"User id: {userDetails.Value.User.Id}");
+            Console.WriteLine($"Custom id: {userDetails.Value.CustomId}");
+            Console.WriteLine($"Last token issued at: {userDetails.Value.LastTokenIssuedAt}");
+            #endregion Snippet:GetUserDetail
+        }
+
+        [Test]
+        [AsyncOnly]
+        public async Task GetUserDetailAsync()
+        {
+            var connectionString = TestEnvironment.LiveTestDynamicConnectionString;
+            var client = new CommunicationIdentityClient(connectionString);
+            client = CreateClient();
+            #region  Snippet:GetUserDetailAsync
+            Response<CommunicationUserIdentifier> userResponse = await client.CreateUserAsync(customId: "alice@contoso.com");
+            CommunicationUserIdentifier user = userResponse.Value;
+            var userDetails = await client.GetUserDetailAsync(user);
+            Console.WriteLine($"User id: {userDetails.Value.User.Id}");
+            Console.WriteLine($"Custom id: {userDetails.Value.CustomId}");
+            Console.WriteLine($"Last token issued at: {userDetails.Value.LastTokenIssuedAt}");
+            #endregion Snippet:GetUserDetailAsync
+        }
+
+        [Test]
         public async Task CreateIdentityWithToken()
         {
             #region Snippet:CreateCommunicationIdentityFromToken
             var endpoint = new Uri("https://my-resource.communication.azure.com");
-            /*@@*/ endpoint = TestEnvironment.LiveTestDynamicEndpoint;
-            TokenCredential tokenCredential = new DefaultAzureCredential();
+            /*@@*/
+            endpoint = TestEnvironment.LiveTestDynamicEndpoint;
+            TokenCredential tokenCredential = TestEnvironment.Credential;
             var client = new CommunicationIdentityClient(endpoint, tokenCredential);
             #endregion Snippet:CreateCommunicationIdentityFromToken
 
-            client = CreateClientWithTokenCredential();
+            client = CreateClient(AuthMethod.TokenCredential);
             try
             {
                 Response<CommunicationUserIdentifier> userResponse = await client.CreateUserAsync();
@@ -220,12 +276,14 @@ namespace Azure.Communication.Identity.Samples
             #region Snippet:CreateCommunicationIdentityFromAccessKey
             var endpoint = new Uri("https://my-resource.communication.azure.com");
             var accessKey = "<access_key>";
-            /*@@*/ endpoint = TestEnvironment.LiveTestDynamicEndpoint;
-            /*@@*/ accessKey = TestEnvironment.LiveTestDynamicAccessKey;
+            /*@@*/
+            endpoint = TestEnvironment.LiveTestDynamicEndpoint;
+            /*@@*/
+            accessKey = TestEnvironment.LiveTestDynamicAccessKey;
             var client = new CommunicationIdentityClient(endpoint, new AzureKeyCredential(accessKey));
             #endregion Snippet:CreateCommunicationIdentityFromAccessKey
 
-            client = CreateClientWithAzureKeyCredential();
+            client = CreateClient(AuthMethod.KeyCredential);
             try
             {
                 Response<CommunicationUserIdentifier> userResponse = await client.CreateUserAsync();
@@ -242,7 +300,7 @@ namespace Azure.Communication.Identity.Samples
         {
             if (TestEnvironment.ShouldIgnoreIdentityExchangeTokenTest)
             {
-                Assert.Ignore("Ignore exchange teams token test if flag is enabled.");
+                Assert.Pass("Ignore exchange teams token test if flag is enabled.");
             }
 
             var options = CreateTeamsUserParams().Result;
@@ -250,7 +308,7 @@ namespace Azure.Communication.Identity.Samples
             var clientId = options.ClientId;
             var userObjectId = options.UserObjectId;
 
-            var client = CreateClientWithConnectionString();
+            var client = CreateClient();
 
             #region Snippet:GetTokenForTeamsUser
             Response<AccessToken> tokenResponse = client.GetTokenForTeamsUser(new GetTokenForTeamsUserOptions(teamsUserAadToken, clientId, userObjectId));
@@ -265,7 +323,7 @@ namespace Azure.Communication.Identity.Samples
         {
             if (TestEnvironment.ShouldIgnoreIdentityExchangeTokenTest)
             {
-                Assert.Ignore("Ignore exchange teams token test if flag is enabled.");
+                Assert.Pass("Ignore exchange teams token test if flag is enabled.");
             }
 
             var options = await CreateTeamsUserParams();
@@ -273,7 +331,7 @@ namespace Azure.Communication.Identity.Samples
             var clientId = options.ClientId;
             var userObjectId = options.UserObjectId;
 
-            var client = CreateClientWithConnectionString();
+            var client = CreateClient();
 
             #region Snippet:GetTokenForTeamsUserAsync
             Response<AccessToken> tokenResponse = await client.GetTokenForTeamsUserAsync(new GetTokenForTeamsUserOptions(teamsUserAadToken, clientId, userObjectId));
@@ -290,7 +348,8 @@ namespace Azure.Communication.Identity.Samples
             // Get a connection string to our Azure Communication resource.
             //@@var connectionString = "<connection_string>";
             var client = new CommunicationIdentityClient(connectionString);
-            /*@@*/ client = CreateClientWithConnectionString();
+            /*@@*/
+            client = CreateClient();
 
             try
             {

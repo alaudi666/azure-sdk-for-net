@@ -10,7 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.Monitor.Models
 {
-    /// <summary> The extent of deviation required to trigger an alert. This will affect how tight the threshold is to the metric series pattern. </summary>
+    /// <summary> The extent of deviation required to trigger an alert. This will affect how tight the threshold is to the metric series pattern. Previously undocumented values might be returned. </summary>
     public readonly partial struct DynamicThresholdSensitivity : IEquatable<DynamicThresholdSensitivity>
     {
         private readonly string _value;
@@ -36,7 +36,7 @@ namespace Azure.ResourceManager.Monitor.Models
         public static bool operator ==(DynamicThresholdSensitivity left, DynamicThresholdSensitivity right) => left.Equals(right);
         /// <summary> Determines if two <see cref="DynamicThresholdSensitivity"/> values are not the same. </summary>
         public static bool operator !=(DynamicThresholdSensitivity left, DynamicThresholdSensitivity right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="DynamicThresholdSensitivity"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="DynamicThresholdSensitivity"/>. </summary>
         public static implicit operator DynamicThresholdSensitivity(string value) => new DynamicThresholdSensitivity(value);
 
         /// <inheritdoc />
@@ -47,7 +47,7 @@ namespace Azure.ResourceManager.Monitor.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

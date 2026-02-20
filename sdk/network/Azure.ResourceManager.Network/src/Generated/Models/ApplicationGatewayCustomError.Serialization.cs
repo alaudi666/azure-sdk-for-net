@@ -6,57 +6,191 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class ApplicationGatewayCustomError : IUtf8JsonSerializable
+    public partial class ApplicationGatewayCustomError : IUtf8JsonSerializable, IJsonModel<ApplicationGatewayCustomError>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ApplicationGatewayCustomError>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ApplicationGatewayCustomError>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayCustomError>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ApplicationGatewayCustomError)} does not support writing '{format}' format.");
+            }
+
             if (Optional.IsDefined(StatusCode))
             {
-                writer.WritePropertyName("statusCode");
+                writer.WritePropertyName("statusCode"u8);
                 writer.WriteStringValue(StatusCode.Value.ToString());
             }
             if (Optional.IsDefined(CustomErrorPageUri))
             {
-                writer.WritePropertyName("customErrorPageUrl");
+                writer.WritePropertyName("customErrorPageUrl"u8);
                 writer.WriteStringValue(CustomErrorPageUri.AbsoluteUri);
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static ApplicationGatewayCustomError DeserializeApplicationGatewayCustomError(JsonElement element)
+        ApplicationGatewayCustomError IJsonModel<ApplicationGatewayCustomError>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<ApplicationGatewayCustomErrorStatusCode> statusCode = default;
-            Optional<Uri> customErrorPageUrl = default;
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayCustomError>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ApplicationGatewayCustomError)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeApplicationGatewayCustomError(document.RootElement, options);
+        }
+
+        internal static ApplicationGatewayCustomError DeserializeApplicationGatewayCustomError(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ApplicationGatewayCustomErrorStatusCode? statusCode = default;
+            Uri customErrorPageUrl = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("statusCode"))
+                if (property.NameEquals("statusCode"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     statusCode = new ApplicationGatewayCustomErrorStatusCode(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("customErrorPageUrl"))
+                if (property.NameEquals("customErrorPageUrl"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        customErrorPageUrl = null;
                         continue;
                     }
                     customErrorPageUrl = new Uri(property.Value.GetString());
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ApplicationGatewayCustomError(Optional.ToNullable(statusCode), customErrorPageUrl.Value);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ApplicationGatewayCustomError(statusCode, customErrorPageUrl, serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(StatusCode), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  statusCode: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(StatusCode))
+                {
+                    builder.Append("  statusCode: ");
+                    builder.AppendLine($"'{StatusCode.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(CustomErrorPageUri), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  customErrorPageUrl: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(CustomErrorPageUri))
+                {
+                    builder.Append("  customErrorPageUrl: ");
+                    builder.AppendLine($"'{CustomErrorPageUri.AbsoluteUri}'");
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<ApplicationGatewayCustomError>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayCustomError>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(ApplicationGatewayCustomError)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ApplicationGatewayCustomError IPersistableModel<ApplicationGatewayCustomError>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayCustomError>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeApplicationGatewayCustomError(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ApplicationGatewayCustomError)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ApplicationGatewayCustomError>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

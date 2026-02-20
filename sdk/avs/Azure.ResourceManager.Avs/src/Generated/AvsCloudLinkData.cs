@@ -5,36 +5,74 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Avs.Models;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Avs
 {
-    /// <summary> A class representing the AvsCloudLink data model. </summary>
+    /// <summary> A cloud link resource. </summary>
     public partial class AvsCloudLinkData : ResourceData
     {
-        /// <summary> Initializes a new instance of AvsCloudLinkData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AvsCloudLinkData"/>. </summary>
         public AvsCloudLinkData()
         {
         }
 
-        /// <summary> Initializes a new instance of AvsCloudLinkData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="status"> The state of the cloud link. </param>
-        /// <param name="linkedCloud"> Identifier of the other private cloud participating in the link. </param>
-        internal AvsCloudLinkData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, AvsCloudLinkStatus? status, ResourceIdentifier linkedCloud) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="AvsCloudLinkData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> The resource-specific properties for this resource. </param>
+        internal AvsCloudLinkData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, CloudLinkProperties properties) : base(id, name, resourceType, systemData)
         {
-            Status = status;
-            LinkedCloud = linkedCloud;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
+        }
+
+        /// <summary> The resource-specific properties for this resource. </summary>
+        internal CloudLinkProperties Properties { get; set; }
+
+        /// <summary> The provisioning state of the resource. </summary>
+        public AvsCloudLinkProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
         }
 
         /// <summary> The state of the cloud link. </summary>
-        public AvsCloudLinkStatus? Status { get; }
+        public AvsCloudLinkStatus? Status
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Status;
+            }
+        }
+
         /// <summary> Identifier of the other private cloud participating in the link. </summary>
-        public ResourceIdentifier LinkedCloud { get; set; }
+        public ResourceIdentifier LinkedCloud
+        {
+            get
+            {
+                return Properties is null ? default : Properties.LinkedCloud;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new CloudLinkProperties();
+                }
+                Properties.LinkedCloud = value;
+            }
+        }
     }
 }

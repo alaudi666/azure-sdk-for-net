@@ -5,89 +5,263 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
-    public partial class IPAddressGroup : IUtf8JsonSerializable
+    public partial class IPAddressGroup : IUtf8JsonSerializable, IJsonModel<IPAddressGroup>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<IPAddressGroup>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<IPAddressGroup>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IPAddressGroup>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(IPAddressGroup)} does not support writing '{format}' format.");
+            }
+
             if (Optional.IsDefined(DeliveryRegion))
             {
-                writer.WritePropertyName("deliveryRegion");
+                writer.WritePropertyName("deliveryRegion"u8);
                 writer.WriteStringValue(DeliveryRegion);
             }
             if (Optional.IsCollectionDefined(IPv4Addresses))
             {
-                writer.WritePropertyName("ipv4Addresses");
+                writer.WritePropertyName("ipv4Addresses"u8);
                 writer.WriteStartArray();
                 foreach (var item in IPv4Addresses)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(IPv6Addresses))
             {
-                writer.WritePropertyName("ipv6Addresses");
+                writer.WritePropertyName("ipv6Addresses"u8);
                 writer.WriteStartArray();
                 foreach (var item in IPv6Addresses)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static IPAddressGroup DeserializeIPAddressGroup(JsonElement element)
+        IPAddressGroup IJsonModel<IPAddressGroup>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> deliveryRegion = default;
-            Optional<IList<CidrIPAddress>> ipv4Addresses = default;
-            Optional<IList<CidrIPAddress>> ipv6Addresses = default;
+            var format = options.Format == "W" ? ((IPersistableModel<IPAddressGroup>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(IPAddressGroup)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeIPAddressGroup(document.RootElement, options);
+        }
+
+        internal static IPAddressGroup DeserializeIPAddressGroup(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string deliveryRegion = default;
+            IList<CidrIPAddress> ipv4Addresses = default;
+            IList<CidrIPAddress> ipv6Addresses = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("deliveryRegion"))
+                if (property.NameEquals("deliveryRegion"u8))
                 {
                     deliveryRegion = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("ipv4Addresses"))
+                if (property.NameEquals("ipv4Addresses"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<CidrIPAddress> array = new List<CidrIPAddress>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(CidrIPAddress.DeserializeCidrIPAddress(item));
+                        array.Add(CidrIPAddress.DeserializeCidrIPAddress(item, options));
                     }
                     ipv4Addresses = array;
                     continue;
                 }
-                if (property.NameEquals("ipv6Addresses"))
+                if (property.NameEquals("ipv6Addresses"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<CidrIPAddress> array = new List<CidrIPAddress>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(CidrIPAddress.DeserializeCidrIPAddress(item));
+                        array.Add(CidrIPAddress.DeserializeCidrIPAddress(item, options));
                     }
                     ipv6Addresses = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new IPAddressGroup(deliveryRegion.Value, Optional.ToList(ipv4Addresses), Optional.ToList(ipv6Addresses));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new IPAddressGroup(deliveryRegion, ipv4Addresses ?? new ChangeTrackingList<CidrIPAddress>(), ipv6Addresses ?? new ChangeTrackingList<CidrIPAddress>(), serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DeliveryRegion), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  deliveryRegion: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DeliveryRegion))
+                {
+                    builder.Append("  deliveryRegion: ");
+                    if (DeliveryRegion.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{DeliveryRegion}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{DeliveryRegion}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IPv4Addresses), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  ipv4Addresses: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(IPv4Addresses))
+                {
+                    if (IPv4Addresses.Any())
+                    {
+                        builder.Append("  ipv4Addresses: ");
+                        builder.AppendLine("[");
+                        foreach (var item in IPv4Addresses)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  ipv4Addresses: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IPv6Addresses), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  ipv6Addresses: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(IPv6Addresses))
+                {
+                    if (IPv6Addresses.Any())
+                    {
+                        builder.Append("  ipv6Addresses: ");
+                        builder.AppendLine("[");
+                        foreach (var item in IPv6Addresses)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  ipv6Addresses: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<IPAddressGroup>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IPAddressGroup>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerCdnContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(IPAddressGroup)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        IPAddressGroup IPersistableModel<IPAddressGroup>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IPAddressGroup>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeIPAddressGroup(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(IPAddressGroup)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<IPAddressGroup>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

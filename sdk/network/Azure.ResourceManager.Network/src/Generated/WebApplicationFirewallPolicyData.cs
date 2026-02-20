@@ -5,32 +5,37 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the WebApplicationFirewallPolicy data model. </summary>
+    /// <summary>
+    /// A class representing the WebApplicationFirewallPolicy data model.
+    /// Defines web application firewall policy.
+    /// </summary>
     public partial class WebApplicationFirewallPolicyData : NetworkTrackedResourceData
     {
-        /// <summary> Initializes a new instance of WebApplicationFirewallPolicyData. </summary>
+        /// <summary> Initializes a new instance of <see cref="WebApplicationFirewallPolicyData"/>. </summary>
         public WebApplicationFirewallPolicyData()
         {
             CustomRules = new ChangeTrackingList<WebApplicationFirewallCustomRule>();
             ApplicationGateways = new ChangeTrackingList<ApplicationGatewayData>();
             HttpListeners = new ChangeTrackingList<WritableSubResource>();
             PathBasedRules = new ChangeTrackingList<WritableSubResource>();
+            ApplicationGatewayForContainers = new ChangeTrackingList<SubResource>();
         }
 
-        /// <summary> Initializes a new instance of WebApplicationFirewallPolicyData. </summary>
+        /// <summary> Initializes a new instance of <see cref="WebApplicationFirewallPolicyData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
         /// <param name="location"> Resource location. </param>
         /// <param name="tags"> Resource tags. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="policySettings"> The PolicySettings for policy. </param>
         /// <param name="customRules"> The custom rules inside the policy. </param>
@@ -40,7 +45,8 @@ namespace Azure.ResourceManager.Network
         /// <param name="managedRules"> Describes the managedRules structure. </param>
         /// <param name="httpListeners"> A collection of references to application gateway http listeners. </param>
         /// <param name="pathBasedRules"> A collection of references to application gateway path rules. </param>
-        internal WebApplicationFirewallPolicyData(ResourceIdentifier id, string name, ResourceType? resourceType, AzureLocation? location, IDictionary<string, string> tags, ETag? etag, PolicySettings policySettings, IList<WebApplicationFirewallCustomRule> customRules, IReadOnlyList<ApplicationGatewayData> applicationGateways, NetworkProvisioningState? provisioningState, WebApplicationFirewallPolicyResourceState? resourceState, ManagedRulesDefinition managedRules, IReadOnlyList<WritableSubResource> httpListeners, IReadOnlyList<WritableSubResource> pathBasedRules) : base(id, name, resourceType, location, tags)
+        /// <param name="applicationGatewayForContainers"> A collection of references to application gateway for containers. </param>
+        internal WebApplicationFirewallPolicyData(ResourceIdentifier id, string name, ResourceType? resourceType, AzureLocation? location, IDictionary<string, string> tags, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, PolicySettings policySettings, IList<WebApplicationFirewallCustomRule> customRules, IReadOnlyList<ApplicationGatewayData> applicationGateways, NetworkProvisioningState? provisioningState, WebApplicationFirewallPolicyResourceState? resourceState, ManagedRulesDefinition managedRules, IReadOnlyList<WritableSubResource> httpListeners, IReadOnlyList<WritableSubResource> pathBasedRules, IReadOnlyList<SubResource> applicationGatewayForContainers) : base(id, name, resourceType, location, tags, serializedAdditionalRawData)
         {
             ETag = etag;
             PolicySettings = policySettings;
@@ -51,25 +57,38 @@ namespace Azure.ResourceManager.Network
             ManagedRules = managedRules;
             HttpListeners = httpListeners;
             PathBasedRules = pathBasedRules;
+            ApplicationGatewayForContainers = applicationGatewayForContainers;
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> The PolicySettings for policy. </summary>
+        [WirePath("properties.policySettings")]
         public PolicySettings PolicySettings { get; set; }
         /// <summary> The custom rules inside the policy. </summary>
+        [WirePath("properties.customRules")]
         public IList<WebApplicationFirewallCustomRule> CustomRules { get; }
         /// <summary> A collection of references to application gateways. </summary>
+        [WirePath("properties.applicationGateways")]
         public IReadOnlyList<ApplicationGatewayData> ApplicationGateways { get; }
         /// <summary> The provisioning state of the web application firewall policy resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
         /// <summary> Resource status of the policy. </summary>
+        [WirePath("properties.resourceState")]
         public WebApplicationFirewallPolicyResourceState? ResourceState { get; }
         /// <summary> Describes the managedRules structure. </summary>
+        [WirePath("properties.managedRules")]
         public ManagedRulesDefinition ManagedRules { get; set; }
         /// <summary> A collection of references to application gateway http listeners. </summary>
+        [WirePath("properties.httpListeners")]
         public IReadOnlyList<WritableSubResource> HttpListeners { get; }
         /// <summary> A collection of references to application gateway path rules. </summary>
+        [WirePath("properties.pathBasedRules")]
         public IReadOnlyList<WritableSubResource> PathBasedRules { get; }
+        /// <summary> A collection of references to application gateway for containers. </summary>
+        [WirePath("properties.applicationGatewayForContainers")]
+        public IReadOnlyList<SubResource> ApplicationGatewayForContainers { get; }
     }
 }

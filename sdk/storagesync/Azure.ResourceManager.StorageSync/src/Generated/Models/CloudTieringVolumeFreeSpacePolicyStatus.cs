@@ -6,32 +6,40 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
     /// <summary> Status of the volume free space policy. </summary>
     public partial class CloudTieringVolumeFreeSpacePolicyStatus
     {
-        /// <summary> Initializes a new instance of CloudTieringVolumeFreeSpacePolicyStatus. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CloudTieringVolumeFreeSpacePolicyStatus"/>. </summary>
         internal CloudTieringVolumeFreeSpacePolicyStatus()
         {
         }
 
-        /// <summary> Initializes a new instance of CloudTieringVolumeFreeSpacePolicyStatus. </summary>
+        /// <summary> Initializes a new instance of <see cref="CloudTieringVolumeFreeSpacePolicyStatus"/>. </summary>
         /// <param name="lastUpdatedOn"> Last updated timestamp. </param>
         /// <param name="effectiveVolumeFreeSpacePolicy"> In the case where multiple server endpoints are present in a volume, an effective free space policy is applied. </param>
         /// <param name="currentVolumeFreeSpacePercent"> Current volume free space percentage. </param>
-        internal CloudTieringVolumeFreeSpacePolicyStatus(DateTimeOffset? lastUpdatedOn, int? effectiveVolumeFreeSpacePolicy, int? currentVolumeFreeSpacePercent)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CloudTieringVolumeFreeSpacePolicyStatus(DateTimeOffset? lastUpdatedOn, int? effectiveVolumeFreeSpacePolicy, int? currentVolumeFreeSpacePercent, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             LastUpdatedOn = lastUpdatedOn;
             EffectiveVolumeFreeSpacePolicy = effectiveVolumeFreeSpacePolicy;
             CurrentVolumeFreeSpacePercent = currentVolumeFreeSpacePercent;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Last updated timestamp. </summary>
         public DateTimeOffset? LastUpdatedOn { get; }
+
         /// <summary> In the case where multiple server endpoints are present in a volume, an effective free space policy is applied. </summary>
         public int? EffectiveVolumeFreeSpacePolicy { get; }
+
         /// <summary> Current volume free space percentage. </summary>
         public int? CurrentVolumeFreeSpacePercent { get; }
     }

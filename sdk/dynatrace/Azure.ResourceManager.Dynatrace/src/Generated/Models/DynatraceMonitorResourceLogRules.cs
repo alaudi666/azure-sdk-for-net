@@ -5,21 +5,25 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Dynatrace;
 
 namespace Azure.ResourceManager.Dynatrace.Models
 {
     /// <summary> Set of rules for sending logs for the Monitor resource. </summary>
     public partial class DynatraceMonitorResourceLogRules
     {
-        /// <summary> Initializes a new instance of DynatraceMonitorResourceLogRules. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DynatraceMonitorResourceLogRules"/>. </summary>
         public DynatraceMonitorResourceLogRules()
         {
             FilteringTags = new ChangeTrackingList<DynatraceMonitorResourceFilteringTag>();
         }
 
-        /// <summary> Initializes a new instance of DynatraceMonitorResourceLogRules. </summary>
+        /// <summary> Initializes a new instance of <see cref="DynatraceMonitorResourceLogRules"/>. </summary>
         /// <param name="sendAadLogs"> Flag specifying if AAD logs should be sent for the Monitor resource. </param>
         /// <param name="sendSubscriptionLogs"> Flag specifying if subscription logs should be sent for the Monitor resource. </param>
         /// <param name="sendActivityLogs"> Flag specifying if activity logs from Azure resources should be sent for the Monitor resource. </param>
@@ -27,20 +31,25 @@ namespace Azure.ResourceManager.Dynatrace.Models
         /// List of filtering tags to be used for capturing logs. This only takes effect if SendActivityLogs flag is enabled. If empty, all resources will be captured.
         /// If only Exclude action is specified, the rules will apply to the list of all available resources. If Include actions are specified, the rules will only include resources with the associated tags.
         /// </param>
-        internal DynatraceMonitorResourceLogRules(AadLogsSendingStatus? sendAadLogs, SubscriptionLogsSendingStatus? sendSubscriptionLogs, ActivityLogsSendingStatus? sendActivityLogs, IList<DynatraceMonitorResourceFilteringTag> filteringTags)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DynatraceMonitorResourceLogRules(AadLogsSendingStatus? sendAadLogs, SubscriptionLogsSendingStatus? sendSubscriptionLogs, ActivityLogsSendingStatus? sendActivityLogs, IList<DynatraceMonitorResourceFilteringTag> filteringTags, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             SendAadLogs = sendAadLogs;
             SendSubscriptionLogs = sendSubscriptionLogs;
             SendActivityLogs = sendActivityLogs;
             FilteringTags = filteringTags;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Flag specifying if AAD logs should be sent for the Monitor resource. </summary>
         public AadLogsSendingStatus? SendAadLogs { get; set; }
+
         /// <summary> Flag specifying if subscription logs should be sent for the Monitor resource. </summary>
         public SubscriptionLogsSendingStatus? SendSubscriptionLogs { get; set; }
+
         /// <summary> Flag specifying if activity logs from Azure resources should be sent for the Monitor resource. </summary>
         public ActivityLogsSendingStatus? SendActivityLogs { get; set; }
+
         /// <summary>
         /// List of filtering tags to be used for capturing logs. This only takes effect if SendActivityLogs flag is enabled. If empty, all resources will be captured.
         /// If only Exclude action is specified, the rules will apply to the list of all available resources. If Include actions are specified, the rules will only include resources with the associated tags.

@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The type of operating system.
-    /// Serialized Name: OperatingSystemType
-    /// </summary>
+    /// <summary> The type of operating system. </summary>
     public readonly partial struct MachineLearningOperatingSystemType : IEquatable<MachineLearningOperatingSystemType>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string LinuxValue = "Linux";
         private const string WindowsValue = "Windows";
 
-        /// <summary>
-        /// Linux
-        /// Serialized Name: OperatingSystemType.Linux
-        /// </summary>
+        /// <summary> Linux. </summary>
         public static MachineLearningOperatingSystemType Linux { get; } = new MachineLearningOperatingSystemType(LinuxValue);
-        /// <summary>
-        /// Windows
-        /// Serialized Name: OperatingSystemType.Windows
-        /// </summary>
+        /// <summary> Windows. </summary>
         public static MachineLearningOperatingSystemType Windows { get; } = new MachineLearningOperatingSystemType(WindowsValue);
         /// <summary> Determines if two <see cref="MachineLearningOperatingSystemType"/> values are the same. </summary>
         public static bool operator ==(MachineLearningOperatingSystemType left, MachineLearningOperatingSystemType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningOperatingSystemType"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningOperatingSystemType left, MachineLearningOperatingSystemType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningOperatingSystemType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningOperatingSystemType"/>. </summary>
         public static implicit operator MachineLearningOperatingSystemType(string value) => new MachineLearningOperatingSystemType(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

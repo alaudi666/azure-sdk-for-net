@@ -39,8 +39,10 @@ namespace Azure.Storage.Test.Shared
 
         public AzuriteFixture(bool includeDebugLog = false)
         {
+#if NETFRAMEWORK
             // This is to force newer protocol on machines with older .NET Framework. Otherwise tests don't connect to Azurite with unsigned cert.
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+#endif
 
             var azuriteLocation = Environment.GetEnvironmentVariable(AzuriteLocationKey);
             var defaultPath = Path.Combine(Environment.GetEnvironmentVariable("APPDATA") ?? string.Empty, "npm");
@@ -119,7 +121,8 @@ namespace Azure.Storage.Test.Shared
             try
             {
                 process.Start();
-            } catch (Win32Exception e)
+            }
+            catch (Win32Exception e)
             {
                 throw new ArgumentException(ErrorMessage("could not run NodeJS, make sure it's installed"), e);
             }
@@ -198,7 +201,7 @@ namespace Azure.Storage.Test.Shared
             }
         }
 
-        private class AzuriteTokenCredential: TokenCredential
+        private class AzuriteTokenCredential : TokenCredential
         {
             public override ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
             {

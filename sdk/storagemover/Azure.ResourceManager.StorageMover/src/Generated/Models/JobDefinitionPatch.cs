@@ -5,21 +5,97 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.Core;
+
 namespace Azure.ResourceManager.StorageMover.Models
 {
     /// <summary> The Job Definition resource. </summary>
     public partial class JobDefinitionPatch
     {
-        /// <summary> Initializes a new instance of JobDefinitionPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="JobDefinitionPatch"/>. </summary>
         public JobDefinitionPatch()
         {
         }
 
+        /// <summary> Initializes a new instance of <see cref="JobDefinitionPatch"/>. </summary>
+        /// <param name="properties"> Job definition properties. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal JobDefinitionPatch(JobDefinitionUpdateProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> Job definition properties. </summary>
+        internal JobDefinitionUpdateProperties Properties { get; set; }
+
         /// <summary> A description for the Job Definition. </summary>
-        public string Description { get; set; }
+        public string Description
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Description;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new JobDefinitionUpdateProperties();
+                }
+                Properties.Description = value;
+            }
+        }
+
         /// <summary> Strategy to use for copy. </summary>
-        public StorageMoverCopyMode? CopyMode { get; set; }
+        public StorageMoverCopyMode? CopyMode
+        {
+            get
+            {
+                return Properties is null ? default : Properties.CopyMode;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new JobDefinitionUpdateProperties();
+                }
+                Properties.CopyMode = value.Value;
+            }
+        }
+
         /// <summary> Name of the Agent to assign for new Job Runs of this Job Definition. </summary>
-        public string AgentName { get; set; }
+        public string AgentName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.AgentName;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new JobDefinitionUpdateProperties();
+                }
+                Properties.AgentName = value;
+            }
+        }
+
+        /// <summary> List of connections associated to this job. </summary>
+        public IList<ResourceIdentifier> Connections
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new JobDefinitionUpdateProperties();
+                }
+                return Properties.Connections;
+            }
+        }
     }
 }

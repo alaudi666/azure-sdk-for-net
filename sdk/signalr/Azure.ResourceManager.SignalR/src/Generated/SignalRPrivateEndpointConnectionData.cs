@@ -5,59 +5,100 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Models;
-using Azure.ResourceManager.Resources.Models;
 using Azure.ResourceManager.SignalR.Models;
 
 namespace Azure.ResourceManager.SignalR
 {
-    /// <summary> A class representing the SignalRPrivateEndpointConnection data model. </summary>
+    /// <summary> A private endpoint connection to an azure resource. </summary>
     public partial class SignalRPrivateEndpointConnectionData : ResourceData
     {
-        /// <summary> Initializes a new instance of SignalRPrivateEndpointConnectionData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRPrivateEndpointConnectionData"/>. </summary>
         public SignalRPrivateEndpointConnectionData()
         {
-            GroupIds = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of SignalRPrivateEndpointConnectionData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="provisioningState"> Provisioning state of the resource. </param>
-        /// <param name="privateEndpoint"> Private endpoint. </param>
-        /// <param name="groupIds"> Group IDs. </param>
-        /// <param name="connectionState"> Connection state of the private endpoint connection. </param>
-        internal SignalRPrivateEndpointConnectionData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, SignalRProvisioningState? provisioningState, WritableSubResource privateEndpoint, IReadOnlyList<string> groupIds, SignalRPrivateLinkServiceConnectionState connectionState) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="SignalRPrivateEndpointConnectionData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> Private endpoint connection properties. </param>
+        internal SignalRPrivateEndpointConnectionData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, PrivateEndpointConnectionProperties properties) : base(id, name, resourceType, systemData)
         {
-            ProvisioningState = provisioningState;
-            PrivateEndpoint = privateEndpoint;
-            GroupIds = groupIds;
-            ConnectionState = connectionState;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
+
+        /// <summary> Private endpoint connection properties. </summary>
+        [WirePath("properties")]
+        internal PrivateEndpointConnectionProperties Properties { get; set; }
 
         /// <summary> Provisioning state of the resource. </summary>
-        public SignalRProvisioningState? ProvisioningState { get; }
-        /// <summary> Private endpoint. </summary>
-        internal WritableSubResource PrivateEndpoint { get; set; }
-        /// <summary> Gets or sets Id. </summary>
-        public ResourceIdentifier PrivateEndpointId
+        [WirePath("properties.provisioningState")]
+        public SignalRProvisioningState? ProvisioningState
         {
-            get => PrivateEndpoint is null ? default : PrivateEndpoint.Id;
-            set
+            get
             {
-                if (PrivateEndpoint is null)
-                    PrivateEndpoint = new WritableSubResource();
-                PrivateEndpoint.Id = value;
+                return Properties is null ? default : Properties.ProvisioningState;
             }
         }
 
         /// <summary> Group IDs. </summary>
-        public IReadOnlyList<string> GroupIds { get; }
+        [WirePath("properties.groupIds")]
+        public IReadOnlyList<string> GroupIds
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new PrivateEndpointConnectionProperties();
+                }
+                return Properties.GroupIds;
+            }
+        }
+
         /// <summary> Connection state of the private endpoint connection. </summary>
-        public SignalRPrivateLinkServiceConnectionState ConnectionState { get; set; }
+        [WirePath("properties.privateLinkServiceConnectionState")]
+        public SignalRPrivateLinkServiceConnectionState ConnectionState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ConnectionState;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new PrivateEndpointConnectionProperties();
+                }
+                Properties.ConnectionState = value;
+            }
+        }
+
+        /// <summary> Full qualified Id of the private endpoint. </summary>
+        [WirePath("properties.privateEndpoint.id")]
+        public ResourceIdentifier PrivateEndpointId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.PrivateEndpointId;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new PrivateEndpointConnectionProperties();
+                }
+                Properties.PrivateEndpointId = value;
+            }
+        }
     }
 }

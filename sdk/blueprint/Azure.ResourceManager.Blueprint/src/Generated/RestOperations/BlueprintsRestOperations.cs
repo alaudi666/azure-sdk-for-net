@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Blueprint.Models;
@@ -37,6 +36,18 @@ namespace Azure.ResourceManager.Blueprint
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
         }
 
+        internal RequestUriBuilder CreateCreateOrUpdateRequestUri(string resourceScope, string blueprintName, BlueprintData data)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceScope, false);
+            uri.AppendPath("/providers/Microsoft.Blueprint/blueprints/", false);
+            uri.AppendPath(blueprintName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
         internal HttpMessage CreateCreateOrUpdateRequest(string resourceScope, string blueprintName, BlueprintData data)
         {
             var message = _pipeline.CreateMessage();
@@ -53,14 +64,14 @@ namespace Azure.ResourceManager.Blueprint
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(data);
+            content.JsonWriter.WriteObjectValue(data, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             _userAgent.Apply(message);
             return message;
         }
 
         /// <summary> Create or update a blueprint definition. </summary>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="blueprintName"> Name of the blueprint definition. </param>
         /// <param name="data"> Blueprint definition. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -79,7 +90,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 201:
                     {
                         BlueprintData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = BlueprintData.DeserializeBlueprintData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -89,7 +100,7 @@ namespace Azure.ResourceManager.Blueprint
         }
 
         /// <summary> Create or update a blueprint definition. </summary>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="blueprintName"> Name of the blueprint definition. </param>
         /// <param name="data"> Blueprint definition. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -108,13 +119,25 @@ namespace Azure.ResourceManager.Blueprint
                 case 201:
                     {
                         BlueprintData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = BlueprintData.DeserializeBlueprintData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetRequestUri(string resourceScope, string blueprintName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceScope, false);
+            uri.AppendPath("/providers/Microsoft.Blueprint/blueprints/", false);
+            uri.AppendPath(blueprintName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetRequest(string resourceScope, string blueprintName)
@@ -136,7 +159,7 @@ namespace Azure.ResourceManager.Blueprint
         }
 
         /// <summary> Get a blueprint definition. </summary>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="blueprintName"> Name of the blueprint definition. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="resourceScope"/> or <paramref name="blueprintName"/> is null. </exception>
@@ -153,7 +176,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         BlueprintData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = BlueprintData.DeserializeBlueprintData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -165,7 +188,7 @@ namespace Azure.ResourceManager.Blueprint
         }
 
         /// <summary> Get a blueprint definition. </summary>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="blueprintName"> Name of the blueprint definition. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="resourceScope"/> or <paramref name="blueprintName"/> is null. </exception>
@@ -182,7 +205,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         BlueprintData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = BlueprintData.DeserializeBlueprintData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -191,6 +214,18 @@ namespace Azure.ResourceManager.Blueprint
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateDeleteRequestUri(string resourceScope, string blueprintName)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceScope, false);
+            uri.AppendPath("/providers/Microsoft.Blueprint/blueprints/", false);
+            uri.AppendPath(blueprintName, true);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateDeleteRequest(string resourceScope, string blueprintName)
@@ -212,7 +247,7 @@ namespace Azure.ResourceManager.Blueprint
         }
 
         /// <summary> Delete a blueprint definition. </summary>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="blueprintName"> Name of the blueprint definition. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="resourceScope"/> or <paramref name="blueprintName"/> is null. </exception>
@@ -229,7 +264,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         BlueprintData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = BlueprintData.DeserializeBlueprintData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -241,7 +276,7 @@ namespace Azure.ResourceManager.Blueprint
         }
 
         /// <summary> Delete a blueprint definition. </summary>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="blueprintName"> Name of the blueprint definition. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="resourceScope"/> or <paramref name="blueprintName"/> is null. </exception>
@@ -258,7 +293,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         BlueprintData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = BlueprintData.DeserializeBlueprintData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -267,6 +302,17 @@ namespace Azure.ResourceManager.Blueprint
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListRequestUri(string resourceScope)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/", false);
+            uri.AppendPath(resourceScope, false);
+            uri.AppendPath("/providers/Microsoft.Blueprint/blueprints", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateListRequest(string resourceScope)
@@ -287,7 +333,7 @@ namespace Azure.ResourceManager.Blueprint
         }
 
         /// <summary> List blueprint definitions. </summary>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="resourceScope"/> is null. </exception>
         public async Task<Response<BlueprintList>> ListAsync(string resourceScope, CancellationToken cancellationToken = default)
@@ -301,7 +347,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         BlueprintList value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = BlueprintList.DeserializeBlueprintList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -311,7 +357,7 @@ namespace Azure.ResourceManager.Blueprint
         }
 
         /// <summary> List blueprint definitions. </summary>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="resourceScope"/> is null. </exception>
         public Response<BlueprintList> List(string resourceScope, CancellationToken cancellationToken = default)
@@ -325,13 +371,21 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         BlueprintList value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = BlueprintList.DeserializeBlueprintList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateListNextPageRequestUri(string nextLink, string resourceScope)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
         }
 
         internal HttpMessage CreateListNextPageRequest(string nextLink, string resourceScope)
@@ -350,7 +404,7 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary> List blueprint definitions. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="resourceScope"/> is null. </exception>
         public async Task<Response<BlueprintList>> ListNextPageAsync(string nextLink, string resourceScope, CancellationToken cancellationToken = default)
@@ -365,7 +419,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         BlueprintList value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = BlueprintList.DeserializeBlueprintList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -376,7 +430,7 @@ namespace Azure.ResourceManager.Blueprint
 
         /// <summary> List blueprint definitions. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: &apos;/providers/Microsoft.Management/managementGroups/{managementGroup}&apos;), subscription (format: &apos;/subscriptions/{subscriptionId}&apos;). </param>
+        /// <param name="resourceScope"> The scope of the resource. Valid scopes are: management group (format: '/providers/Microsoft.Management/managementGroups/{managementGroup}'), subscription (format: '/subscriptions/{subscriptionId}'). </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="resourceScope"/> is null. </exception>
         public Response<BlueprintList> ListNextPage(string nextLink, string resourceScope, CancellationToken cancellationToken = default)
@@ -391,7 +445,7 @@ namespace Azure.ResourceManager.Blueprint
                 case 200:
                     {
                         BlueprintList value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = BlueprintList.DeserializeBlueprintList(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

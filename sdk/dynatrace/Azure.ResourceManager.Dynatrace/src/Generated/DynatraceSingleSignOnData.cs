@@ -13,43 +13,99 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Dynatrace
 {
-    /// <summary> A class representing the DynatraceSingleSignOn data model. </summary>
+    /// <summary> Single sign-on configurations for a given monitor resource. </summary>
     public partial class DynatraceSingleSignOnData : ResourceData
     {
-        /// <summary> Initializes a new instance of DynatraceSingleSignOnData. </summary>
-        public DynatraceSingleSignOnData()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DynatraceSingleSignOnData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> The resource-specific properties for this resource. </param>
+        internal DynatraceSingleSignOnData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, DynatraceSingleSignOnProperties properties) : base(id, name, resourceType, systemData)
         {
-            AadDomains = new ChangeTrackingList<string>();
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
 
-        /// <summary> Initializes a new instance of DynatraceSingleSignOnData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="singleSignOnState"> State of Single Sign On. </param>
-        /// <param name="enterpriseAppId"> Version of the Dynatrace agent installed on the VM. </param>
-        /// <param name="singleSignOnUri"> The login URL specific to this Dynatrace Environment. </param>
-        /// <param name="aadDomains"> array of Aad(azure active directory) domains. </param>
-        /// <param name="provisioningState"> Provisioning state of the resource. </param>
-        internal DynatraceSingleSignOnData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, DynatraceSingleSignOnState? singleSignOnState, Guid? enterpriseAppId, Uri singleSignOnUri, IList<string> aadDomains, DynatraceProvisioningState? provisioningState) : base(id, name, resourceType, systemData)
-        {
-            SingleSignOnState = singleSignOnState;
-            EnterpriseAppId = enterpriseAppId;
-            SingleSignOnUri = singleSignOnUri;
-            AadDomains = aadDomains;
-            ProvisioningState = provisioningState;
-        }
+        /// <summary> The resource-specific properties for this resource. </summary>
+        internal DynatraceSingleSignOnProperties Properties { get; set; }
 
         /// <summary> State of Single Sign On. </summary>
-        public DynatraceSingleSignOnState? SingleSignOnState { get; set; }
+        public DynatraceSingleSignOnState? SingleSignOnState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.SingleSignOnState;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new DynatraceSingleSignOnProperties();
+                }
+                Properties.SingleSignOnState = value.Value;
+            }
+        }
+
         /// <summary> Version of the Dynatrace agent installed on the VM. </summary>
-        public Guid? EnterpriseAppId { get; set; }
+        public Guid? EnterpriseAppId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.EnterpriseAppId;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new DynatraceSingleSignOnProperties();
+                }
+                Properties.EnterpriseAppId = value.Value;
+            }
+        }
+
         /// <summary> The login URL specific to this Dynatrace Environment. </summary>
-        public Uri SingleSignOnUri { get; set; }
+        public Uri SingleSignOnUri
+        {
+            get
+            {
+                return Properties is null ? default : Properties.SingleSignOnUri;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new DynatraceSingleSignOnProperties();
+                }
+                Properties.SingleSignOnUri = value;
+            }
+        }
+
         /// <summary> array of Aad(azure active directory) domains. </summary>
-        public IList<string> AadDomains { get; }
+        public IList<string> AadDomains
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new DynatraceSingleSignOnProperties();
+                }
+                return Properties.AadDomains;
+            }
+        }
+
         /// <summary> Provisioning state of the resource. </summary>
-        public DynatraceProvisioningState? ProvisioningState { get; }
+        public DynatraceProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+        }
     }
 }

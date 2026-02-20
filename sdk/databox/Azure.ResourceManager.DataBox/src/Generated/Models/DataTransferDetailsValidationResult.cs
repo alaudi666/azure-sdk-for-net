@@ -5,6 +5,8 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure;
 
 namespace Azure.ResourceManager.DataBox.Models
@@ -12,20 +14,19 @@ namespace Azure.ResourceManager.DataBox.Models
     /// <summary> Properties of data transfer details validation response. </summary>
     public partial class DataTransferDetailsValidationResult : DataBoxValidationInputResult
     {
-        /// <summary> Initializes a new instance of DataTransferDetailsValidationResult. </summary>
-        internal DataTransferDetailsValidationResult()
+        /// <summary> Initializes a new instance of <see cref="DataTransferDetailsValidationResult"/>. </summary>
+        internal DataTransferDetailsValidationResult() : base(DataBoxValidationInputDiscriminator.ValidateDataTransferDetails)
         {
-            ValidationType = DataBoxValidationInputDiscriminator.ValidateDataTransferDetails;
         }
 
-        /// <summary> Initializes a new instance of DataTransferDetailsValidationResult. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataTransferDetailsValidationResult"/>. </summary>
         /// <param name="validationType"> Identifies the type of validation response. </param>
         /// <param name="error"> Error code and message of validation response. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
         /// <param name="status"> Data transfer details validation status. </param>
-        internal DataTransferDetailsValidationResult(DataBoxValidationInputDiscriminator validationType, ResponseError error, DataBoxValidationStatus? status) : base(validationType, error)
+        internal DataTransferDetailsValidationResult(DataBoxValidationInputDiscriminator validationType, ResponseError error, IDictionary<string, BinaryData> additionalBinaryDataProperties, DataBoxValidationStatus? status) : base(validationType, error, additionalBinaryDataProperties)
         {
             Status = status;
-            ValidationType = validationType;
         }
 
         /// <summary> Data transfer details validation status. </summary>

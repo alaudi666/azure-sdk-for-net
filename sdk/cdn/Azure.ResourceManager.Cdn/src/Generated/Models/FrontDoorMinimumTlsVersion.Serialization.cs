@@ -15,13 +15,15 @@ namespace Azure.ResourceManager.Cdn.Models
         {
             FrontDoorMinimumTlsVersion.Tls1_0 => "TLS10",
             FrontDoorMinimumTlsVersion.Tls1_2 => "TLS12",
+            FrontDoorMinimumTlsVersion.Tls1_3 => "TLS13",
             _ => throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown FrontDoorMinimumTlsVersion value.")
         };
 
         public static FrontDoorMinimumTlsVersion ToFrontDoorMinimumTlsVersion(this string value)
         {
-            if (string.Equals(value, "TLS10", StringComparison.InvariantCultureIgnoreCase)) return FrontDoorMinimumTlsVersion.Tls1_0;
-            if (string.Equals(value, "TLS12", StringComparison.InvariantCultureIgnoreCase)) return FrontDoorMinimumTlsVersion.Tls1_2;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "TLS10")) return FrontDoorMinimumTlsVersion.Tls1_0;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "TLS12")) return FrontDoorMinimumTlsVersion.Tls1_2;
+            if (StringComparer.OrdinalIgnoreCase.Equals(value, "TLS13")) return FrontDoorMinimumTlsVersion.Tls1_3;
             throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown FrontDoorMinimumTlsVersion value.");
         }
     }

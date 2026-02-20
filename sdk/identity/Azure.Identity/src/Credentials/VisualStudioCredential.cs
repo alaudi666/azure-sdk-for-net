@@ -1,4 +1,4 @@
-﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
 using System;
@@ -17,16 +17,15 @@ using Azure.Core.Pipeline;
 namespace Azure.Identity
 {
     /// <summary>
-    /// Enables authentication to Azure Active Directory using data from Visual Studio 2017 or later. See
+    /// Enables authentication to Microsoft Entra ID using data from Visual Studio 2017 or later. See
     /// <seealso href="https://learn.microsoft.com/dotnet/azure/configure-visual-studio" /> for more information
     /// on how to configure Visual Studio for Azure development.
     /// </summary>
     public class VisualStudioCredential : TokenCredential
     {
-        private const string TokenProviderFilePath = @".IdentityService\AzureServiceAuth\tokenprovider.json";
+        private static readonly string TokenProviderFilePath = Path.Combine(".IdentityService", "AzureServiceAuth", "tokenprovider.json");
         private const string ResourceArgumentName = "--resource";
         private const string TenantArgumentName = "--tenant";
-
         private readonly CredentialPipeline _pipeline;
         internal string TenantId { get; }
         internal string[] AdditionallyAllowedTenantIds { get; }
@@ -34,8 +33,9 @@ namespace Azure.Identity
         private readonly IProcessService _processService;
         private readonly bool _logPII;
         private readonly bool _logAccountDetails;
-
-        internal TimeSpan VisualStudioProcessTimeout { get; private set; }
+        internal bool _isChainedCredential;
+        internal TimeSpan ProcessTimeout { get; private set; }
+        internal TenantIdResolverBase TenantIdResolver { get; }
 
         /// <summary>
         /// Creates a new instance of the <see cref="VisualStudioCredential"/>.
@@ -52,21 +52,35 @@ namespace Azure.Identity
 
         internal VisualStudioCredential(string tenantId, CredentialPipeline pipeline, IFileSystemService fileSystem, IProcessService processService, VisualStudioCredentialOptions options = null)
         {
-            _logPII = options?.IsLoggingPIIEnabled ?? false;
+            _logPII = options?.IsUnsafeSupportLoggingEnabled ?? false;
             _logAccountDetails = options?.Diagnostics?.IsAccountIdentifierLoggingEnabled ?? false;
             TenantId = tenantId;
             _pipeline = pipeline ?? CredentialPipeline.GetInstance(null);
             _fileSystem = fileSystem ?? FileSystemService.Default;
             _processService = processService ?? ProcessService.Default;
-            AdditionallyAllowedTenantIds = TenantIdResolver.ResolveAddionallyAllowedTenantIds(options?.AdditionallyAllowedTenantsCore);
-            VisualStudioProcessTimeout = options?.VisualStudioProcessTimeout ?? TimeSpan.FromSeconds(30);
+            TenantIdResolver = options?.TenantIdResolver ?? TenantIdResolverBase.Default;
+            AdditionallyAllowedTenantIds = TenantIdResolver.ResolveAddionallyAllowedTenantIds((options as ISupportsAdditionallyAllowedTenants)?.AdditionallyAllowedTenants);
+            ProcessTimeout = options?.ProcessTimeout ?? TimeSpan.FromSeconds(30);
+            _isChainedCredential = options?.IsChainedCredential ?? false;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Obtains a access token from account signed in to Visual Studio.
+        /// </summary>
+        /// <param name="requestContext">The details of the authentication request.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
+        /// <returns>An <see cref="AccessToken"/> which can be used to authenticate service client calls.</returns>
+        /// <exception cref="AuthenticationFailedException">Thrown when the authentication failed.</exception>
         public override async ValueTask<AccessToken> GetTokenAsync(TokenRequestContext requestContext, CancellationToken cancellationToken)
             => await GetTokenImplAsync(requestContext, true, cancellationToken).ConfigureAwait(false);
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Obtains a access token from account signed in to Visual Studio.
+        /// </summary>
+        /// <param name="requestContext">The details of the authentication request.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> controlling the request lifetime.</param>
+        /// <returns>An <see cref="AccessToken"/> which can be used to authenticate service client calls.</returns>
+        /// <exception cref="AuthenticationFailedException">Thrown when the authentication failed.</exception>
         public override AccessToken GetToken(TokenRequestContext requestContext, CancellationToken cancellationToken)
             => GetTokenImplAsync(requestContext, false, cancellationToken).EnsureCompleted();
 
@@ -104,18 +118,34 @@ namespace Azure.Identity
             }
             catch (Exception e)
             {
-                throw scope.FailWrapAndThrow(e);
+                // Treat all exceptions as credential unavailable, except for OperationCanceledException which is treated as a cancellation.
+                bool IsCancellationRequested = e is OperationCanceledException && cancellationToken.IsCancellationRequested;
+                throw scope.FailWrapAndThrow(e, isCredentialUnavailable: !IsCancellationRequested);
             }
         }
 
         private static string GetTokenProviderPath()
         {
+            string baseFolder;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), TokenProviderFilePath);
+                baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+                if (string.IsNullOrEmpty(baseFolder))
+                {
+                    // There is a known issue that Environment.GetFolderPath does not work on Windows Nano: https://github.com/dotnet/runtime/issues/21430
+                    baseFolder = Environment.GetEnvironmentVariable("LOCALAPPDATA");
+                    if (string.IsNullOrEmpty(baseFolder))
+                    {
+                        throw new CredentialUnavailableException("Can't find the Local Application Data folder. See the troubleshooting guide for more information. https://aka.ms/azsdk/net/identity/vscredential/troubleshoot");
+                    }
+                }
+            }
+            else
+            {
+                baseFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
             }
 
-            throw new CredentialUnavailableException($"Operating system {RuntimeInformation.OSDescription} isn't supported.");
+            return Path.Combine(baseFolder, TokenProviderFilePath);
         }
 
         private async Task<AccessToken> RunProcessesAsync(List<ProcessStartInfo> processStartInfos, bool async, CancellationToken cancellationToken)
@@ -126,7 +156,7 @@ namespace Azure.Identity
                 string output = string.Empty;
                 try
                 {
-                    using var processRunner = new ProcessRunner(_processService.Create(processStartInfo), VisualStudioProcessTimeout, _logPII, cancellationToken);
+                    using var processRunner = new ProcessRunner(_processService.Create(processStartInfo), ProcessTimeout, _logPII, cancellationToken);
                     output = async
                         ? await processRunner.RunAsync().ConfigureAwait(false)
                         : processRunner.Run();
@@ -138,7 +168,7 @@ namespace Azure.Identity
                 }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
                 {
-                    exceptions.Add(new CredentialUnavailableException($"Process \"{processStartInfo.FileName}\" has failed to get access token in {VisualStudioProcessTimeout.TotalSeconds} seconds."));
+                    exceptions.Add(new CredentialUnavailableException($"Process \"{processStartInfo.FileName}\" has failed to get access token in {ProcessTimeout.TotalSeconds} seconds."));
                 }
                 catch (JsonException exception)
                 {
@@ -146,7 +176,14 @@ namespace Azure.Identity
                 }
                 catch (Exception exception) when (!(exception is OperationCanceledException))
                 {
-                    exceptions.Add(new CredentialUnavailableException($"Process \"{processStartInfo.FileName}\" has failed with unexpected error: {exception.Message}.", exception));
+                    if (_isChainedCredential)
+                    {
+                        exceptions.Add(new CredentialUnavailableException($"Process \"{processStartInfo.FileName}\" has failed with unexpected error: {exception.Message}.", exception));
+                    }
+                    else
+                    {
+                        exceptions.Add(new AuthenticationFailedException($"Process \"{processStartInfo.FileName}\" has failed with unexpected error: {exception.Message}.", exception));
+                    }
                 }
             }
 
@@ -178,21 +215,21 @@ namespace Azure.Identity
                 }
 
                 arguments.Clear();
+                // Add the arguments set in the token provider file.
+                if (tokenProvider.Arguments?.Length > 0)
+                {
+                    foreach (var argument in tokenProvider.Arguments)
+                    {
+                        arguments.Append(argument).Append(' ');
+                    }
+                }
+
                 arguments.Append(ResourceArgumentName).Append(' ').Append(resource);
 
                 var tenantId = TenantIdResolver.Resolve(TenantId, requestContext, AdditionallyAllowedTenantIds);
                 if (tenantId != default)
                 {
                     arguments.Append(' ').Append(TenantArgumentName).Append(' ').Append(tenantId);
-                }
-
-                // Add the arguments set in the token provider file.
-                if (tokenProvider.Arguments?.Length > 0)
-                {
-                    foreach (var argument in tokenProvider.Arguments)
-                    {
-                        arguments.Append(' ').Append(argument);
-                    }
                 }
 
                 var startInfo = new ProcessStartInfo

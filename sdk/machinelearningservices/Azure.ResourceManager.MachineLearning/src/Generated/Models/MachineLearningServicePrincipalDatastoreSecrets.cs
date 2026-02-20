@@ -5,39 +5,32 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Datastore Service Principal secrets.
-    /// Serialized Name: ServicePrincipalDatastoreSecrets
-    /// </summary>
+    /// <summary> Datastore Service Principal secrets. </summary>
     public partial class MachineLearningServicePrincipalDatastoreSecrets : MachineLearningDatastoreSecrets
     {
-        /// <summary> Initializes a new instance of MachineLearningServicePrincipalDatastoreSecrets. </summary>
+        /// <summary> Initializes a new instance of <see cref="MachineLearningServicePrincipalDatastoreSecrets"/>. </summary>
         public MachineLearningServicePrincipalDatastoreSecrets()
         {
             SecretsType = SecretsType.ServicePrincipal;
         }
 
-        /// <summary> Initializes a new instance of MachineLearningServicePrincipalDatastoreSecrets. </summary>
-        /// <param name="secretsType">
-        /// [Required] Credential type used to authentication with storage.
-        /// Serialized Name: DatastoreSecrets.secretsType
-        /// </param>
-        /// <param name="clientSecret">
-        /// Service principal secret.
-        /// Serialized Name: ServicePrincipalDatastoreSecrets.clientSecret
-        /// </param>
-        internal MachineLearningServicePrincipalDatastoreSecrets(SecretsType secretsType, string clientSecret) : base(secretsType)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningServicePrincipalDatastoreSecrets"/>. </summary>
+        /// <param name="secretsType"> [Required] Credential type used to authentication with storage. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="clientSecret"> Service principal secret. </param>
+        internal MachineLearningServicePrincipalDatastoreSecrets(SecretsType secretsType, IDictionary<string, BinaryData> serializedAdditionalRawData, string clientSecret) : base(secretsType, serializedAdditionalRawData)
         {
             ClientSecret = clientSecret;
             SecretsType = secretsType;
         }
 
-        /// <summary>
-        /// Service principal secret.
-        /// Serialized Name: ServicePrincipalDatastoreSecrets.clientSecret
-        /// </summary>
+        /// <summary> Service principal secret. </summary>
+        [WirePath("clientSecret")]
         public string ClientSecret { get; set; }
     }
 }

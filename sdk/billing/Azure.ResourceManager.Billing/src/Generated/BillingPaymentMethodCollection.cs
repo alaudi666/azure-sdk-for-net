@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.Billing
 {
     /// <summary>
-    /// A class representing a collection of <see cref="BillingPaymentMethodResource" /> and their operations.
-    /// Each <see cref="BillingPaymentMethodResource" /> in the collection will belong to the same instance of <see cref="TenantResource" />.
-    /// To get a <see cref="BillingPaymentMethodCollection" /> instance call the GetBillingPaymentMethods method from an instance of <see cref="TenantResource" />.
+    /// A class representing a collection of <see cref="BillingPaymentMethodResource"/> and their operations.
+    /// Each <see cref="BillingPaymentMethodResource"/> in the collection will belong to the same instance of <see cref="TenantResource"/>.
+    /// To get a <see cref="BillingPaymentMethodCollection"/> instance call the GetBillingPaymentMethods method from an instance of <see cref="TenantResource"/>.
     /// </summary>
     public partial class BillingPaymentMethodCollection : ArmCollection, IEnumerable<BillingPaymentMethodResource>, IAsyncEnumerable<BillingPaymentMethodResource>
     {
@@ -56,8 +54,24 @@ namespace Azure.ResourceManager.Billing
 
         /// <summary>
         /// Gets a payment method owned by the caller.
-        /// Request Path: /providers/Microsoft.Billing/paymentMethods/{paymentMethodName}
-        /// Operation Id: PaymentMethods_GetByUser
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Billing/paymentMethods/{paymentMethodName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PaymentMethods_GetByUser</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingPaymentMethodResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="paymentMethodName"> The ID that uniquely identifies a payment method. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -85,8 +99,24 @@ namespace Azure.ResourceManager.Billing
 
         /// <summary>
         /// Gets a payment method owned by the caller.
-        /// Request Path: /providers/Microsoft.Billing/paymentMethods/{paymentMethodName}
-        /// Operation Id: PaymentMethods_GetByUser
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Billing/paymentMethods/{paymentMethodName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PaymentMethods_GetByUser</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingPaymentMethodResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="paymentMethodName"> The ID that uniquely identifies a payment method. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -114,92 +144,84 @@ namespace Azure.ResourceManager.Billing
 
         /// <summary>
         /// Lists the payment methods owned by the caller.
-        /// Request Path: /providers/Microsoft.Billing/paymentMethods
-        /// Operation Id: PaymentMethods_ListByUser
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Billing/paymentMethods</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PaymentMethods_ListByUser</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingPaymentMethodResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="BillingPaymentMethodResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="BillingPaymentMethodResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<BillingPaymentMethodResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<BillingPaymentMethodResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _billingPaymentMethodPaymentMethodsClientDiagnostics.CreateScope("BillingPaymentMethodCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _billingPaymentMethodPaymentMethodsRestClient.ListByUserAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new BillingPaymentMethodResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<BillingPaymentMethodResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _billingPaymentMethodPaymentMethodsClientDiagnostics.CreateScope("BillingPaymentMethodCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _billingPaymentMethodPaymentMethodsRestClient.ListByUserNextPageAsync(nextLink, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new BillingPaymentMethodResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _billingPaymentMethodPaymentMethodsRestClient.CreateListByUserRequest();
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _billingPaymentMethodPaymentMethodsRestClient.CreateListByUserNextPageRequest(nextLink);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new BillingPaymentMethodResource(Client, BillingPaymentMethodData.DeserializeBillingPaymentMethodData(e)), _billingPaymentMethodPaymentMethodsClientDiagnostics, Pipeline, "BillingPaymentMethodCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Lists the payment methods owned by the caller.
-        /// Request Path: /providers/Microsoft.Billing/paymentMethods
-        /// Operation Id: PaymentMethods_ListByUser
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Billing/paymentMethods</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PaymentMethods_ListByUser</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingPaymentMethodResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="BillingPaymentMethodResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="BillingPaymentMethodResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<BillingPaymentMethodResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<BillingPaymentMethodResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _billingPaymentMethodPaymentMethodsClientDiagnostics.CreateScope("BillingPaymentMethodCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _billingPaymentMethodPaymentMethodsRestClient.ListByUser(cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new BillingPaymentMethodResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<BillingPaymentMethodResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _billingPaymentMethodPaymentMethodsClientDiagnostics.CreateScope("BillingPaymentMethodCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _billingPaymentMethodPaymentMethodsRestClient.ListByUserNextPage(nextLink, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new BillingPaymentMethodResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _billingPaymentMethodPaymentMethodsRestClient.CreateListByUserRequest();
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _billingPaymentMethodPaymentMethodsRestClient.CreateListByUserNextPageRequest(nextLink);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new BillingPaymentMethodResource(Client, BillingPaymentMethodData.DeserializeBillingPaymentMethodData(e)), _billingPaymentMethodPaymentMethodsClientDiagnostics, Pipeline, "BillingPaymentMethodCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /providers/Microsoft.Billing/paymentMethods/{paymentMethodName}
-        /// Operation Id: PaymentMethods_GetByUser
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Billing/paymentMethods/{paymentMethodName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PaymentMethods_GetByUser</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingPaymentMethodResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="paymentMethodName"> The ID that uniquely identifies a payment method. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -225,8 +247,24 @@ namespace Azure.ResourceManager.Billing
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /providers/Microsoft.Billing/paymentMethods/{paymentMethodName}
-        /// Operation Id: PaymentMethods_GetByUser
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Billing/paymentMethods/{paymentMethodName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PaymentMethods_GetByUser</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingPaymentMethodResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="paymentMethodName"> The ID that uniquely identifies a payment method. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -242,6 +280,96 @@ namespace Azure.ResourceManager.Billing
             {
                 var response = _billingPaymentMethodPaymentMethodsRestClient.GetByUser(paymentMethodName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Billing/paymentMethods/{paymentMethodName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PaymentMethods_GetByUser</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingPaymentMethodResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="paymentMethodName"> The ID that uniquely identifies a payment method. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="paymentMethodName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="paymentMethodName"/> is null. </exception>
+        public virtual async Task<NullableResponse<BillingPaymentMethodResource>> GetIfExistsAsync(string paymentMethodName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(paymentMethodName, nameof(paymentMethodName));
+
+            using var scope = _billingPaymentMethodPaymentMethodsClientDiagnostics.CreateScope("BillingPaymentMethodCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _billingPaymentMethodPaymentMethodsRestClient.GetByUserAsync(paymentMethodName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<BillingPaymentMethodResource>(response.GetRawResponse());
+                return Response.FromValue(new BillingPaymentMethodResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/providers/Microsoft.Billing/paymentMethods/{paymentMethodName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>PaymentMethods_GetByUser</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2024-04-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="BillingPaymentMethodResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="paymentMethodName"> The ID that uniquely identifies a payment method. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="paymentMethodName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="paymentMethodName"/> is null. </exception>
+        public virtual NullableResponse<BillingPaymentMethodResource> GetIfExists(string paymentMethodName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(paymentMethodName, nameof(paymentMethodName));
+
+            using var scope = _billingPaymentMethodPaymentMethodsClientDiagnostics.CreateScope("BillingPaymentMethodCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _billingPaymentMethodPaymentMethodsRestClient.GetByUser(paymentMethodName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<BillingPaymentMethodResource>(response.GetRawResponse());
+                return Response.FromValue(new BillingPaymentMethodResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

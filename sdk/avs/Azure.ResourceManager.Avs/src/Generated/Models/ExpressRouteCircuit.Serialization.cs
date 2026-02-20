@@ -5,59 +5,179 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    public partial class ExpressRouteCircuit : IUtf8JsonSerializable
+    /// <summary> An ExpressRoute Circuit. </summary>
+    public partial class ExpressRouteCircuit : IJsonModel<ExpressRouteCircuit>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ExpressRouteCircuit PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ExpressRouteCircuit>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeExpressRouteCircuit(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ExpressRouteCircuit)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ExpressRouteCircuit>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static ExpressRouteCircuit DeserializeExpressRouteCircuit(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Optional<string> primarySubnet = default;
-            Optional<string> secondarySubnet = default;
-            Optional<ResourceIdentifier> expressRouteId = default;
-            Optional<ResourceIdentifier> expressRoutePrivatePeeringId = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ExpressRouteCircuit>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("primarySubnet"))
+                throw new FormatException($"The model {nameof(ExpressRouteCircuit)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(PrimarySubnet))
+            {
+                writer.WritePropertyName("primarySubnet"u8);
+                writer.WriteStringValue(PrimarySubnet);
+            }
+            if (options.Format != "W" && Optional.IsDefined(SecondarySubnet))
+            {
+                writer.WritePropertyName("secondarySubnet"u8);
+                writer.WriteStringValue(SecondarySubnet);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ExpressRouteId))
+            {
+                writer.WritePropertyName("expressRouteID"u8);
+                writer.WriteStringValue(ExpressRouteId);
+            }
+            if (options.Format != "W" && Optional.IsDefined(ExpressRoutePrivatePeeringId))
+            {
+                writer.WritePropertyName("expressRoutePrivatePeeringID"u8);
+                writer.WriteStringValue(ExpressRoutePrivatePeeringId);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    primarySubnet = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("secondarySubnet"))
-                {
-                    secondarySubnet = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("expressRouteID"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    expressRouteId = new ResourceIdentifier(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("expressRoutePrivatePeeringID"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    expressRoutePrivatePeeringId = new ResourceIdentifier(property.Value.GetString());
-                    continue;
+#endif
                 }
             }
-            return new ExpressRouteCircuit(primarySubnet.Value, secondarySubnet.Value, expressRouteId.Value, expressRoutePrivatePeeringId.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ExpressRouteCircuit IJsonModel<ExpressRouteCircuit>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ExpressRouteCircuit JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ExpressRouteCircuit>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ExpressRouteCircuit)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeExpressRouteCircuit(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ExpressRouteCircuit DeserializeExpressRouteCircuit(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string primarySubnet = default;
+            string secondarySubnet = default;
+            ResourceIdentifier expressRouteId = default;
+            ResourceIdentifier expressRoutePrivatePeeringId = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("primarySubnet"u8))
+                {
+                    primarySubnet = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("secondarySubnet"u8))
+                {
+                    secondarySubnet = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("expressRouteID"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    expressRouteId = new ResourceIdentifier(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("expressRoutePrivatePeeringID"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    expressRoutePrivatePeeringId = new ResourceIdentifier(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new ExpressRouteCircuit(primarySubnet, secondarySubnet, expressRouteId, expressRoutePrivatePeeringId, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ExpressRouteCircuit>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ExpressRouteCircuit>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerAvsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ExpressRouteCircuit)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ExpressRouteCircuit IPersistableModel<ExpressRouteCircuit>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ExpressRouteCircuit>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

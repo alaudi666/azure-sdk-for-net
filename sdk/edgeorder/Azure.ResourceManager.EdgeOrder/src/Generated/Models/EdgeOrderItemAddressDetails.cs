@@ -6,15 +6,19 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Address details for an order item. </summary>
     public partial class EdgeOrderItemAddressDetails
     {
-        /// <summary> Initializes a new instance of EdgeOrderItemAddressDetails. </summary>
-        /// <param name="forwardAddress"> Customer address and contact details. It should be address resource. </param>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderItemAddressDetails"/>. </summary>
+        /// <param name="forwardAddress"> Customer address and contact details. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="forwardAddress"/> is null. </exception>
         public EdgeOrderItemAddressDetails(EdgeOrderItemAddressProperties forwardAddress)
         {
@@ -23,17 +27,20 @@ namespace Azure.ResourceManager.EdgeOrder.Models
             ForwardAddress = forwardAddress;
         }
 
-        /// <summary> Initializes a new instance of EdgeOrderItemAddressDetails. </summary>
-        /// <param name="forwardAddress"> Customer address and contact details. It should be address resource. </param>
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderItemAddressDetails"/>. </summary>
+        /// <param name="forwardAddress"> Customer address and contact details. </param>
         /// <param name="returnAddress"> Return shipping address. </param>
-        internal EdgeOrderItemAddressDetails(EdgeOrderItemAddressProperties forwardAddress, EdgeOrderItemAddressProperties returnAddress)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EdgeOrderItemAddressDetails(EdgeOrderItemAddressProperties forwardAddress, EdgeOrderItemAddressProperties returnAddress, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ForwardAddress = forwardAddress;
             ReturnAddress = returnAddress;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Customer address and contact details. It should be address resource. </summary>
+        /// <summary> Customer address and contact details. </summary>
         public EdgeOrderItemAddressProperties ForwardAddress { get; set; }
+
         /// <summary> Return shipping address. </summary>
         public EdgeOrderItemAddressProperties ReturnAddress { get; }
     }

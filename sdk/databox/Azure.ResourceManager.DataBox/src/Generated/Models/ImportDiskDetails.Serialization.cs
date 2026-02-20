@@ -5,55 +5,166 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class ImportDiskDetails : IUtf8JsonSerializable
+    /// <summary> Import disk details. </summary>
+    public partial class ImportDiskDetails : IJsonModel<ImportDiskDetails>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="ImportDiskDetails"/> for deserialization. </summary>
+        internal ImportDiskDetails()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ImportDiskDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ImportDiskDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeImportDiskDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ImportDiskDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ImportDiskDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("manifestFile");
-            writer.WriteStringValue(ManifestFile);
-            writer.WritePropertyName("manifestHash");
-            writer.WriteStringValue(ManifestHash);
-            writer.WritePropertyName("bitLockerKey");
-            writer.WriteStringValue(BitLockerKey);
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static ImportDiskDetails DeserializeImportDiskDetails(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            string format = options.Format == "W" ? ((IPersistableModel<ImportDiskDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ImportDiskDetails)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("manifestFile"u8);
+            writer.WriteStringValue(ManifestFile);
+            writer.WritePropertyName("manifestHash"u8);
+            writer.WriteStringValue(ManifestHash);
+            writer.WritePropertyName("bitLockerKey"u8);
+            writer.WriteStringValue(BitLockerKey);
+            if (options.Format != "W" && Optional.IsDefined(BackupManifestCloudPath))
+            {
+                writer.WritePropertyName("backupManifestCloudPath"u8);
+                writer.WriteStringValue(BackupManifestCloudPath);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ImportDiskDetails IJsonModel<ImportDiskDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ImportDiskDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ImportDiskDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ImportDiskDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeImportDiskDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ImportDiskDetails DeserializeImportDiskDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             string manifestFile = default;
             string manifestHash = default;
             string bitLockerKey = default;
-            Optional<string> backupManifestCloudPath = default;
-            foreach (var property in element.EnumerateObject())
+            string backupManifestCloudPath = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
             {
-                if (property.NameEquals("manifestFile"))
+                if (prop.NameEquals("manifestFile"u8))
                 {
-                    manifestFile = property.Value.GetString();
+                    manifestFile = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("manifestHash"))
+                if (prop.NameEquals("manifestHash"u8))
                 {
-                    manifestHash = property.Value.GetString();
+                    manifestHash = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("bitLockerKey"))
+                if (prop.NameEquals("bitLockerKey"u8))
                 {
-                    bitLockerKey = property.Value.GetString();
+                    bitLockerKey = prop.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("backupManifestCloudPath"))
+                if (prop.NameEquals("backupManifestCloudPath"u8))
                 {
-                    backupManifestCloudPath = property.Value.GetString();
+                    backupManifestCloudPath = prop.Value.GetString();
                     continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new ImportDiskDetails(manifestFile, manifestHash, bitLockerKey, backupManifestCloudPath.Value);
+            return new ImportDiskDetails(manifestFile, manifestHash, bitLockerKey, backupManifestCloudPath, additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ImportDiskDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ImportDiskDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ImportDiskDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ImportDiskDetails IPersistableModel<ImportDiskDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ImportDiskDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

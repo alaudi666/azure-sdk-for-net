@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Target lags selection modes.
-    /// Serialized Name: TargetLagsMode
-    /// </summary>
+    /// <summary> Target lags selection modes. </summary>
     internal readonly partial struct TargetLagsMode : IEquatable<TargetLagsMode>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string AutoValue = "Auto";
         private const string CustomValue = "Custom";
 
-        /// <summary>
-        /// Target lags to be determined automatically.
-        /// Serialized Name: TargetLagsMode.Auto
-        /// </summary>
+        /// <summary> Target lags to be determined automatically. </summary>
         public static TargetLagsMode Auto { get; } = new TargetLagsMode(AutoValue);
-        /// <summary>
-        /// Use the custom target lags.
-        /// Serialized Name: TargetLagsMode.Custom
-        /// </summary>
+        /// <summary> Use the custom target lags. </summary>
         public static TargetLagsMode Custom { get; } = new TargetLagsMode(CustomValue);
         /// <summary> Determines if two <see cref="TargetLagsMode"/> values are the same. </summary>
         public static bool operator ==(TargetLagsMode left, TargetLagsMode right) => left.Equals(right);
         /// <summary> Determines if two <see cref="TargetLagsMode"/> values are not the same. </summary>
         public static bool operator !=(TargetLagsMode left, TargetLagsMode right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="TargetLagsMode"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="TargetLagsMode"/>. </summary>
         public static implicit operator TargetLagsMode(string value) => new TargetLagsMode(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

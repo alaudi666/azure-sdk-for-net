@@ -5,28 +5,39 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.RecoveryServices;
 
 namespace Azure.ResourceManager.RecoveryServices.Models
 {
     /// <summary> Usage for vault. </summary>
     internal partial class VaultUsageList
     {
-        /// <summary> Initializes a new instance of VaultUsageList. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="VaultUsageList"/>. </summary>
         internal VaultUsageList()
         {
             Value = new ChangeTrackingList<VaultUsage>();
         }
 
-        /// <summary> Initializes a new instance of VaultUsageList. </summary>
+        /// <summary> Initializes a new instance of <see cref="VaultUsageList"/>. </summary>
         /// <param name="value"> The list of usages for the given vault. </param>
-        internal VaultUsageList(IReadOnlyList<VaultUsage> value)
+        /// <param name="nextLink"></param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal VaultUsageList(IList<VaultUsage> value, string nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
+            NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The list of usages for the given vault. </summary>
-        public IReadOnlyList<VaultUsage> Value { get; }
+        public IList<VaultUsage> Value { get; }
+
+        /// <summary> Gets the NextLink. </summary>
+        public string NextLink { get; }
     }
 }

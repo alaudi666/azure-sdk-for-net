@@ -5,48 +5,203 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Kubernetes;
 
 namespace Azure.ResourceManager.Kubernetes.Models
 {
-    public partial class HybridConnectionConfig
+    /// <summary> Contains the REP (rendezvous endpoint) and “Sender” access token. </summary>
+    public partial class HybridConnectionConfig : IJsonModel<HybridConnectionConfig>
     {
-        internal static HybridConnectionConfig DeserializeHybridConnectionConfig(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual HybridConnectionConfig PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<long> expirationTime = default;
-            Optional<string> hybridConnectionName = default;
-            Optional<string> relay = default;
-            Optional<string> token = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<HybridConnectionConfig>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("expirationTime"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeHybridConnectionConfig(document.RootElement, options);
                     }
-                    expirationTime = property.Value.GetInt64();
-                    continue;
-                }
-                if (property.NameEquals("hybridConnectionName"))
+                default:
+                    throw new FormatException($"The model {nameof(HybridConnectionConfig)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<HybridConnectionConfig>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<HybridConnectionConfig>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(HybridConnectionConfig)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(ExpirationTime))
+            {
+                writer.WritePropertyName("expirationTime"u8);
+                writer.WriteNumberValue(ExpirationTime.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(HybridConnectionName))
+            {
+                writer.WritePropertyName("hybridConnectionName"u8);
+                writer.WriteStringValue(HybridConnectionName);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Relay))
+            {
+                writer.WritePropertyName("relay"u8);
+                writer.WriteStringValue(Relay);
+            }
+            if (options.Format != "W" && Optional.IsDefined(Token))
+            {
+                writer.WritePropertyName("token"u8);
+                writer.WriteStringValue(Token);
+            }
+            if (options.Format != "W" && Optional.IsDefined(RelayTid))
+            {
+                writer.WritePropertyName("relayTid"u8);
+                writer.WriteStringValue(RelayTid);
+            }
+            if (options.Format != "W" && Optional.IsDefined(RelayType))
+            {
+                writer.WritePropertyName("relayType"u8);
+                writer.WriteStringValue(RelayType);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    hybridConnectionName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("relay"))
-                {
-                    relay = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("token"))
-                {
-                    token = property.Value.GetString();
-                    continue;
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
                 }
             }
-            return new HybridConnectionConfig(Optional.ToNullable(expirationTime), hybridConnectionName.Value, relay.Value, token.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        HybridConnectionConfig IJsonModel<HybridConnectionConfig>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual HybridConnectionConfig JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<HybridConnectionConfig>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(HybridConnectionConfig)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeHybridConnectionConfig(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static HybridConnectionConfig DeserializeHybridConnectionConfig(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            long? expirationTime = default;
+            string hybridConnectionName = default;
+            string relay = default;
+            string token = default;
+            string relayTid = default;
+            string relayType = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("expirationTime"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    expirationTime = prop.Value.GetInt64();
+                    continue;
+                }
+                if (prop.NameEquals("hybridConnectionName"u8))
+                {
+                    hybridConnectionName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("relay"u8))
+                {
+                    relay = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("token"u8))
+                {
+                    token = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("relayTid"u8))
+                {
+                    relayTid = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("relayType"u8))
+                {
+                    relayType = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new HybridConnectionConfig(
+                expirationTime,
+                hybridConnectionName,
+                relay,
+                token,
+                relayTid,
+                relayType,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<HybridConnectionConfig>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<HybridConnectionConfig>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerKubernetesContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(HybridConnectionConfig)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        HybridConnectionConfig IPersistableModel<HybridConnectionConfig>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<HybridConnectionConfig>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

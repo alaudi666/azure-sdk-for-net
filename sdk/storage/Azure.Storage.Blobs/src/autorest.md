@@ -4,12 +4,23 @@ Run `dotnet build /t:GenerateCode` to generate code.
 
 ``` yaml
 input-file:
-    - https://raw.githubusercontent.com/Azure/azure-rest-api-specs/080b332b7572514a2e100dd2fa1fb86cb8edcb08/specification/storage/data-plane/Microsoft.BlobStorage/preview/2021-12-02/blob.json
+    - https://raw.githubusercontent.com/Azure/azure-rest-api-specs/be46becafeb29aa993898709e35759d3643b2809/specification/storage/data-plane/Microsoft.BlobStorage/stable/2026-04-06/blob.json
 generation1-convenience-client: true
 # https://github.com/Azure/autorest/issues/4075
 skip-semantics-validation: true
+keep-non-overloadable-protocol-signature: true
 modelerfour:
     seal-single-value-enum-by-default: true
+
+helper-namespace: Azure.Storage.Common
+```
+
+### Setup DPG Methods
+``` yaml
+protocol-method-list:
+  - Blob_GetProperties
+  - Blob_AcquireLease
+  - Container_AcquireLease
 ```
 
 ### Don't include container name or blob in path - we have direct URIs.
@@ -23,7 +34,7 @@ directive:
         if (property.includes('/{containerName}/{blob}'))
         {
             $[property]["parameters"] = $[property]["parameters"].filter(function(param) { return (typeof param['$ref'] === "undefined") || (false == param['$ref'].endsWith("#/parameters/ContainerName") && false == param['$ref'].endsWith("#/parameters/Blob"))});
-        } 
+        }
         else if (property.includes('/{containerName}'))
         {
             $[property]["parameters"] = $[property]["parameters"].filter(function(param) { return (typeof param['$ref'] === "undefined") || (false == param['$ref'].endsWith("#/parameters/ContainerName"))});
@@ -82,6 +93,10 @@ directive:
     delete $.IfSequenceNumberLessThanOrEqualTo["x-ms-parameter-grouping"];
     delete $.IfSequenceNumberLessThan["x-ms-parameter-grouping"];
     delete $.IfSequenceNumberEqualTo["x-ms-parameter-grouping"];
+    delete $.IfBlobMatch["x-ms-parameter-grouping"];
+    delete $.IfBlobModifiedSince["x-ms-parameter-grouping"];
+    delete $.IfBlobNoneMatch["x-ms-parameter-grouping"];
+    delete $.IfBlobUnmodifiedSince["x-ms-parameter-grouping"];
 ```
 
 ### Remove blob-Http-Headers parameter grouping
@@ -120,23 +135,15 @@ directive:
     delete $.EncryptionScope["x-ms-parameter-grouping"];
 ```
 
-### Remove Container_GetAccountInfo and Blob_GetAccountInfo. Unused and clashes with Service_GetAccountInfo after removal of path params.
+### Remove source CPK parameter grouping
 ``` yaml
 directive:
 - from: swagger-document
-  where: $["x-ms-paths"]
+  where: $.parameters
   transform: >
-    for (const property in $)
-    {
-        if (property.includes('/{containerName}?restype=account&comp=properties'))
-        {
-            delete $[property];
-        }
-        if (property.includes('/{containerName}/{blob}?restype=account&comp=properties'))
-        {
-            delete $[property];
-        }
-    }
+    delete $.SourceEncryptionKey["x-ms-parameter-grouping"];
+    delete $.SourceEncryptionKeySha256["x-ms-parameter-grouping"];
+    delete $.SourceEncryptionAlgorithm["x-ms-parameter-grouping"];
 ```
 
 ### Fix 304s
@@ -166,7 +173,7 @@ directive:
             var newName = property.replace('/{containerName}/{blob}', '');
             $[newName] = $[oldName];
             delete $[oldName];
-        } 
+        }
         else if (property.includes('/{containerName}'))
         {
             var oldName = property;

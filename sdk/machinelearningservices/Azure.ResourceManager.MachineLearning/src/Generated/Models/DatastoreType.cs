@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Enum to determine the datastore contents type.
-    /// Serialized Name: DatastoreType
-    /// </summary>
+    /// <summary> Enum to determine the datastore contents type. </summary>
     internal readonly partial struct DatastoreType : IEquatable<DatastoreType>
     {
         private readonly string _value;
@@ -29,32 +26,23 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string AzureDataLakeGen1Value = "AzureDataLakeGen1";
         private const string AzureDataLakeGen2Value = "AzureDataLakeGen2";
         private const string AzureFileValue = "AzureFile";
+        private const string OneLakeValue = "OneLake";
 
-        /// <summary>
-        /// AzureBlob
-        /// Serialized Name: DatastoreType.AzureBlob
-        /// </summary>
+        /// <summary> AzureBlob. </summary>
         public static DatastoreType AzureBlob { get; } = new DatastoreType(AzureBlobValue);
-        /// <summary>
-        /// AzureDataLakeGen1
-        /// Serialized Name: DatastoreType.AzureDataLakeGen1
-        /// </summary>
+        /// <summary> AzureDataLakeGen1. </summary>
         public static DatastoreType AzureDataLakeGen1 { get; } = new DatastoreType(AzureDataLakeGen1Value);
-        /// <summary>
-        /// AzureDataLakeGen2
-        /// Serialized Name: DatastoreType.AzureDataLakeGen2
-        /// </summary>
+        /// <summary> AzureDataLakeGen2. </summary>
         public static DatastoreType AzureDataLakeGen2 { get; } = new DatastoreType(AzureDataLakeGen2Value);
-        /// <summary>
-        /// AzureFile
-        /// Serialized Name: DatastoreType.AzureFile
-        /// </summary>
+        /// <summary> AzureFile. </summary>
         public static DatastoreType AzureFile { get; } = new DatastoreType(AzureFileValue);
+        /// <summary> OneLake. </summary>
+        public static DatastoreType OneLake { get; } = new DatastoreType(OneLakeValue);
         /// <summary> Determines if two <see cref="DatastoreType"/> values are the same. </summary>
         public static bool operator ==(DatastoreType left, DatastoreType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="DatastoreType"/> values are not the same. </summary>
         public static bool operator !=(DatastoreType left, DatastoreType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="DatastoreType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="DatastoreType"/>. </summary>
         public static implicit operator DatastoreType(string value) => new DatastoreType(value);
 
         /// <inheritdoc />
@@ -65,7 +53,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

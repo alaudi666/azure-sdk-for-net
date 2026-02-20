@@ -5,65 +5,282 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class NetworkConfigurationDiagnosticProfile : IUtf8JsonSerializable
+    public partial class NetworkConfigurationDiagnosticProfile : IUtf8JsonSerializable, IJsonModel<NetworkConfigurationDiagnosticProfile>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<NetworkConfigurationDiagnosticProfile>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<NetworkConfigurationDiagnosticProfile>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("direction");
-            writer.WriteStringValue(Direction.ToString());
-            writer.WritePropertyName("protocol");
-            writer.WriteStringValue(Protocol);
-            writer.WritePropertyName("source");
-            writer.WriteStringValue(Source);
-            writer.WritePropertyName("destination");
-            writer.WriteStringValue(Destination);
-            writer.WritePropertyName("destinationPort");
-            writer.WriteStringValue(DestinationPort);
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static NetworkConfigurationDiagnosticProfile DeserializeNetworkConfigurationDiagnosticProfile(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<NetworkConfigurationDiagnosticProfile>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NetworkConfigurationDiagnosticProfile)} does not support writing '{format}' format.");
+            }
+
+            writer.WritePropertyName("direction"u8);
+            writer.WriteStringValue(Direction.ToString());
+            writer.WritePropertyName("protocol"u8);
+            writer.WriteStringValue(Protocol);
+            writer.WritePropertyName("source"u8);
+            writer.WriteStringValue(Source);
+            writer.WritePropertyName("destination"u8);
+            writer.WriteStringValue(Destination);
+            writer.WritePropertyName("destinationPort"u8);
+            writer.WriteStringValue(DestinationPort);
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        NetworkConfigurationDiagnosticProfile IJsonModel<NetworkConfigurationDiagnosticProfile>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NetworkConfigurationDiagnosticProfile>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(NetworkConfigurationDiagnosticProfile)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeNetworkConfigurationDiagnosticProfile(document.RootElement, options);
+        }
+
+        internal static NetworkConfigurationDiagnosticProfile DeserializeNetworkConfigurationDiagnosticProfile(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             NetworkTrafficDirection direction = default;
             string protocol = default;
             string source = default;
             string destination = default;
             string destinationPort = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("direction"))
+                if (property.NameEquals("direction"u8))
                 {
                     direction = new NetworkTrafficDirection(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("protocol"))
+                if (property.NameEquals("protocol"u8))
                 {
                     protocol = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("source"))
+                if (property.NameEquals("source"u8))
                 {
                     source = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("destination"))
+                if (property.NameEquals("destination"u8))
                 {
                     destination = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("destinationPort"))
+                if (property.NameEquals("destinationPort"u8))
                 {
                     destinationPort = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new NetworkConfigurationDiagnosticProfile(direction, protocol, source, destination, destinationPort);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new NetworkConfigurationDiagnosticProfile(
+                direction,
+                protocol,
+                source,
+                destination,
+                destinationPort,
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Direction), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  direction: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  direction: ");
+                builder.AppendLine($"'{Direction.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Protocol), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  protocol: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Protocol))
+                {
+                    builder.Append("  protocol: ");
+                    if (Protocol.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Protocol}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Protocol}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Source), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  source: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Source))
+                {
+                    builder.Append("  source: ");
+                    if (Source.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Source}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Source}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Destination), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  destination: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Destination))
+                {
+                    builder.Append("  destination: ");
+                    if (Destination.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Destination}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Destination}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DestinationPort), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  destinationPort: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DestinationPort))
+                {
+                    builder.Append("  destinationPort: ");
+                    if (DestinationPort.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{DestinationPort}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{DestinationPort}'");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<NetworkConfigurationDiagnosticProfile>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NetworkConfigurationDiagnosticProfile>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(NetworkConfigurationDiagnosticProfile)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        NetworkConfigurationDiagnosticProfile IPersistableModel<NetworkConfigurationDiagnosticProfile>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<NetworkConfigurationDiagnosticProfile>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeNetworkConfigurationDiagnosticProfile(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(NetworkConfigurationDiagnosticProfile)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<NetworkConfigurationDiagnosticProfile>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

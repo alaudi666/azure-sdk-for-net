@@ -5,57 +5,63 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Kubernetes properties
-    /// Serialized Name: KubernetesProperties
-    /// </summary>
+    /// <summary> Kubernetes properties. </summary>
     public partial class MachineLearningKubernetesProperties
     {
-        /// <summary> Initializes a new instance of MachineLearningKubernetesProperties. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="MachineLearningKubernetesProperties"/>. </summary>
         public MachineLearningKubernetesProperties()
         {
             InstanceTypes = new ChangeTrackingDictionary<string, MachineLearningInstanceTypeSchema>();
         }
 
-        /// <summary> Initializes a new instance of MachineLearningKubernetesProperties. </summary>
-        /// <param name="relayConnectionString">
-        /// Relay connection string.
-        /// Serialized Name: KubernetesProperties.relayConnectionString
-        /// </param>
-        /// <param name="serviceBusConnectionString">
-        /// ServiceBus connection string.
-        /// Serialized Name: KubernetesProperties.serviceBusConnectionString
-        /// </param>
-        /// <param name="extensionPrincipalId">
-        /// Extension principal-id.
-        /// Serialized Name: KubernetesProperties.extensionPrincipalId
-        /// </param>
-        /// <param name="extensionInstanceReleaseTrain">
-        /// Extension instance release train.
-        /// Serialized Name: KubernetesProperties.extensionInstanceReleaseTrain
-        /// </param>
-        /// <param name="vcName">
-        /// VC name.
-        /// Serialized Name: KubernetesProperties.vcName
-        /// </param>
-        /// <param name="namespace">
-        /// Compute namespace
-        /// Serialized Name: KubernetesProperties.namespace
-        /// </param>
-        /// <param name="defaultInstanceType">
-        /// Default instance type
-        /// Serialized Name: KubernetesProperties.defaultInstanceType
-        /// </param>
-        /// <param name="instanceTypes">
-        /// Instance Type Schema
-        /// Serialized Name: KubernetesProperties.instanceTypes
-        /// </param>
-        internal MachineLearningKubernetesProperties(string relayConnectionString, string serviceBusConnectionString, string extensionPrincipalId, string extensionInstanceReleaseTrain, string vcName, string @namespace, string defaultInstanceType, IDictionary<string, MachineLearningInstanceTypeSchema> instanceTypes)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningKubernetesProperties"/>. </summary>
+        /// <param name="relayConnectionString"> Relay connection string. </param>
+        /// <param name="serviceBusConnectionString"> ServiceBus connection string. </param>
+        /// <param name="extensionPrincipalId"> Extension principal-id. </param>
+        /// <param name="extensionInstanceReleaseTrain"> Extension instance release train. </param>
+        /// <param name="vcName"> VC name. </param>
+        /// <param name="namespace"> Compute namespace. </param>
+        /// <param name="defaultInstanceType"> Default instance type. </param>
+        /// <param name="instanceTypes"> Instance Type Schema. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal MachineLearningKubernetesProperties(string relayConnectionString, string serviceBusConnectionString, string extensionPrincipalId, string extensionInstanceReleaseTrain, string vcName, string @namespace, string defaultInstanceType, IDictionary<string, MachineLearningInstanceTypeSchema> instanceTypes, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             RelayConnectionString = relayConnectionString;
             ServiceBusConnectionString = serviceBusConnectionString;
@@ -65,47 +71,32 @@ namespace Azure.ResourceManager.MachineLearning.Models
             Namespace = @namespace;
             DefaultInstanceType = defaultInstanceType;
             InstanceTypes = instanceTypes;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary>
-        /// Relay connection string.
-        /// Serialized Name: KubernetesProperties.relayConnectionString
-        /// </summary>
+        /// <summary> Relay connection string. </summary>
+        [WirePath("relayConnectionString")]
         public string RelayConnectionString { get; set; }
-        /// <summary>
-        /// ServiceBus connection string.
-        /// Serialized Name: KubernetesProperties.serviceBusConnectionString
-        /// </summary>
+        /// <summary> ServiceBus connection string. </summary>
+        [WirePath("serviceBusConnectionString")]
         public string ServiceBusConnectionString { get; set; }
-        /// <summary>
-        /// Extension principal-id.
-        /// Serialized Name: KubernetesProperties.extensionPrincipalId
-        /// </summary>
+        /// <summary> Extension principal-id. </summary>
+        [WirePath("extensionPrincipalId")]
         public string ExtensionPrincipalId { get; set; }
-        /// <summary>
-        /// Extension instance release train.
-        /// Serialized Name: KubernetesProperties.extensionInstanceReleaseTrain
-        /// </summary>
+        /// <summary> Extension instance release train. </summary>
+        [WirePath("extensionInstanceReleaseTrain")]
         public string ExtensionInstanceReleaseTrain { get; set; }
-        /// <summary>
-        /// VC name.
-        /// Serialized Name: KubernetesProperties.vcName
-        /// </summary>
+        /// <summary> VC name. </summary>
+        [WirePath("vcName")]
         public string VcName { get; set; }
-        /// <summary>
-        /// Compute namespace
-        /// Serialized Name: KubernetesProperties.namespace
-        /// </summary>
+        /// <summary> Compute namespace. </summary>
+        [WirePath("namespace")]
         public string Namespace { get; set; }
-        /// <summary>
-        /// Default instance type
-        /// Serialized Name: KubernetesProperties.defaultInstanceType
-        /// </summary>
+        /// <summary> Default instance type. </summary>
+        [WirePath("defaultInstanceType")]
         public string DefaultInstanceType { get; set; }
-        /// <summary>
-        /// Instance Type Schema
-        /// Serialized Name: KubernetesProperties.instanceTypes
-        /// </summary>
+        /// <summary> Instance Type Schema. </summary>
+        [WirePath("instanceTypes")]
         public IDictionary<string, MachineLearningInstanceTypeSchema> InstanceTypes { get; }
     }
 }

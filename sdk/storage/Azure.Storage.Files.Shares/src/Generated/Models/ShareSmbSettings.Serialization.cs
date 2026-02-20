@@ -8,6 +8,7 @@
 using System.Xml;
 using System.Xml.Linq;
 using Azure.Core;
+using Azure.Storage.Common;
 
 namespace Azure.Storage.Files.Shares.Models
 {
@@ -16,9 +17,13 @@ namespace Azure.Storage.Files.Shares.Models
         void IXmlSerializable.Write(XmlWriter writer, string nameHint)
         {
             writer.WriteStartElement(nameHint ?? "SMB");
-            if (Optional.IsDefined(Multichannel))
+            if (Common.Optional.IsDefined(Multichannel))
             {
                 writer.WriteObjectValue(Multichannel, "Multichannel");
+            }
+            if (Common.Optional.IsDefined(EncryptionInTransit))
+            {
+                writer.WriteObjectValue(EncryptionInTransit, "EncryptionInTransit");
             }
             writer.WriteEndElement();
         }
@@ -26,11 +31,16 @@ namespace Azure.Storage.Files.Shares.Models
         internal static ShareSmbSettings DeserializeShareSmbSettings(XElement element)
         {
             SmbMultichannel multichannel = default;
+            ShareSmbSettingsEncryptionInTransit encryptionInTransit = default;
             if (element.Element("Multichannel") is XElement multichannelElement)
             {
                 multichannel = SmbMultichannel.DeserializeSmbMultichannel(multichannelElement);
             }
-            return new ShareSmbSettings(multichannel);
+            if (element.Element("EncryptionInTransit") is XElement encryptionInTransitElement)
+            {
+                encryptionInTransit = ShareSmbSettingsEncryptionInTransit.DeserializeShareSmbSettingsEncryptionInTransit(encryptionInTransitElement);
+            }
+            return new ShareSmbSettings(multichannel, encryptionInTransit);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-namespace Azure.Monitor.OpenTelemetry.Exporter
+namespace Azure.Monitor.OpenTelemetry.Exporter.Internals
 {
     /// <summary>
     /// Constants for semantic attribute names outlined by the OpenTelemetry specifications.
@@ -30,9 +30,14 @@ namespace Azure.Monitor.OpenTelemetry.Exporter
         public const string AttributeFaasInstance = "faas.instance";
 
         public const string AttributeK8sCluster = "k8s.cluster.name";
+        public const string AttributeK8sCronJob = "k8s.cronjob.name";
+        public const string AttributeK8sDaemonSet = "k8s.daemonset.name";
+        public const string AttributeK8sDeployment = "k8s.deployment.name";
+        public const string AttributeK8sJob = "k8s.job.name";
         public const string AttributeK8sNamespace = "k8s.namespace.name";
         public const string AttributeK8sPod = "k8s.pod.name";
-        public const string AttributeK8sDeployment = "k8s.deployment.name";
+        public const string AttributeK8sReplicaSet = "k8s.replicaset.name";
+        public const string AttributeK8sStatefulSet = "k8s.statefulset.name";
 
         public const string AttributeHostHostname = "host.hostname";
         public const string AttributeHostId = "host.id";
@@ -64,6 +69,7 @@ namespace Azure.Monitor.OpenTelemetry.Exporter
         public const string AttributeNetHostName = "net.host.name";
 
         public const string AttributeEnduserId = "enduser.id";
+        public const string AttributeEnduserPseudoId = "enduser.pseudo.id";
         public const string AttributeEnduserRole = "enduser.role";
         public const string AttributeEnduserScope = "enduser.scope";
 
@@ -81,7 +87,6 @@ namespace Azure.Monitor.OpenTelemetry.Exporter
         public const string AttributeHttpHostName = "host.name";
         public const string AttributeHttpHostPort = "host.port";
         public const string AttributeHttpRoute = "http.route";
-        public const string AttributeHttpClientIP = "http.client_ip";
         public const string AttributeHttpUserAgent = "http.user_agent";
         public const string AttributeHttpRequestContentLength = "http.request_content_length";
         public const string AttributeHttpRequestContentLengthUncompressed = "http.request_content_length_uncompressed";
@@ -102,11 +107,6 @@ namespace Azure.Monitor.OpenTelemetry.Exporter
         public const string AttributeDbHBaseNamespace = "db.hbase.namespace";
         public const string AttributeDbRedisDatabaseIndex = "db.redis.database_index";
         public const string AttributeDbMongoDbCollection = "db.mongodb.collection";
-
-        public const string AttributeRpcMethod = "rpc.method";
-        public const string AttributeRpcStatus = "rpc.grpc.status_code";
-        public const string AttributeRpcService = "rpc.service";
-        public const string AttributeRpcSystem = "rpc.system";
 
         public const string AttributeMessageType = "message.type";
         public const string AttributeMessageId = "message.id";
@@ -141,9 +141,103 @@ namespace Azure.Monitor.OpenTelemetry.Exporter
 
         public const string AttributeAzureNameSpace = "az.namespace";
 
+        // Exceptions v1.24.0 https://github.com/open-telemetry/semantic-conventions/blob/v1.24.0/docs/exceptions/exceptions-spans.md
         public const string AttributeExceptionEventName = "exception";
         public const string AttributeExceptionType = "exception.type";
         public const string AttributeExceptionMessage = "exception.message";
         public const string AttributeExceptionStacktrace = "exception.stacktrace";
+
+        // Http v1.21.0 https://github.com/open-telemetry/opentelemetry-specification/blob/v1.21.0/specification/trace/semantic_conventions/http.md
+        public const string AttributeClientAddress = "client.address"; // replaces: "http.client_ip" (AttributeHttpClientIp)
+        public const string AttributeHttpRequestMethod = "http.request.method"; // replaces: "http.method" (AttributeHttpMethod)
+        public const string AttributeHttpResponseStatusCode = "http.response.status_code"; // replaces: "http.status_code" (AttributeHttpStatusCode)
+        public const string AttributeNetworkProtocolVersion = "network.protocol.version"; // replaces: "http.flavor" (AttributeHttpFlavor)
+        public const string AttributeServerAddress = "server.address"; // replaces: "net.host.name" (AttributeNetHostName)
+        public const string AttributeServerPort = "server.port"; // replaces: "net.host.port" (AttributeNetHostPort) and "net.peer.port" (AttributeNetPeerPort)
+        public const string AttributeUrlFull = "url.full"; // replaces: "http.url" (AttributeHttpUrl)
+        public const string AttributeUrlPath = "url.path"; // replaces: "http.target" (AttributeHttpTarget)
+        public const string AttributeUrlScheme = "url.scheme"; // replaces: "http.scheme" (AttributeHttpScheme)
+        public const string AttributeUrlQuery = "url.query";
+        public const string AttributeUserAgentOriginal = "user_agent.original"; // replaces: "http.user_agent" (AttributeHttpUserAgent)
+        public const string AttributeServerSocketAddress = "server.socket.address"; // replaces: "net.peer.ip" (AttributeNetPeerIp)
+
+        // Messaging v1.21.0 https://github.com/open-telemetry/opentelemetry-specification/blob/v1.21.0/specification/trace/semantic_conventions/messaging.md
+        public const string AttributeMessagingDestinationName = "messaging.destination.name";
+        public const string AttributeNetworkProtocolName = "network.protocol.name";
+
+        // Database v1.36.0 https://github.com/open-telemetry/semantic-conventions/tree/v1.36.0/docs/database
+        public const string AttributeDbCollectionName = "db.collection.name";
+        public const string AttributeDbOperationName = "db.operation.name";
+        public const string AttributeDbSystemName = "db.system.name";
+        public const string AttributeDbNamespace = "db.namespace";
+        public const string AttributeDbResponseStatusCode = "db.response.status_code";
+        public const string AttributeDbOperationBatchSize = "db.operation.batch.size";
+        public const string AttributeDbQuerySummary = "db.query.summary";
+        public const string AttributeDbQueryText = "db.query.text";
+        public const string AttributeDbStoredProcedureName = "db.stored_procedure.name";
+
+        // Microsoft Application Insights Override Attributes
+        // These attributes allow explicit mapping from Application Insights fields to OpenTelemetry attributes
+        // When present, these override computed values from standard semantic conventions
+
+        /// <summary>
+        /// Override attribute for dependency data field.
+        /// When present, takes precedence over computed data from semantic conventions.
+        /// </summary>
+        public const string AttributeMicrosoftDependencyData = "microsoft.dependency.data";
+
+        /// <summary>
+        /// Override attribute for dependency name field.
+        /// When present, takes precedence over computed name from semantic conventions.
+        /// </summary>
+        public const string AttributeMicrosoftDependencyName = "microsoft.dependency.name";
+
+        /// <summary>
+        /// Override attribute for operation name field.
+        /// When present, takes precedence over computed operation name.
+        /// </summary>
+        public const string AttributeMicrosoftOperationName = "microsoft.operation_name";
+
+        /// <summary>
+        /// Override attribute for dependency result code field.
+        /// When present, takes precedence over computed result code from semantic conventions.
+        /// </summary>
+        public const string AttributeMicrosoftDependencyResultCode = "microsoft.dependency.resultCode";
+
+        /// <summary>
+        /// Override attribute for dependency target field.
+        /// When present, takes precedence over computed target from semantic conventions.
+        /// </summary>
+        public const string AttributeMicrosoftDependencyTarget = "microsoft.dependency.target";
+
+        /// <summary>
+        /// Override attribute for dependency type field.
+        /// When present, takes precedence over computed type from semantic conventions.
+        /// </summary>
+        public const string AttributeMicrosoftDependencyType = "microsoft.dependency.type";
+
+        /// <summary>
+        /// Override attribute for request name field.
+        /// When present, takes precedence over Activity.DisplayName.
+        /// </summary>
+        public const string AttributeMicrosoftRequestName = "microsoft.request.name";
+
+        /// <summary>
+        /// Override attribute for request URL field.
+        /// When present, takes precedence over computed URL from semantic conventions.
+        /// </summary>
+        public const string AttributeMicrosoftRequestUrl = "microsoft.request.url";
+
+        /// <summary>
+        /// Override attribute for request source field.
+        /// When present, takes precedence over computed source from semantic conventions.
+        /// </summary>
+        public const string AttributeMicrosoftRequestSource = "microsoft.request.source";
+
+        /// <summary>
+        /// Override attribute for request result code field.
+        /// When present, takes precedence over computed result code from semantic conventions.
+        /// </summary>
+        public const string AttributeMicrosoftRequestResultCode = "microsoft.request.resultCode";
     }
 }

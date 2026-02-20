@@ -5,8 +5,8 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Resources.Models;
 
@@ -15,39 +15,44 @@ namespace Azure.ResourceManager.Network.Models
     /// <summary> UrlPathMaps give a url path to the backend mapping information for PathBasedRouting. </summary>
     public partial class ApplicationGatewayUrlPathMap : NetworkResourceData
     {
-        /// <summary> Initializes a new instance of ApplicationGatewayUrlPathMap. </summary>
+        /// <summary> Initializes a new instance of <see cref="ApplicationGatewayUrlPathMap"/>. </summary>
         public ApplicationGatewayUrlPathMap()
         {
             PathRules = new ChangeTrackingList<ApplicationGatewayPathRule>();
         }
 
-        /// <summary> Initializes a new instance of ApplicationGatewayUrlPathMap. </summary>
+        /// <summary> Initializes a new instance of <see cref="ApplicationGatewayUrlPathMap"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="defaultBackendAddressPool"> Default backend address pool resource of URL path map. </param>
         /// <param name="defaultBackendHttpSettings"> Default backend http settings resource of URL path map. </param>
         /// <param name="defaultRewriteRuleSet"> Default Rewrite rule set resource of URL path map. </param>
         /// <param name="defaultRedirectConfiguration"> Default redirect configuration resource of URL path map. </param>
+        /// <param name="defaultLoadDistributionPolicy"> Default Load Distribution Policy resource of URL path map. </param>
         /// <param name="pathRules"> Path rule of URL path map resource. </param>
         /// <param name="provisioningState"> The provisioning state of the URL path map resource. </param>
-        internal ApplicationGatewayUrlPathMap(ResourceIdentifier id, string name, ResourceType? resourceType, ETag? etag, WritableSubResource defaultBackendAddressPool, WritableSubResource defaultBackendHttpSettings, WritableSubResource defaultRewriteRuleSet, WritableSubResource defaultRedirectConfiguration, IList<ApplicationGatewayPathRule> pathRules, NetworkProvisioningState? provisioningState) : base(id, name, resourceType)
+        internal ApplicationGatewayUrlPathMap(ResourceIdentifier id, string name, ResourceType? resourceType, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, WritableSubResource defaultBackendAddressPool, WritableSubResource defaultBackendHttpSettings, WritableSubResource defaultRewriteRuleSet, WritableSubResource defaultRedirectConfiguration, WritableSubResource defaultLoadDistributionPolicy, IList<ApplicationGatewayPathRule> pathRules, NetworkProvisioningState? provisioningState) : base(id, name, resourceType, serializedAdditionalRawData)
         {
             ETag = etag;
             DefaultBackendAddressPool = defaultBackendAddressPool;
             DefaultBackendHttpSettings = defaultBackendHttpSettings;
             DefaultRewriteRuleSet = defaultRewriteRuleSet;
             DefaultRedirectConfiguration = defaultRedirectConfiguration;
+            DefaultLoadDistributionPolicy = defaultLoadDistributionPolicy;
             PathRules = pathRules;
             ProvisioningState = provisioningState;
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> Default backend address pool resource of URL path map. </summary>
         internal WritableSubResource DefaultBackendAddressPool { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.defaultBackendAddressPool.id")]
         public ResourceIdentifier DefaultBackendAddressPoolId
         {
             get => DefaultBackendAddressPool is null ? default : DefaultBackendAddressPool.Id;
@@ -62,6 +67,7 @@ namespace Azure.ResourceManager.Network.Models
         /// <summary> Default backend http settings resource of URL path map. </summary>
         internal WritableSubResource DefaultBackendHttpSettings { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.defaultBackendHttpSettings.id")]
         public ResourceIdentifier DefaultBackendHttpSettingsId
         {
             get => DefaultBackendHttpSettings is null ? default : DefaultBackendHttpSettings.Id;
@@ -76,6 +82,7 @@ namespace Azure.ResourceManager.Network.Models
         /// <summary> Default Rewrite rule set resource of URL path map. </summary>
         internal WritableSubResource DefaultRewriteRuleSet { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.defaultRewriteRuleSet.id")]
         public ResourceIdentifier DefaultRewriteRuleSetId
         {
             get => DefaultRewriteRuleSet is null ? default : DefaultRewriteRuleSet.Id;
@@ -90,6 +97,7 @@ namespace Azure.ResourceManager.Network.Models
         /// <summary> Default redirect configuration resource of URL path map. </summary>
         internal WritableSubResource DefaultRedirectConfiguration { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.defaultRedirectConfiguration.id")]
         public ResourceIdentifier DefaultRedirectConfigurationId
         {
             get => DefaultRedirectConfiguration is null ? default : DefaultRedirectConfiguration.Id;
@@ -101,9 +109,26 @@ namespace Azure.ResourceManager.Network.Models
             }
         }
 
+        /// <summary> Default Load Distribution Policy resource of URL path map. </summary>
+        internal WritableSubResource DefaultLoadDistributionPolicy { get; set; }
+        /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.defaultLoadDistributionPolicy.id")]
+        public ResourceIdentifier DefaultLoadDistributionPolicyId
+        {
+            get => DefaultLoadDistributionPolicy is null ? default : DefaultLoadDistributionPolicy.Id;
+            set
+            {
+                if (DefaultLoadDistributionPolicy is null)
+                    DefaultLoadDistributionPolicy = new WritableSubResource();
+                DefaultLoadDistributionPolicy.Id = value;
+            }
+        }
+
         /// <summary> Path rule of URL path map resource. </summary>
+        [WirePath("properties.pathRules")]
         public IList<ApplicationGatewayPathRule> PathRules { get; }
         /// <summary> The provisioning state of the URL path map resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
     }
 }

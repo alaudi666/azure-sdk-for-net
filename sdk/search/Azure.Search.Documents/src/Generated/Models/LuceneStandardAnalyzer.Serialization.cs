@@ -5,25 +5,44 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.Search.Documents.Indexes.Models
 {
-    public partial class LuceneStandardAnalyzer : IUtf8JsonSerializable
+    public partial class LuceneStandardAnalyzer : IUtf8JsonSerializable, IJsonModel<LuceneStandardAnalyzer>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<LuceneStandardAnalyzer>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<LuceneStandardAnalyzer>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<LuceneStandardAnalyzer>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(LuceneStandardAnalyzer)} does not support writing '{format}' format.");
+            }
+
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(MaxTokenLength))
             {
-                writer.WritePropertyName("maxTokenLength");
+                writer.WritePropertyName("maxTokenLength"u8);
                 writer.WriteNumberValue(MaxTokenLength.Value);
             }
             if (Optional.IsCollectionDefined(Stopwords))
             {
-                writer.WritePropertyName("stopwords");
+                writer.WritePropertyName("stopwords"u8);
                 writer.WriteStartArray();
                 foreach (var item in Stopwords)
                 {
@@ -31,36 +50,49 @@ namespace Azure.Search.Documents.Indexes.Models
                 }
                 writer.WriteEndArray();
             }
-            writer.WritePropertyName("@odata.type");
-            writer.WriteStringValue(ODataType);
-            writer.WritePropertyName("name");
-            writer.WriteStringValue(Name);
-            writer.WriteEndObject();
         }
 
-        internal static LuceneStandardAnalyzer DeserializeLuceneStandardAnalyzer(JsonElement element)
+        LuceneStandardAnalyzer IJsonModel<LuceneStandardAnalyzer>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<int> maxTokenLength = default;
-            Optional<IList<string>> stopwords = default;
+            var format = options.Format == "W" ? ((IPersistableModel<LuceneStandardAnalyzer>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(LuceneStandardAnalyzer)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeLuceneStandardAnalyzer(document.RootElement, options);
+        }
+
+        internal static LuceneStandardAnalyzer DeserializeLuceneStandardAnalyzer(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            int? maxTokenLength = default;
+            IList<string> stopwords = default;
             string odataType = default;
             string name = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("maxTokenLength"))
+                if (property.NameEquals("maxTokenLength"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     maxTokenLength = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("stopwords"))
+                if (property.NameEquals("stopwords"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
@@ -71,18 +103,70 @@ namespace Azure.Search.Documents.Indexes.Models
                     stopwords = array;
                     continue;
                 }
-                if (property.NameEquals("@odata.type"))
+                if (property.NameEquals("@odata.type"u8))
                 {
                     odataType = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new LuceneStandardAnalyzer(odataType, name, Optional.ToNullable(maxTokenLength), Optional.ToList(stopwords));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new LuceneStandardAnalyzer(odataType, name, serializedAdditionalRawData, maxTokenLength, stopwords ?? new ChangeTrackingList<string>());
+        }
+
+        BinaryData IPersistableModel<LuceneStandardAnalyzer>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<LuceneStandardAnalyzer>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureSearchDocumentsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(LuceneStandardAnalyzer)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        LuceneStandardAnalyzer IPersistableModel<LuceneStandardAnalyzer>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<LuceneStandardAnalyzer>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeLuceneStandardAnalyzer(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(LuceneStandardAnalyzer)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<LuceneStandardAnalyzer>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
+
+        /// <summary> Deserializes the model from a raw response. </summary>
+        /// <param name="response"> The response to deserialize the model from. </param>
+        internal static new LuceneStandardAnalyzer FromResponse(Response response)
+        {
+            using var document = JsonDocument.Parse(response.Content, ModelSerializationExtensions.JsonDocumentOptions);
+            return DeserializeLuceneStandardAnalyzer(document.RootElement);
+        }
+
+        /// <summary> Convert into a <see cref="RequestContent"/>. </summary>
+        internal override RequestContent ToRequestContent()
+        {
+            var content = new Utf8JsonRequestContent();
+            content.JsonWriter.WriteObjectValue(this, ModelSerializationExtensions.WireOptions);
+            return content;
         }
     }
 }

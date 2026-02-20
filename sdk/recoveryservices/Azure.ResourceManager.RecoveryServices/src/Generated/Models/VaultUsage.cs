@@ -6,25 +6,30 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.RecoveryServices.Models
 {
     /// <summary> Usages of a vault. </summary>
     public partial class VaultUsage
     {
-        /// <summary> Initializes a new instance of VaultUsage. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="VaultUsage"/>. </summary>
         internal VaultUsage()
         {
         }
 
-        /// <summary> Initializes a new instance of VaultUsage. </summary>
+        /// <summary> Initializes a new instance of <see cref="VaultUsage"/>. </summary>
         /// <param name="unit"> Unit of the usage. </param>
         /// <param name="quotaPeriod"> Quota period of usage. </param>
         /// <param name="nextResetOn"> Next reset time of usage. </param>
         /// <param name="currentValue"> Current value of usage. </param>
         /// <param name="limit"> Limit of usage. </param>
         /// <param name="name"> Name of usage. </param>
-        internal VaultUsage(UsagesUnit? unit, string quotaPeriod, DateTimeOffset? nextResetOn, long? currentValue, long? limit, NameInfo name)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal VaultUsage(VaultUsageUnit? unit, string quotaPeriod, DateTimeOffset? nextResetOn, long? currentValue, long? limit, VaultUsageNameInfo name, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Unit = unit;
             QuotaPeriod = quotaPeriod;
@@ -32,19 +37,25 @@ namespace Azure.ResourceManager.RecoveryServices.Models
             CurrentValue = currentValue;
             Limit = limit;
             Name = name;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Unit of the usage. </summary>
-        public UsagesUnit? Unit { get; }
+        public VaultUsageUnit? Unit { get; }
+
         /// <summary> Quota period of usage. </summary>
         public string QuotaPeriod { get; }
+
         /// <summary> Next reset time of usage. </summary>
         public DateTimeOffset? NextResetOn { get; }
+
         /// <summary> Current value of usage. </summary>
         public long? CurrentValue { get; }
+
         /// <summary> Limit of usage. </summary>
         public long? Limit { get; }
+
         /// <summary> Name of usage. </summary>
-        public NameInfo Name { get; }
+        public VaultUsageNameInfo Name { get; }
     }
 }

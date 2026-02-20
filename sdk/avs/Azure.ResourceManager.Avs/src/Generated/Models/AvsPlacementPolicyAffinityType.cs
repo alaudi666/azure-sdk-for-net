@@ -7,45 +7,65 @@
 
 using System;
 using System.ComponentModel;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> Placement policy affinity type. </summary>
+    /// <summary> Affinity type. </summary>
     public readonly partial struct AvsPlacementPolicyAffinityType : IEquatable<AvsPlacementPolicyAffinityType>
     {
         private readonly string _value;
+        /// <summary> is affinity. </summary>
+        private const string AffinityValue = "Affinity";
+        /// <summary> is anti-affinity. </summary>
+        private const string AntiAffinityValue = "AntiAffinity";
 
         /// <summary> Initializes a new instance of <see cref="AvsPlacementPolicyAffinityType"/>. </summary>
+        /// <param name="value"> The value. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="value"/> is null. </exception>
         public AvsPlacementPolicyAffinityType(string value)
         {
-            _value = value ?? throw new ArgumentNullException(nameof(value));
+            Argument.AssertNotNull(value, nameof(value));
+
+            _value = value;
         }
 
-        private const string AffinityValue = "Affinity";
-        private const string AntiAffinityValue = "AntiAffinity";
-
-        /// <summary> Affinity. </summary>
+        /// <summary> is affinity. </summary>
         public static AvsPlacementPolicyAffinityType Affinity { get; } = new AvsPlacementPolicyAffinityType(AffinityValue);
-        /// <summary> AntiAffinity. </summary>
+
+        /// <summary> is anti-affinity. </summary>
         public static AvsPlacementPolicyAffinityType AntiAffinity { get; } = new AvsPlacementPolicyAffinityType(AntiAffinityValue);
+
         /// <summary> Determines if two <see cref="AvsPlacementPolicyAffinityType"/> values are the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator ==(AvsPlacementPolicyAffinityType left, AvsPlacementPolicyAffinityType right) => left.Equals(right);
+
         /// <summary> Determines if two <see cref="AvsPlacementPolicyAffinityType"/> values are not the same. </summary>
+        /// <param name="left"> The left value to compare. </param>
+        /// <param name="right"> The right value to compare. </param>
         public static bool operator !=(AvsPlacementPolicyAffinityType left, AvsPlacementPolicyAffinityType right) => !left.Equals(right);
+
         /// <summary> Converts a string to a <see cref="AvsPlacementPolicyAffinityType"/>. </summary>
+        /// <param name="value"> The value. </param>
         public static implicit operator AvsPlacementPolicyAffinityType(string value) => new AvsPlacementPolicyAffinityType(value);
 
-        /// <inheritdoc />
+        /// <summary> Converts a string to a <see cref="AvsPlacementPolicyAffinityType"/>. </summary>
+        /// <param name="value"> The value. </param>
+        public static implicit operator AvsPlacementPolicyAffinityType?(string value) => value == null ? null : new AvsPlacementPolicyAffinityType(value);
+
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
         public override bool Equals(object obj) => obj is AvsPlacementPolicyAffinityType other && Equals(other);
-        /// <inheritdoc />
+
+        /// <inheritdoc/>
         public bool Equals(AvsPlacementPolicyAffinityType other) => string.Equals(_value, other._value, StringComparison.InvariantCultureIgnoreCase);
 
-        /// <inheritdoc />
+        /// <inheritdoc/>
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
-        /// <inheritdoc />
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
+
+        /// <inheritdoc/>
         public override string ToString() => _value;
     }
 }

@@ -5,36 +5,163 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class DeviceErasureDetails
+    /// <summary> Device erasure details with erasure completion status, secure erasure sas key and erasureordestructionlog sas key. </summary>
+    public partial class DeviceErasureDetails : IJsonModel<DeviceErasureDetails>
     {
-        internal static DeviceErasureDetails DeserializeDeviceErasureDetails(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DeviceErasureDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<DataBoxStageStatus> deviceErasureStatus = default;
-            Optional<string> erasureOrDestructionCertificateSasKey = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DeviceErasureDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("deviceErasureStatus"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeDeviceErasureDetails(document.RootElement, options);
                     }
-                    deviceErasureStatus = property.Value.GetString().ToDataBoxStageStatus();
-                    continue;
-                }
-                if (property.NameEquals("erasureOrDestructionCertificateSasKey"))
+                default:
+                    throw new FormatException($"The model {nameof(DeviceErasureDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DeviceErasureDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DeviceErasureDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DeviceErasureDetails)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(DeviceErasureStatus))
+            {
+                writer.WritePropertyName("deviceErasureStatus"u8);
+                writer.WriteStringValue(DeviceErasureStatus.Value.ToSerialString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(ErasureOrDestructionCertificateSasKey))
+            {
+                writer.WritePropertyName("erasureOrDestructionCertificateSasKey"u8);
+                writer.WriteStringValue(ErasureOrDestructionCertificateSasKey);
+            }
+            if (options.Format != "W" && Optional.IsDefined(SecureErasureCertificateSasKey))
+            {
+                writer.WritePropertyName("secureErasureCertificateSasKey"u8);
+                writer.WriteStringValue(SecureErasureCertificateSasKey);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    erasureOrDestructionCertificateSasKey = property.Value.GetString();
-                    continue;
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
                 }
             }
-            return new DeviceErasureDetails(Optional.ToNullable(deviceErasureStatus), erasureOrDestructionCertificateSasKey.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DeviceErasureDetails IJsonModel<DeviceErasureDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DeviceErasureDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DeviceErasureDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DeviceErasureDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDeviceErasureDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DeviceErasureDetails DeserializeDeviceErasureDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DataBoxStageStatus? deviceErasureStatus = default;
+            string erasureOrDestructionCertificateSasKey = default;
+            string secureErasureCertificateSasKey = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("deviceErasureStatus"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    deviceErasureStatus = prop.Value.GetString().ToDataBoxStageStatus();
+                    continue;
+                }
+                if (prop.NameEquals("erasureOrDestructionCertificateSasKey"u8))
+                {
+                    erasureOrDestructionCertificateSasKey = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("secureErasureCertificateSasKey"u8))
+                {
+                    secureErasureCertificateSasKey = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new DeviceErasureDetails(deviceErasureStatus, erasureOrDestructionCertificateSasKey, secureErasureCertificateSasKey, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DeviceErasureDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DeviceErasureDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DeviceErasureDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DeviceErasureDetails IPersistableModel<DeviceErasureDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DeviceErasureDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

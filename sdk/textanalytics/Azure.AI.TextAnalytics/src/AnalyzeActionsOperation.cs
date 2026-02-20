@@ -134,7 +134,7 @@ namespace Azure.AI.TextAnalytics
             Id = operationId;
             _serviceClient = client.ServiceClient;
             _diagnostics = _serviceClient.Diagnostics;
-            _operationInternal = new OperationInternal<AsyncPageable<AnalyzeActionsResult>>(_diagnostics, this, rawResponse: null);
+            _operationInternal = new OperationInternal<AsyncPageable<AnalyzeActionsResult>>(this, _diagnostics, rawResponse: null);
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace Azure.AI.TextAnalytics
             _diagnostics = diagnostics;
             _idToIndexMap = idToIndexMap;
             _showStats = showStats;
-            _operationInternal = new OperationInternal<AsyncPageable<AnalyzeActionsResult>>(_diagnostics, this, rawResponse: null);
+            _operationInternal = new OperationInternal<AsyncPageable<AnalyzeActionsResult>>(this, _diagnostics, rawResponse: null);
 
             _jobId = operationLocation.Split('/').Last().Split('?')[0];
 
@@ -320,6 +320,10 @@ namespace Azure.AI.TextAnalytics
 
             return OperationState<AsyncPageable<AnalyzeActionsResult>>.Failure(rawResponse, new RequestFailedException(rawResponse));
         }
+
+        // This method is never invoked since we don't override Operation<T>.GetRehydrationToken.
+        RehydrationToken IOperation<AsyncPageable<AnalyzeActionsResult>>.GetRehydrationToken() =>
+            throw new NotSupportedException($"{nameof(GetRehydrationToken)} is not supported.");
 
         private AsyncPageable<AnalyzeActionsResult> CreateOperationValueAsync(CancellationToken cancellationToken = default)
         {

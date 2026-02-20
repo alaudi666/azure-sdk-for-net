@@ -24,16 +24,22 @@ namespace Azure.ResourceManager.EventHubs.Models
 
         private const string UnknownValue = "Unknown";
         private const string AvroValue = "Avro";
+        private const string ProtoBufValue = "ProtoBuf";
+        private const string JsonValue = "Json";
 
         /// <summary> Unknown. </summary>
         public static EventHubsSchemaType Unknown { get; } = new EventHubsSchemaType(UnknownValue);
         /// <summary> Avro. </summary>
         public static EventHubsSchemaType Avro { get; } = new EventHubsSchemaType(AvroValue);
+        /// <summary> ProtoBuf. </summary>
+        public static EventHubsSchemaType ProtoBuf { get; } = new EventHubsSchemaType(ProtoBufValue);
+        /// <summary> Json. </summary>
+        public static EventHubsSchemaType Json { get; } = new EventHubsSchemaType(JsonValue);
         /// <summary> Determines if two <see cref="EventHubsSchemaType"/> values are the same. </summary>
         public static bool operator ==(EventHubsSchemaType left, EventHubsSchemaType right) => left.Equals(right);
         /// <summary> Determines if two <see cref="EventHubsSchemaType"/> values are not the same. </summary>
         public static bool operator !=(EventHubsSchemaType left, EventHubsSchemaType right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="EventHubsSchemaType"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="EventHubsSchemaType"/>. </summary>
         public static implicit operator EventHubsSchemaType(string value) => new EventHubsSchemaType(value);
 
         /// <inheritdoc />
@@ -44,7 +50,7 @@ namespace Azure.ResourceManager.EventHubs.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

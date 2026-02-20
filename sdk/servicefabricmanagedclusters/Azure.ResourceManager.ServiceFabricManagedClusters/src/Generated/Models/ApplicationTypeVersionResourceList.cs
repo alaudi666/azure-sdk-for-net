@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
@@ -14,24 +15,31 @@ namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
     /// <summary> The list of application type version resources for the specified application type name resource. </summary>
     internal partial class ApplicationTypeVersionResourceList
     {
-        /// <summary> Initializes a new instance of ApplicationTypeVersionResourceList. </summary>
-        internal ApplicationTypeVersionResourceList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ApplicationTypeVersionResourceList"/>. </summary>
+        /// <param name="value"> The ApplicationTypeVersionResource items on this page. </param>
+        internal ApplicationTypeVersionResourceList(IEnumerable<ServiceFabricManagedApplicationTypeVersionData> value)
         {
-            Value = new ChangeTrackingList<ServiceFabricManagedApplicationTypeVersionData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of ApplicationTypeVersionResourceList. </summary>
-        /// <param name="value"></param>
-        /// <param name="nextLink"> URL to get the next set of application type version list results if there are any. </param>
-        internal ApplicationTypeVersionResourceList(IReadOnlyList<ServiceFabricManagedApplicationTypeVersionData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="ApplicationTypeVersionResourceList"/>. </summary>
+        /// <param name="value"> The ApplicationTypeVersionResource items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ApplicationTypeVersionResourceList(IList<ServiceFabricManagedApplicationTypeVersionData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets the value. </summary>
-        public IReadOnlyList<ServiceFabricManagedApplicationTypeVersionData> Value { get; }
-        /// <summary> URL to get the next set of application type version list results if there are any. </summary>
-        public string NextLink { get; }
+        /// <summary> The ApplicationTypeVersionResource items on this page. </summary>
+        public IList<ServiceFabricManagedApplicationTypeVersionData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

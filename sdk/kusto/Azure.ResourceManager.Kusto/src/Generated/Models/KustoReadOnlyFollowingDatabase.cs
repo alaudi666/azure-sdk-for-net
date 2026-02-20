@@ -6,8 +6,8 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 using Azure.Core;
-using Azure.ResourceManager.Kusto;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Kusto.Models
@@ -15,19 +15,20 @@ namespace Azure.ResourceManager.Kusto.Models
     /// <summary> Class representing a read only following database. </summary>
     public partial class KustoReadOnlyFollowingDatabase : KustoDatabaseData
     {
-        /// <summary> Initializes a new instance of KustoReadOnlyFollowingDatabase. </summary>
+        /// <summary> Initializes a new instance of <see cref="KustoReadOnlyFollowingDatabase"/>. </summary>
         public KustoReadOnlyFollowingDatabase()
         {
             Kind = KustoKind.ReadOnlyFollowing;
         }
 
-        /// <summary> Initializes a new instance of KustoReadOnlyFollowingDatabase. </summary>
+        /// <summary> Initializes a new instance of <see cref="KustoReadOnlyFollowingDatabase"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
         /// <param name="systemData"> The systemData. </param>
         /// <param name="location"> Resource location. </param>
         /// <param name="kind"> Kind of the database. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="provisioningState"> The provisioned state of the resource. </param>
         /// <param name="softDeletePeriod"> The time the data should be kept before it stops being accessible to queries in TimeSpan. </param>
         /// <param name="hotCachePeriod"> The time the data should be kept in cache for fast queries in TimeSpan. </param>
@@ -38,7 +39,8 @@ namespace Azure.ResourceManager.Kusto.Models
         /// <param name="tableLevelSharingProperties"> Table level sharing specifications. </param>
         /// <param name="originalDatabaseName"> The original database name, before databaseNameOverride or databaseNamePrefix where applied. </param>
         /// <param name="databaseShareOrigin"> The origin of the following setup. </param>
-        internal KustoReadOnlyFollowingDatabase(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, AzureLocation? location, KustoKind kind, KustoProvisioningState? provisioningState, TimeSpan? softDeletePeriod, TimeSpan? hotCachePeriod, DatabaseStatistics statistics, string leaderClusterResourceId, string attachedDatabaseConfigurationName, KustoDatabasePrincipalsModificationKind? principalsModificationKind, KustoDatabaseTableLevelSharingProperties tableLevelSharingProperties, string originalDatabaseName, KustoDatabaseShareOrigin? databaseShareOrigin) : base(id, name, resourceType, systemData, location, kind)
+        /// <param name="suspensionDetails"> The database suspension details. If the database is suspended, this object contains information related to the database's suspension state. </param>
+        internal KustoReadOnlyFollowingDatabase(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, AzureLocation? location, KustoKind kind, IDictionary<string, BinaryData> serializedAdditionalRawData, KustoProvisioningState? provisioningState, TimeSpan? softDeletePeriod, TimeSpan? hotCachePeriod, DatabaseStatistics statistics, string leaderClusterResourceId, string attachedDatabaseConfigurationName, KustoDatabasePrincipalsModificationKind? principalsModificationKind, KustoDatabaseTableLevelSharingProperties tableLevelSharingProperties, string originalDatabaseName, KustoDatabaseShareOrigin? databaseShareOrigin, SuspensionDetails suspensionDetails) : base(id, name, resourceType, systemData, location, kind, serializedAdditionalRawData)
         {
             ProvisioningState = provisioningState;
             SoftDeletePeriod = softDeletePeriod;
@@ -50,34 +52,53 @@ namespace Azure.ResourceManager.Kusto.Models
             TableLevelSharingProperties = tableLevelSharingProperties;
             OriginalDatabaseName = originalDatabaseName;
             DatabaseShareOrigin = databaseShareOrigin;
+            SuspensionDetails = suspensionDetails;
             Kind = kind;
         }
 
         /// <summary> The provisioned state of the resource. </summary>
+        [WirePath("properties.provisioningState")]
         public KustoProvisioningState? ProvisioningState { get; }
         /// <summary> The time the data should be kept before it stops being accessible to queries in TimeSpan. </summary>
+        [WirePath("properties.softDeletePeriod")]
         public TimeSpan? SoftDeletePeriod { get; }
         /// <summary> The time the data should be kept in cache for fast queries in TimeSpan. </summary>
+        [WirePath("properties.hotCachePeriod")]
         public TimeSpan? HotCachePeriod { get; set; }
         /// <summary> The statistics of the database. </summary>
         internal DatabaseStatistics Statistics { get; }
         /// <summary> The database size - the total size of compressed data and index in bytes. </summary>
+        [WirePath("properties.statistics.size")]
         public float? StatisticsSize
         {
             get => Statistics?.Size;
         }
 
         /// <summary> The name of the leader cluster. </summary>
+        [WirePath("properties.leaderClusterResourceId")]
         public string LeaderClusterResourceId { get; }
         /// <summary> The name of the attached database configuration cluster. </summary>
+        [WirePath("properties.attachedDatabaseConfigurationName")]
         public string AttachedDatabaseConfigurationName { get; }
         /// <summary> The principals modification kind of the database. </summary>
+        [WirePath("properties.principalsModificationKind")]
         public KustoDatabasePrincipalsModificationKind? PrincipalsModificationKind { get; }
         /// <summary> Table level sharing specifications. </summary>
+        [WirePath("properties.tableLevelSharingProperties")]
         public KustoDatabaseTableLevelSharingProperties TableLevelSharingProperties { get; }
         /// <summary> The original database name, before databaseNameOverride or databaseNamePrefix where applied. </summary>
+        [WirePath("properties.originalDatabaseName")]
         public string OriginalDatabaseName { get; }
         /// <summary> The origin of the following setup. </summary>
+        [WirePath("properties.databaseShareOrigin")]
         public KustoDatabaseShareOrigin? DatabaseShareOrigin { get; }
+        /// <summary> The database suspension details. If the database is suspended, this object contains information related to the database's suspension state. </summary>
+        internal SuspensionDetails SuspensionDetails { get; }
+        /// <summary> The starting date and time of the suspension state. </summary>
+        [WirePath("properties.suspensionDetails.suspensionStartDate")]
+        public DateTimeOffset? SuspensionStartOn
+        {
+            get => SuspensionDetails?.SuspensionStartOn;
+        }
     }
 }

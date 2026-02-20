@@ -13,60 +13,62 @@ namespace Azure.ResourceManager.MachineLearning.Models
 {
     /// <summary>
     /// Machine Learning compute object.
-    /// Serialized Name: Compute
     /// Please note <see cref="MachineLearningComputeProperties"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-    /// The available derived classes include <see cref="MachineLearningAksCompute"/>, <see cref="AmlCompute"/>, <see cref="MachineLearningComputeInstance"/>, <see cref="MachineLearningDataFactoryCompute"/>, <see cref="MachineLearningDataLakeAnalytics"/>, <see cref="MachineLearningDatabricksCompute"/>, <see cref="MachineLearningHDInsightCompute"/>, <see cref="MachineLearningKubernetesCompute"/>, <see cref="MachineLearningSynapseSpark"/> and <see cref="MachineLearningVirtualMachineCompute"/>.
+    /// The available derived classes include <see cref="MachineLearningAksCompute"/>, <see cref="AmlCompute"/>, <see cref="MachineLearningComputeInstance"/>, <see cref="MachineLearningDatabricksCompute"/>, <see cref="MachineLearningDataFactoryCompute"/>, <see cref="MachineLearningDataLakeAnalytics"/>, <see cref="MachineLearningHDInsightCompute"/>, <see cref="MachineLearningKubernetesCompute"/>, <see cref="MachineLearningSynapseSpark"/> and <see cref="MachineLearningVirtualMachineCompute"/>.
     /// </summary>
     public abstract partial class MachineLearningComputeProperties
     {
-        /// <summary> Initializes a new instance of MachineLearningComputeProperties. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private protected IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="MachineLearningComputeProperties"/>. </summary>
         protected MachineLearningComputeProperties()
         {
             ProvisioningErrors = new ChangeTrackingList<MachineLearningError>();
         }
 
-        /// <summary> Initializes a new instance of MachineLearningComputeProperties. </summary>
-        /// <param name="computeType">
-        /// The type of compute
-        /// Serialized Name: Compute.computeType
-        /// </param>
-        /// <param name="computeLocation">
-        /// Location for the underlying compute
-        /// Serialized Name: Compute.computeLocation
-        /// </param>
-        /// <param name="provisioningState">
-        /// The provision state of the cluster. Valid values are Unknown, Updating, Provisioning, Succeeded, and Failed.
-        /// Serialized Name: Compute.provisioningState
-        /// </param>
-        /// <param name="description">
-        /// The description of the Machine Learning compute.
-        /// Serialized Name: Compute.description
-        /// </param>
-        /// <param name="createdOn">
-        /// The time at which the compute was created.
-        /// Serialized Name: Compute.createdOn
-        /// </param>
-        /// <param name="modifiedOn">
-        /// The time at which the compute was last modified.
-        /// Serialized Name: Compute.modifiedOn
-        /// </param>
-        /// <param name="resourceId">
-        /// ARM resource id of the underlying compute
-        /// Serialized Name: Compute.resourceId
-        /// </param>
-        /// <param name="provisioningErrors">
-        /// Errors during provisioning
-        /// Serialized Name: Compute.provisioningErrors
-        /// </param>
-        /// <param name="isAttachedCompute">
-        /// Indicating whether the compute was provisioned by user and brought from outside if true, or machine learning service provisioned it if false.
-        /// Serialized Name: Compute.isAttachedCompute
-        /// </param>
-        /// <param name="disableLocalAuth">
-        /// Opt-out of local authentication and ensure customers can use only MSI and AAD exclusively for authentication.
-        /// Serialized Name: Compute.disableLocalAuth
-        /// </param>
-        internal MachineLearningComputeProperties(ComputeType computeType, string computeLocation, MachineLearningProvisioningState? provisioningState, string description, DateTimeOffset? createdOn, DateTimeOffset? modifiedOn, ResourceIdentifier resourceId, IReadOnlyList<MachineLearningError> provisioningErrors, bool? isAttachedCompute, bool? disableLocalAuth)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningComputeProperties"/>. </summary>
+        /// <param name="computeType"> The type of compute. </param>
+        /// <param name="computeLocation"> Location for the underlying compute. </param>
+        /// <param name="provisioningState"> The provision state of the cluster. Valid values are Unknown, Updating, Provisioning, Succeeded, and Failed. </param>
+        /// <param name="description"> The description of the Machine Learning compute. </param>
+        /// <param name="createdOn"> The time at which the compute was created. </param>
+        /// <param name="modifiedOn"> The time at which the compute was last modified. </param>
+        /// <param name="resourceId"> ARM resource id of the underlying compute. </param>
+        /// <param name="provisioningErrors"> Errors during provisioning. </param>
+        /// <param name="isAttachedCompute"> Indicating whether the compute was provisioned by user and brought from outside if true, or machine learning service provisioned it if false. </param>
+        /// <param name="disableLocalAuth"> Opt-out of local authentication and ensure customers can use only MSI and AAD exclusively for authentication. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal MachineLearningComputeProperties(ComputeType computeType, string computeLocation, MachineLearningProvisioningState? provisioningState, string description, DateTimeOffset? createdOn, DateTimeOffset? modifiedOn, ResourceIdentifier resourceId, IReadOnlyList<MachineLearningError> provisioningErrors, bool? isAttachedCompute, bool? disableLocalAuth, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             ComputeType = computeType;
             ComputeLocation = computeLocation;
@@ -78,57 +80,37 @@ namespace Azure.ResourceManager.MachineLearning.Models
             ProvisioningErrors = provisioningErrors;
             IsAttachedCompute = isAttachedCompute;
             DisableLocalAuth = disableLocalAuth;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary>
-        /// The type of compute
-        /// Serialized Name: Compute.computeType
-        /// </summary>
+        /// <summary> The type of compute. </summary>
         internal ComputeType ComputeType { get; set; }
-        /// <summary>
-        /// Location for the underlying compute
-        /// Serialized Name: Compute.computeLocation
-        /// </summary>
+        /// <summary> Location for the underlying compute. </summary>
+        [WirePath("computeLocation")]
         public string ComputeLocation { get; set; }
-        /// <summary>
-        /// The provision state of the cluster. Valid values are Unknown, Updating, Provisioning, Succeeded, and Failed.
-        /// Serialized Name: Compute.provisioningState
-        /// </summary>
+        /// <summary> The provision state of the cluster. Valid values are Unknown, Updating, Provisioning, Succeeded, and Failed. </summary>
+        [WirePath("provisioningState")]
         public MachineLearningProvisioningState? ProvisioningState { get; }
-        /// <summary>
-        /// The description of the Machine Learning compute.
-        /// Serialized Name: Compute.description
-        /// </summary>
+        /// <summary> The description of the Machine Learning compute. </summary>
+        [WirePath("description")]
         public string Description { get; set; }
-        /// <summary>
-        /// The time at which the compute was created.
-        /// Serialized Name: Compute.createdOn
-        /// </summary>
+        /// <summary> The time at which the compute was created. </summary>
+        [WirePath("createdOn")]
         public DateTimeOffset? CreatedOn { get; }
-        /// <summary>
-        /// The time at which the compute was last modified.
-        /// Serialized Name: Compute.modifiedOn
-        /// </summary>
+        /// <summary> The time at which the compute was last modified. </summary>
+        [WirePath("modifiedOn")]
         public DateTimeOffset? ModifiedOn { get; }
-        /// <summary>
-        /// ARM resource id of the underlying compute
-        /// Serialized Name: Compute.resourceId
-        /// </summary>
+        /// <summary> ARM resource id of the underlying compute. </summary>
+        [WirePath("resourceId")]
         public ResourceIdentifier ResourceId { get; set; }
-        /// <summary>
-        /// Errors during provisioning
-        /// Serialized Name: Compute.provisioningErrors
-        /// </summary>
+        /// <summary> Errors during provisioning. </summary>
+        [WirePath("provisioningErrors")]
         public IReadOnlyList<MachineLearningError> ProvisioningErrors { get; }
-        /// <summary>
-        /// Indicating whether the compute was provisioned by user and brought from outside if true, or machine learning service provisioned it if false.
-        /// Serialized Name: Compute.isAttachedCompute
-        /// </summary>
+        /// <summary> Indicating whether the compute was provisioned by user and brought from outside if true, or machine learning service provisioned it if false. </summary>
+        [WirePath("isAttachedCompute")]
         public bool? IsAttachedCompute { get; }
-        /// <summary>
-        /// Opt-out of local authentication and ensure customers can use only MSI and AAD exclusively for authentication.
-        /// Serialized Name: Compute.disableLocalAuth
-        /// </summary>
+        /// <summary> Opt-out of local authentication and ensure customers can use only MSI and AAD exclusively for authentication. </summary>
+        [WirePath("disableLocalAuth")]
         public bool? DisableLocalAuth { get; set; }
     }
 }

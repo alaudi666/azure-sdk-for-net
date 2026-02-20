@@ -62,7 +62,7 @@ namespace Azure.AI.FormRecognizer.Models
             Id = operationId;
             _serviceClient = client.ServiceClient;
             _diagnostics = client.Diagnostics;
-            _operationInternal = new(_diagnostics, this, rawResponse: null);
+            _operationInternal = new(this, _diagnostics, rawResponse: null);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Azure.AI.FormRecognizer.Models
         {
             _serviceClient = serviceClient;
             _diagnostics = diagnostics;
-            _operationInternal = new(_diagnostics, this, rawResponse: null);
+            _operationInternal = new(this, _diagnostics, rawResponse: null);
 
             // TODO: Add validation here
             // https://github.com/Azure/azure-sdk-for-net/issues/10385
@@ -165,15 +165,17 @@ namespace Azure.AI.FormRecognizer.Models
             }
             else if (status == OperationStatus.Failed)
             {
-                RequestFailedException requestFailedException = await ClientCommon
-                    .CreateExceptionForFailedOperationAsync(async, _diagnostics, rawResponse, response.Value.AnalyzeResult.Errors)
-                    .ConfigureAwait(false);
+                RequestFailedException requestFailedException = ClientCommon.CreateExceptionForFailedOperation(rawResponse, response.Value.AnalyzeResult.Errors);
 
                 return OperationState<FormPageCollection>.Failure(rawResponse, requestFailedException);
             }
 
             return OperationState<FormPageCollection>.Pending(rawResponse);
         }
+
+        // This method is never invoked since we don't override Operation<T>.GetRehydrationToken.
+        RehydrationToken IOperation<FormPageCollection>.GetRehydrationToken() =>
+            throw new NotSupportedException($"{nameof(GetRehydrationToken)} is not supported.");
 
         private static FormPageCollection ConvertValue(IReadOnlyList<PageResult> pageResults, IReadOnlyList<ReadResult> readResults)
         {

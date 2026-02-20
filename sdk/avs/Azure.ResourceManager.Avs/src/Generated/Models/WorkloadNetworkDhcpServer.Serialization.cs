@@ -5,115 +5,200 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    public partial class WorkloadNetworkDhcpServer : IUtf8JsonSerializable
+    /// <summary> NSX DHCP Server. </summary>
+    public partial class WorkloadNetworkDhcpServer : WorkloadNetworkDhcpEntity, IJsonModel<WorkloadNetworkDhcpServer>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override WorkloadNetworkDhcpEntity PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<WorkloadNetworkDhcpServer>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeWorkloadNetworkDhcpServer(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(WorkloadNetworkDhcpServer)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<WorkloadNetworkDhcpServer>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<WorkloadNetworkDhcpServer>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(WorkloadNetworkDhcpServer)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
             if (Optional.IsDefined(ServerAddress))
             {
-                writer.WritePropertyName("serverAddress");
+                writer.WritePropertyName("serverAddress"u8);
                 writer.WriteStringValue(ServerAddress);
             }
             if (Optional.IsDefined(LeaseTime))
             {
-                writer.WritePropertyName("leaseTime");
+                writer.WritePropertyName("leaseTime"u8);
                 writer.WriteNumberValue(LeaseTime.Value);
             }
-            writer.WritePropertyName("dhcpType");
-            writer.WriteStringValue(DhcpType.ToString());
-            if (Optional.IsDefined(DisplayName))
-            {
-                writer.WritePropertyName("displayName");
-                writer.WriteStringValue(DisplayName);
-            }
-            if (Optional.IsDefined(Revision))
-            {
-                writer.WritePropertyName("revision");
-                writer.WriteNumberValue(Revision.Value);
-            }
-            writer.WriteEndObject();
         }
 
-        internal static WorkloadNetworkDhcpServer DeserializeWorkloadNetworkDhcpServer(JsonElement element)
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        WorkloadNetworkDhcpServer IJsonModel<WorkloadNetworkDhcpServer>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (WorkloadNetworkDhcpServer)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override WorkloadNetworkDhcpEntity JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> serverAddress = default;
-            Optional<long> leaseTime = default;
-            DhcpTypeEnum dhcpType = default;
-            Optional<string> displayName = default;
-            Optional<IReadOnlyList<string>> segments = default;
-            Optional<WorkloadNetworkDhcpProvisioningState> provisioningState = default;
-            Optional<long> revision = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<WorkloadNetworkDhcpServer>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("serverAddress"))
+                throw new FormatException($"The model {nameof(WorkloadNetworkDhcpServer)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeWorkloadNetworkDhcpServer(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static WorkloadNetworkDhcpServer DeserializeWorkloadNetworkDhcpServer(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DhcpTypeEnum dhcpType = default;
+            string displayName = default;
+            IReadOnlyList<string> segments = default;
+            WorkloadNetworkDhcpProvisioningState? provisioningState = default;
+            long? revision = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            string serverAddress = default;
+            long? leaseTime = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("dhcpType"u8))
                 {
-                    serverAddress = property.Value.GetString();
+                    dhcpType = new DhcpTypeEnum(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("leaseTime"))
+                if (prop.NameEquals("displayName"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    displayName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("segments"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    leaseTime = property.Value.GetInt64();
-                    continue;
-                }
-                if (property.NameEquals("dhcpType"))
-                {
-                    dhcpType = new DhcpTypeEnum(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("displayName"))
-                {
-                    displayName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("segments"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<string> array = new List<string>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(item.GetString());
+                        if (item.ValueKind == JsonValueKind.Null)
+                        {
+                            array.Add(null);
+                        }
+                        else
+                        {
+                            array.Add(item.GetString());
+                        }
                     }
                     segments = array;
                     continue;
                 }
-                if (property.NameEquals("provisioningState"))
+                if (prop.NameEquals("provisioningState"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    provisioningState = new WorkloadNetworkDhcpProvisioningState(property.Value.GetString());
+                    provisioningState = new WorkloadNetworkDhcpProvisioningState(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("revision"))
+                if (prop.NameEquals("revision"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    revision = property.Value.GetInt64();
+                    revision = prop.Value.GetInt64();
                     continue;
+                }
+                if (prop.NameEquals("serverAddress"u8))
+                {
+                    serverAddress = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("leaseTime"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    leaseTime = prop.Value.GetInt64();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new WorkloadNetworkDhcpServer(dhcpType, displayName.Value, Optional.ToList(segments), Optional.ToNullable(provisioningState), Optional.ToNullable(revision), serverAddress.Value, Optional.ToNullable(leaseTime));
+            return new WorkloadNetworkDhcpServer(
+                dhcpType,
+                displayName,
+                segments ?? new ChangeTrackingList<string>(),
+                provisioningState,
+                revision,
+                additionalBinaryDataProperties,
+                serverAddress,
+                leaseTime);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<WorkloadNetworkDhcpServer>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<WorkloadNetworkDhcpServer>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerAvsContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(WorkloadNetworkDhcpServer)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        WorkloadNetworkDhcpServer IPersistableModel<WorkloadNetworkDhcpServer>.Create(BinaryData data, ModelReaderWriterOptions options) => (WorkloadNetworkDhcpServer)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<WorkloadNetworkDhcpServer>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

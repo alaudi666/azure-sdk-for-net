@@ -5,37 +5,89 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class IPsecPolicy : IUtf8JsonSerializable
+    public partial class IPsecPolicy : IUtf8JsonSerializable, IJsonModel<IPsecPolicy>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<IPsecPolicy>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<IPsecPolicy>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("saLifeTimeSeconds");
-            writer.WriteNumberValue(SaLifeTimeSeconds);
-            writer.WritePropertyName("saDataSizeKilobytes");
-            writer.WriteNumberValue(SaDataSizeKilobytes);
-            writer.WritePropertyName("ipsecEncryption");
-            writer.WriteStringValue(IPsecEncryption.ToString());
-            writer.WritePropertyName("ipsecIntegrity");
-            writer.WriteStringValue(IPsecIntegrity.ToString());
-            writer.WritePropertyName("ikeEncryption");
-            writer.WriteStringValue(IkeEncryption.ToString());
-            writer.WritePropertyName("ikeIntegrity");
-            writer.WriteStringValue(IkeIntegrity.ToString());
-            writer.WritePropertyName("dhGroup");
-            writer.WriteStringValue(DhGroup.ToString());
-            writer.WritePropertyName("pfsGroup");
-            writer.WriteStringValue(PfsGroup.ToString());
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static IPsecPolicy DeserializeIPsecPolicy(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<IPsecPolicy>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(IPsecPolicy)} does not support writing '{format}' format.");
+            }
+
+            writer.WritePropertyName("saLifeTimeSeconds"u8);
+            writer.WriteNumberValue(SaLifeTimeSeconds);
+            writer.WritePropertyName("saDataSizeKilobytes"u8);
+            writer.WriteNumberValue(SaDataSizeKilobytes);
+            writer.WritePropertyName("ipsecEncryption"u8);
+            writer.WriteStringValue(IPsecEncryption.ToString());
+            writer.WritePropertyName("ipsecIntegrity"u8);
+            writer.WriteStringValue(IPsecIntegrity.ToString());
+            writer.WritePropertyName("ikeEncryption"u8);
+            writer.WriteStringValue(IkeEncryption.ToString());
+            writer.WritePropertyName("ikeIntegrity"u8);
+            writer.WriteStringValue(IkeIntegrity.ToString());
+            writer.WritePropertyName("dhGroup"u8);
+            writer.WriteStringValue(DhGroup.ToString());
+            writer.WritePropertyName("pfsGroup"u8);
+            writer.WriteStringValue(PfsGroup.ToString());
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
+        }
+
+        IPsecPolicy IJsonModel<IPsecPolicy>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IPsecPolicy>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(IPsecPolicy)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeIPsecPolicy(document.RootElement, options);
+        }
+
+        internal static IPsecPolicy DeserializeIPsecPolicy(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             int saLifeTimeSeconds = default;
             int saDataSizeKilobytes = default;
             IPsecEncryption ipsecEncryption = default;
@@ -44,50 +96,210 @@ namespace Azure.ResourceManager.Network.Models
             IkeIntegrity ikeIntegrity = default;
             DHGroup dhGroup = default;
             PfsGroup pfsGroup = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("saLifeTimeSeconds"))
+                if (property.NameEquals("saLifeTimeSeconds"u8))
                 {
                     saLifeTimeSeconds = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("saDataSizeKilobytes"))
+                if (property.NameEquals("saDataSizeKilobytes"u8))
                 {
                     saDataSizeKilobytes = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("ipsecEncryption"))
+                if (property.NameEquals("ipsecEncryption"u8))
                 {
                     ipsecEncryption = new IPsecEncryption(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("ipsecIntegrity"))
+                if (property.NameEquals("ipsecIntegrity"u8))
                 {
                     ipsecIntegrity = new IPsecIntegrity(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("ikeEncryption"))
+                if (property.NameEquals("ikeEncryption"u8))
                 {
                     ikeEncryption = new IkeEncryption(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("ikeIntegrity"))
+                if (property.NameEquals("ikeIntegrity"u8))
                 {
                     ikeIntegrity = new IkeIntegrity(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("dhGroup"))
+                if (property.NameEquals("dhGroup"u8))
                 {
                     dhGroup = new DHGroup(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("pfsGroup"))
+                if (property.NameEquals("pfsGroup"u8))
                 {
                     pfsGroup = new PfsGroup(property.Value.GetString());
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new IPsecPolicy(saLifeTimeSeconds, saDataSizeKilobytes, ipsecEncryption, ipsecIntegrity, ikeEncryption, ikeIntegrity, dhGroup, pfsGroup);
+            serializedAdditionalRawData = rawDataDictionary;
+            return new IPsecPolicy(
+                saLifeTimeSeconds,
+                saDataSizeKilobytes,
+                ipsecEncryption,
+                ipsecIntegrity,
+                ikeEncryption,
+                ikeIntegrity,
+                dhGroup,
+                pfsGroup,
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SaLifeTimeSeconds), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  saLifeTimeSeconds: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  saLifeTimeSeconds: ");
+                builder.AppendLine($"{SaLifeTimeSeconds}");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(SaDataSizeKilobytes), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  saDataSizeKilobytes: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  saDataSizeKilobytes: ");
+                builder.AppendLine($"{SaDataSizeKilobytes}");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IPsecEncryption), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  ipsecEncryption: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  ipsecEncryption: ");
+                builder.AppendLine($"'{IPsecEncryption.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IPsecIntegrity), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  ipsecIntegrity: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  ipsecIntegrity: ");
+                builder.AppendLine($"'{IPsecIntegrity.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IkeEncryption), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  ikeEncryption: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  ikeEncryption: ");
+                builder.AppendLine($"'{IkeEncryption.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(IkeIntegrity), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  ikeIntegrity: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  ikeIntegrity: ");
+                builder.AppendLine($"'{IkeIntegrity.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DhGroup), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  dhGroup: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  dhGroup: ");
+                builder.AppendLine($"'{DhGroup.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PfsGroup), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  pfsGroup: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  pfsGroup: ");
+                builder.AppendLine($"'{PfsGroup.ToString()}'");
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<IPsecPolicy>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IPsecPolicy>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(IPsecPolicy)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        IPsecPolicy IPersistableModel<IPsecPolicy>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<IPsecPolicy>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeIPsecPolicy(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(IPsecPolicy)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<IPsecPolicy>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

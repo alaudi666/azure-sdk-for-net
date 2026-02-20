@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.AppContainers
 {
     /// <summary>
-    /// A class representing a collection of <see cref="ContainerAppManagedEnvironmentStorageResource" /> and their operations.
-    /// Each <see cref="ContainerAppManagedEnvironmentStorageResource" /> in the collection will belong to the same instance of <see cref="ContainerAppManagedEnvironmentResource" />.
-    /// To get a <see cref="ContainerAppManagedEnvironmentStorageCollection" /> instance call the GetContainerAppManagedEnvironmentStorages method from an instance of <see cref="ContainerAppManagedEnvironmentResource" />.
+    /// A class representing a collection of <see cref="ContainerAppManagedEnvironmentStorageResource"/> and their operations.
+    /// Each <see cref="ContainerAppManagedEnvironmentStorageResource"/> in the collection will belong to the same instance of <see cref="ContainerAppManagedEnvironmentResource"/>.
+    /// To get a <see cref="ContainerAppManagedEnvironmentStorageCollection"/> instance call the GetContainerAppManagedEnvironmentStorages method from an instance of <see cref="ContainerAppManagedEnvironmentResource"/>.
     /// </summary>
     public partial class ContainerAppManagedEnvironmentStorageCollection : ArmCollection, IEnumerable<ContainerAppManagedEnvironmentStorageResource>, IAsyncEnumerable<ContainerAppManagedEnvironmentStorageResource>
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.AppContainers
 
         /// <summary>
         /// Create or update storage for a managedEnvironment.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}
-        /// Operation Id: ManagedEnvironmentsStorages_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedEnvironmentsStorages_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-07-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ContainerAppManagedEnvironmentStorageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="storageName"> Name of the storage. </param>
@@ -74,7 +88,9 @@ namespace Azure.ResourceManager.AppContainers
             try
             {
                 var response = await _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesRestClient.CreateOrUpdateAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageName, data, cancellationToken).ConfigureAwait(false);
-                var operation = new AppContainersArmOperation<ContainerAppManagedEnvironmentStorageResource>(Response.FromValue(new ContainerAppManagedEnvironmentStorageResource(Client, response), response.GetRawResponse()));
+                var uri = _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesRestClient.CreateCreateOrUpdateRequestUri(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageName, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new AppContainersArmOperation<ContainerAppManagedEnvironmentStorageResource>(Response.FromValue(new ContainerAppManagedEnvironmentStorageResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     await operation.WaitForCompletionAsync(cancellationToken).ConfigureAwait(false);
                 return operation;
@@ -88,8 +104,24 @@ namespace Azure.ResourceManager.AppContainers
 
         /// <summary>
         /// Create or update storage for a managedEnvironment.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}
-        /// Operation Id: ManagedEnvironmentsStorages_CreateOrUpdate
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedEnvironmentsStorages_CreateOrUpdate</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-07-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ContainerAppManagedEnvironmentStorageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="storageName"> Name of the storage. </param>
@@ -107,7 +139,9 @@ namespace Azure.ResourceManager.AppContainers
             try
             {
                 var response = _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesRestClient.CreateOrUpdate(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageName, data, cancellationToken);
-                var operation = new AppContainersArmOperation<ContainerAppManagedEnvironmentStorageResource>(Response.FromValue(new ContainerAppManagedEnvironmentStorageResource(Client, response), response.GetRawResponse()));
+                var uri = _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesRestClient.CreateCreateOrUpdateRequestUri(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageName, data);
+                var rehydrationToken = NextLinkOperationImplementation.GetRehydrationToken(RequestMethod.Put, uri.ToUri(), uri.ToString(), "None", null, OperationFinalStateVia.OriginalUri.ToString());
+                var operation = new AppContainersArmOperation<ContainerAppManagedEnvironmentStorageResource>(Response.FromValue(new ContainerAppManagedEnvironmentStorageResource(Client, response), response.GetRawResponse()), rehydrationToken);
                 if (waitUntil == WaitUntil.Completed)
                     operation.WaitForCompletion(cancellationToken);
                 return operation;
@@ -121,8 +155,24 @@ namespace Azure.ResourceManager.AppContainers
 
         /// <summary>
         /// Get storage for a managedEnvironment.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}
-        /// Operation Id: ManagedEnvironmentsStorages_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedEnvironmentsStorages_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-07-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ContainerAppManagedEnvironmentStorageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="storageName"> Name of the storage. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -150,8 +200,24 @@ namespace Azure.ResourceManager.AppContainers
 
         /// <summary>
         /// Get storage for a managedEnvironment.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}
-        /// Operation Id: ManagedEnvironmentsStorages_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedEnvironmentsStorages_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-07-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ContainerAppManagedEnvironmentStorageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="storageName"> Name of the storage. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -179,62 +245,82 @@ namespace Azure.ResourceManager.AppContainers
 
         /// <summary>
         /// Get all storages for a managedEnvironment.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages
-        /// Operation Id: ManagedEnvironmentsStorages_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedEnvironmentsStorages_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-07-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ContainerAppManagedEnvironmentStorageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="ContainerAppManagedEnvironmentStorageResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="ContainerAppManagedEnvironmentStorageResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<ContainerAppManagedEnvironmentStorageResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<ContainerAppManagedEnvironmentStorageResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesClientDiagnostics.CreateScope("ContainerAppManagedEnvironmentStorageCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new ContainerAppManagedEnvironmentStorageResource(Client, value)), null, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, null);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, null, e => new ContainerAppManagedEnvironmentStorageResource(Client, ContainerAppManagedEnvironmentStorageData.DeserializeContainerAppManagedEnvironmentStorageData(e)), _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesClientDiagnostics, Pipeline, "ContainerAppManagedEnvironmentStorageCollection.GetAll", "value", null, cancellationToken);
         }
 
         /// <summary>
         /// Get all storages for a managedEnvironment.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages
-        /// Operation Id: ManagedEnvironmentsStorages_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedEnvironmentsStorages_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-07-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ContainerAppManagedEnvironmentStorageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="ContainerAppManagedEnvironmentStorageResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="ContainerAppManagedEnvironmentStorageResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<ContainerAppManagedEnvironmentStorageResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<ContainerAppManagedEnvironmentStorageResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesClientDiagnostics.CreateScope("ContainerAppManagedEnvironmentStorageCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new ContainerAppManagedEnvironmentStorageResource(Client, value)), null, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, null);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, null, e => new ContainerAppManagedEnvironmentStorageResource(Client, ContainerAppManagedEnvironmentStorageData.DeserializeContainerAppManagedEnvironmentStorageData(e)), _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesClientDiagnostics, Pipeline, "ContainerAppManagedEnvironmentStorageCollection.GetAll", "value", null, cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}
-        /// Operation Id: ManagedEnvironmentsStorages_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedEnvironmentsStorages_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-07-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ContainerAppManagedEnvironmentStorageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="storageName"> Name of the storage. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -260,8 +346,24 @@ namespace Azure.ResourceManager.AppContainers
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}
-        /// Operation Id: ManagedEnvironmentsStorages_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedEnvironmentsStorages_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-07-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ContainerAppManagedEnvironmentStorageResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="storageName"> Name of the storage. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -277,6 +379,96 @@ namespace Azure.ResourceManager.AppContainers
             {
                 var response = _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedEnvironmentsStorages_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-07-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ContainerAppManagedEnvironmentStorageResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="storageName"> Name of the storage. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="storageName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="storageName"/> is null. </exception>
+        public virtual async Task<NullableResponse<ContainerAppManagedEnvironmentStorageResource>> GetIfExistsAsync(string storageName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(storageName, nameof(storageName));
+
+            using var scope = _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesClientDiagnostics.CreateScope("ContainerAppManagedEnvironmentStorageCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<ContainerAppManagedEnvironmentStorageResource>(response.GetRawResponse());
+                return Response.FromValue(new ContainerAppManagedEnvironmentStorageResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.App/managedEnvironments/{environmentName}/storages/{storageName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>ManagedEnvironmentsStorages_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2025-07-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ContainerAppManagedEnvironmentStorageResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="storageName"> Name of the storage. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="storageName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="storageName"/> is null. </exception>
+        public virtual NullableResponse<ContainerAppManagedEnvironmentStorageResource> GetIfExists(string storageName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(storageName, nameof(storageName));
+
+            using var scope = _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesClientDiagnostics.CreateScope("ContainerAppManagedEnvironmentStorageCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _containerAppManagedEnvironmentStorageManagedEnvironmentsStoragesRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, storageName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<ContainerAppManagedEnvironmentStorageResource>(response.GetRawResponse());
+                return Response.FromValue(new ContainerAppManagedEnvironmentStorageResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

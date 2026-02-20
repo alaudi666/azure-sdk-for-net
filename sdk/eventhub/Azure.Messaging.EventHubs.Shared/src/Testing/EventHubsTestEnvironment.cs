@@ -3,7 +3,6 @@
 
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using Azure.Core.TestFramework;
 
 namespace Azure.Messaging.EventHubs.Tests
@@ -148,7 +147,7 @@ namespace Azure.Messaging.EventHubs.Tests
         ///
         /// <return>The Event Hub-level connection string.</return>
         ///
-        public string BuildConnectionStringForEventHub(string eventHubName) => $"{ EventHubsConnectionString };EntityPath={ eventHubName }";
+        public string BuildConnectionStringForEventHub(string eventHubName) => $"{EventHubsConnectionString};EntityPath={eventHubName}";
 
         /// <summary>
         ///   Ensures that an Event Hubs namespace is available for the test run and captures its properties.
@@ -167,7 +166,7 @@ namespace Azure.Messaging.EventHubs.Tests
             return new NamespaceProperties
             (
                 parsed.FullyQualifiedNamespace.Substring(0, parsed.FullyQualifiedNamespace.IndexOf('.')),
-                environmentConnectionString.Replace($";EntityPath={ parsed.EventHubName }", string.Empty)
+                environmentConnectionString.Replace($";EntityPath={parsed.EventHubName}", string.Empty)
             );
         }
 

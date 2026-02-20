@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Policy for sharing applications on this compute instance among users of parent workspace. If Personal, only the creator can access applications on this compute instance. When Shared, any workspace user can access applications on this instance depending on his/her assigned role.
-    /// Serialized Name: ApplicationSharingPolicy
-    /// </summary>
+    /// <summary> Policy for sharing applications on this compute instance among users of parent workspace. If Personal, only the creator can access applications on this compute instance. When Shared, any workspace user can access applications on this instance depending on his/her assigned role. </summary>
     public readonly partial struct MachineLearningApplicationSharingPolicy : IEquatable<MachineLearningApplicationSharingPolicy>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string PersonalValue = "Personal";
         private const string SharedValue = "Shared";
 
-        /// <summary>
-        /// Personal
-        /// Serialized Name: ApplicationSharingPolicy.Personal
-        /// </summary>
+        /// <summary> Personal. </summary>
         public static MachineLearningApplicationSharingPolicy Personal { get; } = new MachineLearningApplicationSharingPolicy(PersonalValue);
-        /// <summary>
-        /// Shared
-        /// Serialized Name: ApplicationSharingPolicy.Shared
-        /// </summary>
+        /// <summary> Shared. </summary>
         public static MachineLearningApplicationSharingPolicy Shared { get; } = new MachineLearningApplicationSharingPolicy(SharedValue);
         /// <summary> Determines if two <see cref="MachineLearningApplicationSharingPolicy"/> values are the same. </summary>
         public static bool operator ==(MachineLearningApplicationSharingPolicy left, MachineLearningApplicationSharingPolicy right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningApplicationSharingPolicy"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningApplicationSharingPolicy left, MachineLearningApplicationSharingPolicy right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningApplicationSharingPolicy"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningApplicationSharingPolicy"/>. </summary>
         public static implicit operator MachineLearningApplicationSharingPolicy(string value) => new MachineLearningApplicationSharingPolicy(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

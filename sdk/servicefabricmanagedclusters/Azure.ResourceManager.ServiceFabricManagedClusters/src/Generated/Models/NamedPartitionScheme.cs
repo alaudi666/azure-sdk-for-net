@@ -8,31 +8,30 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
     /// <summary> Describes the named partition scheme of the service. </summary>
     public partial class NamedPartitionScheme : ManagedServicePartitionScheme
     {
-        /// <summary> Initializes a new instance of NamedPartitionScheme. </summary>
+        /// <summary> Initializes a new instance of <see cref="NamedPartitionScheme"/>. </summary>
         /// <param name="names"> Array for the names of the partitions. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="names"/> is null. </exception>
-        public NamedPartitionScheme(IEnumerable<string> names)
+        public NamedPartitionScheme(IEnumerable<string> names) : base(PartitionScheme.Named)
         {
             Argument.AssertNotNull(names, nameof(names));
 
             Names = names.ToList();
-            PartitionScheme = PartitionScheme.Named;
         }
 
-        /// <summary> Initializes a new instance of NamedPartitionScheme. </summary>
-        /// <param name="partitionScheme"> Specifies how the service is partitioned. </param>
+        /// <summary> Initializes a new instance of <see cref="NamedPartitionScheme"/>. </summary>
+        /// <param name="partitionScheme"></param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
         /// <param name="names"> Array for the names of the partitions. </param>
-        internal NamedPartitionScheme(PartitionScheme partitionScheme, IList<string> names) : base(partitionScheme)
+        internal NamedPartitionScheme(PartitionScheme partitionScheme, IDictionary<string, BinaryData> additionalBinaryDataProperties, IList<string> names) : base(partitionScheme, additionalBinaryDataProperties)
         {
             Names = names;
-            PartitionScheme = partitionScheme;
         }
 
         /// <summary> Array for the names of the partitions. </summary>

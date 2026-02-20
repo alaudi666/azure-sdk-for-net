@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-using Azure.Core;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Azure.Core;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.CosmosDB.Models;
 using NUnit.Framework;
@@ -36,8 +36,8 @@ namespace Azure.ResourceManager.CosmosDB.Tests
             _resourceGroup = await ArmClient.GetResourceGroupResource(_resourceGroupIdentifier).GetAsync();
 
             List<CosmosDBAccountCapability> capabilities = new List<CosmosDBAccountCapability>();
-            capabilities.Add(new CosmosDBAccountCapability("EnableMongo"));
-            capabilities.Add(new CosmosDBAccountCapability("EnableMongoRoleBasedAccessControl"));
+            capabilities.Add(new CosmosDBAccountCapability("EnableMongo", null));
+            capabilities.Add(new CosmosDBAccountCapability("EnableMongoRoleBasedAccessControl", null));
             _databaseAccount = await CreateDatabaseAccount(Recording.GenerateAssetName("dbaccount-"), CosmosDBAccountKind.MongoDB, capabilities);
 
             _mongoDBDatabase = await MongoDBDatabaseTests.CreateMongoDBDatabase(SessionRecording.GenerateAssetName("mongodb-"), null, _databaseAccount.GetMongoDBDatabases());
@@ -47,15 +47,18 @@ namespace Azure.ResourceManager.CosmosDB.Tests
         [TearDown]
         public async Task TearDown()
         {
-            if (_userDefinition != null)
+            if (Mode != RecordedTestMode.Playback)
             {
-                if (await MongoUserDefinitionCollection.ExistsAsync(this._userDefinitionId))
+                if (_userDefinition != null)
                 {
-                    await _userDefinition.DeleteAsync(WaitUntil.Completed);
+                    if (await MongoUserDefinitionCollection.ExistsAsync(this._userDefinitionId))
+                    {
+                        await _userDefinition.DeleteAsync(WaitUntil.Completed);
+                    }
                 }
+                await _mongoDBDatabase.DeleteAsync(WaitUntil.Completed);
+                await _databaseAccount.DeleteAsync(WaitUntil.Completed);
             }
-            await _mongoDBDatabase.DeleteAsync(WaitUntil.Completed);
-            await _databaseAccount.DeleteAsync(WaitUntil.Completed);
         }
 
         [Test]
@@ -157,7 +160,7 @@ namespace Azure.ResourceManager.CosmosDB.Tests
             this._userDefinitionId = $"{databaseName}.{userName}";
             var parameters = new MongoDBUserDefinitionCreateOrUpdateContent
             {
-                UserName  = userName,
+                UserName = userName,
                 Password = password,
                 DatabaseName = databaseName,
                 CustomData = "My Custm Data",

@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 using Azure.Core;
+using Azure.Storage.Common;
 
 namespace Azure.Storage.Files.Shares.Models
 {
@@ -18,7 +19,7 @@ namespace Azure.Storage.Files.Shares.Models
         /// <summary>
         /// Gets the URI of the resurce that has been modified.
         /// </summary>
-        public Uri ResourceUri { get;  }
+        public Uri ResourceUri { get; }
 
         /// <summary>
         /// Gets the ETag value that was expected during the read.
@@ -66,6 +67,9 @@ namespace Azure.Storage.Files.Shares.Models
         }
 
         /// <inheritdoc />
+#if NET8_0_OR_GREATER
+        [Obsolete(DiagnosticId = "SYSLIB0051")]
+#endif
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             Argument.AssertNotNull(info, nameof(info));

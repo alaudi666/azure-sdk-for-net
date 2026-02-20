@@ -19,7 +19,7 @@ namespace Azure.ResourceManager.Kusto.Tests.Scenario
         [SetUp]
         protected async Task SetUp()
         {
-            await BaseSetUp(database: true);
+            await BaseSetUp();
         }
 
         [TestCase]
@@ -84,7 +84,9 @@ namespace Azure.ResourceManager.Kusto.Tests.Scenario
 
             var eventHubDataConnectionDataCreate = new KustoEventHubDataConnection
             {
-                ConsumerGroup = "$Default", EventHubResourceId = TE.EventHubId, Location = Location,
+                ConsumerGroup = "$Default",
+                EventHubResourceId = TE.EventHubId,
+                Location = Location,
             };
 
             var eventHubDataConnectionDataUpdate = new KustoEventHubDataConnection

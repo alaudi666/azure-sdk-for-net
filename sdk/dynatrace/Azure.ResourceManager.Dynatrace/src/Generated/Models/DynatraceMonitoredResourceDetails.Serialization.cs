@@ -5,64 +5,200 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
+using Azure.ResourceManager.Dynatrace;
 
 namespace Azure.ResourceManager.Dynatrace.Models
 {
-    public partial class DynatraceMonitoredResourceDetails
+    /// <summary> Details of resource being monitored by Dynatrace monitor resource. </summary>
+    public partial class DynatraceMonitoredResourceDetails : IJsonModel<DynatraceMonitoredResourceDetails>
     {
-        internal static DynatraceMonitoredResourceDetails DeserializeDynatraceMonitoredResourceDetails(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DynatraceMonitoredResourceDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<ResourceIdentifier> id = default;
-            Optional<MetricsSendingStatus> sendingMetrics = default;
-            Optional<string> reasonForMetricsStatus = default;
-            Optional<LogsSendingStatus> sendingLogs = default;
-            Optional<string> reasonForLogsStatus = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceMonitoredResourceDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("id"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeDynatraceMonitoredResourceDetails(document.RootElement, options);
                     }
-                    id = new ResourceIdentifier(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("sendingMetrics"))
+                default:
+                    throw new FormatException($"The model {nameof(DynatraceMonitoredResourceDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<DynatraceMonitoredResourceDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceMonitoredResourceDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DynatraceMonitoredResourceDetails)} does not support writing '{format}' format.");
+            }
+            if (Optional.IsDefined(Id))
+            {
+                writer.WritePropertyName("id"u8);
+                writer.WriteStringValue(Id);
+            }
+            if (Optional.IsDefined(SendingMetricsStatus))
+            {
+                writer.WritePropertyName("sendingMetrics"u8);
+                writer.WriteStringValue(SendingMetricsStatus.Value.ToString());
+            }
+            if (Optional.IsDefined(ReasonForMetricsStatus))
+            {
+                writer.WritePropertyName("reasonForMetricsStatus"u8);
+                writer.WriteStringValue(ReasonForMetricsStatus);
+            }
+            if (Optional.IsDefined(SendingLogsStatus))
+            {
+                writer.WritePropertyName("sendingLogs"u8);
+                writer.WriteStringValue(SendingLogsStatus.Value.ToString());
+            }
+            if (Optional.IsDefined(ReasonForLogsStatus))
+            {
+                writer.WritePropertyName("reasonForLogsStatus"u8);
+                writer.WriteStringValue(ReasonForLogsStatus);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    sendingMetrics = new MetricsSendingStatus(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("reasonForMetricsStatus"))
-                {
-                    reasonForMetricsStatus = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("sendingLogs"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    sendingLogs = new LogsSendingStatus(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("reasonForLogsStatus"))
-                {
-                    reasonForLogsStatus = property.Value.GetString();
-                    continue;
+#endif
                 }
             }
-            return new DynatraceMonitoredResourceDetails(id.Value, Optional.ToNullable(sendingMetrics), reasonForMetricsStatus.Value, Optional.ToNullable(sendingLogs), reasonForLogsStatus.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DynatraceMonitoredResourceDetails IJsonModel<DynatraceMonitoredResourceDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual DynatraceMonitoredResourceDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceMonitoredResourceDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DynatraceMonitoredResourceDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDynatraceMonitoredResourceDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static DynatraceMonitoredResourceDetails DeserializeDynatraceMonitoredResourceDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ResourceIdentifier id = default;
+            MetricsSendingStatus? sendingMetricsStatus = default;
+            string reasonForMetricsStatus = default;
+            LogsSendingStatus? sendingLogsStatus = default;
+            string reasonForLogsStatus = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("id"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    id = new ResourceIdentifier(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("sendingMetrics"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    sendingMetricsStatus = new MetricsSendingStatus(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("reasonForMetricsStatus"u8))
+                {
+                    reasonForMetricsStatus = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("sendingLogs"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    sendingLogsStatus = new LogsSendingStatus(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("reasonForLogsStatus"u8))
+                {
+                    reasonForLogsStatus = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new DynatraceMonitoredResourceDetails(
+                id,
+                sendingMetricsStatus,
+                reasonForMetricsStatus,
+                sendingLogsStatus,
+                reasonForLogsStatus,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<DynatraceMonitoredResourceDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<DynatraceMonitoredResourceDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDynatraceContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(DynatraceMonitoredResourceDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        DynatraceMonitoredResourceDetails IPersistableModel<DynatraceMonitoredResourceDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<DynatraceMonitoredResourceDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

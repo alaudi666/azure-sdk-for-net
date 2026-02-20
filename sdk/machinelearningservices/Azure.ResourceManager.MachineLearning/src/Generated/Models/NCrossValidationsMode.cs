@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Determines how N-Cross validations value is determined.
-    /// Serialized Name: NCrossValidationsMode
-    /// </summary>
+    /// <summary> Determines how N-Cross validations value is determined. </summary>
     internal readonly partial struct NCrossValidationsMode : IEquatable<NCrossValidationsMode>
     {
         private readonly string _value;
@@ -28,21 +25,15 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string AutoValue = "Auto";
         private const string CustomValue = "Custom";
 
-        /// <summary>
-        /// Determine N-Cross validations value automatically. Supported only for &apos;Forecasting&apos; AutoML task.
-        /// Serialized Name: NCrossValidationsMode.Auto
-        /// </summary>
+        /// <summary> Determine N-Cross validations value automatically. Supported only for 'Forecasting' AutoML task. </summary>
         public static NCrossValidationsMode Auto { get; } = new NCrossValidationsMode(AutoValue);
-        /// <summary>
-        /// Use custom N-Cross validations value.
-        /// Serialized Name: NCrossValidationsMode.Custom
-        /// </summary>
+        /// <summary> Use custom N-Cross validations value. </summary>
         public static NCrossValidationsMode Custom { get; } = new NCrossValidationsMode(CustomValue);
         /// <summary> Determines if two <see cref="NCrossValidationsMode"/> values are the same. </summary>
         public static bool operator ==(NCrossValidationsMode left, NCrossValidationsMode right) => left.Equals(right);
         /// <summary> Determines if two <see cref="NCrossValidationsMode"/> values are not the same. </summary>
         public static bool operator !=(NCrossValidationsMode left, NCrossValidationsMode right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="NCrossValidationsMode"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="NCrossValidationsMode"/>. </summary>
         public static implicit operator NCrossValidationsMode(string value) => new NCrossValidationsMode(value);
 
         /// <inheritdoc />
@@ -53,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

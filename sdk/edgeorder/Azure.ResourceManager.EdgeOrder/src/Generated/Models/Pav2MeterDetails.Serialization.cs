@@ -6,58 +6,152 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
-    public partial class Pav2MeterDetails
+    /// <summary> Billing type PAV2 meter details. </summary>
+    public partial class Pav2MeterDetails : EdgeOrderProductMeterDetails, IJsonModel<Pav2MeterDetails>
     {
-        internal static Pav2MeterDetails DeserializePav2MeterDetails(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override EdgeOrderProductMeterDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<Guid> meterGuid = default;
-            BillingType billingType = default;
-            Optional<double> multiplier = default;
-            Optional<EdgeOrderProductChargingType> chargingType = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<Pav2MeterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("meterGuid"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializePav2MeterDetails(document.RootElement, options);
                     }
-                    meterGuid = property.Value.GetGuid();
+                default:
+                    throw new FormatException($"The model {nameof(Pav2MeterDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<Pav2MeterDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<Pav2MeterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(Pav2MeterDetails)} does not support writing '{format}' format.");
+            }
+            base.JsonModelWriteCore(writer, options);
+            if (options.Format != "W" && Optional.IsDefined(MeterGuid))
+            {
+                writer.WritePropertyName("meterGuid"u8);
+                writer.WriteStringValue(MeterGuid.Value);
+            }
+        }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        Pav2MeterDetails IJsonModel<Pav2MeterDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => (Pav2MeterDetails)JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override EdgeOrderProductMeterDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<Pav2MeterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(Pav2MeterDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializePav2MeterDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static Pav2MeterDetails DeserializePav2MeterDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            BillingType billingType = default;
+            double? multiplier = default;
+            EdgeOrderProductChargingType? chargingType = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            Guid? meterGuid = default;
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("billingType"u8))
+                {
+                    billingType = new BillingType(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("billingType"))
+                if (prop.NameEquals("multiplier"u8))
                 {
-                    billingType = new BillingType(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("multiplier"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    multiplier = property.Value.GetDouble();
+                    multiplier = prop.Value.GetDouble();
                     continue;
                 }
-                if (property.NameEquals("chargingType"))
+                if (prop.NameEquals("chargingType"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    chargingType = new EdgeOrderProductChargingType(property.Value.GetString());
+                    chargingType = new EdgeOrderProductChargingType(prop.Value.GetString());
                     continue;
+                }
+                if (prop.NameEquals("meterGuid"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    meterGuid = new Guid(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
                 }
             }
-            return new Pav2MeterDetails(billingType, Optional.ToNullable(multiplier), Optional.ToNullable(chargingType), Optional.ToNullable(meterGuid));
+            return new Pav2MeterDetails(billingType, multiplier, chargingType, additionalBinaryDataProperties, meterGuid);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<Pav2MeterDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<Pav2MeterDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerEdgeOrderContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(Pav2MeterDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        Pav2MeterDetails IPersistableModel<Pav2MeterDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => (Pav2MeterDetails)PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<Pav2MeterDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

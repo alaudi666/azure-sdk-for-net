@@ -1,18 +1,18 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System.Linq;
 using System.Threading.Tasks;
 using Azure.Core.TestFramework;
-using NUnit.Framework;
-using System.Linq;
 using Azure.ResourceManager.Chaos.Tests.TestDependencies;
+using NUnit.Framework;
 
 namespace Azure.ResourceManager.Chaos.Tests
 {
     public class TargetTypeTests : ChaosManagementTestBase
     {
         public TargetTypeTests(bool isAsync)
-            : base(isAsync)//, RecordedTestMode.Record)
+            : base(isAsync, RecordedTestMode.Playback)
         {
         }
 

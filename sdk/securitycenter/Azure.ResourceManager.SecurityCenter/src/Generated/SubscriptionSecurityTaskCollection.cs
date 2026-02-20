@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.SecurityCenter
 {
     /// <summary>
-    /// A class representing a collection of <see cref="SubscriptionSecurityTaskResource" /> and their operations.
-    /// Each <see cref="SubscriptionSecurityTaskResource" /> in the collection will belong to the same instance of <see cref="SecurityCenterLocationResource" />.
-    /// To get a <see cref="SubscriptionSecurityTaskCollection" /> instance call the GetSubscriptionSecurityTasks method from an instance of <see cref="SecurityCenterLocationResource" />.
+    /// A class representing a collection of <see cref="SubscriptionSecurityTaskResource"/> and their operations.
+    /// Each <see cref="SubscriptionSecurityTaskResource"/> in the collection will belong to the same instance of <see cref="SecurityCenterLocationResource"/>.
+    /// To get a <see cref="SubscriptionSecurityTaskCollection"/> instance call the GetSubscriptionSecurityTasks method from an instance of <see cref="SecurityCenterLocationResource"/>.
     /// </summary>
     public partial class SubscriptionSecurityTaskCollection : ArmCollection, IEnumerable<SubscriptionSecurityTaskResource>, IAsyncEnumerable<SubscriptionSecurityTaskResource>
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Recommended tasks that will help improve the security of the subscription proactively
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks/{taskName}
-        /// Operation Id: Tasks_GetSubscriptionLevelTask
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks/{taskName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Tasks_GetSubscriptionLevelTask</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2015-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityTaskResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="taskName"> Name of the task object, will be a GUID. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -84,8 +98,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Recommended tasks that will help improve the security of the subscription proactively
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks/{taskName}
-        /// Operation Id: Tasks_GetSubscriptionLevelTask
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks/{taskName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Tasks_GetSubscriptionLevelTask</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2015-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityTaskResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="taskName"> Name of the task object, will be a GUID. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -113,94 +143,86 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Recommended tasks that will help improve the security of the subscription proactively
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks
-        /// Operation Id: Tasks_ListByHomeRegion
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Tasks_ListByHomeRegion</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2015-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityTaskResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="filter"> OData filter. Optional. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="SubscriptionSecurityTaskResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="SubscriptionSecurityTaskResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<SubscriptionSecurityTaskResource> GetAllAsync(string filter = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<SubscriptionSecurityTaskResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _subscriptionSecurityTaskTasksClientDiagnostics.CreateScope("SubscriptionSecurityTaskCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _subscriptionSecurityTaskTasksRestClient.ListByHomeRegionAsync(Id.SubscriptionId, new AzureLocation(Id.Name), filter, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SubscriptionSecurityTaskResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<SubscriptionSecurityTaskResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _subscriptionSecurityTaskTasksClientDiagnostics.CreateScope("SubscriptionSecurityTaskCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _subscriptionSecurityTaskTasksRestClient.ListByHomeRegionNextPageAsync(nextLink, Id.SubscriptionId, new AzureLocation(Id.Name), filter, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new SubscriptionSecurityTaskResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _subscriptionSecurityTaskTasksRestClient.CreateListByHomeRegionRequest(Id.SubscriptionId, new AzureLocation(Id.Name), filter);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _subscriptionSecurityTaskTasksRestClient.CreateListByHomeRegionNextPageRequest(nextLink, Id.SubscriptionId, new AzureLocation(Id.Name), filter);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new SubscriptionSecurityTaskResource(Client, SecurityTaskData.DeserializeSecurityTaskData(e)), _subscriptionSecurityTaskTasksClientDiagnostics, Pipeline, "SubscriptionSecurityTaskCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Recommended tasks that will help improve the security of the subscription proactively
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks
-        /// Operation Id: Tasks_ListByHomeRegion
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Tasks_ListByHomeRegion</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2015-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityTaskResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="filter"> OData filter. Optional. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="SubscriptionSecurityTaskResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="SubscriptionSecurityTaskResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<SubscriptionSecurityTaskResource> GetAll(string filter = null, CancellationToken cancellationToken = default)
         {
-            Page<SubscriptionSecurityTaskResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _subscriptionSecurityTaskTasksClientDiagnostics.CreateScope("SubscriptionSecurityTaskCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _subscriptionSecurityTaskTasksRestClient.ListByHomeRegion(Id.SubscriptionId, new AzureLocation(Id.Name), filter, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SubscriptionSecurityTaskResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<SubscriptionSecurityTaskResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _subscriptionSecurityTaskTasksClientDiagnostics.CreateScope("SubscriptionSecurityTaskCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _subscriptionSecurityTaskTasksRestClient.ListByHomeRegionNextPage(nextLink, Id.SubscriptionId, new AzureLocation(Id.Name), filter, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new SubscriptionSecurityTaskResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _subscriptionSecurityTaskTasksRestClient.CreateListByHomeRegionRequest(Id.SubscriptionId, new AzureLocation(Id.Name), filter);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _subscriptionSecurityTaskTasksRestClient.CreateListByHomeRegionNextPageRequest(nextLink, Id.SubscriptionId, new AzureLocation(Id.Name), filter);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new SubscriptionSecurityTaskResource(Client, SecurityTaskData.DeserializeSecurityTaskData(e)), _subscriptionSecurityTaskTasksClientDiagnostics, Pipeline, "SubscriptionSecurityTaskCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks/{taskName}
-        /// Operation Id: Tasks_GetSubscriptionLevelTask
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks/{taskName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Tasks_GetSubscriptionLevelTask</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2015-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityTaskResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="taskName"> Name of the task object, will be a GUID. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -226,8 +248,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks/{taskName}
-        /// Operation Id: Tasks_GetSubscriptionLevelTask
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks/{taskName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Tasks_GetSubscriptionLevelTask</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2015-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityTaskResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="taskName"> Name of the task object, will be a GUID. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -243,6 +281,96 @@ namespace Azure.ResourceManager.SecurityCenter
             {
                 var response = _subscriptionSecurityTaskTasksRestClient.GetSubscriptionLevelTask(Id.SubscriptionId, new AzureLocation(Id.Name), taskName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks/{taskName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Tasks_GetSubscriptionLevelTask</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2015-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityTaskResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="taskName"> Name of the task object, will be a GUID. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="taskName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="taskName"/> is null. </exception>
+        public virtual async Task<NullableResponse<SubscriptionSecurityTaskResource>> GetIfExistsAsync(string taskName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(taskName, nameof(taskName));
+
+            using var scope = _subscriptionSecurityTaskTasksClientDiagnostics.CreateScope("SubscriptionSecurityTaskCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _subscriptionSecurityTaskTasksRestClient.GetSubscriptionLevelTaskAsync(Id.SubscriptionId, new AzureLocation(Id.Name), taskName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<SubscriptionSecurityTaskResource>(response.GetRawResponse());
+                return Response.FromValue(new SubscriptionSecurityTaskResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/providers/Microsoft.Security/locations/{ascLocation}/tasks/{taskName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Tasks_GetSubscriptionLevelTask</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2015-06-01-preview</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="SubscriptionSecurityTaskResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="taskName"> Name of the task object, will be a GUID. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="taskName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="taskName"/> is null. </exception>
+        public virtual NullableResponse<SubscriptionSecurityTaskResource> GetIfExists(string taskName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(taskName, nameof(taskName));
+
+            using var scope = _subscriptionSecurityTaskTasksClientDiagnostics.CreateScope("SubscriptionSecurityTaskCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _subscriptionSecurityTaskTasksRestClient.GetSubscriptionLevelTask(Id.SubscriptionId, new AzureLocation(Id.Name), taskName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<SubscriptionSecurityTaskResource>(response.GetRawResponse());
+                return Response.FromValue(new SubscriptionSecurityTaskResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

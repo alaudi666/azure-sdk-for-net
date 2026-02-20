@@ -7,14 +7,13 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.Analytics.Synapse.Artifacts.Models
 {
     /// <summary> Rest Service linked service. </summary>
     public partial class RestServiceLinkedService : LinkedService
     {
-        /// <summary> Initializes a new instance of RestServiceLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="RestServiceLinkedService"/>. </summary>
         /// <param name="url"> The base URL of the REST service. </param>
         /// <param name="authenticationType"> Type of authentication used to connect to the REST service. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="url"/> is null. </exception>
@@ -27,8 +26,9 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
             Type = "RestService";
         }
 
-        /// <summary> Initializes a new instance of RestServiceLinkedService. </summary>
+        /// <summary> Initializes a new instance of <see cref="RestServiceLinkedService"/>. </summary>
         /// <param name="type"> Type of linked service. </param>
+        /// <param name="version"> Version of the linked service. </param>
         /// <param name="connectVia"> The integration runtime reference. </param>
         /// <param name="description"> Linked service description. </param>
         /// <param name="parameters"> Parameters for linked service. </param>
@@ -43,9 +43,10 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
         /// The available derived classes include <see cref="AzureKeyVaultSecretReference"/> and <see cref="SecureString"/>.
         /// </param>
-        /// <param name="servicePrincipalId"> The application&apos;s client ID used in AadServicePrincipal authentication type. </param>
+        /// <param name="authHeaders"> The additional HTTP headers in the request to RESTful API used for authorization. Type: object (or Expression with resultType object). </param>
+        /// <param name="servicePrincipalId"> The application's client ID used in AadServicePrincipal authentication type. </param>
         /// <param name="servicePrincipalKey">
-        /// The application&apos;s key used in AadServicePrincipal authentication type.
+        /// The application's key used in AadServicePrincipal authentication type.
         /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
         /// The available derived classes include <see cref="AzureKeyVaultSecretReference"/> and <see cref="SecureString"/>.
         /// </param>
@@ -53,6 +54,7 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         /// <param name="azureCloudType"> Indicates the azure cloud type of the service principle auth. Allowed values are AzurePublic, AzureChina, AzureUsGovernment, AzureGermany. Default value is the data factory regions’ cloud type. Type: string (or Expression with resultType string). </param>
         /// <param name="aadResourceId"> The resource you are requesting authorization to use. </param>
         /// <param name="encryptedCredential"> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </param>
+        /// <param name="credential"> The credential reference containing authentication information. </param>
         /// <param name="clientId"> The client ID associated with your application. Type: string (or Expression with resultType string). </param>
         /// <param name="clientSecret">
         /// The client secret associated with your application.
@@ -62,24 +64,40 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         /// <param name="tokenEndpoint"> The token endpoint of the authorization server to acquire access token. Type: string (or Expression with resultType string). </param>
         /// <param name="resource"> The target service or resource to which the access will be requested. Type: string (or Expression with resultType string). </param>
         /// <param name="scope"> The scope of the access required. It describes what kind of access will be requested. Type: string (or Expression with resultType string). </param>
-        internal RestServiceLinkedService(string type, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<object> annotations, IDictionary<string, object> additionalProperties, object url, object enableServerCertificateValidation, RestServiceAuthenticationType authenticationType, object userName, SecretBase password, object servicePrincipalId, SecretBase servicePrincipalKey, object tenant, object azureCloudType, object aadResourceId, object encryptedCredential, object clientId, SecretBase clientSecret, object tokenEndpoint, object resource, object scope) : base(type, connectVia, description, parameters, annotations, additionalProperties)
+        /// <param name="servicePrincipalCredentialType"> The service principal credential type to use in Server-To-Server authentication. 'ServicePrincipalKey' for key/secret, 'ServicePrincipalCert' for certificate. Type: string (or Expression with resultType string). </param>
+        /// <param name="servicePrincipalEmbeddedCert">
+        /// Specify the base64 encoded certificate of your application registered in Azure Active Directory. Type: string (or Expression with resultType string).
+        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="AzureKeyVaultSecretReference"/> and <see cref="SecureString"/>.
+        /// </param>
+        /// <param name="servicePrincipalEmbeddedCertPassword">
+        /// Specify the password of your certificate if your certificate has a password and you are using AadServicePrincipal authentication. Type: string (or Expression with resultType string).
+        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="AzureKeyVaultSecretReference"/> and <see cref="SecureString"/>.
+        /// </param>
+        internal RestServiceLinkedService(string type, string version, IntegrationRuntimeReference connectVia, string description, IDictionary<string, ParameterSpecification> parameters, IList<object> annotations, IDictionary<string, object> additionalProperties, object url, object enableServerCertificateValidation, RestServiceAuthenticationType authenticationType, object userName, SecretBase password, object authHeaders, object servicePrincipalId, SecretBase servicePrincipalKey, object tenant, object azureCloudType, object aadResourceId, object encryptedCredential, CredentialReference credential, object clientId, SecretBase clientSecret, object tokenEndpoint, object resource, object scope, object servicePrincipalCredentialType, SecretBase servicePrincipalEmbeddedCert, SecretBase servicePrincipalEmbeddedCertPassword) : base(type, version, connectVia, description, parameters, annotations, additionalProperties)
         {
             Url = url;
             EnableServerCertificateValidation = enableServerCertificateValidation;
             AuthenticationType = authenticationType;
             UserName = userName;
             Password = password;
+            AuthHeaders = authHeaders;
             ServicePrincipalId = servicePrincipalId;
             ServicePrincipalKey = servicePrincipalKey;
             Tenant = tenant;
             AzureCloudType = azureCloudType;
             AadResourceId = aadResourceId;
             EncryptedCredential = encryptedCredential;
+            Credential = credential;
             ClientId = clientId;
             ClientSecret = clientSecret;
             TokenEndpoint = tokenEndpoint;
             Resource = resource;
             Scope = scope;
+            ServicePrincipalCredentialType = servicePrincipalCredentialType;
+            ServicePrincipalEmbeddedCert = servicePrincipalEmbeddedCert;
+            ServicePrincipalEmbeddedCertPassword = servicePrincipalEmbeddedCertPassword;
             Type = type ?? "RestService";
         }
 
@@ -97,10 +115,12 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         /// The available derived classes include <see cref="AzureKeyVaultSecretReference"/> and <see cref="SecureString"/>.
         /// </summary>
         public SecretBase Password { get; set; }
-        /// <summary> The application&apos;s client ID used in AadServicePrincipal authentication type. </summary>
+        /// <summary> The additional HTTP headers in the request to RESTful API used for authorization. Type: object (or Expression with resultType object). </summary>
+        public object AuthHeaders { get; set; }
+        /// <summary> The application's client ID used in AadServicePrincipal authentication type. </summary>
         public object ServicePrincipalId { get; set; }
         /// <summary>
-        /// The application&apos;s key used in AadServicePrincipal authentication type.
+        /// The application's key used in AadServicePrincipal authentication type.
         /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
         /// The available derived classes include <see cref="AzureKeyVaultSecretReference"/> and <see cref="SecureString"/>.
         /// </summary>
@@ -113,6 +133,8 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         public object AadResourceId { get; set; }
         /// <summary> The encrypted credential used for authentication. Credentials are encrypted using the integration runtime credential manager. Type: string (or Expression with resultType string). </summary>
         public object EncryptedCredential { get; set; }
+        /// <summary> The credential reference containing authentication information. </summary>
+        public CredentialReference Credential { get; set; }
         /// <summary> The client ID associated with your application. Type: string (or Expression with resultType string). </summary>
         public object ClientId { get; set; }
         /// <summary>
@@ -127,5 +149,19 @@ namespace Azure.Analytics.Synapse.Artifacts.Models
         public object Resource { get; set; }
         /// <summary> The scope of the access required. It describes what kind of access will be requested. Type: string (or Expression with resultType string). </summary>
         public object Scope { get; set; }
+        /// <summary> The service principal credential type to use in Server-To-Server authentication. 'ServicePrincipalKey' for key/secret, 'ServicePrincipalCert' for certificate. Type: string (or Expression with resultType string). </summary>
+        public object ServicePrincipalCredentialType { get; set; }
+        /// <summary>
+        /// Specify the base64 encoded certificate of your application registered in Azure Active Directory. Type: string (or Expression with resultType string).
+        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="AzureKeyVaultSecretReference"/> and <see cref="SecureString"/>.
+        /// </summary>
+        public SecretBase ServicePrincipalEmbeddedCert { get; set; }
+        /// <summary>
+        /// Specify the password of your certificate if your certificate has a password and you are using AadServicePrincipal authentication. Type: string (or Expression with resultType string).
+        /// Please note <see cref="SecretBase"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
+        /// The available derived classes include <see cref="AzureKeyVaultSecretReference"/> and <see cref="SecureString"/>.
+        /// </summary>
+        public SecretBase ServicePrincipalEmbeddedCertPassword { get; set; }
     }
 }

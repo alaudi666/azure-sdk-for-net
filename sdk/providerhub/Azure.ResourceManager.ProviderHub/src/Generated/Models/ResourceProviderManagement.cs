@@ -7,64 +7,19 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.Core;
 
 namespace Azure.ResourceManager.ProviderHub.Models
 {
     /// <summary> The ResourceProviderManagement. </summary>
     public partial class ResourceProviderManagement
     {
-        /// <summary> Initializes a new instance of ResourceProviderManagement. </summary>
-        public ResourceProviderManagement()
-        {
-            SchemaOwners = new ChangeTrackingList<string>();
-            ManifestOwners = new ChangeTrackingList<string>();
-            ServiceTreeInfos = new ChangeTrackingList<ServiceTreeInfo>();
-            ResourceAccessRoles = new ChangeTrackingList<BinaryData>();
-        }
-
-        /// <summary> Initializes a new instance of ResourceProviderManagement. </summary>
-        /// <param name="schemaOwners"></param>
-        /// <param name="manifestOwners"></param>
-        /// <param name="incidentRoutingService"></param>
-        /// <param name="incidentRoutingTeam"></param>
-        /// <param name="incidentContactEmail"></param>
-        /// <param name="serviceTreeInfos"></param>
-        /// <param name="resourceAccessPolicy"></param>
-        /// <param name="resourceAccessRoles"></param>
-        internal ResourceProviderManagement(IList<string> schemaOwners, IList<string> manifestOwners, string incidentRoutingService, string incidentRoutingTeam, string incidentContactEmail, IList<ServiceTreeInfo> serviceTreeInfos, ResourceProviderManagementResourceAccessPolicy? resourceAccessPolicy, IList<BinaryData> resourceAccessRoles)
-        {
-            SchemaOwners = schemaOwners;
-            ManifestOwners = manifestOwners;
-            IncidentRoutingService = incidentRoutingService;
-            IncidentRoutingTeam = incidentRoutingTeam;
-            IncidentContactEmail = incidentContactEmail;
-            ServiceTreeInfos = serviceTreeInfos;
-            ResourceAccessPolicy = resourceAccessPolicy;
-            ResourceAccessRoles = resourceAccessRoles;
-        }
-
-        /// <summary> Gets the schema owners. </summary>
-        public IList<string> SchemaOwners { get; }
-        /// <summary> Gets the manifest owners. </summary>
-        public IList<string> ManifestOwners { get; }
-        /// <summary> Gets or sets the incident routing service. </summary>
-        public string IncidentRoutingService { get; set; }
-        /// <summary> Gets or sets the incident routing team. </summary>
-        public string IncidentRoutingTeam { get; set; }
-        /// <summary> Gets or sets the incident contact email. </summary>
-        public string IncidentContactEmail { get; set; }
-        /// <summary> Gets the service tree infos. </summary>
-        public IList<ServiceTreeInfo> ServiceTreeInfos { get; }
-        /// <summary> Gets or sets the resource access policy. </summary>
-        public ResourceProviderManagementResourceAccessPolicy? ResourceAccessPolicy { get; set; }
         /// <summary>
-        /// Gets the resource access roles
+        /// Keeps track of any properties unknown to the library.
         /// <para>
-        /// To assign an object to the element of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
         /// </para>
         /// <para>
-        /// To assign an already formated json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
         /// </para>
         /// <para>
         /// Examples:
@@ -88,6 +43,98 @@ namespace Azure.ResourceManager.ProviderHub.Models
         /// </list>
         /// </para>
         /// </summary>
-        public IList<BinaryData> ResourceAccessRoles { get; }
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="ResourceProviderManagement"/>. </summary>
+        public ResourceProviderManagement()
+        {
+            SchemaOwners = new ChangeTrackingList<string>();
+            ManifestOwners = new ChangeTrackingList<string>();
+            AuthorizationOwners = new ChangeTrackingList<string>();
+            ServiceTreeInfos = new ChangeTrackingList<ServiceTreeInfo>();
+            ResourceAccessRoleList = new ChangeTrackingList<ResourceAccessRole>();
+            ExpeditedRolloutSubmitters = new ChangeTrackingList<string>();
+            CanaryManifestOwners = new ChangeTrackingList<string>();
+        }
+
+        /// <summary> Initializes a new instance of <see cref="ResourceProviderManagement"/>. </summary>
+        /// <param name="schemaOwners"> The schema owners. </param>
+        /// <param name="manifestOwners"> The manifest owners. </param>
+        /// <param name="authorizationOwners"> The authorization owners. </param>
+        /// <param name="incidentRoutingService"> The incident routing service. </param>
+        /// <param name="incidentRoutingTeam"> The incident routing team. </param>
+        /// <param name="incidentContactEmail"> The incident contact email. </param>
+        /// <param name="serviceTreeInfos"> The service tree infos. </param>
+        /// <param name="resourceAccessPolicy"> The resource access policy. </param>
+        /// <param name="resourceAccessRoleList"> The resource access roles. </param>
+        /// <param name="expeditedRolloutSubmitters"> List of expedited rollout submitters. </param>
+        /// <param name="errorResponseMessageOptions"> Options for error response messages. </param>
+        /// <param name="expeditedRolloutMetadata"> Metadata for expedited rollout. </param>
+        /// <param name="canaryManifestOwners"> List of manifest owners for canary. </param>
+        /// <param name="profitCenterCode"> The profit center code for the subscription. </param>
+        /// <param name="profitCenterProgramId"> The profit center program id for the subscription. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal ResourceProviderManagement(IList<string> schemaOwners, IList<string> manifestOwners, IList<string> authorizationOwners, string incidentRoutingService, string incidentRoutingTeam, string incidentContactEmail, IList<ServiceTreeInfo> serviceTreeInfos, ResourceAccessPolicy? resourceAccessPolicy, IList<ResourceAccessRole> resourceAccessRoleList, IList<string> expeditedRolloutSubmitters, ResourceProviderErrorResponseMessageOptions errorResponseMessageOptions, ExpeditedRolloutMetadata expeditedRolloutMetadata, IList<string> canaryManifestOwners, string profitCenterCode, string profitCenterProgramId, IDictionary<string, BinaryData> serializedAdditionalRawData)
+        {
+            SchemaOwners = schemaOwners;
+            ManifestOwners = manifestOwners;
+            AuthorizationOwners = authorizationOwners;
+            IncidentRoutingService = incidentRoutingService;
+            IncidentRoutingTeam = incidentRoutingTeam;
+            IncidentContactEmail = incidentContactEmail;
+            ServiceTreeInfos = serviceTreeInfos;
+            ResourceAccessPolicy = resourceAccessPolicy;
+            ResourceAccessRoleList = resourceAccessRoleList;
+            ExpeditedRolloutSubmitters = expeditedRolloutSubmitters;
+            ErrorResponseMessageOptions = errorResponseMessageOptions;
+            ExpeditedRolloutMetadata = expeditedRolloutMetadata;
+            CanaryManifestOwners = canaryManifestOwners;
+            ProfitCenterCode = profitCenterCode;
+            ProfitCenterProgramId = profitCenterProgramId;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
+        }
+
+        /// <summary> The schema owners. </summary>
+        public IList<string> SchemaOwners { get; }
+        /// <summary> The manifest owners. </summary>
+        public IList<string> ManifestOwners { get; }
+        /// <summary> The authorization owners. </summary>
+        public IList<string> AuthorizationOwners { get; }
+        /// <summary> The incident routing service. </summary>
+        public string IncidentRoutingService { get; set; }
+        /// <summary> The incident routing team. </summary>
+        public string IncidentRoutingTeam { get; set; }
+        /// <summary> The incident contact email. </summary>
+        public string IncidentContactEmail { get; set; }
+        /// <summary> The service tree infos. </summary>
+        public IList<ServiceTreeInfo> ServiceTreeInfos { get; }
+        /// <summary> The resource access policy. </summary>
+        public ResourceAccessPolicy? ResourceAccessPolicy { get; set; }
+        /// <summary> The resource access roles. </summary>
+        public IList<ResourceAccessRole> ResourceAccessRoleList { get; }
+        /// <summary> List of expedited rollout submitters. </summary>
+        public IList<string> ExpeditedRolloutSubmitters { get; }
+        /// <summary> Options for error response messages. </summary>
+        internal ResourceProviderErrorResponseMessageOptions ErrorResponseMessageOptions { get; set; }
+        /// <summary> Type of server failure response message. </summary>
+        public ServerFailureResponseMessageType? ServerFailureResponseMessageType
+        {
+            get => ErrorResponseMessageOptions is null ? default : ErrorResponseMessageOptions.ServerFailureResponseMessageType;
+            set
+            {
+                if (ErrorResponseMessageOptions is null)
+                    ErrorResponseMessageOptions = new ResourceProviderErrorResponseMessageOptions();
+                ErrorResponseMessageOptions.ServerFailureResponseMessageType = value;
+            }
+        }
+
+        /// <summary> Metadata for expedited rollout. </summary>
+        public ExpeditedRolloutMetadata ExpeditedRolloutMetadata { get; set; }
+        /// <summary> List of manifest owners for canary. </summary>
+        public IList<string> CanaryManifestOwners { get; }
+        /// <summary> The profit center code for the subscription. </summary>
+        public string ProfitCenterCode { get; set; }
+        /// <summary> The profit center program id for the subscription. </summary>
+        public string ProfitCenterProgramId { get; set; }
     }
 }

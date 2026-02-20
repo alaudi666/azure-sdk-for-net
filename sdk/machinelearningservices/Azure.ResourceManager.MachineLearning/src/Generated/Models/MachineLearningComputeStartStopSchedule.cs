@@ -5,103 +5,97 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Compute start stop schedule properties
-    /// Serialized Name: ComputeStartStopSchedule
-    /// </summary>
+    /// <summary> Compute start stop schedule properties. </summary>
     public partial class MachineLearningComputeStartStopSchedule
     {
-        /// <summary> Initializes a new instance of MachineLearningComputeStartStopSchedule. </summary>
-        internal MachineLearningComputeStartStopSchedule()
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="MachineLearningComputeStartStopSchedule"/>. </summary>
+        public MachineLearningComputeStartStopSchedule()
         {
         }
 
-        /// <summary> Initializes a new instance of MachineLearningComputeStartStopSchedule. </summary>
-        /// <param name="id">
-        /// A system assigned id for the schedule.
-        /// Serialized Name: ComputeStartStopSchedule.id
-        /// </param>
-        /// <param name="provisioningStatus">
-        /// The current deployment state of schedule.
-        /// Serialized Name: ComputeStartStopSchedule.provisioningStatus
-        /// </param>
-        /// <param name="status">
-        /// Is the schedule enabled or disabled?
-        /// Serialized Name: ComputeStartStopSchedule.status
-        /// </param>
-        /// <param name="action">
-        /// [Required] The compute power action.
-        /// Serialized Name: ComputeStartStopSchedule.action
-        /// </param>
-        /// <param name="triggerType">
-        /// [Required] The schedule trigger type.
-        /// Serialized Name: ComputeStartStopSchedule.triggerType
-        /// </param>
-        /// <param name="recurrence">
-        /// Required if triggerType is Recurrence.
-        /// Serialized Name: ComputeStartStopSchedule.recurrence
-        /// </param>
-        /// <param name="cron">
-        /// Required if triggerType is Cron.
-        /// Serialized Name: ComputeStartStopSchedule.cron
-        /// </param>
-        /// <param name="schedule">
-        /// [Deprecated] Not used any more.
-        /// Serialized Name: ComputeStartStopSchedule.schedule
-        /// </param>
-        internal MachineLearningComputeStartStopSchedule(string id, MachineLearningComputeProvisioningStatus? provisioningStatus, MachineLearningScheduleStatus? status, MachineLearningComputePowerAction? action, MachineLearningTriggerType? triggerType, MachineLearningRecurrenceTrigger recurrence, CronTrigger cron, MachineLearningScheduleBase schedule)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningComputeStartStopSchedule"/>. </summary>
+        /// <param name="id"> A system assigned id for the schedule. </param>
+        /// <param name="provisioningStatus"> The current deployment state of schedule. </param>
+        /// <param name="status"> Is the schedule enabled or disabled?. </param>
+        /// <param name="action"> [Required] The compute power action. </param>
+        /// <param name="triggerType"> [Required] The schedule trigger type. </param>
+        /// <param name="recurrenceSchedule"> Required if triggerType is Recurrence. </param>
+        /// <param name="cronSchedule"> Required if triggerType is Cron. </param>
+        /// <param name="schedule"> [Deprecated] Not used any more. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal MachineLearningComputeStartStopSchedule(string id, MachineLearningComputeProvisioningStatus? provisioningStatus, MachineLearningScheduleStatus? status, MachineLearningComputePowerAction? action, MachineLearningTriggerType? triggerType, ComputeStartStopRecurrenceSchedule recurrenceSchedule, ComputeStartStopCronSchedule cronSchedule, MachineLearningScheduleBase schedule, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             Id = id;
             ProvisioningStatus = provisioningStatus;
             Status = status;
             Action = action;
             TriggerType = triggerType;
-            Recurrence = recurrence;
-            Cron = cron;
+            RecurrenceSchedule = recurrenceSchedule;
+            CronSchedule = cronSchedule;
             Schedule = schedule;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary>
-        /// A system assigned id for the schedule.
-        /// Serialized Name: ComputeStartStopSchedule.id
-        /// </summary>
+        /// <summary> A system assigned id for the schedule. </summary>
+        [WirePath("id")]
         public string Id { get; }
-        /// <summary>
-        /// The current deployment state of schedule.
-        /// Serialized Name: ComputeStartStopSchedule.provisioningStatus
-        /// </summary>
+        /// <summary> The current deployment state of schedule. </summary>
+        [WirePath("provisioningStatus")]
         public MachineLearningComputeProvisioningStatus? ProvisioningStatus { get; }
-        /// <summary>
-        /// Is the schedule enabled or disabled?
-        /// Serialized Name: ComputeStartStopSchedule.status
-        /// </summary>
-        public MachineLearningScheduleStatus? Status { get; }
-        /// <summary>
-        /// [Required] The compute power action.
-        /// Serialized Name: ComputeStartStopSchedule.action
-        /// </summary>
-        public MachineLearningComputePowerAction? Action { get; }
-        /// <summary>
-        /// [Required] The schedule trigger type.
-        /// Serialized Name: ComputeStartStopSchedule.triggerType
-        /// </summary>
-        public MachineLearningTriggerType? TriggerType { get; }
-        /// <summary>
-        /// Required if triggerType is Recurrence.
-        /// Serialized Name: ComputeStartStopSchedule.recurrence
-        /// </summary>
-        public MachineLearningRecurrenceTrigger Recurrence { get; }
-        /// <summary>
-        /// Required if triggerType is Cron.
-        /// Serialized Name: ComputeStartStopSchedule.cron
-        /// </summary>
-        public CronTrigger Cron { get; }
-        /// <summary>
-        /// [Deprecated] Not used any more.
-        /// Serialized Name: ComputeStartStopSchedule.schedule
-        /// </summary>
-        public MachineLearningScheduleBase Schedule { get; }
+        /// <summary> Is the schedule enabled or disabled?. </summary>
+        [WirePath("status")]
+        public MachineLearningScheduleStatus? Status { get; set; }
+        /// <summary> [Required] The compute power action. </summary>
+        [WirePath("action")]
+        public MachineLearningComputePowerAction? Action { get; set; }
+        /// <summary> [Required] The schedule trigger type. </summary>
+        [WirePath("triggerType")]
+        public MachineLearningTriggerType? TriggerType { get; set; }
+        /// <summary> Required if triggerType is Recurrence. </summary>
+        [WirePath("recurrence")]
+        public ComputeStartStopRecurrenceSchedule RecurrenceSchedule { get; set; }
+        /// <summary> Required if triggerType is Cron. </summary>
+        [WirePath("cron")]
+        public ComputeStartStopCronSchedule CronSchedule { get; set; }
+        /// <summary> [Deprecated] Not used any more. </summary>
+        [WirePath("schedule")]
+        public MachineLearningScheduleBase Schedule { get; set; }
     }
 }

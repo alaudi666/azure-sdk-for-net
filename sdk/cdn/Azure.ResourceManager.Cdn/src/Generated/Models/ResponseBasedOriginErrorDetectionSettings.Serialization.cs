@@ -5,84 +5,241 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Cdn.Models
 {
-    public partial class ResponseBasedOriginErrorDetectionSettings : IUtf8JsonSerializable
+    public partial class ResponseBasedOriginErrorDetectionSettings : IUtf8JsonSerializable, IJsonModel<ResponseBasedOriginErrorDetectionSettings>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ResponseBasedOriginErrorDetectionSettings>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ResponseBasedOriginErrorDetectionSettings>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ResponseBasedOriginErrorDetectionSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ResponseBasedOriginErrorDetectionSettings)} does not support writing '{format}' format.");
+            }
+
             if (Optional.IsDefined(ResponseBasedDetectedErrorType))
             {
-                writer.WritePropertyName("responseBasedDetectedErrorTypes");
+                writer.WritePropertyName("responseBasedDetectedErrorTypes"u8);
                 writer.WriteStringValue(ResponseBasedDetectedErrorType.Value.ToSerialString());
             }
             if (Optional.IsDefined(ResponseBasedFailoverThresholdPercentage))
             {
-                writer.WritePropertyName("responseBasedFailoverThresholdPercentage");
+                writer.WritePropertyName("responseBasedFailoverThresholdPercentage"u8);
                 writer.WriteNumberValue(ResponseBasedFailoverThresholdPercentage.Value);
             }
             if (Optional.IsCollectionDefined(HttpErrorRanges))
             {
-                writer.WritePropertyName("httpErrorRanges");
+                writer.WritePropertyName("httpErrorRanges"u8);
                 writer.WriteStartArray();
                 foreach (var item in HttpErrorRanges)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static ResponseBasedOriginErrorDetectionSettings DeserializeResponseBasedOriginErrorDetectionSettings(JsonElement element)
+        ResponseBasedOriginErrorDetectionSettings IJsonModel<ResponseBasedOriginErrorDetectionSettings>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<ResponseBasedDetectedErrorType> responseBasedDetectedErrorTypes = default;
-            Optional<int> responseBasedFailoverThresholdPercentage = default;
-            Optional<IList<HttpErrorRange>> httpErrorRanges = default;
+            var format = options.Format == "W" ? ((IPersistableModel<ResponseBasedOriginErrorDetectionSettings>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ResponseBasedOriginErrorDetectionSettings)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeResponseBasedOriginErrorDetectionSettings(document.RootElement, options);
+        }
+
+        internal static ResponseBasedOriginErrorDetectionSettings DeserializeResponseBasedOriginErrorDetectionSettings(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ResponseBasedDetectedErrorType? responseBasedDetectedErrorTypes = default;
+            int? responseBasedFailoverThresholdPercentage = default;
+            IList<HttpErrorRange> httpErrorRanges = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("responseBasedDetectedErrorTypes"))
+                if (property.NameEquals("responseBasedDetectedErrorTypes"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     responseBasedDetectedErrorTypes = property.Value.GetString().ToResponseBasedDetectedErrorType();
                     continue;
                 }
-                if (property.NameEquals("responseBasedFailoverThresholdPercentage"))
+                if (property.NameEquals("responseBasedFailoverThresholdPercentage"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     responseBasedFailoverThresholdPercentage = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("httpErrorRanges"))
+                if (property.NameEquals("httpErrorRanges"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<HttpErrorRange> array = new List<HttpErrorRange>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(HttpErrorRange.DeserializeHttpErrorRange(item));
+                        array.Add(HttpErrorRange.DeserializeHttpErrorRange(item, options));
                     }
                     httpErrorRanges = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ResponseBasedOriginErrorDetectionSettings(Optional.ToNullable(responseBasedDetectedErrorTypes), Optional.ToNullable(responseBasedFailoverThresholdPercentage), Optional.ToList(httpErrorRanges));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ResponseBasedOriginErrorDetectionSettings(responseBasedDetectedErrorTypes, responseBasedFailoverThresholdPercentage, httpErrorRanges ?? new ChangeTrackingList<HttpErrorRange>(), serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ResponseBasedDetectedErrorType), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  responseBasedDetectedErrorTypes: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ResponseBasedDetectedErrorType))
+                {
+                    builder.Append("  responseBasedDetectedErrorTypes: ");
+                    builder.AppendLine($"'{ResponseBasedDetectedErrorType.Value.ToSerialString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ResponseBasedFailoverThresholdPercentage), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  responseBasedFailoverThresholdPercentage: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ResponseBasedFailoverThresholdPercentage))
+                {
+                    builder.Append("  responseBasedFailoverThresholdPercentage: ");
+                    builder.AppendLine($"{ResponseBasedFailoverThresholdPercentage.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(HttpErrorRanges), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  httpErrorRanges: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(HttpErrorRanges))
+                {
+                    if (HttpErrorRanges.Any())
+                    {
+                        builder.Append("  httpErrorRanges: ");
+                        builder.AppendLine("[");
+                        foreach (var item in HttpErrorRanges)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  httpErrorRanges: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<ResponseBasedOriginErrorDetectionSettings>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ResponseBasedOriginErrorDetectionSettings>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerCdnContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(ResponseBasedOriginErrorDetectionSettings)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ResponseBasedOriginErrorDetectionSettings IPersistableModel<ResponseBasedOriginErrorDetectionSettings>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ResponseBasedOriginErrorDetectionSettings>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeResponseBasedOriginErrorDetectionSettings(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ResponseBasedOriginErrorDetectionSettings)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ResponseBasedOriginErrorDetectionSettings>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

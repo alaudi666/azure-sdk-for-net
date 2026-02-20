@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Grafana.Models;
@@ -12,44 +13,44 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Grafana
 {
-    /// <summary> A class representing the ManagedGrafana data model. </summary>
+    /// <summary> The grafana resource type. </summary>
     public partial class ManagedGrafanaData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of ManagedGrafanaData. </summary>
-        /// <param name="location"> The location. </param>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedGrafanaData"/>. </summary>
+        /// <param name="location"> The geo-location where the resource lives. </param>
         public ManagedGrafanaData(AzureLocation location) : base(location)
         {
         }
 
-        /// <summary> Initializes a new instance of ManagedGrafanaData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="tags"> The tags. </param>
-        /// <param name="location"> The location. </param>
-        /// <param name="sku"> The Sku of the grafana resource. </param>
+        /// <summary> Initializes a new instance of <see cref="ManagedGrafanaData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="location"> The geo-location where the resource lives. </param>
         /// <param name="properties"> Properties specific to the grafana resource. </param>
-        /// <param name="identity"> The managed identity of the grafana resource. </param>
-        internal ManagedGrafanaData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, ManagedGrafanaSku sku, ManagedGrafanaProperties properties, ManagedServiceIdentity identity) : base(id, name, resourceType, systemData, tags, location)
+        /// <param name="sku"> The Sku of the grafana resource. </param>
+        /// <param name="tags"> Resource tags. </param>
+        /// <param name="identity"> The managed service identities assigned to this resource. </param>
+        internal ManagedGrafanaData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, AzureLocation location, ManagedGrafanaProperties properties, ManagedGrafanaSku sku, IDictionary<string, string> tags, ManagedServiceIdentity identity) : base(id, name, resourceType, systemData, tags, location)
         {
-            Sku = sku;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
             Properties = properties;
+            Sku = sku;
             Identity = identity;
-        }
-
-        /// <summary> The Sku of the grafana resource. </summary>
-        internal ManagedGrafanaSku Sku { get; set; }
-        /// <summary> Gets or sets the sku name. </summary>
-        public string SkuName
-        {
-            get => Sku is null ? default : Sku.Name;
-            set => Sku = new ManagedGrafanaSku(value);
         }
 
         /// <summary> Properties specific to the grafana resource. </summary>
         public ManagedGrafanaProperties Properties { get; set; }
-        /// <summary> The managed identity of the grafana resource. </summary>
+
+        /// <summary> The Sku of the grafana resource. </summary>
+        public ManagedGrafanaSku Sku { get; set; }
+
+        /// <summary> The managed service identities assigned to this resource. </summary>
         public ManagedServiceIdentity Identity { get; set; }
     }
 }

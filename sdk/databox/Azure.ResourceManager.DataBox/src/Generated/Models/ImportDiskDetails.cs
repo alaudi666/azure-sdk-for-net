@@ -6,14 +6,18 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Import disk details. </summary>
     public partial class ImportDiskDetails
     {
-        /// <summary> Initializes a new instance of ImportDiskDetails. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ImportDiskDetails"/>. </summary>
         /// <param name="manifestFile"> The relative path of the manifest file on the disk. </param>
         /// <param name="manifestHash"> The Base16-encoded MD5 hash of the manifest file on the disk. </param>
         /// <param name="bitLockerKey"> BitLocker key used to encrypt the disk. </param>
@@ -29,25 +33,30 @@ namespace Azure.ResourceManager.DataBox.Models
             BitLockerKey = bitLockerKey;
         }
 
-        /// <summary> Initializes a new instance of ImportDiskDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="ImportDiskDetails"/>. </summary>
         /// <param name="manifestFile"> The relative path of the manifest file on the disk. </param>
         /// <param name="manifestHash"> The Base16-encoded MD5 hash of the manifest file on the disk. </param>
         /// <param name="bitLockerKey"> BitLocker key used to encrypt the disk. </param>
         /// <param name="backupManifestCloudPath"> Path to backed up manifest, only returned if enableManifestBackup is true. </param>
-        internal ImportDiskDetails(string manifestFile, string manifestHash, string bitLockerKey, string backupManifestCloudPath)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ImportDiskDetails(string manifestFile, string manifestHash, string bitLockerKey, string backupManifestCloudPath, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ManifestFile = manifestFile;
             ManifestHash = manifestHash;
             BitLockerKey = bitLockerKey;
             BackupManifestCloudPath = backupManifestCloudPath;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The relative path of the manifest file on the disk. </summary>
         public string ManifestFile { get; set; }
+
         /// <summary> The Base16-encoded MD5 hash of the manifest file on the disk. </summary>
         public string ManifestHash { get; set; }
+
         /// <summary> BitLocker key used to encrypt the disk. </summary>
         public string BitLockerKey { get; set; }
+
         /// <summary> Path to backed up manifest, only returned if enableManifestBackup is true. </summary>
         public string BackupManifestCloudPath { get; }
     }

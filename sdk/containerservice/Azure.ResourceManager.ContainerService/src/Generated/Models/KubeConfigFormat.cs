@@ -10,7 +10,10 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.ContainerService.Models
 {
-    /// <summary> The KubeConfigFormat. </summary>
+    /// <summary>
+    /// The KubeConfigFormat.
+    /// Serialized Name: Format
+    /// </summary>
     public readonly partial struct KubeConfigFormat : IEquatable<KubeConfigFormat>
     {
         private readonly string _value;
@@ -25,15 +28,21 @@ namespace Azure.ResourceManager.ContainerService.Models
         private const string AzureValue = "azure";
         private const string ExecValue = "exec";
 
-        /// <summary> Return azure auth-provider kubeconfig. This format is deprecated in 1.22 and will be fully removed in 1.25. </summary>
+        /// <summary>
+        /// Return azure auth-provider kubeconfig. This format is deprecated in v1.22 and will be fully removed in v1.26. See: https://aka.ms/k8s/changes-1-26.
+        /// Serialized Name: Format.azure
+        /// </summary>
         public static KubeConfigFormat Azure { get; } = new KubeConfigFormat(AzureValue);
-        /// <summary> Return exec format kubeconfig. This format requires kubelogin binary in the path. </summary>
+        /// <summary>
+        /// Return exec format kubeconfig. This format requires kubelogin binary in the path.
+        /// Serialized Name: Format.exec
+        /// </summary>
         public static KubeConfigFormat Exec { get; } = new KubeConfigFormat(ExecValue);
         /// <summary> Determines if two <see cref="KubeConfigFormat"/> values are the same. </summary>
         public static bool operator ==(KubeConfigFormat left, KubeConfigFormat right) => left.Equals(right);
         /// <summary> Determines if two <see cref="KubeConfigFormat"/> values are not the same. </summary>
         public static bool operator !=(KubeConfigFormat left, KubeConfigFormat right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="KubeConfigFormat"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="KubeConfigFormat"/>. </summary>
         public static implicit operator KubeConfigFormat(string value) => new KubeConfigFormat(value);
 
         /// <inheritdoc />
@@ -44,7 +53,7 @@ namespace Azure.ResourceManager.ContainerService.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

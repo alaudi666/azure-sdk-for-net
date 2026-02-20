@@ -2,9 +2,9 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Azure.Messaging.EventHubs.Producer;
-using System.Security.Cryptography;
 
 namespace Azure.Messaging.EventHubs.Stress;
 
@@ -21,6 +21,18 @@ public class TestParameters : IDisposable
     /// </summary>
     ///
     public string EventHubsConnectionString = string.Empty;
+
+    /// <summary>
+    ///   The job index of this test.
+    /// </summary>
+    ///
+    public int JobIndex = default;
+
+    /// <summary>
+    ///   If this instance of the test should run all the roles in parallel.
+    /// </summary>
+    ///
+    public bool RunAllRoles = false;
 
     /// <summary>
     ///   The name of the Event Hub to use for a test run.

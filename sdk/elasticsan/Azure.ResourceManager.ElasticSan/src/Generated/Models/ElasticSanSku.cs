@@ -5,29 +5,38 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.ElasticSan.Models
 {
     /// <summary> The SKU name. Required for account creation; optional for update. </summary>
     public partial class ElasticSanSku
     {
-        /// <summary> Initializes a new instance of ElasticSanSku. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ElasticSanSku"/>. </summary>
         /// <param name="name"> The sku name. </param>
         public ElasticSanSku(ElasticSanSkuName name)
         {
             Name = name;
         }
 
-        /// <summary> Initializes a new instance of ElasticSanSku. </summary>
+        /// <summary> Initializes a new instance of <see cref="ElasticSanSku"/>. </summary>
         /// <param name="name"> The sku name. </param>
         /// <param name="tier"> The sku tier. </param>
-        internal ElasticSanSku(ElasticSanSkuName name, ElasticSanSkuTier? tier)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ElasticSanSku(ElasticSanSkuName name, ElasticSanSkuTier? tier, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Name = name;
             Tier = tier;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The sku name. </summary>
         public ElasticSanSkuName Name { get; set; }
+
         /// <summary> The sku tier. </summary>
         public ElasticSanSkuTier? Tier { get; set; }
     }

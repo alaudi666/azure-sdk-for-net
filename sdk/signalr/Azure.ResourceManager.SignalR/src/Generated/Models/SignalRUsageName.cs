@@ -5,28 +5,40 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.SignalR;
+
 namespace Azure.ResourceManager.SignalR.Models
 {
     /// <summary> Localizable String object containing the name and a localized value. </summary>
     public partial class SignalRUsageName
     {
-        /// <summary> Initializes a new instance of SignalRUsageName. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRUsageName"/>. </summary>
         internal SignalRUsageName()
         {
         }
 
-        /// <summary> Initializes a new instance of SignalRUsageName. </summary>
+        /// <summary> Initializes a new instance of <see cref="SignalRUsageName"/>. </summary>
         /// <param name="value"> The identifier of the usage. </param>
         /// <param name="localizedValue"> Localized name of the usage. </param>
-        internal SignalRUsageName(string value, string localizedValue)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRUsageName(string value, string localizedValue, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             LocalizedValue = localizedValue;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The identifier of the usage. </summary>
+        [WirePath("value")]
         public string Value { get; }
+
         /// <summary> Localized name of the usage. </summary>
+        [WirePath("localizedValue")]
         public string LocalizedValue { get; }
     }
 }

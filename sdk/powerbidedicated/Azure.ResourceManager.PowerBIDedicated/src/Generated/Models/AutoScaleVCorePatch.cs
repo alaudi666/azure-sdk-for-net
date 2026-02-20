@@ -5,25 +5,61 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.PowerBIDedicated;
 
 namespace Azure.ResourceManager.PowerBIDedicated.Models
 {
     /// <summary> Update request specification. </summary>
     public partial class AutoScaleVCorePatch
     {
-        /// <summary> Initializes a new instance of AutoScaleVCorePatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="AutoScaleVCorePatch"/>. </summary>
         public AutoScaleVCorePatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="AutoScaleVCorePatch"/>. </summary>
+        /// <param name="sku"> The SKU of the auto scale v-core resource. </param>
+        /// <param name="tags"> Key-value pairs of additional provisioning properties. </param>
+        /// <param name="properties"> Properties of the update operation request. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal AutoScaleVCorePatch(AutoScaleVCoreSku sku, IDictionary<string, string> tags, AutoScaleVCoreMutableProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Sku = sku;
+            Tags = tags;
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> The SKU of the auto scale v-core resource. </summary>
         public AutoScaleVCoreSku Sku { get; set; }
+
         /// <summary> Key-value pairs of additional provisioning properties. </summary>
         public IDictionary<string, string> Tags { get; }
+
+        /// <summary> Properties of the update operation request. </summary>
+        internal AutoScaleVCoreMutableProperties Properties { get; set; }
+
         /// <summary> The maximum capacity of an auto scale v-core resource. </summary>
-        public int? CapacityLimit { get; set; }
+        public int? CapacityLimit
+        {
+            get
+            {
+                return Properties is null ? default : Properties.CapacityLimit;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new AutoScaleVCoreMutableProperties();
+                }
+                Properties.CapacityLimit = value.Value;
+            }
+        }
     }
 }

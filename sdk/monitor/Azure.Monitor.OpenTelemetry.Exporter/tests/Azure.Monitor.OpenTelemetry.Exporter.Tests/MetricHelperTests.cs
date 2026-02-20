@@ -29,21 +29,39 @@ namespace Azure.Monitor.OpenTelemetry.Exporter.Tests
                 .Build();
 
             var doubleCounter = meter.CreateCounter<double>("TestDoubleCounter");
-            doubleCounter.Add(123.45);
+            doubleCounter.Add(123.45, new("tag0", null), new("tag1", "value1"), new("tag2", new[] { 1, 2, 3 }), new("tag3", new object?[] { null, null }));
             provider.ForceFlush();
 
-            var telemetryItems = MetricHelper.OtelToAzureMonitorMetrics(new Batch<Metric>(metrics.ToArray(), 1), "testRoleName", "testRoleInstance", "00000000-0000-0000-0000-000000000000");
+            var metricResource = new AzureMonitorResource(
+                roleName: "testRoleName",
+                roleInstance: "testRoleInstance",
+                serviceVersion: null,
+                monitorBaseData: null);
+            (var telemetryItems, var telemetryCounter) = MetricHelper.OtelToAzureMonitorMetrics(new Batch<Metric>(metrics.ToArray(), 1), metricResource, "00000000-0000-0000-0000-000000000000");
             Assert.Single(telemetryItems);
             Assert.Equal("MetricData", telemetryItems[0].Data.BaseType);
             Assert.Equal("00000000-0000-0000-0000-000000000000", telemetryItems[0].InstrumentationKey);
-            Assert.Equal("testRoleName", telemetryItems[0].Tags[ContextTagKeys.AiCloudRole.ToString()]);
-            Assert.Equal("testRoleInstance", telemetryItems[0].Tags[ContextTagKeys.AiCloudRoleInstance.ToString()]);
+            Assert.Equal(metricResource.RoleName, telemetryItems[0].Tags[ContextTagKeys.AiCloudRole.ToString()]);
+            Assert.Equal(metricResource.RoleInstance, telemetryItems[0].Tags[ContextTagKeys.AiCloudRoleInstance.ToString()]);
 
             var metricsData = (MetricsData)telemetryItems[0].Data.BaseData;
             Assert.Equal(2, metricsData.Version);
             Assert.Equal("TestDoubleCounter", metricsData.Metrics.First().Name);
             Assert.Equal(123.45, metricsData.Metrics.First().Value);
             Assert.Null(metricsData.Metrics.First().DataPointType);
+
+            Assert.Equal(3, metricsData.Properties.Count);
+            Assert.Contains(metricsData.Properties, kvp => kvp.Key == "tag1" && kvp.Value == "value1");
+            Assert.Contains(metricsData.Properties, kvp => kvp.Key == "tag2" && kvp.Value == "1,2,3");
+            Assert.Contains(metricsData.Properties, kvp => kvp.Key == "tag3" && kvp.Value == string.Empty);
+
+            // Validate TelemetryCounter
+            Assert.Equal(1, telemetryCounter._metricCount);
+            Assert.Equal(0, telemetryCounter._requestCount);
+            Assert.Equal(0, telemetryCounter._dependencyCount);
+            Assert.Equal(0, telemetryCounter._exceptionCount);
+            Assert.Equal(0, telemetryCounter._eventCount);
+            Assert.Equal(0, telemetryCounter._traceCount);
         }
     }
 }

@@ -5,43 +5,53 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Credential details of the shares in account. </summary>
     public partial class ShareCredentialDetails
     {
-        /// <summary> Initializes a new instance of ShareCredentialDetails. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ShareCredentialDetails"/>. </summary>
         internal ShareCredentialDetails()
         {
             SupportedAccessProtocols = new ChangeTrackingList<DataBoxAccessProtocol>();
         }
 
-        /// <summary> Initializes a new instance of ShareCredentialDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="ShareCredentialDetails"/>. </summary>
         /// <param name="shareName"> Name of the share. </param>
         /// <param name="shareType"> Type of the share. </param>
         /// <param name="userName"> User name for the share. </param>
         /// <param name="password"> Password for the share. </param>
         /// <param name="supportedAccessProtocols"> Access protocols supported on the device. </param>
-        internal ShareCredentialDetails(string shareName, ShareDestinationFormatType? shareType, string userName, string password, IReadOnlyList<DataBoxAccessProtocol> supportedAccessProtocols)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ShareCredentialDetails(string shareName, ShareDestinationFormatType? shareType, string userName, string password, IReadOnlyList<DataBoxAccessProtocol> supportedAccessProtocols, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ShareName = shareName;
             ShareType = shareType;
             UserName = userName;
             Password = password;
             SupportedAccessProtocols = supportedAccessProtocols;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Name of the share. </summary>
         public string ShareName { get; }
+
         /// <summary> Type of the share. </summary>
         public ShareDestinationFormatType? ShareType { get; }
+
         /// <summary> User name for the share. </summary>
         public string UserName { get; }
+
         /// <summary> Password for the share. </summary>
         public string Password { get; }
+
         /// <summary> Access protocols supported on the device. </summary>
         public IReadOnlyList<DataBoxAccessProtocol> SupportedAccessProtocols { get; }
     }

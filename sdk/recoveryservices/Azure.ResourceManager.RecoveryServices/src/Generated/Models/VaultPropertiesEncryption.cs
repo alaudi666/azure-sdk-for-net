@@ -6,45 +6,58 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.RecoveryServices.Models
 {
     /// <summary> Customer Managed Key details of the resource. </summary>
     public partial class VaultPropertiesEncryption
     {
-        /// <summary> Initializes a new instance of VaultPropertiesEncryption. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="VaultPropertiesEncryption"/>. </summary>
         public VaultPropertiesEncryption()
         {
         }
 
-        /// <summary> Initializes a new instance of VaultPropertiesEncryption. </summary>
+        /// <summary> Initializes a new instance of <see cref="VaultPropertiesEncryption"/>. </summary>
         /// <param name="keyVaultProperties"> The properties of the Key Vault which hosts CMK. </param>
         /// <param name="kekIdentity"> The details of the identity used for CMK. </param>
         /// <param name="infrastructureEncryption"> Enabling/Disabling the Double Encryption state. </param>
-        internal VaultPropertiesEncryption(CmkKeyVaultProperties keyVaultProperties, CmkKekIdentity kekIdentity, InfrastructureEncryptionState? infrastructureEncryption)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal VaultPropertiesEncryption(CmkKeyVaultProperties keyVaultProperties, CmkKekIdentity kekIdentity, InfrastructureEncryptionState? infrastructureEncryption, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             KeyVaultProperties = keyVaultProperties;
             KekIdentity = kekIdentity;
             InfrastructureEncryption = infrastructureEncryption;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The properties of the Key Vault which hosts CMK. </summary>
         internal CmkKeyVaultProperties KeyVaultProperties { get; set; }
-        /// <summary> The key uri of the Customer Managed Key. </summary>
-        public Uri KeyUri
-        {
-            get => KeyVaultProperties is null ? default : KeyVaultProperties.KeyUri;
-            set
-            {
-                if (KeyVaultProperties is null)
-                    KeyVaultProperties = new CmkKeyVaultProperties();
-                KeyVaultProperties.KeyUri = value;
-            }
-        }
 
         /// <summary> The details of the identity used for CMK. </summary>
         public CmkKekIdentity KekIdentity { get; set; }
+
         /// <summary> Enabling/Disabling the Double Encryption state. </summary>
         public InfrastructureEncryptionState? InfrastructureEncryption { get; set; }
+
+        /// <summary> The key uri of the Customer Managed Key. </summary>
+        public Uri KeyUri
+        {
+            get
+            {
+                return KeyVaultProperties is null ? default : KeyVaultProperties.KeyUri;
+            }
+            set
+            {
+                if (KeyVaultProperties is null)
+                {
+                    KeyVaultProperties = new CmkKeyVaultProperties();
+                }
+                KeyVaultProperties.KeyUri = value;
+            }
+        }
     }
 }

@@ -10,6 +10,7 @@ namespace Azure.Communication.CallingServer.Tests.MediaStreaming
     internal class CallAutomationStreamingParserTests
     {
         [Test]
+        [Ignore("Disabling this test as the library is flagged for decomissioning.")]
         public void ParseMetadata_Test()
         {
             string metadataJson = "{"
@@ -27,6 +28,7 @@ namespace Azure.Communication.CallingServer.Tests.MediaStreaming
         }
 
         [Test]
+        [Ignore("Disabling this test as the library is flagged for decomissioning.")]
         public void ParseAudio_Test()
         {
             string audioJson = "{"
@@ -36,11 +38,12 @@ namespace Azure.Communication.CallingServer.Tests.MediaStreaming
                 + "\"isSilence\": false"
                 + "}";
 
-            MediaStreamingAudio streamingAudio = (MediaStreamingAudio) MediaStreamingPackageParser.Parse(audioJson);
+            MediaStreamingAudio streamingAudio = (MediaStreamingAudio)MediaStreamingPackageParser.Parse(audioJson);
             ValidateAudioData(streamingAudio);
         }
 
         [Test]
+        [Ignore("Disabling this test as the library is flagged for decomissioning.")]
         public void ParseBinaryData()
         {
             JObject jsonData = new JObject();
@@ -56,6 +59,7 @@ namespace Azure.Communication.CallingServer.Tests.MediaStreaming
         }
 
         [Test]
+        [Ignore("Disabling this test as the library is flagged for decomissioning.")]
         public void ParseAudioEventsWithBynaryArray()
         {
             JObject jsonAudio = new JObject();
@@ -65,7 +69,7 @@ namespace Azure.Communication.CallingServer.Tests.MediaStreaming
             jsonAudio["isSilence"] = false;
 
             byte[] receivedBytes = System.Text.Encoding.UTF8.GetBytes(jsonAudio.ToString());
-            MediaStreamingAudio parsedPackage = (MediaStreamingAudio) MediaStreamingPackageParser.Parse(receivedBytes);
+            MediaStreamingAudio parsedPackage = (MediaStreamingAudio)MediaStreamingPackageParser.Parse(receivedBytes);
 
             Assert.NotNull(parsedPackage);
             ValidateAudioData(parsedPackage);

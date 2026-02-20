@@ -5,32 +5,40 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.KeyVault.Models;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.KeyVault
 {
-    /// <summary> A class representing the DeletedManagedHsm data model. </summary>
+    /// <summary> Concrete proxy resource types can be created by aliasing this type using a specific property type. </summary>
     public partial class DeletedManagedHsmData : ResourceData
     {
-        /// <summary> Initializes a new instance of DeletedManagedHsmData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DeletedManagedHsmData"/>. </summary>
         internal DeletedManagedHsmData()
         {
         }
 
-        /// <summary> Initializes a new instance of DeletedManagedHsmData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
+        /// <summary> Initializes a new instance of <see cref="DeletedManagedHsmData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
         /// <param name="properties"> Properties of the deleted managed HSM. </param>
-        internal DeletedManagedHsmData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, DeletedManagedHsmProperties properties) : base(id, name, resourceType, systemData)
+        internal DeletedManagedHsmData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, DeletedManagedHsmProperties properties) : base(id, name, resourceType, systemData)
         {
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
             Properties = properties;
         }
 
         /// <summary> Properties of the deleted managed HSM. </summary>
+        [WirePath("properties")]
         public DeletedManagedHsmProperties Properties { get; }
     }
 }

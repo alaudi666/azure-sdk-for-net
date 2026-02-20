@@ -6,65 +6,169 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.KeyVault;
 
 namespace Azure.ResourceManager.KeyVault.Models
 {
-    public partial class KeyVaultAccessPolicy : IUtf8JsonSerializable
+    /// <summary> An identity that have access to the key vault. All identities in the array must use the same tenant ID as the key vault's tenant ID. </summary>
+    public partial class KeyVaultAccessPolicy : IJsonModel<KeyVaultAccessPolicy>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="KeyVaultAccessPolicy"/> for deserialization. </summary>
+        internal KeyVaultAccessPolicy()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual KeyVaultAccessPolicy PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<KeyVaultAccessPolicy>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeKeyVaultAccessPolicy(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(KeyVaultAccessPolicy)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<KeyVaultAccessPolicy>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("tenantId");
-            writer.WriteStringValue(TenantId);
-            writer.WritePropertyName("objectId");
-            writer.WriteStringValue(ObjectId);
-            if (Optional.IsDefined(ApplicationId))
-            {
-                writer.WritePropertyName("applicationId");
-                writer.WriteStringValue(ApplicationId.Value);
-            }
-            writer.WritePropertyName("permissions");
-            writer.WriteObjectValue(Permissions);
+            JsonModelWriteCore(writer, options);
             writer.WriteEndObject();
         }
 
-        internal static KeyVaultAccessPolicy DeserializeKeyVaultAccessPolicy(JsonElement element)
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
-            Guid tenantId = default;
-            string objectId = default;
-            Optional<Guid> applicationId = default;
-            IdentityAccessPermissions permissions = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<KeyVaultAccessPolicy>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("tenantId"))
+                throw new FormatException($"The model {nameof(KeyVaultAccessPolicy)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("tenantId"u8);
+            writer.WriteStringValue(TenantId);
+            writer.WritePropertyName("objectId"u8);
+            writer.WriteStringValue(ObjectId);
+            if (Optional.IsDefined(ApplicationId))
+            {
+                writer.WritePropertyName("applicationId"u8);
+                writer.WriteStringValue(ApplicationId.Value);
+            }
+            writer.WritePropertyName("permissions"u8);
+            writer.WriteObjectValue(Permissions, options);
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    tenantId = property.Value.GetGuid();
-                    continue;
-                }
-                if (property.NameEquals("objectId"))
-                {
-                    objectId = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("applicationId"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    applicationId = property.Value.GetGuid();
-                    continue;
-                }
-                if (property.NameEquals("permissions"))
-                {
-                    permissions = IdentityAccessPermissions.DeserializeIdentityAccessPermissions(property.Value);
-                    continue;
+#endif
                 }
             }
-            return new KeyVaultAccessPolicy(tenantId, objectId, Optional.ToNullable(applicationId), permissions);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        KeyVaultAccessPolicy IJsonModel<KeyVaultAccessPolicy>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual KeyVaultAccessPolicy JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<KeyVaultAccessPolicy>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(KeyVaultAccessPolicy)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeKeyVaultAccessPolicy(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static KeyVaultAccessPolicy DeserializeKeyVaultAccessPolicy(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            Guid tenantId = default;
+            string objectId = default;
+            Guid? applicationId = default;
+            IdentityAccessPermissions permissions = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("tenantId"u8))
+                {
+                    tenantId = new Guid(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("objectId"u8))
+                {
+                    objectId = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("applicationId"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    applicationId = new Guid(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("permissions"u8))
+                {
+                    permissions = IdentityAccessPermissions.DeserializeIdentityAccessPermissions(prop.Value, options);
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new KeyVaultAccessPolicy(tenantId, objectId, applicationId, permissions, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<KeyVaultAccessPolicy>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<KeyVaultAccessPolicy>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerKeyVaultContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(KeyVaultAccessPolicy)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        KeyVaultAccessPolicy IPersistableModel<KeyVaultAccessPolicy>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<KeyVaultAccessPolicy>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

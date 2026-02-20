@@ -5,9 +5,9 @@
   },
   "matrix": {
     "Agent": {
-      "Ubuntu-20.04_NETCore3.1": {
-        "OSVmImage": "MMSUbuntu20.04",
-        "Pool": "azsdk-pool-mms-ubuntu-2004-general",
+      "Ubuntu-24.04_NETCore3.1": {
+        "OSVmImage": "ubuntu-24.04",
+        "Pool": "azsdk-pool",
         "TestTargetFramework": "netcoreapp3.1"
       }
     },
@@ -32,8 +32,8 @@
     {
       "Agent": {
         "windows2022": {
-          "OSVmImage": "MMS2022",
-          "Pool": "azsdk-pool-mms-win-2022-general",
+          "OSVmImage": "windows-2022",
+          "Pool": "azsdk-pool",
           "TestTargetFramework": "netcoreapp3.1"
         }
       },

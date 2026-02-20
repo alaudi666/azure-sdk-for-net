@@ -110,17 +110,15 @@ namespace Azure.ResourceManager.LoadTesting.Tests.ScenarioTests
             Assert.AreEqual("maxConcurrentTestRuns", quotaResource.Data.Name);
 
             LoadTestingQuotaBucketDimensions dimensions = new LoadTestingQuotaBucketDimensions(
-                Subscription.Id.SubscriptionId, LoadTestResourceHelper.LOADTESTS_RESOURCE_LOCATION);
+                Subscription.Id.SubscriptionId, LoadTestResourceHelper.LOADTESTS_RESOURCE_LOCATION, null);
 
-            LoadTestingQuotaBucketContent quotaAvailabilityPayload = new LoadTestingQuotaBucketContent(
-                quotaResponse.Value.Data.Id,
-                quotaResource.Data.Name,
-                quotaResource.Data.ResourceType,
-                null,
-                quotaResource.Data.Usage,
-                quotaResource.Data.Limit,
-                quotaResource.Data.Limit,
-                dimensions);
+            LoadTestingQuotaBucketContent quotaAvailabilityPayload = new LoadTestingQuotaBucketContent
+            {
+                CurrentUsage = quotaResource.Data.Usage,
+                CurrentQuota = quotaResource.Data.Limit,
+                NewQuota = quotaResource.Data.Limit,
+                Dimensions = dimensions
+            };
 
             Response<LoadTestingQuotaAvailabilityResult> checkAvailabilityResult = await quotaResponse.Value.CheckLoadTestingQuotaAvailabilityAsync(quotaAvailabilityPayload);
             Assert.IsNotNull(checkAvailabilityResult);

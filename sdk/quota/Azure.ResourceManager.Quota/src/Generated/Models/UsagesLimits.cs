@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Quota;
 
 namespace Azure.ResourceManager.Quota.Models
@@ -14,24 +15,33 @@ namespace Azure.ResourceManager.Quota.Models
     /// <summary> Quota limits. </summary>
     internal partial class UsagesLimits
     {
-        /// <summary> Initializes a new instance of UsagesLimits. </summary>
-        internal UsagesLimits()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="UsagesLimits"/>. </summary>
+        /// <param name="value"> The CurrentUsagesBase items on this page. </param>
+        internal UsagesLimits(IEnumerable<CurrentUsagesBaseData> value)
         {
-            Value = new ChangeTrackingList<CurrentUsagesBaseData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of UsagesLimits. </summary>
-        /// <param name="value"> List of quota limits. </param>
-        /// <param name="nextLink"> The URI used to fetch the next page of quota limits. When there are no more pages, this is null. </param>
-        internal UsagesLimits(IReadOnlyList<CurrentUsagesBaseData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="UsagesLimits"/>. </summary>
+        /// <param name="value"> The CurrentUsagesBase items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal UsagesLimits(IList<CurrentUsagesBaseData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> List of quota limits. </summary>
-        public IReadOnlyList<CurrentUsagesBaseData> Value { get; }
-        /// <summary> The URI used to fetch the next page of quota limits. When there are no more pages, this is null. </summary>
-        public string NextLink { get; }
+        /// <summary> The CurrentUsagesBase items on this page. </summary>
+        [WirePath("value")]
+        public IList<CurrentUsagesBaseData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        [WirePath("nextLink")]
+        public Uri NextLink { get; }
     }
 }

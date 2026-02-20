@@ -5,52 +5,171 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
-    public partial class ServerEndpointFilesNotSyncingError
+    /// <summary> Files not syncing error object. </summary>
+    public partial class ServerEndpointFilesNotSyncingError : IJsonModel<ServerEndpointFilesNotSyncingError>
     {
-        internal static ServerEndpointFilesNotSyncingError DeserializeServerEndpointFilesNotSyncingError(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServerEndpointFilesNotSyncingError PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<int> errorCode = default;
-            Optional<long> persistentCount = default;
-            Optional<long> transientCount = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointFilesNotSyncingError>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("errorCode"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeServerEndpointFilesNotSyncingError(document.RootElement, options);
                     }
-                    errorCode = property.Value.GetInt32();
-                    continue;
-                }
-                if (property.NameEquals("persistentCount"))
+                default:
+                    throw new FormatException($"The model {nameof(ServerEndpointFilesNotSyncingError)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ServerEndpointFilesNotSyncingError>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointFilesNotSyncingError>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServerEndpointFilesNotSyncingError)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(ErrorCode))
+            {
+                writer.WritePropertyName("errorCode"u8);
+                writer.WriteNumberValue(ErrorCode.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(PersistentCount))
+            {
+                writer.WritePropertyName("persistentCount"u8);
+                writer.WriteNumberValue(PersistentCount.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(TransientCount))
+            {
+                writer.WritePropertyName("transientCount"u8);
+                writer.WriteNumberValue(TransientCount.Value);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    persistentCount = property.Value.GetInt64();
-                    continue;
-                }
-                if (property.NameEquals("transientCount"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    transientCount = property.Value.GetInt64();
-                    continue;
+#endif
                 }
             }
-            return new ServerEndpointFilesNotSyncingError(Optional.ToNullable(errorCode), Optional.ToNullable(persistentCount), Optional.ToNullable(transientCount));
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServerEndpointFilesNotSyncingError IJsonModel<ServerEndpointFilesNotSyncingError>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServerEndpointFilesNotSyncingError JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointFilesNotSyncingError>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServerEndpointFilesNotSyncingError)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeServerEndpointFilesNotSyncingError(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ServerEndpointFilesNotSyncingError DeserializeServerEndpointFilesNotSyncingError(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            int? errorCode = default;
+            long? persistentCount = default;
+            long? transientCount = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("errorCode"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    errorCode = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("persistentCount"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    persistentCount = prop.Value.GetInt64();
+                    continue;
+                }
+                if (prop.NameEquals("transientCount"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    transientCount = prop.Value.GetInt64();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new ServerEndpointFilesNotSyncingError(errorCode, persistentCount, transientCount, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ServerEndpointFilesNotSyncingError>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointFilesNotSyncingError>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerStorageSyncContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ServerEndpointFilesNotSyncingError)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServerEndpointFilesNotSyncingError IPersistableModel<ServerEndpointFilesNotSyncingError>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ServerEndpointFilesNotSyncingError>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

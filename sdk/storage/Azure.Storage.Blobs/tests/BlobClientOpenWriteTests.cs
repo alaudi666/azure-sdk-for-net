@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.TestFramework;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Common;
 using Azure.Storage.Test;
 using Azure.Storage.Test.Shared;
 using NUnit.Framework;
@@ -108,14 +109,14 @@ namespace Azure.Storage.Blobs.Tests
             HttpHeaderParameters httpHeaders = default,
             IProgress<long> progressHandler = default)
             => await client.OpenWriteAsync(overwrite, new BlobOpenWriteOptions
-               {
-                   BufferSize = bufferSize,
-                   OpenConditions = conditions,
-                   Metadata = metadata,
-                   Tags = tags,
-                   HttpHeaders = httpHeaders.ToBlobHttpHeaders(),
-                   ProgressHandler = progressHandler
-               });
+            {
+                BufferSize = bufferSize,
+                OpenConditions = conditions,
+                Metadata = metadata,
+                Tags = tags,
+                HttpHeaders = httpHeaders.ToBlobHttpHeaders(),
+                ProgressHandler = progressHandler
+            });
         #endregion
 
         #region Tests

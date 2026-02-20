@@ -5,30 +5,27 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The UnknownEarlyTerminationPolicy.
-    /// Serialized Name: UnknownEarlyTerminationPolicy
-    /// </summary>
+    /// <summary> Unknown version of EarlyTerminationPolicy. </summary>
     internal partial class UnknownEarlyTerminationPolicy : MachineLearningEarlyTerminationPolicy
     {
-        /// <summary> Initializes a new instance of UnknownEarlyTerminationPolicy. </summary>
-        /// <param name="delayEvaluation">
-        /// Number of intervals by which to delay the first evaluation.
-        /// Serialized Name: EarlyTerminationPolicy.delayEvaluation
-        /// </param>
-        /// <param name="evaluationInterval">
-        /// Interval (number of runs) between policy evaluations.
-        /// Serialized Name: EarlyTerminationPolicy.evaluationInterval
-        /// </param>
-        /// <param name="policyType">
-        /// [Required] Name of policy configuration
-        /// Serialized Name: EarlyTerminationPolicy.policyType
-        /// </param>
-        internal UnknownEarlyTerminationPolicy(int? delayEvaluation, int? evaluationInterval, EarlyTerminationPolicyType policyType) : base(delayEvaluation, evaluationInterval, policyType)
+        /// <summary> Initializes a new instance of <see cref="UnknownEarlyTerminationPolicy"/>. </summary>
+        /// <param name="policyType"> [Required] Name of policy configuration. </param>
+        /// <param name="evaluationInterval"> Interval (number of runs) between policy evaluations. </param>
+        /// <param name="delayEvaluation"> Number of intervals by which to delay the first evaluation. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal UnknownEarlyTerminationPolicy(EarlyTerminationPolicyType policyType, int? evaluationInterval, int? delayEvaluation, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(policyType, evaluationInterval, delayEvaluation, serializedAdditionalRawData)
         {
             PolicyType = policyType;
+        }
+
+        /// <summary> Initializes a new instance of <see cref="UnknownEarlyTerminationPolicy"/> for deserialization. </summary>
+        internal UnknownEarlyTerminationPolicy()
+        {
         }
     }
 }

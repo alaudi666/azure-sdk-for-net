@@ -15,6 +15,7 @@ namespace Azure.Communication.CallingServer
         }
 
         [Test]
+        [Ignore("Disabling this test as the library is flagged for decomissioning.")]
         public async Task RemoveAPSTNUserFromAnOngoingCallTest()
         {
             /* Test case:
@@ -64,13 +65,15 @@ namespace Azure.Communication.CallingServer
             {
                 Assert.Fail($"Unexpected error: {ex}");
             }
-            finally {
+            finally
+            {
                 await client.GetCallConnection(callConnectionId).HangUpAsync(true).ConfigureAwait(false);
                 await WaitForOperationCompletion().ConfigureAwait(false);
             }
         }
 
         [Test]
+        [Ignore("Disabling this test as the library is flagged for decomissioning.")]
         public async Task RemoveAPSTNUserAndAcsUserFromAnOngoingCallTest()
         {
             /* Test case:
@@ -129,6 +132,7 @@ namespace Azure.Communication.CallingServer
         }
 
         [Test]
+        [Ignore("Disabling this test as the library is flagged for decomissioning.")]
         public async Task StartAGroupCallAndHangUpTest()
         {
             /* Test case:
@@ -193,6 +197,7 @@ namespace Azure.Communication.CallingServer
         }
 
         [Test]
+        [Ignore("Disabling this test as the library is flagged for decomissioning.")]
         public async Task StartAGroupCallAndHangUpForEveryoneTest()
         {
             /* Test case:
@@ -257,6 +262,7 @@ namespace Azure.Communication.CallingServer
         }
 
         [Test]
+        [Ignore("Disabling this test as the library is flagged for decomissioning.")]
         public async Task TransferACallFromOneUserToAnotherUserTest()
         {
             /* Test case:

@@ -49,7 +49,7 @@ namespace Azure.Security.KeyVault.Certificates.Tests
         [Test]
         public void ECDecoderPrime256v1RequiresPublicKey()
         {
-#if NET461
+#if NET462
             Assert.Ignore("ECC is not supported before .NET Framework 4.7");
 #endif
             byte[] data = Convert.FromBase64String(EcPrime256v1PrivateKeyImported);
@@ -70,7 +70,7 @@ namespace Azure.Security.KeyVault.Certificates.Tests
         // Not using TestCaseSource because params too long for friendly test case rendering.
         private static void VerifyECDecoder(string key, CertificateKeyCurveName keyCurveName, string signature, string cer = null)
         {
-#if NET461
+#if NET462
             Assert.Ignore("ECC is not supported before .NET Framework 4.7");
 #endif
             byte[] data = Convert.FromBase64String(key);
@@ -82,7 +82,11 @@ namespace Azure.Security.KeyVault.Certificates.Tests
                 if (cer != null)
                 {
                     byte[] publicKeyData = Convert.FromBase64String(cer);
+#if NET9_0_OR_GREATER
+                    using X509Certificate2 certificate = X509CertificateLoader.LoadCertificate(publicKeyData);
+#else
                     using X509Certificate2 certificate = new X509Certificate2(publicKeyData);
+#endif
 
                     publicKey = certificate.GetECDsaPublicKey();
                 }

@@ -5,63 +5,230 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class DeviceProperties : IUtf8JsonSerializable
+    public partial class DeviceProperties : IUtf8JsonSerializable, IJsonModel<DeviceProperties>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<DeviceProperties>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<DeviceProperties>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DeviceProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DeviceProperties)} does not support writing '{format}' format.");
+            }
+
             if (Optional.IsDefined(DeviceVendor))
             {
-                writer.WritePropertyName("deviceVendor");
+                writer.WritePropertyName("deviceVendor"u8);
                 writer.WriteStringValue(DeviceVendor);
             }
             if (Optional.IsDefined(DeviceModel))
             {
-                writer.WritePropertyName("deviceModel");
+                writer.WritePropertyName("deviceModel"u8);
                 writer.WriteStringValue(DeviceModel);
             }
             if (Optional.IsDefined(LinkSpeedInMbps))
             {
-                writer.WritePropertyName("linkSpeedInMbps");
+                writer.WritePropertyName("linkSpeedInMbps"u8);
                 writer.WriteNumberValue(LinkSpeedInMbps.Value);
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static DeviceProperties DeserializeDeviceProperties(JsonElement element)
+        DeviceProperties IJsonModel<DeviceProperties>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<string> deviceVendor = default;
-            Optional<string> deviceModel = default;
-            Optional<int> linkSpeedInMbps = default;
+            var format = options.Format == "W" ? ((IPersistableModel<DeviceProperties>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(DeviceProperties)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeDeviceProperties(document.RootElement, options);
+        }
+
+        internal static DeviceProperties DeserializeDeviceProperties(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string deviceVendor = default;
+            string deviceModel = default;
+            int? linkSpeedInMbps = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("deviceVendor"))
+                if (property.NameEquals("deviceVendor"u8))
                 {
                     deviceVendor = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("deviceModel"))
+                if (property.NameEquals("deviceModel"u8))
                 {
                     deviceModel = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("linkSpeedInMbps"))
+                if (property.NameEquals("linkSpeedInMbps"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     linkSpeedInMbps = property.Value.GetInt32();
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new DeviceProperties(deviceVendor.Value, deviceModel.Value, Optional.ToNullable(linkSpeedInMbps));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new DeviceProperties(deviceVendor, deviceModel, linkSpeedInMbps, serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DeviceVendor), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  deviceVendor: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DeviceVendor))
+                {
+                    builder.Append("  deviceVendor: ");
+                    if (DeviceVendor.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{DeviceVendor}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{DeviceVendor}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DeviceModel), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  deviceModel: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(DeviceModel))
+                {
+                    builder.Append("  deviceModel: ");
+                    if (DeviceModel.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{DeviceModel}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{DeviceModel}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(LinkSpeedInMbps), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  linkSpeedInMbps: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(LinkSpeedInMbps))
+                {
+                    builder.Append("  linkSpeedInMbps: ");
+                    builder.AppendLine($"{LinkSpeedInMbps.Value}");
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<DeviceProperties>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DeviceProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(DeviceProperties)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        DeviceProperties IPersistableModel<DeviceProperties>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<DeviceProperties>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeDeviceProperties(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(DeviceProperties)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<DeviceProperties>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

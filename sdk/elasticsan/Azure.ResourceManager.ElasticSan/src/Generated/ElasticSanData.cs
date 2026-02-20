@@ -13,11 +13,14 @@ using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.ElasticSan
 {
-    /// <summary> A class representing the ElasticSan data model. </summary>
+    /// <summary> Response for ElasticSan request. </summary>
     public partial class ElasticSanData : TrackedResourceData
     {
-        /// <summary> Initializes a new instance of ElasticSanData. </summary>
-        /// <param name="location"> The location. </param>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ElasticSanData"/>. </summary>
+        /// <param name="location"> The geo-location where the resource lives. </param>
         /// <param name="sku"> resource sku. </param>
         /// <param name="baseSizeTiB"> Base size of the Elastic San appliance in TiB. </param>
         /// <param name="extendedCapacitySizeTiB"> Extended size of the Elastic San appliance in TiB. </param>
@@ -26,62 +29,190 @@ namespace Azure.ResourceManager.ElasticSan
         {
             Argument.AssertNotNull(sku, nameof(sku));
 
-            Sku = sku;
-            AvailabilityZones = new ChangeTrackingList<string>();
-            BaseSizeTiB = baseSizeTiB;
-            ExtendedCapacitySizeTiB = extendedCapacitySizeTiB;
+            Properties = new ElasticSanProperties(sku, baseSizeTiB, extendedCapacitySizeTiB);
         }
 
-        /// <summary> Initializes a new instance of ElasticSanData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="tags"> The tags. </param>
-        /// <param name="location"> The location. </param>
-        /// <param name="sku"> resource sku. </param>
-        /// <param name="availabilityZones"> Logical zone for Elastic San resource; example: [&quot;1&quot;]. </param>
-        /// <param name="provisioningState"> State of the operation on the resource. </param>
-        /// <param name="baseSizeTiB"> Base size of the Elastic San appliance in TiB. </param>
-        /// <param name="extendedCapacitySizeTiB"> Extended size of the Elastic San appliance in TiB. </param>
-        /// <param name="totalVolumeSizeGiB"> Total size of the provisioned Volumes in GiB. </param>
-        /// <param name="volumeGroupCount"> Total number of volume groups in this Elastic San appliance. </param>
-        /// <param name="totalIops"> Total Provisioned IOPS of the Elastic San appliance. </param>
-        /// <param name="totalMbps"> Total Provisioned MBps Elastic San appliance. </param>
-        /// <param name="totalSizeTiB"> Total size of the Elastic San appliance in TB. </param>
-        internal ElasticSanData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, string> tags, AzureLocation location, ElasticSanSku sku, IList<string> availabilityZones, ElasticSanProvisioningState? provisioningState, long baseSizeTiB, long extendedCapacitySizeTiB, long? totalVolumeSizeGiB, long? volumeGroupCount, long? totalIops, long? totalMbps, long? totalSizeTiB) : base(id, name, resourceType, systemData, tags, location)
+        /// <summary> Initializes a new instance of <see cref="ElasticSanData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="tags"> Resource tags. </param>
+        /// <param name="location"> The geo-location where the resource lives. </param>
+        /// <param name="properties"> Properties of ElasticSan. </param>
+        internal ElasticSanData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, IDictionary<string, string> tags, AzureLocation location, ElasticSanProperties properties) : base(id, name, resourceType, systemData, tags, location)
         {
-            Sku = sku;
-            AvailabilityZones = availabilityZones;
-            ProvisioningState = provisioningState;
-            BaseSizeTiB = baseSizeTiB;
-            ExtendedCapacitySizeTiB = extendedCapacitySizeTiB;
-            TotalVolumeSizeGiB = totalVolumeSizeGiB;
-            VolumeGroupCount = volumeGroupCount;
-            TotalIops = totalIops;
-            TotalMbps = totalMbps;
-            TotalSizeTiB = totalSizeTiB;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
+
+        /// <summary> Properties of ElasticSan. </summary>
+        internal ElasticSanProperties Properties { get; set; }
 
         /// <summary> resource sku. </summary>
-        public ElasticSanSku Sku { get; set; }
-        /// <summary> Logical zone for Elastic San resource; example: [&quot;1&quot;]. </summary>
-        public IList<string> AvailabilityZones { get; }
+        public ElasticSanSku Sku
+        {
+            get
+            {
+                return Properties is null ? default : Properties.Sku;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ElasticSanProperties();
+                }
+                Properties.Sku = value;
+            }
+        }
+
+        /// <summary> Logical zone for Elastic San resource; example: ["1"]. </summary>
+        public IList<string> AvailabilityZones
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new ElasticSanProperties();
+                }
+                return Properties.AvailabilityZones;
+            }
+        }
+
         /// <summary> State of the operation on the resource. </summary>
-        public ElasticSanProvisioningState? ProvisioningState { get; }
+        public ElasticSanProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+        }
+
         /// <summary> Base size of the Elastic San appliance in TiB. </summary>
-        public long BaseSizeTiB { get; set; }
+        public long BaseSizeTiB
+        {
+            get
+            {
+                return Properties is null ? default : Properties.BaseSizeTiB;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ElasticSanProperties();
+                }
+                Properties.BaseSizeTiB = value;
+            }
+        }
+
         /// <summary> Extended size of the Elastic San appliance in TiB. </summary>
-        public long ExtendedCapacitySizeTiB { get; set; }
+        public long ExtendedCapacitySizeTiB
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ExtendedCapacitySizeTiB;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ElasticSanProperties();
+                }
+                Properties.ExtendedCapacitySizeTiB = value;
+            }
+        }
+
         /// <summary> Total size of the provisioned Volumes in GiB. </summary>
-        public long? TotalVolumeSizeGiB { get; }
+        public long? TotalVolumeSizeGiB
+        {
+            get
+            {
+                return Properties is null ? default : Properties.TotalVolumeSizeGiB;
+            }
+        }
+
         /// <summary> Total number of volume groups in this Elastic San appliance. </summary>
-        public long? VolumeGroupCount { get; }
+        public long? VolumeGroupCount
+        {
+            get
+            {
+                return Properties is null ? default : Properties.VolumeGroupCount;
+            }
+        }
+
         /// <summary> Total Provisioned IOPS of the Elastic San appliance. </summary>
-        public long? TotalIops { get; }
+        public long? TotalIops
+        {
+            get
+            {
+                return Properties is null ? default : Properties.TotalIops;
+            }
+        }
+
         /// <summary> Total Provisioned MBps Elastic San appliance. </summary>
-        public long? TotalMbps { get; }
+        public long? TotalMbps
+        {
+            get
+            {
+                return Properties is null ? default : Properties.TotalMbps;
+            }
+        }
+
         /// <summary> Total size of the Elastic San appliance in TB. </summary>
-        public long? TotalSizeTiB { get; }
+        public long? TotalSizeTiB
+        {
+            get
+            {
+                return Properties is null ? default : Properties.TotalSizeTiB;
+            }
+        }
+
+        /// <summary> The list of Private Endpoint Connections. </summary>
+        public IReadOnlyList<ElasticSanPrivateEndpointConnectionData> PrivateEndpointConnections
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new ElasticSanProperties();
+                }
+                return Properties.PrivateEndpointConnections;
+            }
+        }
+
+        /// <summary> Allow or disallow public network access to ElasticSan. Value is optional but if passed in, must be 'Enabled' or 'Disabled'. </summary>
+        public ElasticSanPublicNetworkAccess? PublicNetworkAccess
+        {
+            get
+            {
+                return Properties is null ? default : Properties.PublicNetworkAccess;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ElasticSanProperties();
+                }
+                Properties.PublicNetworkAccess = value.Value;
+            }
+        }
+
+        /// <summary> Scale up settings on Elastic San Appliance. </summary>
+        public ElasticSanScaleUpProperties ScaleUpProperties
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ScaleUpProperties;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new ElasticSanProperties();
+                }
+                Properties.ScaleUpProperties = value;
+            }
+        }
     }
 }

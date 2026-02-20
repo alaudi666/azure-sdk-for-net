@@ -8,13 +8,17 @@ azure-arm: true
 csharp: true
 library-name: ManagedServiceIdentities
 namespace: Azure.ResourceManager.ManagedServiceIdentities
-require: https://github.com/Azure/azure-rest-api-specs/blob/1ddabd9234338d209f9755beac5c13cc0ae3b5f7/specification/msi/resource-manager/readme.md
-tag: package-preview-2022-01
+require: https://github.com/Azure/azure-rest-api-specs/blob/bf90cab9d5f6060ce1f7775ffac88ed8eda785ca/specification/msi/resource-manager/readme.md
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
+sample-gen:
+  output-folder: $(this-folder)/../tests/Generated
+  clear-output-folder: true
 skip-csproj: true
 modelerfour:
   flatten-payloads: false
+use-model-reader-writer: true
+enable-bicep-serialization: true
 
 format-by-name-rules:
   'tenantId': 'uuid'
@@ -23,7 +27,7 @@ format-by-name-rules:
   '*Uri': 'Uri'
   '*Uris': 'Uri'
 
-rename-rules:
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS

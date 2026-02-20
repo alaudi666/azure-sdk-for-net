@@ -5,35 +5,90 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
+using Azure.ResourceManager.Grafana;
 
 namespace Azure.ResourceManager.Grafana.Models
 {
     /// <summary> The properties parameters for a PATCH request to a grafana resource. </summary>
     public partial class ManagedGrafanaPatchProperties
     {
-        /// <summary> Initializes a new instance of ManagedGrafanaPatchProperties. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ManagedGrafanaPatchProperties"/>. </summary>
         public ManagedGrafanaPatchProperties()
         {
+            GrafanaPlugins = new ChangeTrackingDictionary<string, GrafanaPlugin>();
+        }
+
+        /// <summary> Initializes a new instance of <see cref="ManagedGrafanaPatchProperties"/>. </summary>
+        /// <param name="zoneRedundancy"> The zone redundancy setting of the Grafana instance. </param>
+        /// <param name="apiKey"> The api key setting of the Grafana instance. </param>
+        /// <param name="creatorCanAdmin"> The creator will have admin access for the Grafana instance. </param>
+        /// <param name="deterministicOutboundIP"> Whether a Grafana instance uses deterministic outbound IPs. </param>
+        /// <param name="publicNetworkAccess"> Indicate the state for enable or disable traffic over the public interface. </param>
+        /// <param name="grafanaIntegrations"> GrafanaIntegrations is a bundled observability experience (e.g. pre-configured data source, tailored Grafana dashboards, alerting defaults) for common monitoring scenarios. </param>
+        /// <param name="enterpriseConfigurations"> Enterprise settings of a Grafana instance. </param>
+        /// <param name="grafanaConfigurations"> Server configurations of a Grafana instance. </param>
+        /// <param name="grafanaPlugins"> Update of Grafana plugin. Key is plugin id, value is plugin definition. If plugin definition is null, plugin with given plugin id will be removed. Otherwise, given plugin will be installed. </param>
+        /// <param name="grafanaMajorVersion"> The major Grafana software version to target. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ManagedGrafanaPatchProperties(GrafanaZoneRedundancy? zoneRedundancy, GrafanaApiKey? apiKey, GrafanaCreatorCanAdmin? creatorCanAdmin, DeterministicOutboundIP? deterministicOutboundIP, GrafanaPublicNetworkAccess? publicNetworkAccess, GrafanaIntegrations grafanaIntegrations, EnterpriseConfigurations enterpriseConfigurations, GrafanaConfigurations grafanaConfigurations, IDictionary<string, GrafanaPlugin> grafanaPlugins, string grafanaMajorVersion, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            ZoneRedundancy = zoneRedundancy;
+            ApiKey = apiKey;
+            CreatorCanAdmin = creatorCanAdmin;
+            DeterministicOutboundIP = deterministicOutboundIP;
+            PublicNetworkAccess = publicNetworkAccess;
+            GrafanaIntegrations = grafanaIntegrations;
+            EnterpriseConfigurations = enterpriseConfigurations;
+            GrafanaConfigurations = grafanaConfigurations;
+            GrafanaPlugins = grafanaPlugins;
+            GrafanaMajorVersion = grafanaMajorVersion;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> The zone redundancy setting of the Grafana instance. </summary>
         public GrafanaZoneRedundancy? ZoneRedundancy { get; set; }
+
         /// <summary> The api key setting of the Grafana instance. </summary>
         public GrafanaApiKey? ApiKey { get; set; }
+
+        /// <summary> The creator will have admin access for the Grafana instance. </summary>
+        public GrafanaCreatorCanAdmin? CreatorCanAdmin { get; set; }
+
         /// <summary> Whether a Grafana instance uses deterministic outbound IPs. </summary>
         public DeterministicOutboundIP? DeterministicOutboundIP { get; set; }
+
         /// <summary> Indicate the state for enable or disable traffic over the public interface. </summary>
         public GrafanaPublicNetworkAccess? PublicNetworkAccess { get; set; }
+
         /// <summary> GrafanaIntegrations is a bundled observability experience (e.g. pre-configured data source, tailored Grafana dashboards, alerting defaults) for common monitoring scenarios. </summary>
         internal GrafanaIntegrations GrafanaIntegrations { get; set; }
-        /// <summary> Gets the monitor workspace integrations. </summary>
+
+        /// <summary> Enterprise settings of a Grafana instance. </summary>
+        public EnterpriseConfigurations EnterpriseConfigurations { get; set; }
+
+        /// <summary> Server configurations of a Grafana instance. </summary>
+        public GrafanaConfigurations GrafanaConfigurations { get; set; }
+
+        /// <summary> Update of Grafana plugin. Key is plugin id, value is plugin definition. If plugin definition is null, plugin with given plugin id will be removed. Otherwise, given plugin will be installed. </summary>
+        public IDictionary<string, GrafanaPlugin> GrafanaPlugins { get; }
+
+        /// <summary> The major Grafana software version to target. </summary>
+        public string GrafanaMajorVersion { get; set; }
+
+        /// <summary> Gets the MonitorWorkspaceIntegrations. </summary>
         public IList<MonitorWorkspaceIntegration> MonitorWorkspaceIntegrations
         {
             get
             {
                 if (GrafanaIntegrations is null)
+                {
                     GrafanaIntegrations = new GrafanaIntegrations();
+                }
                 return GrafanaIntegrations.MonitorWorkspaceIntegrations;
             }
         }

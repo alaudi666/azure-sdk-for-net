@@ -5,24 +5,33 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.Core;
+
 namespace Azure.ResourceManager.Nginx.Models
 {
-    /// <summary> The NginxNetworkInterfaceConfiguration. </summary>
+    /// <summary> Nginx Network Interface Configuration. </summary>
     internal partial class NginxNetworkInterfaceConfiguration
     {
-        /// <summary> Initializes a new instance of NginxNetworkInterfaceConfiguration. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NginxNetworkInterfaceConfiguration"/>. </summary>
         public NginxNetworkInterfaceConfiguration()
         {
         }
 
-        /// <summary> Initializes a new instance of NginxNetworkInterfaceConfiguration. </summary>
+        /// <summary> Initializes a new instance of <see cref="NginxNetworkInterfaceConfiguration"/>. </summary>
         /// <param name="subnetId"></param>
-        internal NginxNetworkInterfaceConfiguration(string subnetId)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NginxNetworkInterfaceConfiguration(ResourceIdentifier subnetId, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             SubnetId = subnetId;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets or sets the subnet id. </summary>
-        public string SubnetId { get; set; }
+        /// <summary> Gets or sets the SubnetId. </summary>
+        public ResourceIdentifier SubnetId { get; set; }
     }
 }

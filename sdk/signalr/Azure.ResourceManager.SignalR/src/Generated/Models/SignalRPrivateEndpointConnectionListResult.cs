@@ -5,8 +5,9 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.SignalR;
 
 namespace Azure.ResourceManager.SignalR.Models
@@ -14,24 +15,33 @@ namespace Azure.ResourceManager.SignalR.Models
     /// <summary> A list of private endpoint connections. </summary>
     internal partial class SignalRPrivateEndpointConnectionListResult
     {
-        /// <summary> Initializes a new instance of SignalRPrivateEndpointConnectionListResult. </summary>
-        internal SignalRPrivateEndpointConnectionListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SignalRPrivateEndpointConnectionListResult"/>. </summary>
+        /// <param name="value"> The PrivateEndpointConnection items on this page. </param>
+        internal SignalRPrivateEndpointConnectionListResult(IEnumerable<SignalRPrivateEndpointConnectionData> value)
         {
-            Value = new ChangeTrackingList<SignalRPrivateEndpointConnectionData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of SignalRPrivateEndpointConnectionListResult. </summary>
-        /// <param name="value"> The list of the private endpoint connections. </param>
-        /// <param name="nextLink"> Request URL that can be used to query next page of private endpoint connections. Returned when the total number of requested private endpoint connections exceed maximum page size. </param>
-        internal SignalRPrivateEndpointConnectionListResult(IReadOnlyList<SignalRPrivateEndpointConnectionData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="SignalRPrivateEndpointConnectionListResult"/>. </summary>
+        /// <param name="value"> The PrivateEndpointConnection items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SignalRPrivateEndpointConnectionListResult(IList<SignalRPrivateEndpointConnectionData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The list of the private endpoint connections. </summary>
-        public IReadOnlyList<SignalRPrivateEndpointConnectionData> Value { get; }
-        /// <summary> Request URL that can be used to query next page of private endpoint connections. Returned when the total number of requested private endpoint connections exceed maximum page size. </summary>
-        public string NextLink { get; }
+        /// <summary> The PrivateEndpointConnection items on this page. </summary>
+        [WirePath("value")]
+        public IList<SignalRPrivateEndpointConnectionData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        [WirePath("nextLink")]
+        public Uri NextLink { get; }
     }
 }

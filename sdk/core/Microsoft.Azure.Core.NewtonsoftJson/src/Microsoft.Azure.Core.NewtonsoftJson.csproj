@@ -2,13 +2,15 @@
   <PropertyGroup>
     <AssemblyTitle>Newtonsoft.Json support for Azure Core shared client library for .NET</AssemblyTitle>
     <RootNamespace>Azure.Core.Serialization</RootNamespace>
-    <Version>1.1.0-beta.1</Version>
-    <ApiCompatVersion>1.0.0</ApiCompatVersion>
+    <Version>2.1.0-beta.1</Version>
+    <!--The ApiCompatVersion is managed automatically and should not generally be modified manually.-->
+    <ApiCompatVersion>2.0.0</ApiCompatVersion>
     <Description>This library contains converters dependent on the Newtonsoft.Json package for use with Azure.Core.</Description>
     <PackageTags>Microsoft Azure SDK Newtonsoft Json</PackageTags>
     <Nullable>enable</Nullable>
     <TargetFrameworks>$(RequiredTargetFrameworks)</TargetFrameworks>
     <EnableClientSdkAnalyzers>false</EnableClientSdkAnalyzers>
+    <AotCompatOptOut>true</AotCompatOptOut>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +21,7 @@
   <!-- Pull in Shared Source from Azure.Core -->
   <ItemGroup>
     <Compile Include="$(AzureCoreSharedSources)Argument.cs" LinkBase="Shared" />
+    <Compile Include="$(AzureCoreSharedSources)TrimmingAttribute.cs" LinkBase="Shared\Core" />
   </ItemGroup>
 
 </Project>

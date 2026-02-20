@@ -5,116 +5,230 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
+using Azure.ResourceManager.SqlVirtualMachine;
 
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
-    public partial class AvailabilityGroupListenerLoadBalancerConfiguration : IUtf8JsonSerializable
+    /// <summary> A load balancer configuration for an availability group listener. </summary>
+    public partial class AvailabilityGroupListenerLoadBalancerConfiguration : IJsonModel<AvailabilityGroupListenerLoadBalancerConfiguration>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual AvailabilityGroupListenerLoadBalancerConfiguration PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvailabilityGroupListenerLoadBalancerConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeAvailabilityGroupListenerLoadBalancerConfiguration(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(AvailabilityGroupListenerLoadBalancerConfiguration)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<AvailabilityGroupListenerLoadBalancerConfiguration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvailabilityGroupListenerLoadBalancerConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(AvailabilityGroupListenerLoadBalancerConfiguration)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(PrivateIPAddress))
             {
-                writer.WritePropertyName("privateIpAddress");
-                writer.WriteObjectValue(PrivateIPAddress);
+                writer.WritePropertyName("privateIpAddress"u8);
+                writer.WriteObjectValue(PrivateIPAddress, options);
             }
             if (Optional.IsDefined(PublicIPAddressResourceId))
             {
-                writer.WritePropertyName("publicIpAddressResourceId");
+                writer.WritePropertyName("publicIpAddressResourceId"u8);
                 writer.WriteStringValue(PublicIPAddressResourceId);
             }
             if (Optional.IsDefined(LoadBalancerResourceId))
             {
-                writer.WritePropertyName("loadBalancerResourceId");
+                writer.WritePropertyName("loadBalancerResourceId"u8);
                 writer.WriteStringValue(LoadBalancerResourceId);
             }
             if (Optional.IsDefined(ProbePort))
             {
-                writer.WritePropertyName("probePort");
+                writer.WritePropertyName("probePort"u8);
                 writer.WriteNumberValue(ProbePort.Value);
             }
             if (Optional.IsCollectionDefined(SqlVmInstances))
             {
-                writer.WritePropertyName("sqlVirtualMachineInstances");
+                writer.WritePropertyName("sqlVirtualMachineInstances"u8);
                 writer.WriteStartArray();
-                foreach (var item in SqlVmInstances)
+                foreach (ResourceIdentifier item in SqlVmInstances)
                 {
+                    if (item == null)
+                    {
+                        writer.WriteNullValue();
+                        continue;
+                    }
                     writer.WriteStringValue(item);
                 }
                 writer.WriteEndArray();
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static AvailabilityGroupListenerLoadBalancerConfiguration DeserializeAvailabilityGroupListenerLoadBalancerConfiguration(JsonElement element)
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AvailabilityGroupListenerLoadBalancerConfiguration IJsonModel<AvailabilityGroupListenerLoadBalancerConfiguration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual AvailabilityGroupListenerLoadBalancerConfiguration JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<AvailabilityGroupListenerPrivateIPAddress> privateIPAddress = default;
-            Optional<ResourceIdentifier> publicIPAddressResourceId = default;
-            Optional<ResourceIdentifier> loadBalancerResourceId = default;
-            Optional<int> probePort = default;
-            Optional<IList<ResourceIdentifier>> sqlVmInstances = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<AvailabilityGroupListenerLoadBalancerConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                if (property.NameEquals("privateIpAddress"))
+                throw new FormatException($"The model {nameof(AvailabilityGroupListenerLoadBalancerConfiguration)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeAvailabilityGroupListenerLoadBalancerConfiguration(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static AvailabilityGroupListenerLoadBalancerConfiguration DeserializeAvailabilityGroupListenerLoadBalancerConfiguration(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            AvailabilityGroupListenerPrivateIPAddress privateIPAddress = default;
+            ResourceIdentifier publicIPAddressResourceId = default;
+            ResourceIdentifier loadBalancerResourceId = default;
+            int? probePort = default;
+            IList<ResourceIdentifier> sqlVmInstances = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("privateIpAddress"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    privateIPAddress = AvailabilityGroupListenerPrivateIPAddress.DeserializeAvailabilityGroupListenerPrivateIPAddress(property.Value);
+                    privateIPAddress = AvailabilityGroupListenerPrivateIPAddress.DeserializeAvailabilityGroupListenerPrivateIPAddress(prop.Value, options);
                     continue;
                 }
-                if (property.NameEquals("publicIpAddressResourceId"))
+                if (prop.NameEquals("publicIpAddressResourceId"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    publicIPAddressResourceId = new ResourceIdentifier(property.Value.GetString());
+                    publicIPAddressResourceId = new ResourceIdentifier(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("loadBalancerResourceId"))
+                if (prop.NameEquals("loadBalancerResourceId"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    loadBalancerResourceId = new ResourceIdentifier(property.Value.GetString());
+                    loadBalancerResourceId = new ResourceIdentifier(prop.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("probePort"))
+                if (prop.NameEquals("probePort"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
-                    probePort = property.Value.GetInt32();
+                    probePort = prop.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("sqlVirtualMachineInstances"))
+                if (prop.NameEquals("sqlVirtualMachineInstances"u8))
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ResourceIdentifier> array = new List<ResourceIdentifier>();
-                    foreach (var item in property.Value.EnumerateArray())
+                    foreach (var item in prop.Value.EnumerateArray())
                     {
-                        array.Add(new ResourceIdentifier(item.GetString()));
+                        if (item.ValueKind == JsonValueKind.Null)
+                        {
+                            array.Add(null);
+                        }
+                        else
+                        {
+                            array.Add(new ResourceIdentifier(item.GetString()));
+                        }
                     }
                     sqlVmInstances = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
             }
-            return new AvailabilityGroupListenerLoadBalancerConfiguration(privateIPAddress.Value, publicIPAddressResourceId.Value, loadBalancerResourceId.Value, Optional.ToNullable(probePort), Optional.ToList(sqlVmInstances));
+            return new AvailabilityGroupListenerLoadBalancerConfiguration(
+                privateIPAddress,
+                publicIPAddressResourceId,
+                loadBalancerResourceId,
+                probePort,
+                sqlVmInstances ?? new ChangeTrackingList<ResourceIdentifier>(),
+                additionalBinaryDataProperties);
         }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<AvailabilityGroupListenerLoadBalancerConfiguration>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<AvailabilityGroupListenerLoadBalancerConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerSqlVirtualMachineContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(AvailabilityGroupListenerLoadBalancerConfiguration)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        AvailabilityGroupListenerLoadBalancerConfiguration IPersistableModel<AvailabilityGroupListenerLoadBalancerConfiguration>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<AvailabilityGroupListenerLoadBalancerConfiguration>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

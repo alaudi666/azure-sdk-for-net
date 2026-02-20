@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Learning rate scheduler enum.
-    /// Serialized Name: LearningRateScheduler
-    /// </summary>
+    /// <summary> Learning rate scheduler enum. </summary>
     public readonly partial struct LearningRateScheduler : IEquatable<LearningRateScheduler>
     {
         private readonly string _value;
@@ -29,26 +26,17 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string WarmupCosineValue = "WarmupCosine";
         private const string StepValue = "Step";
 
-        /// <summary>
-        /// No learning rate scheduler selected.
-        /// Serialized Name: LearningRateScheduler.None
-        /// </summary>
+        /// <summary> No learning rate scheduler selected. </summary>
         public static LearningRateScheduler None { get; } = new LearningRateScheduler(NoneValue);
-        /// <summary>
-        /// Cosine Annealing With Warmup.
-        /// Serialized Name: LearningRateScheduler.WarmupCosine
-        /// </summary>
+        /// <summary> Cosine Annealing With Warmup. </summary>
         public static LearningRateScheduler WarmupCosine { get; } = new LearningRateScheduler(WarmupCosineValue);
-        /// <summary>
-        /// Step learning rate scheduler.
-        /// Serialized Name: LearningRateScheduler.Step
-        /// </summary>
+        /// <summary> Step learning rate scheduler. </summary>
         public static LearningRateScheduler Step { get; } = new LearningRateScheduler(StepValue);
         /// <summary> Determines if two <see cref="LearningRateScheduler"/> values are the same. </summary>
         public static bool operator ==(LearningRateScheduler left, LearningRateScheduler right) => left.Equals(right);
         /// <summary> Determines if two <see cref="LearningRateScheduler"/> values are not the same. </summary>
         public static bool operator !=(LearningRateScheduler left, LearningRateScheduler right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="LearningRateScheduler"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="LearningRateScheduler"/>. </summary>
         public static implicit operator LearningRateScheduler(string value) => new LearningRateScheduler(value);
 
         /// <inheritdoc />
@@ -59,7 +47,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

@@ -5,25 +5,73 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.EdgeOrder;
 
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> The Address update parameters. </summary>
     public partial class EdgeOrderAddressPatch
     {
-        /// <summary> Initializes a new instance of EdgeOrderAddressPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderAddressPatch"/>. </summary>
         public EdgeOrderAddressPatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderAddressPatch"/>. </summary>
+        /// <param name="properties"> Properties of an address to be updated. </param>
+        /// <param name="tags"> The list of key value pairs that describe the resource. These tags can be used in viewing and grouping this resource (across resource groups). </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EdgeOrderAddressPatch(AddressUpdateProperties properties, IDictionary<string, string> tags, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Properties = properties;
+            Tags = tags;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> Properties of an address to be updated. </summary>
+        internal AddressUpdateProperties Properties { get; set; }
+
         /// <summary> The list of key value pairs that describe the resource. These tags can be used in viewing and grouping this resource (across resource groups). </summary>
         public IDictionary<string, string> Tags { get; }
+
         /// <summary> Shipping details for the address. </summary>
-        public EdgeOrderShippingAddress ShippingAddress { get; set; }
+        public EdgeOrderShippingAddress ShippingAddress
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ShippingAddress;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new AddressUpdateProperties();
+                }
+                Properties.ShippingAddress = value;
+            }
+        }
+
         /// <summary> Contact details for the address. </summary>
-        public EdgeOrderAddressContactDetails ContactDetails { get; set; }
+        public EdgeOrderAddressContactDetails ContactDetails
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ContactDetails;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new AddressUpdateProperties();
+                }
+                Properties.ContactDetails = value;
+            }
+        }
     }
 }

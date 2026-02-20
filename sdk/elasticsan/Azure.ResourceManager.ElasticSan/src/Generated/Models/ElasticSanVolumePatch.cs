@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 
@@ -13,15 +14,58 @@ namespace Azure.ResourceManager.ElasticSan.Models
     /// <summary> Response for Volume request. </summary>
     public partial class ElasticSanVolumePatch
     {
-        /// <summary> Initializes a new instance of ElasticSanVolumePatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="ElasticSanVolumePatch"/>. </summary>
         public ElasticSanVolumePatch()
         {
-            Tags = new ChangeTrackingDictionary<string, string>();
         }
 
-        /// <summary> Resource tags. </summary>
-        public IDictionary<string, string> Tags { get; }
+        /// <summary> Initializes a new instance of <see cref="ElasticSanVolumePatch"/>. </summary>
+        /// <param name="properties"> Properties of Volume. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ElasticSanVolumePatch(VolumeUpdateProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> Properties of Volume. </summary>
+        internal VolumeUpdateProperties Properties { get; set; }
+
         /// <summary> Volume size. </summary>
-        public long? SizeGiB { get; set; }
+        public long? SizeGiB
+        {
+            get
+            {
+                return Properties is null ? default : Properties.SizeGiB;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new VolumeUpdateProperties();
+                }
+                Properties.SizeGiB = value.Value;
+            }
+        }
+
+        /// <summary> Resource ID of the resource managing the volume, this is a restricted field and can only be set for internal use. </summary>
+        public ResourceIdentifier ManagedByResourceId
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ManagedByResourceId;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new VolumeUpdateProperties();
+                }
+                Properties.ManagedByResourceId = value;
+            }
+        }
     }
 }

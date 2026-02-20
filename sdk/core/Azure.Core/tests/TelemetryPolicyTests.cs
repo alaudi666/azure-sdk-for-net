@@ -18,7 +18,7 @@ namespace Azure.Core.Tests
         {
             var assembly = Assembly.GetAssembly(GetType());
             var transport = new MockTransport(new MockResponse(200));
-            var telemetryPolicy = new TelemetryPolicy(new TelemetryDetails(GetType().Assembly));
+            var telemetryPolicy = new TelemetryPolicy(new TelemetryDetails(GetType().Assembly, default));
 
             await SendGetRequest(transport, telemetryPolicy);
 
@@ -44,13 +44,6 @@ namespace Azure.Core.Tests
 
             Assert.True(transport.SingleRequest.TryGetHeader("User-Agent", out var userAgent));
             StringAssert.StartsWith("application-id ", userAgent);
-        }
-
-        [Test]
-        public void ApplicationIdLimitedTo24Chars()
-        {
-            var options = new DiagnosticsOptions();
-            Assert.Throws<ArgumentOutOfRangeException>(() => options.ApplicationId = "0123456789012345678912345");
         }
 
         private class TestOptions : ClientOptions

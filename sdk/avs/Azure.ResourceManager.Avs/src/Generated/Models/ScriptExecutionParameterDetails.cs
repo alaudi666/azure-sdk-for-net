@@ -6,39 +6,43 @@
 #nullable disable
 
 using System;
-using Azure.Core;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.Avs.Models
 {
     /// <summary>
     /// The arguments passed in to the execution
-    /// Please note <see cref="ScriptExecutionParameterDetails"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-    /// The available derived classes include <see cref="PSCredentialExecutionParameterDetails"/>, <see cref="ScriptSecureStringExecutionParameterDetails"/> and <see cref="ScriptStringExecutionParameterDetails"/>.
+    /// Please note this is the abstract base class. The derived classes available for instantiation are: <see cref="ScriptSecureStringExecutionParameterDetails"/>, <see cref="ScriptStringExecutionParameterDetails"/>, and <see cref="PSCredentialExecutionParameterDetails"/>.
     /// </summary>
     public abstract partial class ScriptExecutionParameterDetails
     {
-        /// <summary> Initializes a new instance of ScriptExecutionParameterDetails. </summary>
-        /// <param name="name"> The parameter name. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="name"/> is null. </exception>
-        protected ScriptExecutionParameterDetails(string name)
-        {
-            Argument.AssertNotNull(name, nameof(name));
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
 
+        /// <summary> Initializes a new instance of <see cref="ScriptExecutionParameterDetails"/>. </summary>
+        /// <param name="type"> script execution parameter type. </param>
+        /// <param name="name"> The parameter name. </param>
+        private protected ScriptExecutionParameterDetails(ScriptExecutionParameterType @type, string name)
+        {
+            Type = @type;
             Name = name;
         }
 
-        /// <summary> Initializes a new instance of ScriptExecutionParameterDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="ScriptExecutionParameterDetails"/>. </summary>
+        /// <param name="type"> script execution parameter type. </param>
         /// <param name="name"> The parameter name. </param>
-        /// <param name="parameterType"> The type of execution parameter. </param>
-        internal ScriptExecutionParameterDetails(string name, ScriptExecutionParameterType parameterType)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal ScriptExecutionParameterDetails(ScriptExecutionParameterType @type, string name, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
+            Type = @type;
             Name = name;
-            ParameterType = parameterType;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
+
+        /// <summary> script execution parameter type. </summary>
+        internal ScriptExecutionParameterType Type { get; set; }
 
         /// <summary> The parameter name. </summary>
         public string Name { get; set; }
-        /// <summary> The type of execution parameter. </summary>
-        internal ScriptExecutionParameterType ParameterType { get; set; }
     }
 }

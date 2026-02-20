@@ -5,6 +5,7 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
 using Azure.Core;
 
@@ -13,22 +14,101 @@ namespace Azure.ResourceManager.Avs.Models
     /// <summary> An update of a DRS placement policy resource. </summary>
     public partial class PlacementPolicyPatch
     {
-        /// <summary> Initializes a new instance of PlacementPolicyPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="PlacementPolicyPatch"/>. </summary>
         public PlacementPolicyPatch()
         {
-            VmMembers = new ChangeTrackingList<ResourceIdentifier>();
-            HostMembers = new ChangeTrackingList<string>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="PlacementPolicyPatch"/>. </summary>
+        /// <param name="properties"> The properties of a placement policy resource that may be updated. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal PlacementPolicyPatch(PlacementPolicyUpdateProperties properties, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Properties = properties;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
+        /// <summary> The properties of a placement policy resource that may be updated. </summary>
+        internal PlacementPolicyUpdateProperties Properties { get; set; }
+
         /// <summary> Whether the placement policy is enabled or disabled. </summary>
-        public PlacementPolicyState? State { get; set; }
+        public PlacementPolicyState? State
+        {
+            get
+            {
+                return Properties is null ? default : Properties.State;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new PlacementPolicyUpdateProperties();
+                }
+                Properties.State = value.Value;
+            }
+        }
+
         /// <summary> Virtual machine members list. </summary>
-        public IList<ResourceIdentifier> VmMembers { get; }
+        public IList<ResourceIdentifier> VmMembers
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new PlacementPolicyUpdateProperties();
+                }
+                return Properties.VmMembers;
+            }
+        }
+
         /// <summary> Host members list. </summary>
-        public IList<string> HostMembers { get; }
+        public IList<string> HostMembers
+        {
+            get
+            {
+                if (Properties is null)
+                {
+                    Properties = new PlacementPolicyUpdateProperties();
+                }
+                return Properties.HostMembers;
+            }
+        }
+
         /// <summary> vm-host placement policy affinity strength (should/must). </summary>
-        public VmHostPlacementPolicyAffinityStrength? AffinityStrength { get; set; }
+        public VmHostPlacementPolicyAffinityStrength? AffinityStrength
+        {
+            get
+            {
+                return Properties is null ? default : Properties.AffinityStrength;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new PlacementPolicyUpdateProperties();
+                }
+                Properties.AffinityStrength = value.Value;
+            }
+        }
+
         /// <summary> placement policy azure hybrid benefit opt-in type. </summary>
-        public AzureHybridBenefitType? AzureHybridBenefitType { get; set; }
+        public AzureHybridBenefitType? AzureHybridBenefitType
+        {
+            get
+            {
+                return Properties is null ? default : Properties.AzureHybridBenefitType;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new PlacementPolicyUpdateProperties();
+                }
+                Properties.AzureHybridBenefitType = value.Value;
+            }
+        }
     }
 }

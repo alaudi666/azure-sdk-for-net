@@ -11,14 +11,13 @@
     <PackageReference Include="NUnit3TestAdapter" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Moq" />
+    <PackageReference Include="Microsoft.Azure.Core.NewtonsoftJson" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="$(AzureCoreTestFramework)" />
     <ProjectReference Include="..\src\Azure.Data.SchemaRegistry.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="SessionRecords\SchemaRegistryClientLiveTest\" />
+    <ProjectReference Include="..\..\..\eventhub\Azure.Messaging.EventHubs\src\Azure.Messaging.EventHubs.csproj" />
+    <ProjectReference Include="..\..\..\servicebus\Azure.Messaging.ServiceBus\src\Azure.Messaging.ServiceBus.csproj" />
   </ItemGroup>
 </Project>

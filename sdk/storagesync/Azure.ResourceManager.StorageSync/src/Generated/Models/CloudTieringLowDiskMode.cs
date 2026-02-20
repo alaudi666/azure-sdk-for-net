@@ -6,28 +6,35 @@
 #nullable disable
 
 using System;
+using System.Collections.Generic;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
     /// <summary> Information regarding the low disk mode state. </summary>
     public partial class CloudTieringLowDiskMode
     {
-        /// <summary> Initializes a new instance of CloudTieringLowDiskMode. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="CloudTieringLowDiskMode"/>. </summary>
         internal CloudTieringLowDiskMode()
         {
         }
 
-        /// <summary> Initializes a new instance of CloudTieringLowDiskMode. </summary>
+        /// <summary> Initializes a new instance of <see cref="CloudTieringLowDiskMode"/>. </summary>
         /// <param name="lastUpdatedOn"> Last updated timestamp. </param>
         /// <param name="state"> Low disk mode state. </param>
-        internal CloudTieringLowDiskMode(DateTimeOffset? lastUpdatedOn, CloudTieringLowDiskModeState? state)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal CloudTieringLowDiskMode(DateTimeOffset? lastUpdatedOn, CloudTieringLowDiskModeState? state, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             LastUpdatedOn = lastUpdatedOn;
             State = state;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Last updated timestamp. </summary>
         public DateTimeOffset? LastUpdatedOn { get; }
+
         /// <summary> Low disk mode state. </summary>
         public CloudTieringLowDiskModeState? State { get; }
     }

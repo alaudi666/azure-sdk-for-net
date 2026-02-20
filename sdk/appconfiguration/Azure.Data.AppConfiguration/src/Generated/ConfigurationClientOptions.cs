@@ -5,16 +5,12 @@
 
 #nullable disable
 
-using System;
 using Azure.Core;
 
 namespace Azure.Data.AppConfiguration
 {
-    /// <summary> Client options for ConfigurationClient. </summary>
+    /// <summary> Client options for <see cref="ConfigurationClient"/>. </summary>
     public partial class ConfigurationClientOptions : ClientOptions
     {
-        private const ServiceVersion LatestVersion = ServiceVersion.V1_0;
-
-        internal string Version { get; }
     }
 }

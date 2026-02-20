@@ -121,9 +121,7 @@ namespace Azure.Messaging.EventGrid
                 return message.Response.Status switch
                 {
                     200 => message.Response,
-                    _ => async ?
-                        throw await _clientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false) :
-                        throw _clientDiagnostics.CreateRequestFailedException(message.Response)
+                    _ => throw new RequestFailedException(message.Response)
                 };
             }
             catch (Exception e)
@@ -190,9 +188,7 @@ namespace Azure.Messaging.EventGrid
                 return message.Response.Status switch
                 {
                     200 => message.Response,
-                    _ => async ?
-                        throw await _clientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false) :
-                        throw _clientDiagnostics.CreateRequestFailedException(message.Response)
+                    _ => throw new RequestFailedException(message.Response)
                 };
             }
             catch (Exception e)
@@ -280,7 +276,7 @@ namespace Azure.Messaging.EventGrid
                     request.Headers.Add("aeg-channel-name", channelName);
                 }
 
-                CloudEventRequestContent content = new CloudEventRequestContent(events, _clientDiagnostics.IsActivityEnabled);
+                CloudEventsRequestContent content = new CloudEventsRequestContent(events, _clientDiagnostics.IsActivityEnabled);
                 request.Content = content;
 
                 if (async)
@@ -294,9 +290,7 @@ namespace Azure.Messaging.EventGrid
                 return message.Response.Status switch
                 {
                     200 => message.Response,
-                    _ => async ?
-                        throw await _clientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false) :
-                        throw _clientDiagnostics.CreateRequestFailedException(message.Response)
+                    _ => throw new RequestFailedException(message.Response)
                 };
             }
             catch (Exception e)
@@ -364,9 +358,7 @@ namespace Azure.Messaging.EventGrid
                 return message.Response.Status switch
                 {
                     200 => message.Response,
-                    _ => async ?
-                        throw await _clientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false) :
-                        throw _clientDiagnostics.CreateRequestFailedException(message.Response)
+                    _ => throw new RequestFailedException(message.Response)
                 };
             }
             catch (Exception e)

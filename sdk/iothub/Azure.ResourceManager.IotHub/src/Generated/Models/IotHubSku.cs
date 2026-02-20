@@ -29,6 +29,7 @@ namespace Azure.ResourceManager.IotHub.Models
         private const string B1Value = "B1";
         private const string B2Value = "B2";
         private const string B3Value = "B3";
+        private const string Gen2Value = "GEN2";
 
         /// <summary> F1. </summary>
         public static IotHubSku F1 { get; } = new IotHubSku(F1Value);
@@ -44,11 +45,13 @@ namespace Azure.ResourceManager.IotHub.Models
         public static IotHubSku B2 { get; } = new IotHubSku(B2Value);
         /// <summary> B3. </summary>
         public static IotHubSku B3 { get; } = new IotHubSku(B3Value);
+        /// <summary> GEN2. </summary>
+        public static IotHubSku Gen2 { get; } = new IotHubSku(Gen2Value);
         /// <summary> Determines if two <see cref="IotHubSku"/> values are the same. </summary>
         public static bool operator ==(IotHubSku left, IotHubSku right) => left.Equals(right);
         /// <summary> Determines if two <see cref="IotHubSku"/> values are not the same. </summary>
         public static bool operator !=(IotHubSku left, IotHubSku right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="IotHubSku"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="IotHubSku"/>. </summary>
         public static implicit operator IotHubSku(string value) => new IotHubSku(value);
 
         /// <inheritdoc />
@@ -59,7 +62,7 @@ namespace Azure.ResourceManager.IotHub.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

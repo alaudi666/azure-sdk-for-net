@@ -5,33 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Grafana;
 
 namespace Azure.ResourceManager.Grafana.Models
 {
-    /// <summary> List of private endpoint connection associated with the specified storage account. </summary>
+    /// <summary> The response of a PrivateEndpointConnection list operation. </summary>
     internal partial class GrafanaPrivateEndpointConnectionListResult
     {
-        /// <summary> Initializes a new instance of GrafanaPrivateEndpointConnectionListResult. </summary>
-        internal GrafanaPrivateEndpointConnectionListResult()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="GrafanaPrivateEndpointConnectionListResult"/>. </summary>
+        /// <param name="value"> The PrivateEndpointConnection items on this page. </param>
+        internal GrafanaPrivateEndpointConnectionListResult(IEnumerable<GrafanaPrivateEndpointConnectionData> value)
         {
-            Value = new ChangeTrackingList<GrafanaPrivateEndpointConnectionData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of GrafanaPrivateEndpointConnectionListResult. </summary>
-        /// <param name="value"> Array of private endpoint connections. </param>
-        /// <param name="nextLink"> URL to get the next set of operation list results (if there are any). </param>
-        internal GrafanaPrivateEndpointConnectionListResult(IReadOnlyList<GrafanaPrivateEndpointConnectionData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="GrafanaPrivateEndpointConnectionListResult"/>. </summary>
+        /// <param name="value"> The PrivateEndpointConnection items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal GrafanaPrivateEndpointConnectionListResult(IList<GrafanaPrivateEndpointConnectionData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Array of private endpoint connections. </summary>
-        public IReadOnlyList<GrafanaPrivateEndpointConnectionData> Value { get; }
-        /// <summary> URL to get the next set of operation list results (if there are any). </summary>
-        public string NextLink { get; }
+        /// <summary> The PrivateEndpointConnection items on this page. </summary>
+        public IList<GrafanaPrivateEndpointConnectionData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

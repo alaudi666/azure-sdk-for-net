@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.Search.Documents.Models;
@@ -37,7 +36,7 @@ namespace Azure.Search.Documents
         /// <param name="apiVersion"> Api Version. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="clientDiagnostics"/>, <paramref name="pipeline"/>, <paramref name="endpoint"/>, <paramref name="indexName"/> or <paramref name="apiVersion"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="indexName"/> is an empty string, and was expected to be non-empty. </exception>
-        public DocumentsRestClient(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, string endpoint, string indexName, Guid? xMsClientRequestId = null, string apiVersion = "2021-04-30-Preview")
+        public DocumentsRestClient(ClientDiagnostics clientDiagnostics, HttpPipeline pipeline, string endpoint, string indexName, Guid? xMsClientRequestId = null, string apiVersion = "2025-11-01-preview")
         {
             ClientDiagnostics = clientDiagnostics ?? throw new ArgumentNullException(nameof(clientDiagnostics));
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
@@ -75,12 +74,12 @@ namespace Azure.Search.Documents
                 case 200:
                     {
                         long value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = document.RootElement.GetInt64();
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -95,16 +94,16 @@ namespace Azure.Search.Documents
                 case 200:
                     {
                         long value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = document.RootElement.GetInt64();
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateSearchPostRequest(SearchOptions searchRequest)
+        internal HttpMessage CreateSearchPostRequest(SearchOptions searchOptions, string xMsQuerySourceAuthorization, bool? xMsEnableElevatedRead)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -117,69 +116,83 @@ namespace Azure.Search.Documents
             uri.AppendPath("/docs/search.post.search", false);
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
+            if (xMsQuerySourceAuthorization != null)
+            {
+                request.Headers.Add("x-ms-query-source-authorization", xMsQuerySourceAuthorization);
+            }
+            if (xMsEnableElevatedRead != null)
+            {
+                request.Headers.Add("x-ms-enable-elevated-read", xMsEnableElevatedRead.Value);
+            }
             request.Headers.Add("Accept", "application/json; odata.metadata=none");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(searchRequest);
+            content.JsonWriter.WriteObjectValue(searchOptions, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             return message;
         }
 
         /// <summary> Searches for documents in the index. </summary>
-        /// <param name="searchRequest"> The definition of the Search request. </param>
+        /// <param name="searchOptions"> The definition of the Search request. </param>
+        /// <param name="xMsQuerySourceAuthorization"> Token identifying the user for which the query is being executed. This token is used to enforce security restrictions on documents. </param>
+        /// <param name="xMsEnableElevatedRead"> A value that enables elevated read that bypass document level permission checks for the query operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="searchRequest"/> is null. </exception>
-        public async Task<Response<SearchDocumentsResult>> SearchPostAsync(SearchOptions searchRequest, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="searchOptions"/> is null. </exception>
+        public async Task<Response<SearchDocumentsResult>> SearchPostAsync(SearchOptions searchOptions, string xMsQuerySourceAuthorization = null, bool? xMsEnableElevatedRead = null, CancellationToken cancellationToken = default)
         {
-            if (searchRequest == null)
+            if (searchOptions == null)
             {
-                throw new ArgumentNullException(nameof(searchRequest));
+                throw new ArgumentNullException(nameof(searchOptions));
             }
 
-            using var message = CreateSearchPostRequest(searchRequest);
+            using var message = CreateSearchPostRequest(searchOptions, xMsQuerySourceAuthorization, xMsEnableElevatedRead);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
+                case 206:
                     {
                         SearchDocumentsResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = SearchDocumentsResult.DeserializeSearchDocumentsResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Searches for documents in the index. </summary>
-        /// <param name="searchRequest"> The definition of the Search request. </param>
+        /// <param name="searchOptions"> The definition of the Search request. </param>
+        /// <param name="xMsQuerySourceAuthorization"> Token identifying the user for which the query is being executed. This token is used to enforce security restrictions on documents. </param>
+        /// <param name="xMsEnableElevatedRead"> A value that enables elevated read that bypass document level permission checks for the query operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="searchRequest"/> is null. </exception>
-        public Response<SearchDocumentsResult> SearchPost(SearchOptions searchRequest, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="searchOptions"/> is null. </exception>
+        public Response<SearchDocumentsResult> SearchPost(SearchOptions searchOptions, string xMsQuerySourceAuthorization = null, bool? xMsEnableElevatedRead = null, CancellationToken cancellationToken = default)
         {
-            if (searchRequest == null)
+            if (searchOptions == null)
             {
-                throw new ArgumentNullException(nameof(searchRequest));
+                throw new ArgumentNullException(nameof(searchOptions));
             }
 
-            using var message = CreateSearchPostRequest(searchRequest);
+            using var message = CreateSearchPostRequest(searchOptions, xMsQuerySourceAuthorization, xMsEnableElevatedRead);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
+                case 206:
                     {
                         SearchDocumentsResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = SearchDocumentsResult.DeserializeSearchDocumentsResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateGetRequest(string key, IEnumerable<string> selectedFields)
+        internal HttpMessage CreateGetRequest(string key, IEnumerable<string> selectedFields, string xMsQuerySourceAuthorization, bool? xMsEnableElevatedRead)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -192,12 +205,20 @@ namespace Azure.Search.Documents
             uri.AppendPath("/docs('", false);
             uri.AppendPath(key, true);
             uri.AppendPath("')", false);
-            if (selectedFields != null)
+            if (selectedFields != null && !(selectedFields is ChangeTrackingList<string> changeTrackingList && changeTrackingList.IsUndefined))
             {
                 uri.AppendQueryDelimited("$select", selectedFields, ",", true);
             }
             uri.AppendQuery("api-version", _apiVersion, true);
             request.Uri = uri;
+            if (xMsQuerySourceAuthorization != null)
+            {
+                request.Headers.Add("x-ms-query-source-authorization", xMsQuerySourceAuthorization);
+            }
+            if (xMsEnableElevatedRead != null)
+            {
+                request.Headers.Add("x-ms-enable-elevated-read", xMsEnableElevatedRead.Value);
+            }
             request.Headers.Add("Accept", "application/json; odata.metadata=none");
             return message;
         }
@@ -205,60 +226,88 @@ namespace Azure.Search.Documents
         /// <summary> Retrieves a document from the index. </summary>
         /// <param name="key"> The key of the document to retrieve. </param>
         /// <param name="selectedFields"> List of field names to retrieve for the document; Any field not retrieved will be missing from the returned document. </param>
+        /// <param name="xMsQuerySourceAuthorization"> Token identifying the user for which the query is being executed. This token is used to enforce security restrictions on documents. </param>
+        /// <param name="xMsEnableElevatedRead"> A value that enables elevated read that bypass document level permission checks for the query operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="key"/> is null. </exception>
-        public async Task<Response<object>> GetAsync(string key, IEnumerable<string> selectedFields = null, CancellationToken cancellationToken = default)
+        public async Task<Response<IReadOnlyDictionary<string, object>>> GetAsync(string key, IEnumerable<string> selectedFields = null, string xMsQuerySourceAuthorization = null, bool? xMsEnableElevatedRead = null, CancellationToken cancellationToken = default)
         {
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            using var message = CreateGetRequest(key, selectedFields);
+            using var message = CreateGetRequest(key, selectedFields, xMsQuerySourceAuthorization, xMsEnableElevatedRead);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
-                        object value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-                        value = document.RootElement.GetObject();
+                        IReadOnlyDictionary<string, object> value = default;
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
+                        Dictionary<string, object> dictionary = new Dictionary<string, object>();
+                        foreach (var property in document.RootElement.EnumerateObject())
+                        {
+                            if (property.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                dictionary.Add(property.Name, null);
+                            }
+                            else
+                            {
+                                dictionary.Add(property.Name, property.Value.GetObject());
+                            }
+                        }
+                        value = dictionary;
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Retrieves a document from the index. </summary>
         /// <param name="key"> The key of the document to retrieve. </param>
         /// <param name="selectedFields"> List of field names to retrieve for the document; Any field not retrieved will be missing from the returned document. </param>
+        /// <param name="xMsQuerySourceAuthorization"> Token identifying the user for which the query is being executed. This token is used to enforce security restrictions on documents. </param>
+        /// <param name="xMsEnableElevatedRead"> A value that enables elevated read that bypass document level permission checks for the query operation. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="key"/> is null. </exception>
-        public Response<object> Get(string key, IEnumerable<string> selectedFields = null, CancellationToken cancellationToken = default)
+        public Response<IReadOnlyDictionary<string, object>> Get(string key, IEnumerable<string> selectedFields = null, string xMsQuerySourceAuthorization = null, bool? xMsEnableElevatedRead = null, CancellationToken cancellationToken = default)
         {
             if (key == null)
             {
                 throw new ArgumentNullException(nameof(key));
             }
 
-            using var message = CreateGetRequest(key, selectedFields);
+            using var message = CreateGetRequest(key, selectedFields, xMsQuerySourceAuthorization, xMsEnableElevatedRead);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
-                        object value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
-                        value = document.RootElement.GetObject();
+                        IReadOnlyDictionary<string, object> value = default;
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
+                        Dictionary<string, object> dictionary = new Dictionary<string, object>();
+                        foreach (var property in document.RootElement.EnumerateObject())
+                        {
+                            if (property.Value.ValueKind == JsonValueKind.Null)
+                            {
+                                dictionary.Add(property.Name, null);
+                            }
+                            else
+                            {
+                                dictionary.Add(property.Name, property.Value.GetObject());
+                            }
+                        }
+                        value = dictionary;
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateSuggestPostRequest(SuggestOptions suggestRequest)
+        internal HttpMessage CreateSuggestPostRequest(SuggestOptions suggestOptions)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -274,62 +323,62 @@ namespace Azure.Search.Documents
             request.Headers.Add("Accept", "application/json; odata.metadata=none");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(suggestRequest);
+            content.JsonWriter.WriteObjectValue(suggestOptions, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             return message;
         }
 
         /// <summary> Suggests documents in the index that match the given partial query text. </summary>
-        /// <param name="suggestRequest"> The Suggest request. </param>
+        /// <param name="suggestOptions"> The Suggest request. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="suggestRequest"/> is null. </exception>
-        public async Task<Response<SuggestDocumentsResult>> SuggestPostAsync(SuggestOptions suggestRequest, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="suggestOptions"/> is null. </exception>
+        public async Task<Response<SuggestDocumentsResult>> SuggestPostAsync(SuggestOptions suggestOptions, CancellationToken cancellationToken = default)
         {
-            if (suggestRequest == null)
+            if (suggestOptions == null)
             {
-                throw new ArgumentNullException(nameof(suggestRequest));
+                throw new ArgumentNullException(nameof(suggestOptions));
             }
 
-            using var message = CreateSuggestPostRequest(suggestRequest);
+            using var message = CreateSuggestPostRequest(suggestOptions);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         SuggestDocumentsResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = SuggestDocumentsResult.DeserializeSuggestDocumentsResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Suggests documents in the index that match the given partial query text. </summary>
-        /// <param name="suggestRequest"> The Suggest request. </param>
+        /// <param name="suggestOptions"> The Suggest request. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="suggestRequest"/> is null. </exception>
-        public Response<SuggestDocumentsResult> SuggestPost(SuggestOptions suggestRequest, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="suggestOptions"/> is null. </exception>
+        public Response<SuggestDocumentsResult> SuggestPost(SuggestOptions suggestOptions, CancellationToken cancellationToken = default)
         {
-            if (suggestRequest == null)
+            if (suggestOptions == null)
             {
-                throw new ArgumentNullException(nameof(suggestRequest));
+                throw new ArgumentNullException(nameof(suggestOptions));
             }
 
-            using var message = CreateSuggestPostRequest(suggestRequest);
+            using var message = CreateSuggestPostRequest(suggestOptions);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         SuggestDocumentsResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = SuggestDocumentsResult.DeserializeSuggestDocumentsResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -349,7 +398,7 @@ namespace Azure.Search.Documents
             request.Headers.Add("Accept", "application/json; odata.metadata=none");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(batch);
+            content.JsonWriter.WriteObjectValue(batch, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             return message;
         }
@@ -373,12 +422,12 @@ namespace Azure.Search.Documents
                 case 207:
                     {
                         IndexDocumentsResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = IndexDocumentsResult.DeserializeIndexDocumentsResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
@@ -401,16 +450,16 @@ namespace Azure.Search.Documents
                 case 207:
                     {
                         IndexDocumentsResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = IndexDocumentsResult.DeserializeIndexDocumentsResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
-        internal HttpMessage CreateAutocompletePostRequest(AutocompleteOptions autocompleteRequest)
+        internal HttpMessage CreateAutocompletePostRequest(AutocompleteOptions autocompleteOptions)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -426,62 +475,62 @@ namespace Azure.Search.Documents
             request.Headers.Add("Accept", "application/json; odata.metadata=none");
             request.Headers.Add("Content-Type", "application/json");
             var content = new Utf8JsonRequestContent();
-            content.JsonWriter.WriteObjectValue(autocompleteRequest);
+            content.JsonWriter.WriteObjectValue(autocompleteOptions, ModelSerializationExtensions.WireOptions);
             request.Content = content;
             return message;
         }
 
         /// <summary> Autocompletes incomplete query terms based on input text and matching terms in the index. </summary>
-        /// <param name="autocompleteRequest"> The definition of the Autocomplete request. </param>
+        /// <param name="autocompleteOptions"> The definition of the Autocomplete request. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="autocompleteRequest"/> is null. </exception>
-        public async Task<Response<AutocompleteResults>> AutocompletePostAsync(AutocompleteOptions autocompleteRequest, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="autocompleteOptions"/> is null. </exception>
+        public async Task<Response<AutocompleteResults>> AutocompletePostAsync(AutocompleteOptions autocompleteOptions, CancellationToken cancellationToken = default)
         {
-            if (autocompleteRequest == null)
+            if (autocompleteOptions == null)
             {
-                throw new ArgumentNullException(nameof(autocompleteRequest));
+                throw new ArgumentNullException(nameof(autocompleteOptions));
             }
 
-            using var message = CreateAutocompletePostRequest(autocompleteRequest);
+            using var message = CreateAutocompletePostRequest(autocompleteOptions);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         AutocompleteResults value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = AutocompleteResults.DeserializeAutocompleteResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw await ClientDiagnostics.CreateRequestFailedExceptionAsync(message.Response).ConfigureAwait(false);
+                    throw new RequestFailedException(message.Response);
             }
         }
 
         /// <summary> Autocompletes incomplete query terms based on input text and matching terms in the index. </summary>
-        /// <param name="autocompleteRequest"> The definition of the Autocomplete request. </param>
+        /// <param name="autocompleteOptions"> The definition of the Autocomplete request. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <exception cref="ArgumentNullException"> <paramref name="autocompleteRequest"/> is null. </exception>
-        public Response<AutocompleteResults> AutocompletePost(AutocompleteOptions autocompleteRequest, CancellationToken cancellationToken = default)
+        /// <exception cref="ArgumentNullException"> <paramref name="autocompleteOptions"/> is null. </exception>
+        public Response<AutocompleteResults> AutocompletePost(AutocompleteOptions autocompleteOptions, CancellationToken cancellationToken = default)
         {
-            if (autocompleteRequest == null)
+            if (autocompleteOptions == null)
             {
-                throw new ArgumentNullException(nameof(autocompleteRequest));
+                throw new ArgumentNullException(nameof(autocompleteOptions));
             }
 
-            using var message = CreateAutocompletePostRequest(autocompleteRequest);
+            using var message = CreateAutocompletePostRequest(autocompleteOptions);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         AutocompleteResults value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = AutocompleteResults.DeserializeAutocompleteResults(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
-                    throw ClientDiagnostics.CreateRequestFailedException(message.Response);
+                    throw new RequestFailedException(message.Response);
             }
         }
     }

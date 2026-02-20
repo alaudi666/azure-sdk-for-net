@@ -5,19 +5,29 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> The Mitigate Job captured from request body for Mitigate API. </summary>
     public partial class MitigateJobContent
     {
-        /// <summary> Initializes a new instance of MitigateJobContent. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="MitigateJobContent"/>. </summary>
         /// <param name="customerResolutionCode"> Resolution code for the job. </param>
-        public MitigateJobContent(CustomerResolutionCode customerResolutionCode)
+        /// <param name="serialNumberCustomerResolutionMap"> Serial number and the customer resolution code corresponding to each serial number. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal MitigateJobContent(CustomerResolutionCode customerResolutionCode, IDictionary<string, CustomerResolutionCode> serialNumberCustomerResolutionMap, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             CustomerResolutionCode = customerResolutionCode;
+            SerialNumberCustomerResolutionMap = serialNumberCustomerResolutionMap;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Resolution code for the job. </summary>
-        public CustomerResolutionCode CustomerResolutionCode { get; }
+        /// <summary> Serial number and the customer resolution code corresponding to each serial number. </summary>
+        public IDictionary<string, CustomerResolutionCode> SerialNumberCustomerResolutionMap { get; }
     }
 }

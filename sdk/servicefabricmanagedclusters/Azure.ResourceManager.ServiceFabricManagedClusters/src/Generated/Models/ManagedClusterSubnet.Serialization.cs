@@ -5,97 +5,206 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
 using Azure.Core;
+using Azure.ResourceManager.ServiceFabricManagedClusters;
 
 namespace Azure.ResourceManager.ServiceFabricManagedClusters.Models
 {
-    public partial class ManagedClusterSubnet : IUtf8JsonSerializable
+    /// <summary> Describes a Subnet. </summary>
+    public partial class ManagedClusterSubnet : IJsonModel<ManagedClusterSubnet>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <summary> Initializes a new instance of <see cref="ManagedClusterSubnet"/> for deserialization. </summary>
+        internal ManagedClusterSubnet()
+        {
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ManagedClusterSubnet PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedClusterSubnet>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializeManagedClusterSubnet(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ManagedClusterSubnet)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ManagedClusterSubnet>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("name");
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedClusterSubnet>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ManagedClusterSubnet)} does not support writing '{format}' format.");
+            }
+            writer.WritePropertyName("name"u8);
             writer.WriteStringValue(Name);
             if (Optional.IsDefined(IsIPv6Enabled))
             {
-                writer.WritePropertyName("enableIpv6");
+                writer.WritePropertyName("enableIpv6"u8);
                 writer.WriteBooleanValue(IsIPv6Enabled.Value);
             }
             if (Optional.IsDefined(PrivateEndpointNetworkPolicies))
             {
-                writer.WritePropertyName("privateEndpointNetworkPolicies");
+                writer.WritePropertyName("privateEndpointNetworkPolicies"u8);
                 writer.WriteStringValue(PrivateEndpointNetworkPolicies.Value.ToString());
             }
             if (Optional.IsDefined(PrivateLinkServiceNetworkPolicies))
             {
-                writer.WritePropertyName("privateLinkServiceNetworkPolicies");
+                writer.WritePropertyName("privateLinkServiceNetworkPolicies"u8);
                 writer.WriteStringValue(PrivateLinkServiceNetworkPolicies.Value.ToString());
             }
             if (Optional.IsDefined(NetworkSecurityGroupId))
             {
-                writer.WritePropertyName("networkSecurityGroupId");
+                writer.WritePropertyName("networkSecurityGroupId"u8);
                 writer.WriteStringValue(NetworkSecurityGroupId);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static ManagedClusterSubnet DeserializeManagedClusterSubnet(JsonElement element)
-        {
-            string name = default;
-            Optional<bool> enableIPv6 = default;
-            Optional<ManagedClusterSubnetPrivateEndpointNetworkPoliciesState> privateEndpointNetworkPolicies = default;
-            Optional<ManagedClusterSubnetPrivateLinkServiceNetworkPoliciesState> privateLinkServiceNetworkPolicies = default;
-            Optional<ResourceIdentifier> networkSecurityGroupId = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("name"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    name = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("enableIpv6"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    enableIPv6 = property.Value.GetBoolean();
-                    continue;
-                }
-                if (property.NameEquals("privateEndpointNetworkPolicies"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    privateEndpointNetworkPolicies = new ManagedClusterSubnetPrivateEndpointNetworkPoliciesState(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("privateLinkServiceNetworkPolicies"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    privateLinkServiceNetworkPolicies = new ManagedClusterSubnetPrivateLinkServiceNetworkPoliciesState(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("networkSecurityGroupId"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    networkSecurityGroupId = new ResourceIdentifier(property.Value.GetString());
-                    continue;
+#endif
                 }
             }
-            return new ManagedClusterSubnet(name, Optional.ToNullable(enableIPv6), Optional.ToNullable(privateEndpointNetworkPolicies), Optional.ToNullable(privateLinkServiceNetworkPolicies), networkSecurityGroupId.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ManagedClusterSubnet IJsonModel<ManagedClusterSubnet>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ManagedClusterSubnet JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedClusterSubnet>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ManagedClusterSubnet)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeManagedClusterSubnet(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ManagedClusterSubnet DeserializeManagedClusterSubnet(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string name = default;
+            bool? isIPv6Enabled = default;
+            ManagedClusterSubnetPrivateEndpointNetworkPoliciesState? privateEndpointNetworkPolicies = default;
+            ManagedClusterSubnetPrivateLinkServiceNetworkPoliciesState? privateLinkServiceNetworkPolicies = default;
+            ResourceIdentifier networkSecurityGroupId = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("name"u8))
+                {
+                    name = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("enableIpv6"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    isIPv6Enabled = prop.Value.GetBoolean();
+                    continue;
+                }
+                if (prop.NameEquals("privateEndpointNetworkPolicies"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    privateEndpointNetworkPolicies = new ManagedClusterSubnetPrivateEndpointNetworkPoliciesState(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("privateLinkServiceNetworkPolicies"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    privateLinkServiceNetworkPolicies = new ManagedClusterSubnetPrivateLinkServiceNetworkPoliciesState(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("networkSecurityGroupId"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    networkSecurityGroupId = new ResourceIdentifier(prop.Value.GetString());
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new ManagedClusterSubnet(
+                name,
+                isIPv6Enabled,
+                privateEndpointNetworkPolicies,
+                privateLinkServiceNetworkPolicies,
+                networkSecurityGroupId,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ManagedClusterSubnet>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ManagedClusterSubnet>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerServiceFabricManagedClustersContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ManagedClusterSubnet)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ManagedClusterSubnet IPersistableModel<ManagedClusterSubnet>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ManagedClusterSubnet>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

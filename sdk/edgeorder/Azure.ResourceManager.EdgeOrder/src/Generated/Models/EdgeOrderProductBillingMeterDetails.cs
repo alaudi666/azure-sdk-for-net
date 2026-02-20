@@ -5,44 +5,52 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.EdgeOrder.Models
 {
     /// <summary> Holds billing meter details for each type of billing. </summary>
     public partial class EdgeOrderProductBillingMeterDetails
     {
-        /// <summary> Initializes a new instance of EdgeOrderProductBillingMeterDetails. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderProductBillingMeterDetails"/>. </summary>
         internal EdgeOrderProductBillingMeterDetails()
         {
         }
 
-        /// <summary> Initializes a new instance of EdgeOrderProductBillingMeterDetails. </summary>
+        /// <summary> Initializes a new instance of <see cref="EdgeOrderProductBillingMeterDetails"/>. </summary>
         /// <param name="name"> Represents Billing type name. </param>
-        /// <param name="meterDetails">
-        /// Represents MeterDetails
-        /// Please note <see cref="EdgeOrderProductMeterDetails"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="Pav2MeterDetails"/> and <see cref="PurchaseMeterDetails"/>.
-        /// </param>
+        /// <param name="meterDetails"> Represents MeterDetails. </param>
         /// <param name="meteringType"> Represents Metering type (eg one-time or recurrent). </param>
         /// <param name="frequency"> Frequency of recurrence. </param>
-        internal EdgeOrderProductBillingMeterDetails(string name, EdgeOrderProductMeterDetails meterDetails, EdgeOrderProductMeteringType? meteringType, string frequency)
+        /// <param name="termTypeDetails"> Represent Term Type details. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal EdgeOrderProductBillingMeterDetails(string name, EdgeOrderProductMeterDetails meterDetails, EdgeOrderProductMeteringType? meteringType, string frequency, EdgeOrderTermTypeDetails termTypeDetails, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Name = name;
             MeterDetails = meterDetails;
             MeteringType = meteringType;
             Frequency = frequency;
+            TermTypeDetails = termTypeDetails;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Represents Billing type name. </summary>
         public string Name { get; }
-        /// <summary>
-        /// Represents MeterDetails
-        /// Please note <see cref="EdgeOrderProductMeterDetails"/> is the base class. According to the scenario, a derived class of the base class might need to be assigned here, or this property needs to be casted to one of the possible derived classes.
-        /// The available derived classes include <see cref="Pav2MeterDetails"/> and <see cref="PurchaseMeterDetails"/>.
-        /// </summary>
+
+        /// <summary> Represents MeterDetails. </summary>
         public EdgeOrderProductMeterDetails MeterDetails { get; }
+
         /// <summary> Represents Metering type (eg one-time or recurrent). </summary>
         public EdgeOrderProductMeteringType? MeteringType { get; }
+
         /// <summary> Frequency of recurrence. </summary>
         public string Frequency { get; }
+
+        /// <summary> Represent Term Type details. </summary>
+        public EdgeOrderTermTypeDetails TermTypeDetails { get; }
     }
 }

@@ -5,27 +5,36 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.DataBox.Models
 {
     /// <summary> Dc access security code. </summary>
     public partial class DataCenterAccessSecurityCode
     {
-        /// <summary> Initializes a new instance of DataCenterAccessSecurityCode. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DataCenterAccessSecurityCode"/>. </summary>
         internal DataCenterAccessSecurityCode()
         {
         }
 
-        /// <summary> Initializes a new instance of DataCenterAccessSecurityCode. </summary>
+        /// <summary> Initializes a new instance of <see cref="DataCenterAccessSecurityCode"/>. </summary>
         /// <param name="reverseDataCenterAccessCode"> Reverse Dc access security code. </param>
         /// <param name="forwardDataCenterAccessCode"> Forward Dc access security code. </param>
-        internal DataCenterAccessSecurityCode(string reverseDataCenterAccessCode, string forwardDataCenterAccessCode)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DataCenterAccessSecurityCode(string reverseDataCenterAccessCode, string forwardDataCenterAccessCode, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             ReverseDataCenterAccessCode = reverseDataCenterAccessCode;
             ForwardDataCenterAccessCode = forwardDataCenterAccessCode;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Reverse Dc access security code. </summary>
         public string ReverseDataCenterAccessCode { get; }
+
         /// <summary> Forward Dc access security code. </summary>
         public string ForwardDataCenterAccessCode { get; }
     }

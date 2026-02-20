@@ -5,29 +5,62 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The MachineLearningWorkspaceNotebookAccessTokenResult.
-    /// Serialized Name: NotebookAccessTokenResult
-    /// </summary>
+    /// <summary> The MachineLearningWorkspaceNotebookAccessTokenResult. </summary>
     public partial class MachineLearningWorkspaceNotebookAccessTokenResult
     {
-        /// <summary> Initializes a new instance of MachineLearningWorkspaceNotebookAccessTokenResult. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="MachineLearningWorkspaceNotebookAccessTokenResult"/>. </summary>
         internal MachineLearningWorkspaceNotebookAccessTokenResult()
         {
         }
 
-        /// <summary> Initializes a new instance of MachineLearningWorkspaceNotebookAccessTokenResult. </summary>
-        /// <param name="notebookResourceId"> Serialized Name: NotebookAccessTokenResult.notebookResourceId. </param>
-        /// <param name="hostName"> Serialized Name: NotebookAccessTokenResult.hostName. </param>
-        /// <param name="publicDns"> Serialized Name: NotebookAccessTokenResult.publicDns. </param>
-        /// <param name="accessToken"> Serialized Name: NotebookAccessTokenResult.accessToken. </param>
-        /// <param name="tokenType"> Serialized Name: NotebookAccessTokenResult.tokenType. </param>
-        /// <param name="expiresIn"> Serialized Name: NotebookAccessTokenResult.expiresIn. </param>
-        /// <param name="refreshToken"> Serialized Name: NotebookAccessTokenResult.refreshToken. </param>
-        /// <param name="scope"> Serialized Name: NotebookAccessTokenResult.scope. </param>
-        internal MachineLearningWorkspaceNotebookAccessTokenResult(string notebookResourceId, string hostName, string publicDns, string accessToken, string tokenType, int? expiresIn, string refreshToken, string scope)
+        /// <summary> Initializes a new instance of <see cref="MachineLearningWorkspaceNotebookAccessTokenResult"/>. </summary>
+        /// <param name="notebookResourceId"></param>
+        /// <param name="hostName"></param>
+        /// <param name="publicDns"></param>
+        /// <param name="accessToken"></param>
+        /// <param name="tokenType"></param>
+        /// <param name="expiresIn"></param>
+        /// <param name="refreshToken"></param>
+        /// <param name="scope"></param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal MachineLearningWorkspaceNotebookAccessTokenResult(string notebookResourceId, string hostName, string publicDns, string accessToken, string tokenType, int? expiresIn, string refreshToken, string scope, IDictionary<string, BinaryData> serializedAdditionalRawData)
         {
             NotebookResourceId = notebookResourceId;
             HostName = hostName;
@@ -37,23 +70,32 @@ namespace Azure.ResourceManager.MachineLearning.Models
             ExpiresIn = expiresIn;
             RefreshToken = refreshToken;
             Scope = scope;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
-        /// <summary> Serialized Name: NotebookAccessTokenResult.notebookResourceId. </summary>
+        /// <summary> Gets the notebook resource id. </summary>
+        [WirePath("notebookResourceId")]
         public string NotebookResourceId { get; }
-        /// <summary> Serialized Name: NotebookAccessTokenResult.hostName. </summary>
+        /// <summary> Gets the host name. </summary>
+        [WirePath("hostName")]
         public string HostName { get; }
-        /// <summary> Serialized Name: NotebookAccessTokenResult.publicDns. </summary>
+        /// <summary> Gets the public dns. </summary>
+        [WirePath("publicDns")]
         public string PublicDns { get; }
-        /// <summary> Serialized Name: NotebookAccessTokenResult.accessToken. </summary>
+        /// <summary> Gets the access token. </summary>
+        [WirePath("accessToken")]
         public string AccessToken { get; }
-        /// <summary> Serialized Name: NotebookAccessTokenResult.tokenType. </summary>
+        /// <summary> Gets the token type. </summary>
+        [WirePath("tokenType")]
         public string TokenType { get; }
-        /// <summary> Serialized Name: NotebookAccessTokenResult.expiresIn. </summary>
+        /// <summary> Gets the expires in. </summary>
+        [WirePath("expiresIn")]
         public int? ExpiresIn { get; }
-        /// <summary> Serialized Name: NotebookAccessTokenResult.refreshToken. </summary>
+        /// <summary> Gets the refresh token. </summary>
+        [WirePath("refreshToken")]
         public string RefreshToken { get; }
-        /// <summary> Serialized Name: NotebookAccessTokenResult.scope. </summary>
+        /// <summary> Gets the scope. </summary>
+        [WirePath("scope")]
         public string Scope { get; }
     }
 }

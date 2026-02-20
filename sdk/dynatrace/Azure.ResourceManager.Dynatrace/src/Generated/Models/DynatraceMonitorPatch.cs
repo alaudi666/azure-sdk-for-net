@@ -5,31 +5,62 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using Azure.ResourceManager.Dynatrace;
+using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Dynatrace.Models
 {
     /// <summary> The updatable properties of the MonitorResource. </summary>
     public partial class DynatraceMonitorPatch
     {
-        /// <summary> Initializes a new instance of DynatraceMonitorPatch. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="DynatraceMonitorPatch"/>. </summary>
         public DynatraceMonitorPatch()
         {
             Tags = new ChangeTrackingDictionary<string, string>();
         }
 
+        /// <summary> Initializes a new instance of <see cref="DynatraceMonitorPatch"/>. </summary>
+        /// <param name="tags"> Resource tags. </param>
+        /// <param name="properties"> The set of properties that can be updated in a PATCH request to a monitor resource. </param>
+        /// <param name="identity"> The managed service identities assigned to this resource. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal DynatraceMonitorPatch(IDictionary<string, string> tags, MonitorUpdateProperties properties, ManagedServiceIdentity identity, IDictionary<string, BinaryData> additionalBinaryDataProperties)
+        {
+            Tags = tags;
+            Properties = properties;
+            Identity = identity;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+        }
+
         /// <summary> Resource tags. </summary>
         public IDictionary<string, string> Tags { get; }
-        /// <summary> Status of the monitor. </summary>
-        public DynatraceMonitoringStatus? MonitoringStatus { get; set; }
-        /// <summary> Marketplace subscription status. </summary>
-        public DynatraceMonitorMarketplaceSubscriptionStatus? MarketplaceSubscriptionStatus { get; set; }
-        /// <summary> Properties of the Dynatrace environment. </summary>
-        public DynatraceEnvironmentProperties DynatraceEnvironmentProperties { get; set; }
-        /// <summary> User info. </summary>
-        public DynatraceMonitorUserInfo UserInfo { get; set; }
-        /// <summary> Billing plan information. </summary>
-        public DynatraceBillingPlanInfo PlanData { get; set; }
+
+        /// <summary> The set of properties that can be updated in a PATCH request to a monitor resource. </summary>
+        internal MonitorUpdateProperties Properties { get; set; }
+
+        /// <summary> The managed service identities assigned to this resource. </summary>
+        public ManagedServiceIdentity Identity { get; set; }
+
+        /// <summary> The new Billing plan information. </summary>
+        public DynatraceBillingPlanInfo MonitorUpdatePlanData
+        {
+            get
+            {
+                return Properties is null ? default : Properties.PlanData;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new MonitorUpdateProperties();
+                }
+                Properties.PlanData = value;
+            }
+        }
     }
 }

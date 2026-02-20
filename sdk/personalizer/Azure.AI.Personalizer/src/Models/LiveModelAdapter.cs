@@ -1,8 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-using Rl.Net;
 using System;
+using Rl.Net;
 
 namespace Azure.AI.Personalizer
 {
@@ -56,6 +56,13 @@ namespace Azure.AI.Personalizer
         public override void QueueActionTakenEvent(string eventId)
         {
             liveModel.QueueActionTakenEvent(eventId);
+        }
+
+        /// <summary> Dispose liveModel </summary>
+        protected override void DisposeManagedObjects()
+        {
+            liveModel.Dispose();
+            base.DisposeManagedObjects();
         }
     }
 }

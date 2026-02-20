@@ -5,32 +5,52 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class MatchCondition : IUtf8JsonSerializable
+    public partial class MatchCondition : IUtf8JsonSerializable, IJsonModel<MatchCondition>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<MatchCondition>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<MatchCondition>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("matchVariables");
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<MatchCondition>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(MatchCondition)} does not support writing '{format}' format.");
+            }
+
+            writer.WritePropertyName("matchVariables"u8);
             writer.WriteStartArray();
             foreach (var item in MatchVariables)
             {
-                writer.WriteObjectValue(item);
+                writer.WriteObjectValue(item, options);
             }
             writer.WriteEndArray();
-            writer.WritePropertyName("operator");
+            writer.WritePropertyName("operator"u8);
             writer.WriteStringValue(Operator.ToString());
             if (Optional.IsDefined(NegationConditon))
             {
-                writer.WritePropertyName("negationConditon");
+                writer.WritePropertyName("negationConditon"u8);
                 writer.WriteBooleanValue(NegationConditon.Value);
             }
-            writer.WritePropertyName("matchValues");
+            writer.WritePropertyName("matchValues"u8);
             writer.WriteStartArray();
             foreach (var item in MatchValues)
             {
@@ -39,7 +59,7 @@ namespace Azure.ResourceManager.Network.Models
             writer.WriteEndArray();
             if (Optional.IsCollectionDefined(Transforms))
             {
-                writer.WritePropertyName("transforms");
+                writer.WritePropertyName("transforms"u8);
                 writer.WriteStartArray();
                 foreach (var item in Transforms)
                 {
@@ -47,44 +67,77 @@ namespace Azure.ResourceManager.Network.Models
                 }
                 writer.WriteEndArray();
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static MatchCondition DeserializeMatchCondition(JsonElement element)
+        MatchCondition IJsonModel<MatchCondition>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<MatchCondition>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(MatchCondition)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeMatchCondition(document.RootElement, options);
+        }
+
+        internal static MatchCondition DeserializeMatchCondition(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             IList<MatchVariable> matchVariables = default;
             WebApplicationFirewallOperator @operator = default;
-            Optional<bool> negationConditon = default;
+            bool? negationConditon = default;
             IList<string> matchValues = default;
-            Optional<IList<WebApplicationFirewallTransform>> transforms = default;
+            IList<WebApplicationFirewallTransform> transforms = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("matchVariables"))
+                if (property.NameEquals("matchVariables"u8))
                 {
                     List<MatchVariable> array = new List<MatchVariable>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(MatchVariable.DeserializeMatchVariable(item));
+                        array.Add(MatchVariable.DeserializeMatchVariable(item, options));
                     }
                     matchVariables = array;
                     continue;
                 }
-                if (property.NameEquals("operator"))
+                if (property.NameEquals("operator"u8))
                 {
                     @operator = new WebApplicationFirewallOperator(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("negationConditon"))
+                if (property.NameEquals("negationConditon"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     negationConditon = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("matchValues"))
+                if (property.NameEquals("matchValues"u8))
                 {
                     List<string> array = new List<string>();
                     foreach (var item in property.Value.EnumerateArray())
@@ -94,11 +147,10 @@ namespace Azure.ResourceManager.Network.Models
                     matchValues = array;
                     continue;
                 }
-                if (property.NameEquals("transforms"))
+                if (property.NameEquals("transforms"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<WebApplicationFirewallTransform> array = new List<WebApplicationFirewallTransform>();
@@ -109,8 +161,177 @@ namespace Azure.ResourceManager.Network.Models
                     transforms = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new MatchCondition(matchVariables, @operator, Optional.ToNullable(negationConditon), matchValues, Optional.ToList(transforms));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new MatchCondition(
+                matchVariables,
+                @operator,
+                negationConditon,
+                matchValues,
+                transforms ?? new ChangeTrackingList<WebApplicationFirewallTransform>(),
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(MatchVariables), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  matchVariables: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(MatchVariables))
+                {
+                    if (MatchVariables.Any())
+                    {
+                        builder.Append("  matchVariables: ");
+                        builder.AppendLine("[");
+                        foreach (var item in MatchVariables)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  matchVariables: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Operator), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  operator: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  operator: ");
+                builder.AppendLine($"'{Operator.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(NegationConditon), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  negationConditon: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(NegationConditon))
+                {
+                    builder.Append("  negationConditon: ");
+                    var boolValue = NegationConditon.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(MatchValues), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  matchValues: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(MatchValues))
+                {
+                    if (MatchValues.Any())
+                    {
+                        builder.Append("  matchValues: ");
+                        builder.AppendLine("[");
+                        foreach (var item in MatchValues)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("    '''");
+                                builder.AppendLine($"{item}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"    '{item}'");
+                            }
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Transforms), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  transforms: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(Transforms))
+                {
+                    if (Transforms.Any())
+                    {
+                        builder.Append("  transforms: ");
+                        builder.AppendLine("[");
+                        foreach (var item in Transforms)
+                        {
+                            builder.AppendLine($"    '{item.ToString()}'");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<MatchCondition>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<MatchCondition>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(MatchCondition)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        MatchCondition IPersistableModel<MatchCondition>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<MatchCondition>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeMatchCondition(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(MatchCondition)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<MatchCondition>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

@@ -1,6 +1,9 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Azure.Core;
 using Azure.Core.TestFramework;
 using Azure.ResourceManager.GuestConfiguration.Models;
@@ -9,9 +12,6 @@ using Azure.ResourceManager.Models;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.TestFramework;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Azure.ResourceManager.GuestConfiguration.Tests
 {
@@ -81,9 +81,20 @@ namespace Azure.ResourceManager.GuestConfiguration.Tests
             var configurationParameter = new GuestConfigurationParameter();
             var configurationParameterList = new List<GuestConfigurationParameter>() { configurationParameter };
 
-            GuestConfigurationNavigation guestConfigurationNavigation = new(GuestConfigurationManagementUtilities.DefaultKind, GuestConfigurationManagementUtilities.DefaultAssignmentName,
-            GuestConfigurationManagementUtilities.DefaultAssignmentVersion, null, null, GuestConfigurationManagementUtilities.DefaultAssignmentType,
-            null, GuestConfigurationManagementUtilities.Builtin, configurationParameterList, configurationParameterList, null);
+            GuestConfigurationNavigation guestConfigurationNavigation = new GuestConfigurationNavigation(
+                GuestConfigurationManagementUtilities.DefaultKind,
+                GuestConfigurationManagementUtilities.DefaultAssignmentName,
+                GuestConfigurationManagementUtilities.DefaultAssignmentVersion,
+                null,
+                null,
+                null,
+                GuestConfigurationManagementUtilities.DefaultAssignmentType,
+                null,
+                GuestConfigurationManagementUtilities.Builtin,
+                configurationParameterList,
+                configurationParameterList,
+                null,
+                null);
 
             return new GuestConfigurationAssignmentProperties()
             {

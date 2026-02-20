@@ -14,26 +14,35 @@ using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Grafana
 {
-    internal class GrafanaPrivateEndpointConnectionOperationSource : IOperationSource<GrafanaPrivateEndpointConnectionResource>
+    /// <summary></summary>
+    internal partial class GrafanaPrivateEndpointConnectionOperationSource : IOperationSource<GrafanaPrivateEndpointConnectionResource>
     {
         private readonly ArmClient _client;
 
+        /// <summary></summary>
+        /// <param name="client"></param>
         internal GrafanaPrivateEndpointConnectionOperationSource(ArmClient client)
         {
             _client = client;
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         GrafanaPrivateEndpointConnectionResource IOperationSource<GrafanaPrivateEndpointConnectionResource>.CreateResult(Response response, CancellationToken cancellationToken)
         {
-            using var document = JsonDocument.Parse(response.ContentStream);
-            var data = GrafanaPrivateEndpointConnectionData.DeserializeGrafanaPrivateEndpointConnectionData(document.RootElement);
+            using JsonDocument document = JsonDocument.Parse(response.ContentStream);
+            GrafanaPrivateEndpointConnectionData data = GrafanaPrivateEndpointConnectionData.DeserializeGrafanaPrivateEndpointConnectionData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new GrafanaPrivateEndpointConnectionResource(_client, data);
         }
 
+        /// <param name="response"> The response from the service. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <returns></returns>
         async ValueTask<GrafanaPrivateEndpointConnectionResource> IOperationSource<GrafanaPrivateEndpointConnectionResource>.CreateResultAsync(Response response, CancellationToken cancellationToken)
         {
-            using var document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
-            var data = GrafanaPrivateEndpointConnectionData.DeserializeGrafanaPrivateEndpointConnectionData(document.RootElement);
+            using JsonDocument document = await JsonDocument.ParseAsync(response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+            GrafanaPrivateEndpointConnectionData data = GrafanaPrivateEndpointConnectionData.DeserializeGrafanaPrivateEndpointConnectionData(document.RootElement, ModelSerializationExtensions.WireOptions);
             return new GrafanaPrivateEndpointConnectionResource(_client, data);
         }
     }

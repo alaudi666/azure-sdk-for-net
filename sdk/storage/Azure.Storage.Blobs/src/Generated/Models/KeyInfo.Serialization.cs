@@ -7,6 +7,7 @@
 
 using System.Xml;
 using Azure.Core;
+using Azure.Storage.Common;
 
 namespace Azure.Storage.Blobs.Models
 {
@@ -15,7 +16,7 @@ namespace Azure.Storage.Blobs.Models
         void IXmlSerializable.Write(XmlWriter writer, string nameHint)
         {
             writer.WriteStartElement(nameHint ?? "KeyInfo");
-            if (Optional.IsDefined(Start))
+            if (Common.Optional.IsDefined(Start))
             {
                 writer.WriteStartElement("Start");
                 writer.WriteValue(Start);
@@ -24,6 +25,12 @@ namespace Azure.Storage.Blobs.Models
             writer.WriteStartElement("Expiry");
             writer.WriteValue(Expiry);
             writer.WriteEndElement();
+            if (Common.Optional.IsDefined(DelegatedUserTid))
+            {
+                writer.WriteStartElement("DelegatedUserTid");
+                writer.WriteValue(DelegatedUserTid);
+                writer.WriteEndElement();
+            }
             writer.WriteEndElement();
         }
     }

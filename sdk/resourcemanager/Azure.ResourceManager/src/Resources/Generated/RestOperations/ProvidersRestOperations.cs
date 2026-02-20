@@ -9,7 +9,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
 using Azure.Core;
 using Azure.Core.Pipeline;
 using Azure.ResourceManager.Resources.Models;
@@ -33,8 +32,21 @@ namespace Azure.ResourceManager.Resources
         {
             _pipeline = pipeline ?? throw new ArgumentNullException(nameof(pipeline));
             _endpoint = endpoint ?? new Uri("https://management.azure.com");
-            _apiVersion = apiVersion ?? "2021-04-01";
+            _apiVersion = apiVersion ?? "2022-09-01";
             _userAgent = new TelemetryDetails(GetType().Assembly, applicationId);
+        }
+
+        internal RequestUriBuilder CreateUnregisterRequestUri(string subscriptionId, string resourceProviderNamespace)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(resourceProviderNamespace, true);
+            uri.AppendPath("/unregister", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateUnregisterRequest(string subscriptionId, string resourceProviderNamespace)
@@ -74,7 +86,7 @@ namespace Azure.ResourceManager.Resources
                 case 200:
                     {
                         ResourceProviderData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ResourceProviderData.DeserializeResourceProviderData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -101,13 +113,26 @@ namespace Azure.ResourceManager.Resources
                 case 200:
                     {
                         ResourceProviderData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ResourceProviderData.DeserializeResourceProviderData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateProviderPermissionsRequestUri(string subscriptionId, string resourceProviderNamespace)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(resourceProviderNamespace, true);
+            uri.AppendPath("/providerPermissions", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateProviderPermissionsRequest(string subscriptionId, string resourceProviderNamespace)
@@ -147,7 +172,7 @@ namespace Azure.ResourceManager.Resources
                 case 200:
                     {
                         ProviderPermissionListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ProviderPermissionListResult.DeserializeProviderPermissionListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -174,13 +199,26 @@ namespace Azure.ResourceManager.Resources
                 case 200:
                     {
                         ProviderPermissionListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ProviderPermissionListResult.DeserializeProviderPermissionListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateRegisterRequestUri(string subscriptionId, string resourceProviderNamespace, ProviderRegistrationContent content)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(resourceProviderNamespace, true);
+            uri.AppendPath("/register", false);
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateRegisterRequest(string subscriptionId, string resourceProviderNamespace, ProviderRegistrationContent content)
@@ -202,7 +240,7 @@ namespace Azure.ResourceManager.Resources
             {
                 request.Headers.Add("Content-Type", "application/json");
                 var content0 = new Utf8JsonRequestContent();
-                content0.JsonWriter.WriteObjectValue(content);
+                content0.JsonWriter.WriteObjectValue(content, ModelSerializationExtensions.WireOptions);
                 request.Content = content0;
             }
             _userAgent.Apply(message);
@@ -228,7 +266,7 @@ namespace Azure.ResourceManager.Resources
                 case 200:
                     {
                         ResourceProviderData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ResourceProviderData.DeserializeResourceProviderData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -256,7 +294,7 @@ namespace Azure.ResourceManager.Resources
                 case 200:
                     {
                         ResourceProviderData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ResourceProviderData.DeserializeResourceProviderData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -265,7 +303,22 @@ namespace Azure.ResourceManager.Resources
             }
         }
 
-        internal HttpMessage CreateListRequest(string subscriptionId, int? top, string expand)
+        internal RequestUriBuilder CreateListRequestUri(string subscriptionId, string expand)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers", false);
+            if (expand != null)
+            {
+                uri.AppendQuery("$expand", expand, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
+        internal HttpMessage CreateListRequest(string subscriptionId, string expand)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -275,10 +328,6 @@ namespace Azure.ResourceManager.Resources
             uri.AppendPath("/subscriptions/", false);
             uri.AppendPath(subscriptionId, true);
             uri.AppendPath("/providers", false);
-            if (top != null)
-            {
-                uri.AppendQuery("$top", top.Value, true);
-            }
             if (expand != null)
             {
                 uri.AppendQuery("$expand", expand, true);
@@ -292,23 +341,22 @@ namespace Azure.ResourceManager.Resources
 
         /// <summary> Gets all resource providers for a subscription. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
-        /// <param name="top"> The number of results to return. If null is passed returns all deployments. </param>
         /// <param name="expand"> The properties to include in the results. For example, use &amp;$expand=metadata in the query string to retrieve resource provider metadata. To include property aliases in response, use $expand=resourceTypes/aliases. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ResourceProviderListResult>> ListAsync(string subscriptionId, int? top = null, string expand = null, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceProviderListResult>> ListAsync(string subscriptionId, string expand = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
-            using var message = CreateListRequest(subscriptionId, top, expand);
+            using var message = CreateListRequest(subscriptionId, expand);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         ResourceProviderListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ResourceProviderListResult.DeserializeResourceProviderListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -319,23 +367,22 @@ namespace Azure.ResourceManager.Resources
 
         /// <summary> Gets all resource providers for a subscription. </summary>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
-        /// <param name="top"> The number of results to return. If null is passed returns all deployments. </param>
         /// <param name="expand"> The properties to include in the results. For example, use &amp;$expand=metadata in the query string to retrieve resource provider metadata. To include property aliases in response, use $expand=resourceTypes/aliases. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ResourceProviderListResult> List(string subscriptionId, int? top = null, string expand = null, CancellationToken cancellationToken = default)
+        public Response<ResourceProviderListResult> List(string subscriptionId, string expand = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
-            using var message = CreateListRequest(subscriptionId, top, expand);
+            using var message = CreateListRequest(subscriptionId, expand);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         ResourceProviderListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ResourceProviderListResult.DeserializeResourceProviderListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -344,7 +391,20 @@ namespace Azure.ResourceManager.Resources
             }
         }
 
-        internal HttpMessage CreateListAtTenantScopeRequest(int? top, string expand)
+        internal RequestUriBuilder CreateListAtTenantScopeRequestUri(string expand)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/providers", false);
+            if (expand != null)
+            {
+                uri.AppendQuery("$expand", expand, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
+        }
+
+        internal HttpMessage CreateListAtTenantScopeRequest(string expand)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -352,10 +412,6 @@ namespace Azure.ResourceManager.Resources
             var uri = new RawRequestUriBuilder();
             uri.Reset(_endpoint);
             uri.AppendPath("/providers", false);
-            if (top != null)
-            {
-                uri.AppendQuery("$top", top.Value, true);
-            }
             if (expand != null)
             {
                 uri.AppendQuery("$expand", expand, true);
@@ -368,19 +424,18 @@ namespace Azure.ResourceManager.Resources
         }
 
         /// <summary> Gets all resource providers for the tenant. </summary>
-        /// <param name="top"> The number of results to return. If null is passed returns all providers. </param>
         /// <param name="expand"> The properties to include in the results. For example, use &amp;$expand=metadata in the query string to retrieve resource provider metadata. To include property aliases in response, use $expand=resourceTypes/aliases. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public async Task<Response<TenantResourceProviderListResult>> ListAtTenantScopeAsync(int? top = null, string expand = null, CancellationToken cancellationToken = default)
+        public async Task<Response<TenantResourceProviderListResult>> ListAtTenantScopeAsync(string expand = null, CancellationToken cancellationToken = default)
         {
-            using var message = CreateListAtTenantScopeRequest(top, expand);
+            using var message = CreateListAtTenantScopeRequest(expand);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         TenantResourceProviderListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = TenantResourceProviderListResult.DeserializeTenantResourceProviderListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -390,25 +445,40 @@ namespace Azure.ResourceManager.Resources
         }
 
         /// <summary> Gets all resource providers for the tenant. </summary>
-        /// <param name="top"> The number of results to return. If null is passed returns all providers. </param>
         /// <param name="expand"> The properties to include in the results. For example, use &amp;$expand=metadata in the query string to retrieve resource provider metadata. To include property aliases in response, use $expand=resourceTypes/aliases. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        public Response<TenantResourceProviderListResult> ListAtTenantScope(int? top = null, string expand = null, CancellationToken cancellationToken = default)
+        public Response<TenantResourceProviderListResult> ListAtTenantScope(string expand = null, CancellationToken cancellationToken = default)
         {
-            using var message = CreateListAtTenantScopeRequest(top, expand);
+            using var message = CreateListAtTenantScopeRequest(expand);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         TenantResourceProviderListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = TenantResourceProviderListResult.DeserializeTenantResourceProviderListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetRequestUri(string subscriptionId, string resourceProviderNamespace, string expand)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/subscriptions/", false);
+            uri.AppendPath(subscriptionId, true);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(resourceProviderNamespace, true);
+            if (expand != null)
+            {
+                uri.AppendQuery("$expand", expand, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetRequest(string subscriptionId, string resourceProviderNamespace, string expand)
@@ -452,7 +522,7 @@ namespace Azure.ResourceManager.Resources
                 case 200:
                     {
                         ResourceProviderData value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ResourceProviderData.DeserializeResourceProviderData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -482,7 +552,7 @@ namespace Azure.ResourceManager.Resources
                 case 200:
                     {
                         ResourceProviderData value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ResourceProviderData.DeserializeResourceProviderData(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -491,6 +561,20 @@ namespace Azure.ResourceManager.Resources
                 default:
                     throw new RequestFailedException(message.Response);
             }
+        }
+
+        internal RequestUriBuilder CreateGetAtTenantScopeRequestUri(string resourceProviderNamespace, string expand)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendPath("/providers/", false);
+            uri.AppendPath(resourceProviderNamespace, true);
+            if (expand != null)
+            {
+                uri.AppendQuery("$expand", expand, true);
+            }
+            uri.AppendQuery("api-version", _apiVersion, true);
+            return uri;
         }
 
         internal HttpMessage CreateGetAtTenantScopeRequest(string resourceProviderNamespace, string expand)
@@ -530,7 +614,7 @@ namespace Azure.ResourceManager.Resources
                 case 200:
                     {
                         TenantResourceProvider value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = TenantResourceProvider.DeserializeTenantResourceProvider(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -556,7 +640,7 @@ namespace Azure.ResourceManager.Resources
                 case 200:
                     {
                         TenantResourceProvider value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = TenantResourceProvider.DeserializeTenantResourceProvider(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -565,7 +649,15 @@ namespace Azure.ResourceManager.Resources
             }
         }
 
-        internal HttpMessage CreateListNextPageRequest(string nextLink, string subscriptionId, int? top, string expand)
+        internal RequestUriBuilder CreateListNextPageRequestUri(string nextLink, string subscriptionId, string expand)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
+        }
+
+        internal HttpMessage CreateListNextPageRequest(string nextLink, string subscriptionId, string expand)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -582,24 +674,23 @@ namespace Azure.ResourceManager.Resources
         /// <summary> Gets all resource providers for a subscription. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
-        /// <param name="top"> The number of results to return. If null is passed returns all deployments. </param>
         /// <param name="expand"> The properties to include in the results. For example, use &amp;$expand=metadata in the query string to retrieve resource provider metadata. To include property aliases in response, use $expand=resourceTypes/aliases. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public async Task<Response<ResourceProviderListResult>> ListNextPageAsync(string nextLink, string subscriptionId, int? top = null, string expand = null, CancellationToken cancellationToken = default)
+        public async Task<Response<ResourceProviderListResult>> ListNextPageAsync(string nextLink, string subscriptionId, string expand = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
-            using var message = CreateListNextPageRequest(nextLink, subscriptionId, top, expand);
+            using var message = CreateListNextPageRequest(nextLink, subscriptionId, expand);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         ResourceProviderListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = ResourceProviderListResult.DeserializeResourceProviderListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -611,24 +702,23 @@ namespace Azure.ResourceManager.Resources
         /// <summary> Gets all resource providers for a subscription. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
         /// <param name="subscriptionId"> The ID of the target subscription. </param>
-        /// <param name="top"> The number of results to return. If null is passed returns all deployments. </param>
         /// <param name="expand"> The properties to include in the results. For example, use &amp;$expand=metadata in the query string to retrieve resource provider metadata. To include property aliases in response, use $expand=resourceTypes/aliases. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> or <paramref name="subscriptionId"/> is null. </exception>
         /// <exception cref="ArgumentException"> <paramref name="subscriptionId"/> is an empty string, and was expected to be non-empty. </exception>
-        public Response<ResourceProviderListResult> ListNextPage(string nextLink, string subscriptionId, int? top = null, string expand = null, CancellationToken cancellationToken = default)
+        public Response<ResourceProviderListResult> ListNextPage(string nextLink, string subscriptionId, string expand = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
             Argument.AssertNotNullOrEmpty(subscriptionId, nameof(subscriptionId));
 
-            using var message = CreateListNextPageRequest(nextLink, subscriptionId, top, expand);
+            using var message = CreateListNextPageRequest(nextLink, subscriptionId, expand);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         ResourceProviderListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = ResourceProviderListResult.DeserializeResourceProviderListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -637,7 +727,15 @@ namespace Azure.ResourceManager.Resources
             }
         }
 
-        internal HttpMessage CreateListAtTenantScopeNextPageRequest(string nextLink, int? top, string expand)
+        internal RequestUriBuilder CreateListAtTenantScopeNextPageRequestUri(string nextLink, string expand)
+        {
+            var uri = new RawRequestUriBuilder();
+            uri.Reset(_endpoint);
+            uri.AppendRawNextLink(nextLink, false);
+            return uri;
+        }
+
+        internal HttpMessage CreateListAtTenantScopeNextPageRequest(string nextLink, string expand)
         {
             var message = _pipeline.CreateMessage();
             var request = message.Request;
@@ -653,22 +751,21 @@ namespace Azure.ResourceManager.Resources
 
         /// <summary> Gets all resource providers for the tenant. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="top"> The number of results to return. If null is passed returns all providers. </param>
         /// <param name="expand"> The properties to include in the results. For example, use &amp;$expand=metadata in the query string to retrieve resource provider metadata. To include property aliases in response, use $expand=resourceTypes/aliases. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public async Task<Response<TenantResourceProviderListResult>> ListAtTenantScopeNextPageAsync(string nextLink, int? top = null, string expand = null, CancellationToken cancellationToken = default)
+        public async Task<Response<TenantResourceProviderListResult>> ListAtTenantScopeNextPageAsync(string nextLink, string expand = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
-            using var message = CreateListAtTenantScopeNextPageRequest(nextLink, top, expand);
+            using var message = CreateListAtTenantScopeNextPageRequest(nextLink, expand);
             await _pipeline.SendAsync(message, cancellationToken).ConfigureAwait(false);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         TenantResourceProviderListResult value = default;
-                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, default, cancellationToken).ConfigureAwait(false);
+                        using var document = await JsonDocument.ParseAsync(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions, cancellationToken).ConfigureAwait(false);
                         value = TenantResourceProviderListResult.DeserializeTenantResourceProviderListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }
@@ -679,22 +776,21 @@ namespace Azure.ResourceManager.Resources
 
         /// <summary> Gets all resource providers for the tenant. </summary>
         /// <param name="nextLink"> The URL to the next page of results. </param>
-        /// <param name="top"> The number of results to return. If null is passed returns all providers. </param>
         /// <param name="expand"> The properties to include in the results. For example, use &amp;$expand=metadata in the query string to retrieve resource provider metadata. To include property aliases in response, use $expand=resourceTypes/aliases. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="nextLink"/> is null. </exception>
-        public Response<TenantResourceProviderListResult> ListAtTenantScopeNextPage(string nextLink, int? top = null, string expand = null, CancellationToken cancellationToken = default)
+        public Response<TenantResourceProviderListResult> ListAtTenantScopeNextPage(string nextLink, string expand = null, CancellationToken cancellationToken = default)
         {
             Argument.AssertNotNull(nextLink, nameof(nextLink));
 
-            using var message = CreateListAtTenantScopeNextPageRequest(nextLink, top, expand);
+            using var message = CreateListAtTenantScopeNextPageRequest(nextLink, expand);
             _pipeline.Send(message, cancellationToken);
             switch (message.Response.Status)
             {
                 case 200:
                     {
                         TenantResourceProviderListResult value = default;
-                        using var document = JsonDocument.Parse(message.Response.ContentStream);
+                        using var document = JsonDocument.Parse(message.Response.ContentStream, ModelSerializationExtensions.JsonDocumentOptions);
                         value = TenantResourceProviderListResult.DeserializeTenantResourceProviderListResult(document.RootElement);
                         return Response.FromValue(value, message.Response);
                     }

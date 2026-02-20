@@ -9,20 +9,18 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 
 namespace Azure.ResourceManager.Orbital
 {
     /// <summary>
-    /// A class representing a collection of <see cref="OrbitalContactResource" /> and their operations.
-    /// Each <see cref="OrbitalContactResource" /> in the collection will belong to the same instance of <see cref="OrbitalSpacecraftResource" />.
-    /// To get an <see cref="OrbitalContactCollection" /> instance call the GetOrbitalContacts method from an instance of <see cref="OrbitalSpacecraftResource" />.
+    /// A class representing a collection of <see cref="OrbitalContactResource"/> and their operations.
+    /// Each <see cref="OrbitalContactResource"/> in the collection will belong to the same instance of <see cref="OrbitalSpacecraftResource"/>.
+    /// To get an <see cref="OrbitalContactCollection"/> instance call the GetOrbitalContacts method from an instance of <see cref="OrbitalSpacecraftResource"/>.
     /// </summary>
     public partial class OrbitalContactCollection : ArmCollection, IEnumerable<OrbitalContactResource>, IAsyncEnumerable<OrbitalContactResource>
     {
@@ -55,8 +53,24 @@ namespace Azure.ResourceManager.Orbital
 
         /// <summary>
         /// Creates a contact.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}
-        /// Operation Id: Contacts_Create
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Contacts_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="OrbitalContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="contactName"> Contact name. </param>
@@ -88,8 +102,24 @@ namespace Azure.ResourceManager.Orbital
 
         /// <summary>
         /// Creates a contact.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}
-        /// Operation Id: Contacts_Create
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Contacts_Create</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="OrbitalContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="waitUntil"> <see cref="WaitUntil.Completed"/> if the method should wait to return until the long-running operation has completed on the service; <see cref="WaitUntil.Started"/> if it should return after starting the operation. For more information on long-running operations, please see <see href="https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/core/Azure.Core/samples/LongRunningOperations.md"> Azure.Core Long-Running Operation samples</see>. </param>
         /// <param name="contactName"> Contact name. </param>
@@ -121,8 +151,24 @@ namespace Azure.ResourceManager.Orbital
 
         /// <summary>
         /// Gets the specified contact in a specified resource group.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}
-        /// Operation Id: Contacts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Contacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="OrbitalContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="contactName"> Contact name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -150,8 +196,24 @@ namespace Azure.ResourceManager.Orbital
 
         /// <summary>
         /// Gets the specified contact in a specified resource group.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}
-        /// Operation Id: Contacts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Contacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="OrbitalContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="contactName"> Contact name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -179,94 +241,86 @@ namespace Azure.ResourceManager.Orbital
 
         /// <summary>
         /// Returns list of contacts by spacecraftName.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts
-        /// Operation Id: Contacts_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Contacts_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="OrbitalContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="skiptoken"> An opaque string that the resource provider uses to skip over previously-returned results. This is used when a previous list operation call returned a partial result. If a previous response contains a nextLink element, the value of the nextLink element will include a skiptoken parameter that specifies a starting point to use for subsequent calls. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="OrbitalContactResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="OrbitalContactResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<OrbitalContactResource> GetAllAsync(string skiptoken = null, CancellationToken cancellationToken = default)
         {
-            async Task<Page<OrbitalContactResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _orbitalContactContactsClientDiagnostics.CreateScope("OrbitalContactCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _orbitalContactContactsRestClient.ListAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, skiptoken, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new OrbitalContactResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<OrbitalContactResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _orbitalContactContactsClientDiagnostics.CreateScope("OrbitalContactCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _orbitalContactContactsRestClient.ListNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, skiptoken, cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new OrbitalContactResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _orbitalContactContactsRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, skiptoken);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _orbitalContactContactsRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, skiptoken);
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new OrbitalContactResource(Client, OrbitalContactData.DeserializeOrbitalContactData(e)), _orbitalContactContactsClientDiagnostics, Pipeline, "OrbitalContactCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Returns list of contacts by spacecraftName.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts
-        /// Operation Id: Contacts_List
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Contacts_List</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="OrbitalContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="skiptoken"> An opaque string that the resource provider uses to skip over previously-returned results. This is used when a previous list operation call returned a partial result. If a previous response contains a nextLink element, the value of the nextLink element will include a skiptoken parameter that specifies a starting point to use for subsequent calls. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="OrbitalContactResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="OrbitalContactResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<OrbitalContactResource> GetAll(string skiptoken = null, CancellationToken cancellationToken = default)
         {
-            Page<OrbitalContactResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _orbitalContactContactsClientDiagnostics.CreateScope("OrbitalContactCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _orbitalContactContactsRestClient.List(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, skiptoken, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new OrbitalContactResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<OrbitalContactResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _orbitalContactContactsClientDiagnostics.CreateScope("OrbitalContactCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _orbitalContactContactsRestClient.ListNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, skiptoken, cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new OrbitalContactResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _orbitalContactContactsRestClient.CreateListRequest(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, skiptoken);
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _orbitalContactContactsRestClient.CreateListNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, Id.Name, skiptoken);
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new OrbitalContactResource(Client, OrbitalContactData.DeserializeOrbitalContactData(e)), _orbitalContactContactsClientDiagnostics, Pipeline, "OrbitalContactCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}
-        /// Operation Id: Contacts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Contacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="OrbitalContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="contactName"> Contact name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -292,8 +346,24 @@ namespace Azure.ResourceManager.Orbital
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}
-        /// Operation Id: Contacts_Get
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Contacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="OrbitalContactResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="contactName"> Contact name. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -309,6 +379,96 @@ namespace Azure.ResourceManager.Orbital
             {
                 var response = _orbitalContactContactsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, contactName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Contacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="OrbitalContactResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="contactName"> Contact name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="contactName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="contactName"/> is null. </exception>
+        public virtual async Task<NullableResponse<OrbitalContactResource>> GetIfExistsAsync(string contactName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(contactName, nameof(contactName));
+
+            using var scope = _orbitalContactContactsClientDiagnostics.CreateScope("OrbitalContactCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _orbitalContactContactsRestClient.GetAsync(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, contactName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<OrbitalContactResource>(response.GetRawResponse());
+                return Response.FromValue(new OrbitalContactResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Orbital/spacecrafts/{spacecraftName}/contacts/{contactName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Contacts_Get</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-03-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="OrbitalContactResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="contactName"> Contact name. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="contactName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="contactName"/> is null. </exception>
+        public virtual NullableResponse<OrbitalContactResource> GetIfExists(string contactName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(contactName, nameof(contactName));
+
+            using var scope = _orbitalContactContactsClientDiagnostics.CreateScope("OrbitalContactCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _orbitalContactContactsRestClient.Get(Id.SubscriptionId, Id.ResourceGroupName, Id.Name, contactName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<OrbitalContactResource>(response.GetRawResponse());
+                return Response.FromValue(new OrbitalContactResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

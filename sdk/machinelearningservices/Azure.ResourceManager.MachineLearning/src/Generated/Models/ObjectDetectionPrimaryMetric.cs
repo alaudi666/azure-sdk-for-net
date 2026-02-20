@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// Primary metrics for Image ObjectDetection task.
-    /// Serialized Name: ObjectDetectionPrimaryMetrics
-    /// </summary>
+    /// <summary> Primary metrics for Image ObjectDetection task. </summary>
     public readonly partial struct ObjectDetectionPrimaryMetric : IEquatable<ObjectDetectionPrimaryMetric>
     {
         private readonly string _value;
@@ -30,14 +27,13 @@ namespace Azure.ResourceManager.MachineLearning.Models
         /// <summary>
         /// Mean Average Precision (MAP) is the average of AP (Average Precision).
         /// AP is calculated for each class and averaged to get the MAP.
-        /// Serialized Name: ObjectDetectionPrimaryMetrics.MeanAveragePrecision
         /// </summary>
         public static ObjectDetectionPrimaryMetric MeanAveragePrecision { get; } = new ObjectDetectionPrimaryMetric(MeanAveragePrecisionValue);
         /// <summary> Determines if two <see cref="ObjectDetectionPrimaryMetric"/> values are the same. </summary>
         public static bool operator ==(ObjectDetectionPrimaryMetric left, ObjectDetectionPrimaryMetric right) => left.Equals(right);
         /// <summary> Determines if two <see cref="ObjectDetectionPrimaryMetric"/> values are not the same. </summary>
         public static bool operator !=(ObjectDetectionPrimaryMetric left, ObjectDetectionPrimaryMetric right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="ObjectDetectionPrimaryMetric"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="ObjectDetectionPrimaryMetric"/>. </summary>
         public static implicit operator ObjectDetectionPrimaryMetric(string value) => new ObjectDetectionPrimaryMetric(value);
 
         /// <inheritdoc />
@@ -48,7 +44,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

@@ -9,21 +9,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure;
+using Autorest.CSharp.Core;
 using Azure.Core;
 using Azure.Core.Pipeline;
-using Azure.ResourceManager;
 using Azure.ResourceManager.Resources;
 
 namespace Azure.ResourceManager.SecurityCenter
 {
     /// <summary>
-    /// A class representing a collection of <see cref="ResourceGroupSecurityAlertResource" /> and their operations.
-    /// Each <see cref="ResourceGroupSecurityAlertResource" /> in the collection will belong to the same instance of <see cref="ResourceGroupResource" />.
-    /// To get a <see cref="ResourceGroupSecurityAlertCollection" /> instance call the GetResourceGroupSecurityAlerts method from an instance of <see cref="ResourceGroupResource" />.
+    /// A class representing a collection of <see cref="ResourceGroupSecurityAlertResource"/> and their operations.
+    /// Each <see cref="ResourceGroupSecurityAlertResource"/> in the collection will belong to the same instance of <see cref="ResourceGroupResource"/>.
+    /// To get a <see cref="ResourceGroupSecurityAlertCollection"/> instance call the GetResourceGroupSecurityAlerts method from an instance of <see cref="ResourceGroupResource"/>.
     /// </summary>
     public partial class ResourceGroupSecurityAlertCollection : ArmCollection, IEnumerable<ResourceGroupSecurityAlertResource>, IAsyncEnumerable<ResourceGroupSecurityAlertResource>
     {
@@ -59,8 +57,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get an alert that is associated a resource group or a resource in a resource group
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}
-        /// Operation Id: Alerts_GetResourceGroupLevel
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_GetResourceGroupLevel</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ResourceGroupSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="alertName"> Name of the alert object. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -88,8 +102,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Get an alert that is associated a resource group or a resource in a resource group
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}
-        /// Operation Id: Alerts_GetResourceGroupLevel
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_GetResourceGroupLevel</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ResourceGroupSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="alertName"> Name of the alert object. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -117,92 +147,84 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// List all the alerts that are associated with the resource group that are stored in a specific location
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts
-        /// Operation Id: Alerts_ListResourceGroupLevelByRegion
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_ListResourceGroupLevelByRegion</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ResourceGroupSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> An async collection of <see cref="ResourceGroupSecurityAlertResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> An async collection of <see cref="ResourceGroupSecurityAlertResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual AsyncPageable<ResourceGroupSecurityAlertResource> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            async Task<Page<ResourceGroupSecurityAlertResource>> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _resourceGroupSecurityAlertAlertsClientDiagnostics.CreateScope("ResourceGroupSecurityAlertCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _resourceGroupSecurityAlertAlertsRestClient.ListResourceGroupLevelByRegionAsync(Id.SubscriptionId, Id.ResourceGroupName, new AzureLocation(_ascLocation), cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new ResourceGroupSecurityAlertResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            async Task<Page<ResourceGroupSecurityAlertResource>> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _resourceGroupSecurityAlertAlertsClientDiagnostics.CreateScope("ResourceGroupSecurityAlertCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = await _resourceGroupSecurityAlertAlertsRestClient.ListResourceGroupLevelByRegionNextPageAsync(nextLink, Id.SubscriptionId, Id.ResourceGroupName, new AzureLocation(_ascLocation), cancellationToken: cancellationToken).ConfigureAwait(false);
-                    return Page.FromValues(response.Value.Value.Select(value => new ResourceGroupSecurityAlertResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateAsyncEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _resourceGroupSecurityAlertAlertsRestClient.CreateListResourceGroupLevelByRegionRequest(Id.SubscriptionId, Id.ResourceGroupName, new AzureLocation(_ascLocation));
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _resourceGroupSecurityAlertAlertsRestClient.CreateListResourceGroupLevelByRegionNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, new AzureLocation(_ascLocation));
+            return GeneratorPageableHelpers.CreateAsyncPageable(FirstPageRequest, NextPageRequest, e => new ResourceGroupSecurityAlertResource(Client, SecurityAlertData.DeserializeSecurityAlertData(e)), _resourceGroupSecurityAlertAlertsClientDiagnostics, Pipeline, "ResourceGroupSecurityAlertCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// List all the alerts that are associated with the resource group that are stored in a specific location
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts
-        /// Operation Id: Alerts_ListResourceGroupLevelByRegion
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_ListResourceGroupLevelByRegion</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ResourceGroupSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
-        /// <returns> A collection of <see cref="ResourceGroupSecurityAlertResource" /> that may take multiple service requests to iterate over. </returns>
+        /// <returns> A collection of <see cref="ResourceGroupSecurityAlertResource"/> that may take multiple service requests to iterate over. </returns>
         public virtual Pageable<ResourceGroupSecurityAlertResource> GetAll(CancellationToken cancellationToken = default)
         {
-            Page<ResourceGroupSecurityAlertResource> FirstPageFunc(int? pageSizeHint)
-            {
-                using var scope = _resourceGroupSecurityAlertAlertsClientDiagnostics.CreateScope("ResourceGroupSecurityAlertCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _resourceGroupSecurityAlertAlertsRestClient.ListResourceGroupLevelByRegion(Id.SubscriptionId, Id.ResourceGroupName, new AzureLocation(_ascLocation), cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new ResourceGroupSecurityAlertResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            Page<ResourceGroupSecurityAlertResource> NextPageFunc(string nextLink, int? pageSizeHint)
-            {
-                using var scope = _resourceGroupSecurityAlertAlertsClientDiagnostics.CreateScope("ResourceGroupSecurityAlertCollection.GetAll");
-                scope.Start();
-                try
-                {
-                    var response = _resourceGroupSecurityAlertAlertsRestClient.ListResourceGroupLevelByRegionNextPage(nextLink, Id.SubscriptionId, Id.ResourceGroupName, new AzureLocation(_ascLocation), cancellationToken: cancellationToken);
-                    return Page.FromValues(response.Value.Value.Select(value => new ResourceGroupSecurityAlertResource(Client, value)), response.Value.NextLink, response.GetRawResponse());
-                }
-                catch (Exception e)
-                {
-                    scope.Failed(e);
-                    throw;
-                }
-            }
-            return PageableHelpers.CreateEnumerable(FirstPageFunc, NextPageFunc);
+            HttpMessage FirstPageRequest(int? pageSizeHint) => _resourceGroupSecurityAlertAlertsRestClient.CreateListResourceGroupLevelByRegionRequest(Id.SubscriptionId, Id.ResourceGroupName, new AzureLocation(_ascLocation));
+            HttpMessage NextPageRequest(int? pageSizeHint, string nextLink) => _resourceGroupSecurityAlertAlertsRestClient.CreateListResourceGroupLevelByRegionNextPageRequest(nextLink, Id.SubscriptionId, Id.ResourceGroupName, new AzureLocation(_ascLocation));
+            return GeneratorPageableHelpers.CreatePageable(FirstPageRequest, NextPageRequest, e => new ResourceGroupSecurityAlertResource(Client, SecurityAlertData.DeserializeSecurityAlertData(e)), _resourceGroupSecurityAlertAlertsClientDiagnostics, Pipeline, "ResourceGroupSecurityAlertCollection.GetAll", "value", "nextLink", cancellationToken);
         }
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}
-        /// Operation Id: Alerts_GetResourceGroupLevel
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_GetResourceGroupLevel</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ResourceGroupSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="alertName"> Name of the alert object. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -228,8 +250,24 @@ namespace Azure.ResourceManager.SecurityCenter
 
         /// <summary>
         /// Checks to see if the resource exists in azure.
-        /// Request Path: /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}
-        /// Operation Id: Alerts_GetResourceGroupLevel
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_GetResourceGroupLevel</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ResourceGroupSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
         /// </summary>
         /// <param name="alertName"> Name of the alert object. </param>
         /// <param name="cancellationToken"> The cancellation token to use. </param>
@@ -245,6 +283,96 @@ namespace Azure.ResourceManager.SecurityCenter
             {
                 var response = _resourceGroupSecurityAlertAlertsRestClient.GetResourceGroupLevel(Id.SubscriptionId, Id.ResourceGroupName, new AzureLocation(_ascLocation), alertName, cancellationToken: cancellationToken);
                 return Response.FromValue(response.Value != null, response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_GetResourceGroupLevel</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ResourceGroupSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="alertName"> Name of the alert object. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="alertName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="alertName"/> is null. </exception>
+        public virtual async Task<NullableResponse<ResourceGroupSecurityAlertResource>> GetIfExistsAsync(string alertName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(alertName, nameof(alertName));
+
+            using var scope = _resourceGroupSecurityAlertAlertsClientDiagnostics.CreateScope("ResourceGroupSecurityAlertCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = await _resourceGroupSecurityAlertAlertsRestClient.GetResourceGroupLevelAsync(Id.SubscriptionId, Id.ResourceGroupName, new AzureLocation(_ascLocation), alertName, cancellationToken: cancellationToken).ConfigureAwait(false);
+                if (response.Value == null)
+                    return new NoValueResponse<ResourceGroupSecurityAlertResource>(response.GetRawResponse());
+                return Response.FromValue(new ResourceGroupSecurityAlertResource(Client, response.Value), response.GetRawResponse());
+            }
+            catch (Exception e)
+            {
+                scope.Failed(e);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get details for this resource from the service.
+        /// <list type="bullet">
+        /// <item>
+        /// <term>Request Path</term>
+        /// <description>/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Security/locations/{ascLocation}/alerts/{alertName}</description>
+        /// </item>
+        /// <item>
+        /// <term>Operation Id</term>
+        /// <description>Alerts_GetResourceGroupLevel</description>
+        /// </item>
+        /// <item>
+        /// <term>Default Api Version</term>
+        /// <description>2022-01-01</description>
+        /// </item>
+        /// <item>
+        /// <term>Resource</term>
+        /// <description><see cref="ResourceGroupSecurityAlertResource"/></description>
+        /// </item>
+        /// </list>
+        /// </summary>
+        /// <param name="alertName"> Name of the alert object. </param>
+        /// <param name="cancellationToken"> The cancellation token to use. </param>
+        /// <exception cref="ArgumentException"> <paramref name="alertName"/> is an empty string, and was expected to be non-empty. </exception>
+        /// <exception cref="ArgumentNullException"> <paramref name="alertName"/> is null. </exception>
+        public virtual NullableResponse<ResourceGroupSecurityAlertResource> GetIfExists(string alertName, CancellationToken cancellationToken = default)
+        {
+            Argument.AssertNotNullOrEmpty(alertName, nameof(alertName));
+
+            using var scope = _resourceGroupSecurityAlertAlertsClientDiagnostics.CreateScope("ResourceGroupSecurityAlertCollection.GetIfExists");
+            scope.Start();
+            try
+            {
+                var response = _resourceGroupSecurityAlertAlertsRestClient.GetResourceGroupLevel(Id.SubscriptionId, Id.ResourceGroupName, new AzureLocation(_ascLocation), alertName, cancellationToken: cancellationToken);
+                if (response.Value == null)
+                    return new NoValueResponse<ResourceGroupSecurityAlertResource>(response.GetRawResponse());
+                return Response.FromValue(new ResourceGroupSecurityAlertResource(Client, response.Value), response.GetRawResponse());
             }
             catch (Exception e)
             {

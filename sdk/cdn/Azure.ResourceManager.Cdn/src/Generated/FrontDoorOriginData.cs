@@ -5,6 +5,8 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Cdn.Models;
 using Azure.ResourceManager.Models;
@@ -12,15 +14,50 @@ using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Cdn
 {
-    /// <summary> A class representing the FrontDoorOrigin data model. </summary>
+    /// <summary>
+    /// A class representing the FrontDoorOrigin data model.
+    /// Azure Front Door origin is the source of the content being delivered via Azure Front Door. When the edge nodes represented by an endpoint do not have the requested content cached, they attempt to fetch it from one or more of the configured origins.
+    /// </summary>
     public partial class FrontDoorOriginData : ResourceData
     {
-        /// <summary> Initializes a new instance of FrontDoorOriginData. </summary>
+        /// <summary>
+        /// Keeps track of any properties unknown to the library.
+        /// <para>
+        /// To assign an object to the value of this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
+        /// </para>
+        /// <para>
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// </para>
+        /// <para>
+        /// Examples:
+        /// <list type="bullet">
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson("foo")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("\"foo\"")</term>
+        /// <description>Creates a payload of "foo".</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromObjectAsJson(new { key = "value" })</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// <item>
+        /// <term>BinaryData.FromString("{\"key\": \"value\"}")</term>
+        /// <description>Creates a payload of { "key": "value" }.</description>
+        /// </item>
+        /// </list>
+        /// </para>
+        /// </summary>
+        private IDictionary<string, BinaryData> _serializedAdditionalRawData;
+
+        /// <summary> Initializes a new instance of <see cref="FrontDoorOriginData"/>. </summary>
         public FrontDoorOriginData()
         {
         }
 
-        /// <summary> Initializes a new instance of FrontDoorOriginData. </summary>
+        /// <summary> Initializes a new instance of <see cref="FrontDoorOriginData"/>. </summary>
         /// <param name="id"> The id. </param>
         /// <param name="name"> The name. </param>
         /// <param name="resourceType"> The resourceType. </param>
@@ -30,7 +67,7 @@ namespace Azure.ResourceManager.Cdn
         /// <param name="hostName"> The address of the origin. Domain names, IPv4 addresses, and IPv6 addresses are supported.This should be unique across all origins in an endpoint. </param>
         /// <param name="httpPort"> The value of the HTTP port. Must be between 1 and 65535. </param>
         /// <param name="httpsPort"> The value of the HTTPS port. Must be between 1 and 65535. </param>
-        /// <param name="originHostHeader"> The host header value sent to the origin with each request. If you leave this blank, the request hostname determines this value. Azure CDN origins, such as Web Apps, Blob Storage, and Cloud Services require this host header value to match the origin hostname by default. This overrides the host header defined at Endpoint. </param>
+        /// <param name="originHostHeader"> The host header value sent to the origin with each request. If you leave this blank, the request hostname determines this value. Azure Front Door origins, such as Web Apps, Blob Storage, and Cloud Services require this host header value to match the origin hostname by default. This overrides the host header defined at Endpoint. </param>
         /// <param name="priority"> Priority of origin in given origin group for load balancing. Higher priorities will not be used for load balancing if any lower priority origin is healthy.Must be between 1 and 5. </param>
         /// <param name="weight"> Weight of the origin in given origin group for load balancing. Must be between 1 and 1000. </param>
         /// <param name="sharedPrivateLinkResource"> The properties of the private link resource for private origin. </param>
@@ -38,7 +75,8 @@ namespace Azure.ResourceManager.Cdn
         /// <param name="enforceCertificateNameCheck"> Whether to enable certificate name check at origin level. </param>
         /// <param name="provisioningState"> Provisioning status. </param>
         /// <param name="deploymentStatus"></param>
-        internal FrontDoorOriginData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string originGroupName, WritableSubResource origin, string hostName, int? httpPort, int? httpsPort, string originHostHeader, int? priority, int? weight, SharedPrivateLinkResourceProperties sharedPrivateLinkResource, EnabledState? enabledState, bool? enforceCertificateNameCheck, FrontDoorProvisioningState? provisioningState, FrontDoorDeploymentStatus? deploymentStatus) : base(id, name, resourceType, systemData)
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
+        internal FrontDoorOriginData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string originGroupName, WritableSubResource origin, string hostName, int? httpPort, int? httpsPort, string originHostHeader, int? priority, int? weight, SharedPrivateLinkResourceProperties sharedPrivateLinkResource, EnabledState? enabledState, bool? enforceCertificateNameCheck, FrontDoorProvisioningState? provisioningState, FrontDoorDeploymentStatus? deploymentStatus, IDictionary<string, BinaryData> serializedAdditionalRawData) : base(id, name, resourceType, systemData)
         {
             OriginGroupName = originGroupName;
             Origin = origin;
@@ -53,13 +91,16 @@ namespace Azure.ResourceManager.Cdn
             EnforceCertificateNameCheck = enforceCertificateNameCheck;
             ProvisioningState = provisioningState;
             DeploymentStatus = deploymentStatus;
+            _serializedAdditionalRawData = serializedAdditionalRawData;
         }
 
         /// <summary> The name of the origin group which contains this origin. </summary>
+        [WirePath("properties.originGroupName")]
         public string OriginGroupName { get; }
         /// <summary> Resource reference to the Azure origin resource. </summary>
         internal WritableSubResource Origin { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.azureOrigin.id")]
         public ResourceIdentifier OriginId
         {
             get => Origin is null ? default : Origin.Id;
@@ -72,26 +113,37 @@ namespace Azure.ResourceManager.Cdn
         }
 
         /// <summary> The address of the origin. Domain names, IPv4 addresses, and IPv6 addresses are supported.This should be unique across all origins in an endpoint. </summary>
+        [WirePath("properties.hostName")]
         public string HostName { get; set; }
         /// <summary> The value of the HTTP port. Must be between 1 and 65535. </summary>
+        [WirePath("properties.httpPort")]
         public int? HttpPort { get; set; }
         /// <summary> The value of the HTTPS port. Must be between 1 and 65535. </summary>
+        [WirePath("properties.httpsPort")]
         public int? HttpsPort { get; set; }
-        /// <summary> The host header value sent to the origin with each request. If you leave this blank, the request hostname determines this value. Azure CDN origins, such as Web Apps, Blob Storage, and Cloud Services require this host header value to match the origin hostname by default. This overrides the host header defined at Endpoint. </summary>
+        /// <summary> The host header value sent to the origin with each request. If you leave this blank, the request hostname determines this value. Azure Front Door origins, such as Web Apps, Blob Storage, and Cloud Services require this host header value to match the origin hostname by default. This overrides the host header defined at Endpoint. </summary>
+        [WirePath("properties.originHostHeader")]
         public string OriginHostHeader { get; set; }
         /// <summary> Priority of origin in given origin group for load balancing. Higher priorities will not be used for load balancing if any lower priority origin is healthy.Must be between 1 and 5. </summary>
+        [WirePath("properties.priority")]
         public int? Priority { get; set; }
         /// <summary> Weight of the origin in given origin group for load balancing. Must be between 1 and 1000. </summary>
+        [WirePath("properties.weight")]
         public int? Weight { get; set; }
         /// <summary> The properties of the private link resource for private origin. </summary>
+        [WirePath("properties.sharedPrivateLinkResource")]
         public SharedPrivateLinkResourceProperties SharedPrivateLinkResource { get; set; }
         /// <summary> Whether to enable health probes to be made against backends defined under backendPools. Health probes can only be disabled if there is a single enabled backend in single enabled backend pool. </summary>
+        [WirePath("properties.enabledState")]
         public EnabledState? EnabledState { get; set; }
         /// <summary> Whether to enable certificate name check at origin level. </summary>
+        [WirePath("properties.enforceCertificateNameCheck")]
         public bool? EnforceCertificateNameCheck { get; set; }
         /// <summary> Provisioning status. </summary>
+        [WirePath("properties.provisioningState")]
         public FrontDoorProvisioningState? ProvisioningState { get; }
         /// <summary> Gets the deployment status. </summary>
+        [WirePath("properties.deploymentStatus")]
         public FrontDoorDeploymentStatus? DeploymentStatus { get; }
     }
 }

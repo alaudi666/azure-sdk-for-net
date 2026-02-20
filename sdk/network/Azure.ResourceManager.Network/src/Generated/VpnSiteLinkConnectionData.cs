@@ -5,29 +5,34 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure;
 using Azure.Core;
 using Azure.ResourceManager.Network.Models;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.Network
 {
-    /// <summary> A class representing the VpnSiteLinkConnection data model. </summary>
+    /// <summary>
+    /// A class representing the VpnSiteLinkConnection data model.
+    /// VpnSiteLinkConnection Resource.
+    /// </summary>
     public partial class VpnSiteLinkConnectionData : NetworkResourceData
     {
-        /// <summary> Initializes a new instance of VpnSiteLinkConnectionData. </summary>
+        /// <summary> Initializes a new instance of <see cref="VpnSiteLinkConnectionData"/>. </summary>
         public VpnSiteLinkConnectionData()
         {
+            VpnGatewayCustomBgpAddresses = new ChangeTrackingList<GatewayCustomBgpIPAddressIPConfiguration>();
             IPsecPolicies = new ChangeTrackingList<IPsecPolicy>();
             IngressNatRules = new ChangeTrackingList<WritableSubResource>();
             EgressNatRules = new ChangeTrackingList<WritableSubResource>();
         }
 
-        /// <summary> Initializes a new instance of VpnSiteLinkConnectionData. </summary>
+        /// <summary> Initializes a new instance of <see cref="VpnSiteLinkConnectionData"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="vpnSiteLink"> Id of the connected vpn site link. </param>
         /// <param name="routingWeight"> Routing weight for vpn connection. </param>
@@ -37,8 +42,9 @@ namespace Azure.ResourceManager.Network
         /// <param name="ingressBytesTransferred"> Ingress bytes transferred. </param>
         /// <param name="egressBytesTransferred"> Egress bytes transferred. </param>
         /// <param name="connectionBandwidth"> Expected bandwidth in MBPS. </param>
-        /// <param name="sharedKey"> SharedKey for the vpn connection. </param>
+        /// <param name="sharedKey"> SharedKey for the vpn link connection. We will no longer return sharedKey in any Create/Update/Get/List/UpdateTags VpnGateway/VpnConnection/VpnLinkConnection APIs response. Please use 'Vpn Link Connections - List Default Shared Key' API to fetch Vpn link connection sharedKey. </param>
         /// <param name="enableBgp"> EnableBgp flag. </param>
+        /// <param name="vpnGatewayCustomBgpAddresses"> vpnGatewayCustomBgpAddresses used by this connection. </param>
         /// <param name="usePolicyBasedTrafficSelectors"> Enable policy-based traffic selectors. </param>
         /// <param name="ipsecPolicies"> The IPSec Policies to be considered by this connection. </param>
         /// <param name="enableRateLimiting"> EnableBgp flag. </param>
@@ -46,7 +52,8 @@ namespace Azure.ResourceManager.Network
         /// <param name="provisioningState"> The provisioning state of the VPN site link connection resource. </param>
         /// <param name="ingressNatRules"> List of ingress NatRules. </param>
         /// <param name="egressNatRules"> List of egress NatRules. </param>
-        internal VpnSiteLinkConnectionData(ResourceIdentifier id, string name, ResourceType? resourceType, ETag? etag, WritableSubResource vpnSiteLink, int? routingWeight, VpnLinkConnectionMode? vpnLinkConnectionMode, VpnConnectionStatus? connectionStatus, VirtualNetworkGatewayConnectionProtocol? vpnConnectionProtocolType, long? ingressBytesTransferred, long? egressBytesTransferred, int? connectionBandwidth, string sharedKey, bool? enableBgp, bool? usePolicyBasedTrafficSelectors, IList<IPsecPolicy> ipsecPolicies, bool? enableRateLimiting, bool? useLocalAzureIPAddress, NetworkProvisioningState? provisioningState, IList<WritableSubResource> ingressNatRules, IList<WritableSubResource> egressNatRules) : base(id, name, resourceType)
+        /// <param name="dpdTimeoutSeconds"> Dead Peer Detection timeout in seconds for VpnLink connection. </param>
+        internal VpnSiteLinkConnectionData(ResourceIdentifier id, string name, ResourceType? resourceType, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, WritableSubResource vpnSiteLink, int? routingWeight, VpnLinkConnectionMode? vpnLinkConnectionMode, VpnConnectionStatus? connectionStatus, VirtualNetworkGatewayConnectionProtocol? vpnConnectionProtocolType, long? ingressBytesTransferred, long? egressBytesTransferred, int? connectionBandwidth, string sharedKey, bool? enableBgp, IList<GatewayCustomBgpIPAddressIPConfiguration> vpnGatewayCustomBgpAddresses, bool? usePolicyBasedTrafficSelectors, IList<IPsecPolicy> ipsecPolicies, bool? enableRateLimiting, bool? useLocalAzureIPAddress, NetworkProvisioningState? provisioningState, IList<WritableSubResource> ingressNatRules, IList<WritableSubResource> egressNatRules, int? dpdTimeoutSeconds) : base(id, name, resourceType, serializedAdditionalRawData)
         {
             ETag = etag;
             VpnSiteLink = vpnSiteLink;
@@ -59,6 +66,7 @@ namespace Azure.ResourceManager.Network
             ConnectionBandwidth = connectionBandwidth;
             SharedKey = sharedKey;
             EnableBgp = enableBgp;
+            VpnGatewayCustomBgpAddresses = vpnGatewayCustomBgpAddresses;
             UsePolicyBasedTrafficSelectors = usePolicyBasedTrafficSelectors;
             IPsecPolicies = ipsecPolicies;
             EnableRateLimiting = enableRateLimiting;
@@ -66,13 +74,16 @@ namespace Azure.ResourceManager.Network
             ProvisioningState = provisioningState;
             IngressNatRules = ingressNatRules;
             EgressNatRules = egressNatRules;
+            DpdTimeoutSeconds = dpdTimeoutSeconds;
         }
 
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary> Id of the connected vpn site link. </summary>
         internal WritableSubResource VpnSiteLink { get; set; }
         /// <summary> Gets or sets Id. </summary>
+        [WirePath("properties.vpnSiteLink.id")]
         public ResourceIdentifier VpnSiteLinkId
         {
             get => VpnSiteLink is null ? default : VpnSiteLink.Id;
@@ -85,36 +96,58 @@ namespace Azure.ResourceManager.Network
         }
 
         /// <summary> Routing weight for vpn connection. </summary>
+        [WirePath("properties.routingWeight")]
         public int? RoutingWeight { get; set; }
         /// <summary> Vpn link connection mode. </summary>
+        [WirePath("properties.vpnLinkConnectionMode")]
         public VpnLinkConnectionMode? VpnLinkConnectionMode { get; set; }
         /// <summary> The connection status. </summary>
+        [WirePath("properties.connectionStatus")]
         public VpnConnectionStatus? ConnectionStatus { get; }
         /// <summary> Connection protocol used for this connection. </summary>
+        [WirePath("properties.vpnConnectionProtocolType")]
         public VirtualNetworkGatewayConnectionProtocol? VpnConnectionProtocolType { get; set; }
         /// <summary> Ingress bytes transferred. </summary>
+        [WirePath("properties.ingressBytesTransferred")]
         public long? IngressBytesTransferred { get; }
         /// <summary> Egress bytes transferred. </summary>
+        [WirePath("properties.egressBytesTransferred")]
         public long? EgressBytesTransferred { get; }
         /// <summary> Expected bandwidth in MBPS. </summary>
+        [WirePath("properties.connectionBandwidth")]
         public int? ConnectionBandwidth { get; set; }
-        /// <summary> SharedKey for the vpn connection. </summary>
+        /// <summary> SharedKey for the vpn link connection. We will no longer return sharedKey in any Create/Update/Get/List/UpdateTags VpnGateway/VpnConnection/VpnLinkConnection APIs response. Please use 'Vpn Link Connections - List Default Shared Key' API to fetch Vpn link connection sharedKey. </summary>
+        [WirePath("properties.sharedKey")]
         public string SharedKey { get; set; }
         /// <summary> EnableBgp flag. </summary>
+        [WirePath("properties.enableBgp")]
         public bool? EnableBgp { get; set; }
+        /// <summary> vpnGatewayCustomBgpAddresses used by this connection. </summary>
+        [WirePath("properties.vpnGatewayCustomBgpAddresses")]
+        public IList<GatewayCustomBgpIPAddressIPConfiguration> VpnGatewayCustomBgpAddresses { get; }
         /// <summary> Enable policy-based traffic selectors. </summary>
+        [WirePath("properties.usePolicyBasedTrafficSelectors")]
         public bool? UsePolicyBasedTrafficSelectors { get; set; }
         /// <summary> The IPSec Policies to be considered by this connection. </summary>
+        [WirePath("properties.ipsecPolicies")]
         public IList<IPsecPolicy> IPsecPolicies { get; }
         /// <summary> EnableBgp flag. </summary>
+        [WirePath("properties.enableRateLimiting")]
         public bool? EnableRateLimiting { get; set; }
         /// <summary> Use local azure ip to initiate connection. </summary>
+        [WirePath("properties.useLocalAzureIpAddress")]
         public bool? UseLocalAzureIPAddress { get; set; }
         /// <summary> The provisioning state of the VPN site link connection resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
         /// <summary> List of ingress NatRules. </summary>
+        [WirePath("properties.ingressNatRules")]
         public IList<WritableSubResource> IngressNatRules { get; }
         /// <summary> List of egress NatRules. </summary>
+        [WirePath("properties.egressNatRules")]
         public IList<WritableSubResource> EgressNatRules { get; }
+        /// <summary> Dead Peer Detection timeout in seconds for VpnLink connection. </summary>
+        [WirePath("properties.dpdTimeoutSeconds")]
+        public int? DpdTimeoutSeconds { get; set; }
     }
 }

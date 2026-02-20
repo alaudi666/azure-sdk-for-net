@@ -8,13 +8,22 @@ azure-arm: true
 csharp: true
 library-name: CognitiveServices
 namespace: Azure.ResourceManager.CognitiveServices
-require: https://github.com/Azure/azure-rest-api-specs/blob/7a6ec0f1e66aac22421f9338c00cbb2d1c97547d/specification/cognitiveservices/resource-manager/readme.md
-tag: package-2022-10
+require: https://github.com/Azure/azure-rest-api-specs/blob/78c97002d557d9aca3f8220b4a4774ed5aae3a09/specification/cognitiveservices/resource-manager/readme.md
+#tag: package-2025-06-01
 output-folder: $(this-folder)/Generated
 clear-output-folder: true
+sample-gen:
+  output-folder: $(this-folder)/../tests/Generated
+  clear-output-folder: true
 skip-csproj: true
 modelerfour:
   flatten-payloads: false
+  lenient-model-deduplication: true
+use-model-reader-writer: true
+enable-bicep-serialization: true
+
+#mgmt-debug:
+#  show-serialized-names: true
 
 list-exception:
   - /subscriptions/{subscriptionId}/providers/Microsoft.CognitiveServices/locations/{location}/resourceGroups/{resourceGroupName}/deletedAccounts/{accountName}
@@ -22,6 +31,12 @@ list-exception:
 request-path-to-resource-name:
   /subscriptions/{subscriptionId}/providers/Microsoft.CognitiveServices/locations/{location}/resourceGroups/{resourceGroupName}/deletedAccounts/{accountName}: CognitiveServicesDeletedAccount
   /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CognitiveServices/accounts/{accountName}: CognitiveServicesAccount
+  /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CognitiveServices/accounts/{accountName}/commitmentPlans/{commitmentPlanName}: CommitmentPlan
+  /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CognitiveServices/commitmentPlans/{commitmentPlanName}: CognitiveServicesCommitmentPlan
+  /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CognitiveServices/accounts/{accountName}/capabilityHosts/{capabilityHostName}: CognitiveServicesCapabilityHost
+  /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CognitiveServices/accounts/{accountName}/projects/{projectName}/capabilityHosts/{capabilityHostName}: CognitiveServicesProjectCapabilityHost
+  /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CognitiveServices/accounts/{accountName}/connections/{connectionName}: CognitiveServicesConnection
+  /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.CognitiveServices/accounts/{accountName}/projects/{projectName}/connections/{connectionName}: CognitiveServicesProjectConnection
 
 rename-mapping:
   CheckSkuAvailabilityParameter.type: ResourceType
@@ -68,6 +83,47 @@ rename-mapping:
   Usage: ServiceAccountUsage
   UsageListResult: ServiceAccountUsageListResult
   UserOwnedStorage: ServiceAccountUserOwnedStorage
+  RegionSetting: CognitiveServicesRegionSetting
+  RoutingMethods: CognitiveServicesRoutingMethod
+  PatchResourceTags: CognitiveServicesPatchResourceTags
+  MultiRegionSettings: CognitiveServicesMultiRegionSettings
+  CommitmentPlanProperties.commitmentPlanGuid: -|uuid
+  CommitmentPlanAssociation.commitmentPlanId: -|arm-id
+  KeyVaultProperties: CognitiveServicesKeyVaultProperties
+  ModelListResult: CognitiveServicesModelListResult
+  Model: CognitiveServicesModel
+  ModelSku: CognitiveServicesModelSku
+  CapacityConfig: CognitiveServicesCapacityConfig
+  CalculateModelCapacityParameter: CalculateModelCapacityContent
+  RaiBlocklistItemBulkRequest: RaiBlocklistItemBulkContent
+  SkuResource: CognitiveServicesResourceSku
+  DeploymentProperties.dynamicThrottlingEnabled: IsDynamicThrottlingEnabled
+  RaiMonitorConfig.adxStorageResourceId: -|arm-id
+  UserOwnedAmlWorkspace.resourceId: -|arm-id
+  NetworkSecurityPerimeter.perimeterGuid: -|uuid
+  ByPassSelection: TrustedServicesByPassSelection
+  ContentLevel: RaiPolicyContentLevel
+  ProvisioningIssue: NetworkSecurityPerimeterProvisioningIssue
+  ProvisioningIssueProperties: NetworkSecurityPerimeterProvisioningIssueProperties
+  CapabilityHost: CognitiveServicesCapabilityHost
+  CapabilityHostProperties: CognitiveServicesCapabilityHostProperties
+  ConnectionPropertiesV2BasicResource: CognitiveServicesConnection
+  ConnectionUpdateContent: CognitiveServicesConnectionPatch
+  ConnectionPropertiesV2: CognitiveServicesConnectionProperties
+  Project: CognitiveServicesProject
+  ProjectProperties: CognitiveServicesProjectProperties
+  AADAuthTypeConnectionProperties: AadAuthTypeConnectionProperties
+  ConnectionAccessKey: CognitiveServicesConnectionAccessKey
+  ConnectionCategory: CognitiveServicesConnectionCategory
+  ConnectionGroup: CognitiveServicesConnectionGroup
+  ConnectionManagedIdentity: CognitiveServicesConnectionManagedIdentity
+  ConnectionOAuth2: CognitiveServicesConnectionOAuth2
+  ConnectionServicePrincipal: CognitiveServicesConnectionServicePrincipal
+  ConnectionUsernamePassword: CognitiveServicesConnectionUsernamePassword
+  NetworkInjection: AIFoundryNetworkInjection
+  AccountProperties.networkInjections: AIFoundryNetworkInjections
+  PATAuthTypeConnectionProperties: PatAuthTypeConnectionProperties
+  ScenarioType: AIFoundryNetworkInjectionScenarioType
 
 prepend-rp-prefix:
   - Account
@@ -77,9 +133,13 @@ prepend-rp-prefix:
   - AccountProperties
   - AccountSku
   - AccountSkuListResult
-  - IPRule
+  - EncryptionScope
+  - EncryptionScopeProperties
+  - IpRule
   - NetworkRuleAction
   - NetworkRuleSet
+  - NetworkSecurityPerimeter
+  - ResourceBase
   - SkuCapability
   - SkuChangeInfo
   - VirtualNetworkRule
@@ -95,7 +155,7 @@ format-by-name-rules:
   'aadTenantId': 'uuid'
   'identityClientId': 'uuid'
 
-rename-rules:
+acronym-mapping:
   CPU: Cpu
   CPUs: Cpus
   Os: OS
@@ -116,6 +176,8 @@ rename-rules:
   SSO: Sso
   URI: Uri
   Etag: ETag|etag
+  Db: DB
+  SqlMi: SqlMI
 
 directive:
   - from: cognitiveservices.json
@@ -127,8 +189,8 @@ directive:
     transform: >
       $.CheckDomainAvailabilityParameter.properties.type['x-ms-format'] = 'resource-type';
       $.CheckSkuAvailabilityParameter.properties.type['x-ms-format'] =  'resource-type';
-      $.Encryption.properties.keyVaultProperties['x-ms-client-flatten'] = true;
       $.PrivateEndpointConnection.properties.properties['x-ms-client-flatten'] = true;
+      $.ModelSku.properties.rateLimits['readOnly'] = true;
       delete $.AccountProperties.properties.internalId;
   # TODO, these configs will be replaced by the new rename-mapping
   - from: cognitiveservices.json

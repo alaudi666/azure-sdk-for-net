@@ -10,10 +10,7 @@ using System.ComponentModel;
 
 namespace Azure.ResourceManager.MachineLearning.Models
 {
-    /// <summary>
-    /// The MachineLearningServiceDataAccessAuthIdentity.
-    /// Serialized Name: ServiceDataAccessAuthIdentity
-    /// </summary>
+    /// <summary> The MachineLearningServiceDataAccessAuthIdentity. </summary>
     public readonly partial struct MachineLearningServiceDataAccessAuthIdentity : IEquatable<MachineLearningServiceDataAccessAuthIdentity>
     {
         private readonly string _value;
@@ -29,26 +26,17 @@ namespace Azure.ResourceManager.MachineLearning.Models
         private const string WorkspaceSystemAssignedIdentityValue = "WorkspaceSystemAssignedIdentity";
         private const string WorkspaceUserAssignedIdentityValue = "WorkspaceUserAssignedIdentity";
 
-        /// <summary>
-        /// Do not use any identity for service data access.
-        /// Serialized Name: ServiceDataAccessAuthIdentity.None
-        /// </summary>
+        /// <summary> Do not use any identity for service data access. </summary>
         public static MachineLearningServiceDataAccessAuthIdentity None { get; } = new MachineLearningServiceDataAccessAuthIdentity(NoneValue);
-        /// <summary>
-        /// Use the system assigned managed identity of the Workspace to authenticate service data access.
-        /// Serialized Name: ServiceDataAccessAuthIdentity.WorkspaceSystemAssignedIdentity
-        /// </summary>
+        /// <summary> Use the system assigned managed identity of the Workspace to authenticate service data access. </summary>
         public static MachineLearningServiceDataAccessAuthIdentity WorkspaceSystemAssignedIdentity { get; } = new MachineLearningServiceDataAccessAuthIdentity(WorkspaceSystemAssignedIdentityValue);
-        /// <summary>
-        /// Use the user assigned managed identity of the Workspace to authenticate service data access.
-        /// Serialized Name: ServiceDataAccessAuthIdentity.WorkspaceUserAssignedIdentity
-        /// </summary>
+        /// <summary> Use the user assigned managed identity of the Workspace to authenticate service data access. </summary>
         public static MachineLearningServiceDataAccessAuthIdentity WorkspaceUserAssignedIdentity { get; } = new MachineLearningServiceDataAccessAuthIdentity(WorkspaceUserAssignedIdentityValue);
         /// <summary> Determines if two <see cref="MachineLearningServiceDataAccessAuthIdentity"/> values are the same. </summary>
         public static bool operator ==(MachineLearningServiceDataAccessAuthIdentity left, MachineLearningServiceDataAccessAuthIdentity right) => left.Equals(right);
         /// <summary> Determines if two <see cref="MachineLearningServiceDataAccessAuthIdentity"/> values are not the same. </summary>
         public static bool operator !=(MachineLearningServiceDataAccessAuthIdentity left, MachineLearningServiceDataAccessAuthIdentity right) => !left.Equals(right);
-        /// <summary> Converts a string to a <see cref="MachineLearningServiceDataAccessAuthIdentity"/>. </summary>
+        /// <summary> Converts a <see cref="string"/> to a <see cref="MachineLearningServiceDataAccessAuthIdentity"/>. </summary>
         public static implicit operator MachineLearningServiceDataAccessAuthIdentity(string value) => new MachineLearningServiceDataAccessAuthIdentity(value);
 
         /// <inheritdoc />
@@ -59,7 +47,7 @@ namespace Azure.ResourceManager.MachineLearning.Models
 
         /// <inheritdoc />
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public override int GetHashCode() => _value?.GetHashCode() ?? 0;
+        public override int GetHashCode() => _value != null ? StringComparer.InvariantCultureIgnoreCase.GetHashCode(_value) : 0;
         /// <inheritdoc />
         public override string ToString() => _value;
     }

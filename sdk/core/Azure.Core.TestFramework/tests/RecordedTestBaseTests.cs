@@ -5,12 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Azure.Core.TestFramework;
 using NUnit.Framework;
 
 namespace Azure.Core.TestFramework.Tests
 {
-    public class RecordedTestBaseTests: RecordedTestBase
+    public class RecordedTestBaseTests : RecordedTestBase
     {
         public RecordedTestBaseTests(bool isAsync) : base(isAsync)
         {
@@ -21,6 +20,8 @@ namespace Azure.Core.TestFramework.Tests
         {
             TestDiagnostics = false;
         }
+
+        public override string AssetsJsonPath => null;
 
         [Test]
         [PlaybackOnly("Validates logic that only runs during the playback")]

@@ -5,39 +5,51 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+
 namespace Azure.ResourceManager.SqlVirtualMachine.Models
 {
-    /// <summary> The SqlVmAssessmentSchedule. </summary>
+    /// <summary> Set assessment schedule for SQL Server. </summary>
     public partial class SqlVmAssessmentSchedule
     {
-        /// <summary> Initializes a new instance of SqlVmAssessmentSchedule. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="SqlVmAssessmentSchedule"/>. </summary>
         public SqlVmAssessmentSchedule()
         {
         }
 
-        /// <summary> Initializes a new instance of SqlVmAssessmentSchedule. </summary>
+        /// <summary> Initializes a new instance of <see cref="SqlVmAssessmentSchedule"/>. </summary>
         /// <param name="isEnabled"> Enable or disable assessment schedule on SQL virtual machine. </param>
         /// <param name="weeklyInterval"> Number of weeks to schedule between 2 assessment runs. Takes value from 1-6. </param>
         /// <param name="monthlyOccurrence"> Occurrence of the DayOfWeek day within a month to schedule assessment. Takes values: 1,2,3,4 and -1. Use -1 for last DayOfWeek day of the month. </param>
         /// <param name="dayOfWeek"> Day of the week to run assessment. </param>
         /// <param name="startTime"> Time of the day in HH:mm format. Eg. 17:30. </param>
-        internal SqlVmAssessmentSchedule(bool? isEnabled, int? weeklyInterval, int? monthlyOccurrence, SqlVmAssessmentDayOfWeek? dayOfWeek, string startTime)
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal SqlVmAssessmentSchedule(bool? isEnabled, int? weeklyInterval, int? monthlyOccurrence, SqlVmAssessmentDayOfWeek? dayOfWeek, string startTime, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             IsEnabled = isEnabled;
             WeeklyInterval = weeklyInterval;
             MonthlyOccurrence = monthlyOccurrence;
             DayOfWeek = dayOfWeek;
             StartTime = startTime;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
         /// <summary> Enable or disable assessment schedule on SQL virtual machine. </summary>
         public bool? IsEnabled { get; set; }
+
         /// <summary> Number of weeks to schedule between 2 assessment runs. Takes value from 1-6. </summary>
         public int? WeeklyInterval { get; set; }
+
         /// <summary> Occurrence of the DayOfWeek day within a month to schedule assessment. Takes values: 1,2,3,4 and -1. Use -1 for last DayOfWeek day of the month. </summary>
         public int? MonthlyOccurrence { get; set; }
+
         /// <summary> Day of the week to run assessment. </summary>
         public SqlVmAssessmentDayOfWeek? DayOfWeek { get; set; }
+
         /// <summary> Time of the day in HH:mm format. Eg. 17:30. </summary>
         public string StartTime { get; set; }
     }

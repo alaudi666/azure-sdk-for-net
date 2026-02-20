@@ -6,7 +6,7 @@
 #nullable disable
 
 using System;
-using Azure;
+using System.Collections.Generic;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
@@ -14,7 +14,7 @@ namespace Azure.ResourceManager.Network.Models
     /// <summary> VPN client root certificate of virtual network gateway. </summary>
     public partial class VpnClientRootCertificate : NetworkResourceData
     {
-        /// <summary> Initializes a new instance of VpnClientRootCertificate. </summary>
+        /// <summary> Initializes a new instance of <see cref="VpnClientRootCertificate"/>. </summary>
         /// <param name="publicCertData"> The certificate public data. </param>
         /// <exception cref="ArgumentNullException"> <paramref name="publicCertData"/> is null. </exception>
         public VpnClientRootCertificate(BinaryData publicCertData)
@@ -24,21 +24,28 @@ namespace Azure.ResourceManager.Network.Models
             PublicCertData = publicCertData;
         }
 
-        /// <summary> Initializes a new instance of VpnClientRootCertificate. </summary>
+        /// <summary> Initializes a new instance of <see cref="VpnClientRootCertificate"/>. </summary>
         /// <param name="id"> Resource ID. </param>
         /// <param name="name"> Resource name. </param>
         /// <param name="resourceType"> Resource type. </param>
+        /// <param name="serializedAdditionalRawData"> Keeps track of any properties unknown to the library. </param>
         /// <param name="etag"> A unique read-only string that changes whenever the resource is updated. </param>
         /// <param name="publicCertData"> The certificate public data. </param>
         /// <param name="provisioningState"> The provisioning state of the VPN client root certificate resource. </param>
-        internal VpnClientRootCertificate(ResourceIdentifier id, string name, ResourceType? resourceType, ETag? etag, BinaryData publicCertData, NetworkProvisioningState? provisioningState) : base(id, name, resourceType)
+        internal VpnClientRootCertificate(ResourceIdentifier id, string name, ResourceType? resourceType, IDictionary<string, BinaryData> serializedAdditionalRawData, ETag? etag, BinaryData publicCertData, NetworkProvisioningState? provisioningState) : base(id, name, resourceType, serializedAdditionalRawData)
         {
             ETag = etag;
             PublicCertData = publicCertData;
             ProvisioningState = provisioningState;
         }
 
+        /// <summary> Initializes a new instance of <see cref="VpnClientRootCertificate"/> for deserialization. </summary>
+        internal VpnClientRootCertificate()
+        {
+        }
+
         /// <summary> A unique read-only string that changes whenever the resource is updated. </summary>
+        [WirePath("etag")]
         public ETag? ETag { get; }
         /// <summary>
         /// The certificate public data.
@@ -46,7 +53,7 @@ namespace Azure.ResourceManager.Network.Models
         /// To assign an object to this property use <see cref="BinaryData.FromObjectAsJson{T}(T, System.Text.Json.JsonSerializerOptions?)"/>.
         /// </para>
         /// <para>
-        /// To assign an already formated json string to this property use <see cref="BinaryData.FromString(string)"/>.
+        /// To assign an already formatted json string to this property use <see cref="BinaryData.FromString(string)"/>.
         /// </para>
         /// <para>
         /// Examples:
@@ -70,8 +77,10 @@ namespace Azure.ResourceManager.Network.Models
         /// </list>
         /// </para>
         /// </summary>
+        [WirePath("properties.publicCertData")]
         public BinaryData PublicCertData { get; set; }
         /// <summary> The provisioning state of the VPN client root certificate resource. </summary>
+        [WirePath("properties.provisioningState")]
         public NetworkProvisioningState? ProvisioningState { get; }
     }
 }

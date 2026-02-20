@@ -5,174 +5,464 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 
 namespace Azure.ResourceManager.Network.Models
 {
-    public partial class ApplicationGatewayWebApplicationFirewallConfiguration : IUtf8JsonSerializable
+    public partial class ApplicationGatewayWebApplicationFirewallConfiguration : IUtf8JsonSerializable, IJsonModel<ApplicationGatewayWebApplicationFirewallConfiguration>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<ApplicationGatewayWebApplicationFirewallConfiguration>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<ApplicationGatewayWebApplicationFirewallConfiguration>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            writer.WritePropertyName("enabled");
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayWebApplicationFirewallConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ApplicationGatewayWebApplicationFirewallConfiguration)} does not support writing '{format}' format.");
+            }
+
+            writer.WritePropertyName("enabled"u8);
             writer.WriteBooleanValue(Enabled);
-            writer.WritePropertyName("firewallMode");
+            writer.WritePropertyName("firewallMode"u8);
             writer.WriteStringValue(FirewallMode.ToString());
-            writer.WritePropertyName("ruleSetType");
+            writer.WritePropertyName("ruleSetType"u8);
             writer.WriteStringValue(RuleSetType);
-            writer.WritePropertyName("ruleSetVersion");
+            writer.WritePropertyName("ruleSetVersion"u8);
             writer.WriteStringValue(RuleSetVersion);
             if (Optional.IsCollectionDefined(DisabledRuleGroups))
             {
-                writer.WritePropertyName("disabledRuleGroups");
+                writer.WritePropertyName("disabledRuleGroups"u8);
                 writer.WriteStartArray();
                 foreach (var item in DisabledRuleGroups)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsDefined(RequestBodyCheck))
             {
-                writer.WritePropertyName("requestBodyCheck");
+                writer.WritePropertyName("requestBodyCheck"u8);
                 writer.WriteBooleanValue(RequestBodyCheck.Value);
             }
             if (Optional.IsDefined(MaxRequestBodySize))
             {
-                writer.WritePropertyName("maxRequestBodySize");
+                writer.WritePropertyName("maxRequestBodySize"u8);
                 writer.WriteNumberValue(MaxRequestBodySize.Value);
             }
             if (Optional.IsDefined(MaxRequestBodySizeInKb))
             {
-                writer.WritePropertyName("maxRequestBodySizeInKb");
+                writer.WritePropertyName("maxRequestBodySizeInKb"u8);
                 writer.WriteNumberValue(MaxRequestBodySizeInKb.Value);
             }
             if (Optional.IsDefined(FileUploadLimitInMb))
             {
-                writer.WritePropertyName("fileUploadLimitInMb");
+                writer.WritePropertyName("fileUploadLimitInMb"u8);
                 writer.WriteNumberValue(FileUploadLimitInMb.Value);
             }
             if (Optional.IsCollectionDefined(Exclusions))
             {
-                writer.WritePropertyName("exclusions");
+                writer.WritePropertyName("exclusions"u8);
                 writer.WriteStartArray();
                 foreach (var item in Exclusions)
                 {
-                    writer.WriteObjectValue(item);
+                    writer.WriteObjectValue(item, options);
                 }
                 writer.WriteEndArray();
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && _serializedAdditionalRawData != null)
+            {
+                foreach (var item in _serializedAdditionalRawData)
+                {
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+				writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
+                }
+            }
         }
 
-        internal static ApplicationGatewayWebApplicationFirewallConfiguration DeserializeApplicationGatewayWebApplicationFirewallConfiguration(JsonElement element)
+        ApplicationGatewayWebApplicationFirewallConfiguration IJsonModel<ApplicationGatewayWebApplicationFirewallConfiguration>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayWebApplicationFirewallConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ApplicationGatewayWebApplicationFirewallConfiguration)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeApplicationGatewayWebApplicationFirewallConfiguration(document.RootElement, options);
+        }
+
+        internal static ApplicationGatewayWebApplicationFirewallConfiguration DeserializeApplicationGatewayWebApplicationFirewallConfiguration(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
             bool enabled = default;
             ApplicationGatewayFirewallMode firewallMode = default;
             string ruleSetType = default;
             string ruleSetVersion = default;
-            Optional<IList<ApplicationGatewayFirewallDisabledRuleGroup>> disabledRuleGroups = default;
-            Optional<bool> requestBodyCheck = default;
-            Optional<int> maxRequestBodySize = default;
-            Optional<int> maxRequestBodySizeInKb = default;
-            Optional<int> fileUploadLimitInMb = default;
-            Optional<IList<ApplicationGatewayFirewallExclusion>> exclusions = default;
+            IList<ApplicationGatewayFirewallDisabledRuleGroup> disabledRuleGroups = default;
+            bool? requestBodyCheck = default;
+            int? maxRequestBodySize = default;
+            int? maxRequestBodySizeInKb = default;
+            int? fileUploadLimitInMb = default;
+            IList<ApplicationGatewayFirewallExclusion> exclusions = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("enabled"))
+                if (property.NameEquals("enabled"u8))
                 {
                     enabled = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("firewallMode"))
+                if (property.NameEquals("firewallMode"u8))
                 {
                     firewallMode = new ApplicationGatewayFirewallMode(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("ruleSetType"))
+                if (property.NameEquals("ruleSetType"u8))
                 {
                     ruleSetType = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("ruleSetVersion"))
+                if (property.NameEquals("ruleSetVersion"u8))
                 {
                     ruleSetVersion = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("disabledRuleGroups"))
+                if (property.NameEquals("disabledRuleGroups"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ApplicationGatewayFirewallDisabledRuleGroup> array = new List<ApplicationGatewayFirewallDisabledRuleGroup>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ApplicationGatewayFirewallDisabledRuleGroup.DeserializeApplicationGatewayFirewallDisabledRuleGroup(item));
+                        array.Add(ApplicationGatewayFirewallDisabledRuleGroup.DeserializeApplicationGatewayFirewallDisabledRuleGroup(item, options));
                     }
                     disabledRuleGroups = array;
                     continue;
                 }
-                if (property.NameEquals("requestBodyCheck"))
+                if (property.NameEquals("requestBodyCheck"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     requestBodyCheck = property.Value.GetBoolean();
                     continue;
                 }
-                if (property.NameEquals("maxRequestBodySize"))
+                if (property.NameEquals("maxRequestBodySize"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     maxRequestBodySize = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("maxRequestBodySizeInKb"))
+                if (property.NameEquals("maxRequestBodySizeInKb"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     maxRequestBodySizeInKb = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("fileUploadLimitInMb"))
+                if (property.NameEquals("fileUploadLimitInMb"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     fileUploadLimitInMb = property.Value.GetInt32();
                     continue;
                 }
-                if (property.NameEquals("exclusions"))
+                if (property.NameEquals("exclusions"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     List<ApplicationGatewayFirewallExclusion> array = new List<ApplicationGatewayFirewallExclusion>();
                     foreach (var item in property.Value.EnumerateArray())
                     {
-                        array.Add(ApplicationGatewayFirewallExclusion.DeserializeApplicationGatewayFirewallExclusion(item));
+                        array.Add(ApplicationGatewayFirewallExclusion.DeserializeApplicationGatewayFirewallExclusion(item, options));
                     }
                     exclusions = array;
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new ApplicationGatewayWebApplicationFirewallConfiguration(enabled, firewallMode, ruleSetType, ruleSetVersion, Optional.ToList(disabledRuleGroups), Optional.ToNullable(requestBodyCheck), Optional.ToNullable(maxRequestBodySize), Optional.ToNullable(maxRequestBodySizeInKb), Optional.ToNullable(fileUploadLimitInMb), Optional.ToList(exclusions));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new ApplicationGatewayWebApplicationFirewallConfiguration(
+                enabled,
+                firewallMode,
+                ruleSetType,
+                ruleSetVersion,
+                disabledRuleGroups ?? new ChangeTrackingList<ApplicationGatewayFirewallDisabledRuleGroup>(),
+                requestBodyCheck,
+                maxRequestBodySize,
+                maxRequestBodySizeInKb,
+                fileUploadLimitInMb,
+                exclusions ?? new ChangeTrackingList<ApplicationGatewayFirewallExclusion>(),
+                serializedAdditionalRawData);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Enabled), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  enabled: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  enabled: ");
+                var boolValue = Enabled == true ? "true" : "false";
+                builder.AppendLine($"{boolValue}");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(FirewallMode), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  firewallMode: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                builder.Append("  firewallMode: ");
+                builder.AppendLine($"'{FirewallMode.ToString()}'");
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RuleSetType), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  ruleSetType: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(RuleSetType))
+                {
+                    builder.Append("  ruleSetType: ");
+                    if (RuleSetType.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{RuleSetType}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{RuleSetType}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RuleSetVersion), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  ruleSetVersion: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(RuleSetVersion))
+                {
+                    builder.Append("  ruleSetVersion: ");
+                    if (RuleSetVersion.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{RuleSetVersion}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{RuleSetVersion}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(DisabledRuleGroups), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  disabledRuleGroups: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(DisabledRuleGroups))
+                {
+                    if (DisabledRuleGroups.Any())
+                    {
+                        builder.Append("  disabledRuleGroups: ");
+                        builder.AppendLine("[");
+                        foreach (var item in DisabledRuleGroups)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  disabledRuleGroups: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RequestBodyCheck), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  requestBodyCheck: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(RequestBodyCheck))
+                {
+                    builder.Append("  requestBodyCheck: ");
+                    var boolValue = RequestBodyCheck.Value == true ? "true" : "false";
+                    builder.AppendLine($"{boolValue}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(MaxRequestBodySize), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  maxRequestBodySize: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(MaxRequestBodySize))
+                {
+                    builder.Append("  maxRequestBodySize: ");
+                    builder.AppendLine($"{MaxRequestBodySize.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(MaxRequestBodySizeInKb), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  maxRequestBodySizeInKb: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(MaxRequestBodySizeInKb))
+                {
+                    builder.Append("  maxRequestBodySizeInKb: ");
+                    builder.AppendLine($"{MaxRequestBodySizeInKb.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(FileUploadLimitInMb), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  fileUploadLimitInMb: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(FileUploadLimitInMb))
+                {
+                    builder.Append("  fileUploadLimitInMb: ");
+                    builder.AppendLine($"{FileUploadLimitInMb.Value}");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Exclusions), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  exclusions: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(Exclusions))
+                {
+                    if (Exclusions.Any())
+                    {
+                        builder.Append("  exclusions: ");
+                        builder.AppendLine("[");
+                        foreach (var item in Exclusions)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 4, true, "  exclusions: ");
+                        }
+                        builder.AppendLine("  ]");
+                    }
+                }
+            }
+
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<ApplicationGatewayWebApplicationFirewallConfiguration>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayWebApplicationFirewallConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerNetworkContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(ApplicationGatewayWebApplicationFirewallConfiguration)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        ApplicationGatewayWebApplicationFirewallConfiguration IPersistableModel<ApplicationGatewayWebApplicationFirewallConfiguration>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<ApplicationGatewayWebApplicationFirewallConfiguration>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeApplicationGatewayWebApplicationFirewallConfiguration(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(ApplicationGatewayWebApplicationFirewallConfiguration)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<ApplicationGatewayWebApplicationFirewallConfiguration>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

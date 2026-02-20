@@ -5,24 +5,39 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
+using Azure.ResourceManager.Nginx;
+
 namespace Azure.ResourceManager.Nginx.Models
 {
-    /// <summary> The NginxConfigurationPackage. </summary>
-    internal partial class NginxConfigurationPackage
+    /// <summary> Nginx Configuration Package. </summary>
+    public partial class NginxConfigurationPackage
     {
-        /// <summary> Initializes a new instance of NginxConfigurationPackage. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="NginxConfigurationPackage"/>. </summary>
         public NginxConfigurationPackage()
         {
+            ProtectedFiles = new ChangeTrackingList<string>();
         }
 
-        /// <summary> Initializes a new instance of NginxConfigurationPackage. </summary>
+        /// <summary> Initializes a new instance of <see cref="NginxConfigurationPackage"/>. </summary>
         /// <param name="data"></param>
-        internal NginxConfigurationPackage(string data)
+        /// <param name="protectedFiles"></param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal NginxConfigurationPackage(string data, IList<string> protectedFiles, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Data = data;
+            ProtectedFiles = protectedFiles;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> Gets or sets the data. </summary>
+        /// <summary> Gets or sets the Data. </summary>
         public string Data { get; set; }
+
+        /// <summary> Gets the ProtectedFiles. </summary>
+        public IList<string> ProtectedFiles { get; }
     }
 }

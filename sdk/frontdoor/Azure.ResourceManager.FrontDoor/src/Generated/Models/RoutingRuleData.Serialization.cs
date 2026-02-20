@@ -5,43 +5,54 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
 using Azure.Core;
 using Azure.ResourceManager.Resources.Models;
 
 namespace Azure.ResourceManager.FrontDoor.Models
 {
-    public partial class RoutingRuleData : IUtf8JsonSerializable
+    public partial class RoutingRuleData : IUtf8JsonSerializable, IJsonModel<RoutingRuleData>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer) => ((IJsonModel<RoutingRuleData>)this).Write(writer, ModelSerializationExtensions.WireOptions);
+
+        void IJsonModel<RoutingRuleData>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
-            if (Optional.IsDefined(Id))
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected override void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<RoutingRuleData>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
             {
-                writer.WritePropertyName("id");
-                writer.WriteStringValue(Id);
+                throw new FormatException($"The model {nameof(RoutingRuleData)} does not support writing '{format}' format.");
             }
-            if (Optional.IsDefined(Name))
-            {
-                writer.WritePropertyName("name");
-                writer.WriteStringValue(Name);
-            }
-            writer.WritePropertyName("properties");
+
+            base.JsonModelWriteCore(writer, options);
+            writer.WritePropertyName("properties"u8);
             writer.WriteStartObject();
             if (Optional.IsCollectionDefined(FrontendEndpoints))
             {
-                writer.WritePropertyName("frontendEndpoints");
+                writer.WritePropertyName("frontendEndpoints"u8);
                 writer.WriteStartArray();
                 foreach (var item in FrontendEndpoints)
                 {
-                    JsonSerializer.Serialize(writer, item);
+                    ((IJsonModel<WritableSubResource>)item).Write(writer, options);
                 }
                 writer.WriteEndArray();
             }
             if (Optional.IsCollectionDefined(AcceptedProtocols))
             {
-                writer.WritePropertyName("acceptedProtocols");
+                writer.WritePropertyName("acceptedProtocols"u8);
                 writer.WriteStartArray();
                 foreach (var item in AcceptedProtocols)
                 {
@@ -51,7 +62,7 @@ namespace Azure.ResourceManager.FrontDoor.Models
             }
             if (Optional.IsCollectionDefined(PatternsToMatch))
             {
-                writer.WritePropertyName("patternsToMatch");
+                writer.WritePropertyName("patternsToMatch"u8);
                 writer.WriteStartArray();
                 foreach (var item in PatternsToMatch)
                 {
@@ -61,69 +72,91 @@ namespace Azure.ResourceManager.FrontDoor.Models
             }
             if (Optional.IsDefined(EnabledState))
             {
-                writer.WritePropertyName("enabledState");
+                writer.WritePropertyName("enabledState"u8);
                 writer.WriteStringValue(EnabledState.Value.ToString());
             }
             if (Optional.IsDefined(RouteConfiguration))
             {
-                writer.WritePropertyName("routeConfiguration");
-                writer.WriteObjectValue(RouteConfiguration);
+                writer.WritePropertyName("routeConfiguration"u8);
+                writer.WriteObjectValue(RouteConfiguration, options);
             }
             if (Optional.IsDefined(RulesEngine))
             {
-                writer.WritePropertyName("rulesEngine");
-                JsonSerializer.Serialize(writer, RulesEngine);
+                writer.WritePropertyName("rulesEngine"u8);
+                ((IJsonModel<WritableSubResource>)RulesEngine).Write(writer, options);
             }
             if (Optional.IsDefined(WebApplicationFirewallPolicyLink))
             {
-                writer.WritePropertyName("webApplicationFirewallPolicyLink");
-                JsonSerializer.Serialize(writer, WebApplicationFirewallPolicyLink);
+                writer.WritePropertyName("webApplicationFirewallPolicyLink"u8);
+                ((IJsonModel<WritableSubResource>)WebApplicationFirewallPolicyLink).Write(writer, options);
             }
-            writer.WriteEndObject();
+            if (options.Format != "W" && Optional.IsDefined(ResourceState))
+            {
+                writer.WritePropertyName("resourceState"u8);
+                writer.WriteStringValue(ResourceState.Value.ToString());
+            }
             writer.WriteEndObject();
         }
 
-        internal static RoutingRuleData DeserializeRoutingRuleData(JsonElement element)
+        RoutingRuleData IJsonModel<RoutingRuleData>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
         {
-            Optional<ResourceIdentifier> id = default;
-            Optional<string> name = default;
-            Optional<ResourceType> type = default;
-            Optional<IList<WritableSubResource>> frontendEndpoints = default;
-            Optional<IList<FrontDoorProtocol>> acceptedProtocols = default;
-            Optional<IList<string>> patternsToMatch = default;
-            Optional<RoutingRuleEnabledState> enabledState = default;
-            Optional<RouteConfiguration> routeConfiguration = default;
-            Optional<WritableSubResource> rulesEngine = default;
-            Optional<WritableSubResource> webApplicationFirewallPolicyLink = default;
-            Optional<FrontDoorResourceState> resourceState = default;
+            var format = options.Format == "W" ? ((IPersistableModel<RoutingRuleData>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(RoutingRuleData)} does not support reading '{format}' format.");
+            }
+
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeRoutingRuleData(document.RootElement, options);
+        }
+
+        internal static RoutingRuleData DeserializeRoutingRuleData(JsonElement element, ModelReaderWriterOptions options = null)
+        {
+            options ??= ModelSerializationExtensions.WireOptions;
+
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            ResourceIdentifier id = default;
+            string name = default;
+            ResourceType? type = default;
+            IList<WritableSubResource> frontendEndpoints = default;
+            IList<FrontDoorProtocol> acceptedProtocols = default;
+            IList<string> patternsToMatch = default;
+            RoutingRuleEnabledState? enabledState = default;
+            RouteConfiguration routeConfiguration = default;
+            WritableSubResource rulesEngine = default;
+            WritableSubResource webApplicationFirewallPolicyLink = default;
+            FrontDoorResourceState? resourceState = default;
+            IDictionary<string, BinaryData> serializedAdditionalRawData = default;
+            Dictionary<string, BinaryData> rawDataDictionary = new Dictionary<string, BinaryData>();
             foreach (var property in element.EnumerateObject())
             {
-                if (property.NameEquals("id"))
+                if (property.NameEquals("id"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     id = new ResourceIdentifier(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("name"))
+                if (property.NameEquals("name"u8))
                 {
                     name = property.Value.GetString();
                     continue;
                 }
-                if (property.NameEquals("type"))
+                if (property.NameEquals("type"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
-                        property.ThrowNonNullablePropertyIsNull();
                         continue;
                     }
                     type = new ResourceType(property.Value.GetString());
                     continue;
                 }
-                if (property.NameEquals("properties"))
+                if (property.NameEquals("properties"u8))
                 {
                     if (property.Value.ValueKind == JsonValueKind.Null)
                     {
@@ -132,26 +165,24 @@ namespace Azure.ResourceManager.FrontDoor.Models
                     }
                     foreach (var property0 in property.Value.EnumerateObject())
                     {
-                        if (property0.NameEquals("frontendEndpoints"))
+                        if (property0.NameEquals("frontendEndpoints"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<WritableSubResource> array = new List<WritableSubResource>();
                             foreach (var item in property0.Value.EnumerateArray())
                             {
-                                array.Add(JsonSerializer.Deserialize<WritableSubResource>(item.GetRawText()));
+                                array.Add(ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(item.GetRawText())), options, AzureResourceManagerFrontDoorContext.Default));
                             }
                             frontendEndpoints = array;
                             continue;
                         }
-                        if (property0.NameEquals("acceptedProtocols"))
+                        if (property0.NameEquals("acceptedProtocols"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<FrontDoorProtocol> array = new List<FrontDoorProtocol>();
@@ -162,11 +193,10 @@ namespace Azure.ResourceManager.FrontDoor.Models
                             acceptedProtocols = array;
                             continue;
                         }
-                        if (property0.NameEquals("patternsToMatch"))
+                        if (property0.NameEquals("patternsToMatch"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             List<string> array = new List<string>();
@@ -177,51 +207,46 @@ namespace Azure.ResourceManager.FrontDoor.Models
                             patternsToMatch = array;
                             continue;
                         }
-                        if (property0.NameEquals("enabledState"))
+                        if (property0.NameEquals("enabledState"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             enabledState = new RoutingRuleEnabledState(property0.Value.GetString());
                             continue;
                         }
-                        if (property0.NameEquals("routeConfiguration"))
+                        if (property0.NameEquals("routeConfiguration"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            routeConfiguration = RouteConfiguration.DeserializeRouteConfiguration(property0.Value);
+                            routeConfiguration = RouteConfiguration.DeserializeRouteConfiguration(property0.Value, options);
                             continue;
                         }
-                        if (property0.NameEquals("rulesEngine"))
+                        if (property0.NameEquals("rulesEngine"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            rulesEngine = JsonSerializer.Deserialize<WritableSubResource>(property0.Value.GetRawText());
+                            rulesEngine = ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(property0.Value.GetRawText())), options, AzureResourceManagerFrontDoorContext.Default);
                             continue;
                         }
-                        if (property0.NameEquals("webApplicationFirewallPolicyLink"))
+                        if (property0.NameEquals("webApplicationFirewallPolicyLink"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
-                            webApplicationFirewallPolicyLink = JsonSerializer.Deserialize<WritableSubResource>(property0.Value.GetRawText());
+                            webApplicationFirewallPolicyLink = ModelReaderWriter.Read<WritableSubResource>(new BinaryData(Encoding.UTF8.GetBytes(property0.Value.GetRawText())), options, AzureResourceManagerFrontDoorContext.Default);
                             continue;
                         }
-                        if (property0.NameEquals("resourceState"))
+                        if (property0.NameEquals("resourceState"u8))
                         {
                             if (property0.Value.ValueKind == JsonValueKind.Null)
                             {
-                                property0.ThrowNonNullablePropertyIsNull();
                                 continue;
                             }
                             resourceState = new FrontDoorResourceState(property0.Value.GetString());
@@ -230,8 +255,281 @@ namespace Azure.ResourceManager.FrontDoor.Models
                     }
                     continue;
                 }
+                if (options.Format != "W")
+                {
+                    rawDataDictionary.Add(property.Name, BinaryData.FromString(property.Value.GetRawText()));
+                }
             }
-            return new RoutingRuleData(id.Value, name.Value, Optional.ToNullable(type), Optional.ToList(frontendEndpoints), Optional.ToList(acceptedProtocols), Optional.ToList(patternsToMatch), Optional.ToNullable(enabledState), routeConfiguration.Value, rulesEngine, webApplicationFirewallPolicyLink, Optional.ToNullable(resourceState));
+            serializedAdditionalRawData = rawDataDictionary;
+            return new RoutingRuleData(
+                id,
+                name,
+                type,
+                serializedAdditionalRawData,
+                frontendEndpoints ?? new ChangeTrackingList<WritableSubResource>(),
+                acceptedProtocols ?? new ChangeTrackingList<FrontDoorProtocol>(),
+                patternsToMatch ?? new ChangeTrackingList<string>(),
+                enabledState,
+                routeConfiguration,
+                rulesEngine,
+                webApplicationFirewallPolicyLink,
+                resourceState);
         }
+
+        private BinaryData SerializeBicep(ModelReaderWriterOptions options)
+        {
+            StringBuilder builder = new StringBuilder();
+            BicepModelReaderWriterOptions bicepOptions = options as BicepModelReaderWriterOptions;
+            IDictionary<string, string> propertyOverrides = null;
+            bool hasObjectOverride = bicepOptions != null && bicepOptions.PropertyOverrides.TryGetValue(this, out propertyOverrides);
+            bool hasPropertyOverride = false;
+            string propertyOverride = null;
+
+            builder.AppendLine("{");
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Name), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  name: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Name))
+                {
+                    builder.Append("  name: ");
+                    if (Name.Contains(Environment.NewLine))
+                    {
+                        builder.AppendLine("'''");
+                        builder.AppendLine($"{Name}'''");
+                    }
+                    else
+                    {
+                        builder.AppendLine($"'{Name}'");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(Id), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("  id: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(Id))
+                {
+                    builder.Append("  id: ");
+                    builder.AppendLine($"'{Id.ToString()}'");
+                }
+            }
+
+            builder.Append("  properties:");
+            builder.AppendLine(" {");
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(FrontendEndpoints), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    frontendEndpoints: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(FrontendEndpoints))
+                {
+                    if (FrontendEndpoints.Any())
+                    {
+                        builder.Append("    frontendEndpoints: ");
+                        builder.AppendLine("[");
+                        foreach (var item in FrontendEndpoints)
+                        {
+                            BicepSerializationHelpers.AppendChildObject(builder, item, options, 6, true, "    frontendEndpoints: ");
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(AcceptedProtocols), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    acceptedProtocols: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(AcceptedProtocols))
+                {
+                    if (AcceptedProtocols.Any())
+                    {
+                        builder.Append("    acceptedProtocols: ");
+                        builder.AppendLine("[");
+                        foreach (var item in AcceptedProtocols)
+                        {
+                            builder.AppendLine($"      '{item.ToString()}'");
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(PatternsToMatch), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    patternsToMatch: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsCollectionDefined(PatternsToMatch))
+                {
+                    if (PatternsToMatch.Any())
+                    {
+                        builder.Append("    patternsToMatch: ");
+                        builder.AppendLine("[");
+                        foreach (var item in PatternsToMatch)
+                        {
+                            if (item == null)
+                            {
+                                builder.Append("null");
+                                continue;
+                            }
+                            if (item.Contains(Environment.NewLine))
+                            {
+                                builder.AppendLine("      '''");
+                                builder.AppendLine($"{item}'''");
+                            }
+                            else
+                            {
+                                builder.AppendLine($"      '{item}'");
+                            }
+                        }
+                        builder.AppendLine("    ]");
+                    }
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(EnabledState), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    enabledState: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(EnabledState))
+                {
+                    builder.Append("    enabledState: ");
+                    builder.AppendLine($"'{EnabledState.Value.ToString()}'");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(RouteConfiguration), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    routeConfiguration: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(RouteConfiguration))
+                {
+                    builder.Append("    routeConfiguration: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, RouteConfiguration, options, 4, false, "    routeConfiguration: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("RulesEngineId", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    rulesEngine: ");
+                builder.AppendLine("{");
+                builder.AppendLine("      rulesEngine: {");
+                builder.Append("        id: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("      }");
+                builder.AppendLine("    }");
+            }
+            else
+            {
+                if (Optional.IsDefined(RulesEngine))
+                {
+                    builder.Append("    rulesEngine: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, RulesEngine, options, 4, false, "    rulesEngine: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue("WebApplicationFirewallPolicyLinkId", out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    webApplicationFirewallPolicyLink: ");
+                builder.AppendLine("{");
+                builder.AppendLine("      webApplicationFirewallPolicyLink: {");
+                builder.Append("        id: ");
+                builder.AppendLine(propertyOverride);
+                builder.AppendLine("      }");
+                builder.AppendLine("    }");
+            }
+            else
+            {
+                if (Optional.IsDefined(WebApplicationFirewallPolicyLink))
+                {
+                    builder.Append("    webApplicationFirewallPolicyLink: ");
+                    BicepSerializationHelpers.AppendChildObject(builder, WebApplicationFirewallPolicyLink, options, 4, false, "    webApplicationFirewallPolicyLink: ");
+                }
+            }
+
+            hasPropertyOverride = hasObjectOverride && propertyOverrides.TryGetValue(nameof(ResourceState), out propertyOverride);
+            if (hasPropertyOverride)
+            {
+                builder.Append("    resourceState: ");
+                builder.AppendLine(propertyOverride);
+            }
+            else
+            {
+                if (Optional.IsDefined(ResourceState))
+                {
+                    builder.Append("    resourceState: ");
+                    builder.AppendLine($"'{ResourceState.Value.ToString()}'");
+                }
+            }
+
+            builder.AppendLine("  }");
+            builder.AppendLine("}");
+            return BinaryData.FromString(builder.ToString());
+        }
+
+        BinaryData IPersistableModel<RoutingRuleData>.Write(ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<RoutingRuleData>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerFrontDoorContext.Default);
+                case "bicep":
+                    return SerializeBicep(options);
+                default:
+                    throw new FormatException($"The model {nameof(RoutingRuleData)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        RoutingRuleData IPersistableModel<RoutingRuleData>.Create(BinaryData data, ModelReaderWriterOptions options)
+        {
+            var format = options.Format == "W" ? ((IPersistableModel<RoutingRuleData>)this).GetFormatFromOptions(options) : options.Format;
+
+            switch (format)
+            {
+                case "J":
+                    {
+                        using JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions);
+                        return DeserializeRoutingRuleData(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(RoutingRuleData)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        string IPersistableModel<RoutingRuleData>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

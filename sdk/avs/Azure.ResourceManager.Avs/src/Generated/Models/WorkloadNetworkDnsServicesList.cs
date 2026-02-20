@@ -5,33 +5,41 @@
 
 #nullable disable
 
+using System;
 using System.Collections.Generic;
-using Azure.Core;
+using System.Linq;
 using Azure.ResourceManager.Avs;
 
 namespace Azure.ResourceManager.Avs.Models
 {
-    /// <summary> A list of NSX DNS Services. </summary>
+    /// <summary> The response of a WorkloadNetworkDnsService list operation. </summary>
     internal partial class WorkloadNetworkDnsServicesList
     {
-        /// <summary> Initializes a new instance of WorkloadNetworkDnsServicesList. </summary>
-        internal WorkloadNetworkDnsServicesList()
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkDnsServicesList"/>. </summary>
+        /// <param name="value"> The WorkloadNetworkDnsService items on this page. </param>
+        internal WorkloadNetworkDnsServicesList(IEnumerable<WorkloadNetworkDnsServiceData> value)
         {
-            Value = new ChangeTrackingList<WorkloadNetworkDnsServiceData>();
+            Value = value.ToList();
         }
 
-        /// <summary> Initializes a new instance of WorkloadNetworkDnsServicesList. </summary>
-        /// <param name="value"> The items on the page. </param>
-        /// <param name="nextLink"> URL to get the next page if any. </param>
-        internal WorkloadNetworkDnsServicesList(IReadOnlyList<WorkloadNetworkDnsServiceData> value, string nextLink)
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkDnsServicesList"/>. </summary>
+        /// <param name="value"> The WorkloadNetworkDnsService items on this page. </param>
+        /// <param name="nextLink"> The link to the next page of items. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        internal WorkloadNetworkDnsServicesList(IList<WorkloadNetworkDnsServiceData> value, Uri nextLink, IDictionary<string, BinaryData> additionalBinaryDataProperties)
         {
             Value = value;
             NextLink = nextLink;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
         }
 
-        /// <summary> The items on the page. </summary>
-        public IReadOnlyList<WorkloadNetworkDnsServiceData> Value { get; }
-        /// <summary> URL to get the next page if any. </summary>
-        public string NextLink { get; }
+        /// <summary> The WorkloadNetworkDnsService items on this page. </summary>
+        public IList<WorkloadNetworkDnsServiceData> Value { get; }
+
+        /// <summary> The link to the next page of items. </summary>
+        public Uri NextLink { get; }
     }
 }

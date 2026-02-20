@@ -5,44 +5,91 @@
 
 #nullable disable
 
+using System;
+using System.Collections.Generic;
 using Azure.Core;
 using Azure.ResourceManager.Avs.Models;
 using Azure.ResourceManager.Models;
 
 namespace Azure.ResourceManager.Avs
 {
-    /// <summary> A class representing the WorkloadNetworkPublicIP data model. </summary>
+    /// <summary> NSX Public IP Block. </summary>
     public partial class WorkloadNetworkPublicIPData : ResourceData
     {
-        /// <summary> Initializes a new instance of WorkloadNetworkPublicIPData. </summary>
+        /// <summary> Keeps track of any properties unknown to the library. </summary>
+        private protected readonly IDictionary<string, BinaryData> _additionalBinaryDataProperties;
+
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkPublicIPData"/>. </summary>
         public WorkloadNetworkPublicIPData()
         {
         }
 
-        /// <summary> Initializes a new instance of WorkloadNetworkPublicIPData. </summary>
-        /// <param name="id"> The id. </param>
-        /// <param name="name"> The name. </param>
-        /// <param name="resourceType"> The resourceType. </param>
-        /// <param name="systemData"> The systemData. </param>
-        /// <param name="displayName"> Display name of the Public IP Block. </param>
-        /// <param name="numberOfPublicIPs"> Number of Public IPs requested. </param>
-        /// <param name="publicIPBlock"> CIDR Block of the Public IP Block. </param>
-        /// <param name="provisioningState"> The provisioning state. </param>
-        internal WorkloadNetworkPublicIPData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, string displayName, long? numberOfPublicIPs, string publicIPBlock, WorkloadNetworkPublicIPProvisioningState? provisioningState) : base(id, name, resourceType, systemData)
+        /// <summary> Initializes a new instance of <see cref="WorkloadNetworkPublicIPData"/>. </summary>
+        /// <param name="id"> Fully qualified resource ID for the resource. Ex - /subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/{resourceProviderNamespace}/{resourceType}/{resourceName}. </param>
+        /// <param name="name"> The name of the resource. </param>
+        /// <param name="resourceType"> The type of the resource. E.g. "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts". </param>
+        /// <param name="systemData"> Azure Resource Manager metadata containing createdBy and modifiedBy information. </param>
+        /// <param name="additionalBinaryDataProperties"> Keeps track of any properties unknown to the library. </param>
+        /// <param name="properties"> The resource-specific properties for this resource. </param>
+        internal WorkloadNetworkPublicIPData(ResourceIdentifier id, string name, ResourceType resourceType, SystemData systemData, IDictionary<string, BinaryData> additionalBinaryDataProperties, WorkloadNetworkPublicIPProperties properties) : base(id, name, resourceType, systemData)
         {
-            DisplayName = displayName;
-            NumberOfPublicIPs = numberOfPublicIPs;
-            PublicIPBlock = publicIPBlock;
-            ProvisioningState = provisioningState;
+            _additionalBinaryDataProperties = additionalBinaryDataProperties;
+            Properties = properties;
         }
 
+        /// <summary> The resource-specific properties for this resource. </summary>
+        internal WorkloadNetworkPublicIPProperties Properties { get; set; }
+
         /// <summary> Display name of the Public IP Block. </summary>
-        public string DisplayName { get; set; }
+        public string DisplayName
+        {
+            get
+            {
+                return Properties is null ? default : Properties.DisplayName;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkloadNetworkPublicIPProperties();
+                }
+                Properties.DisplayName = value;
+            }
+        }
+
         /// <summary> Number of Public IPs requested. </summary>
-        public long? NumberOfPublicIPs { get; set; }
+        public long? NumberOfPublicIPs
+        {
+            get
+            {
+                return Properties is null ? default : Properties.NumberOfPublicIPs;
+            }
+            set
+            {
+                if (Properties is null)
+                {
+                    Properties = new WorkloadNetworkPublicIPProperties();
+                }
+                Properties.NumberOfPublicIPs = value.Value;
+            }
+        }
+
         /// <summary> CIDR Block of the Public IP Block. </summary>
-        public string PublicIPBlock { get; }
+        public string PublicIPBlock
+        {
+            get
+            {
+                return Properties is null ? default : Properties.PublicIPBlock;
+            }
+        }
+
         /// <summary> The provisioning state. </summary>
-        public WorkloadNetworkPublicIPProvisioningState? ProvisioningState { get; }
+        public WorkloadNetworkPublicIPProvisioningState? ProvisioningState
+        {
+            get
+            {
+                return Properties is null ? default : Properties.ProvisioningState;
+            }
+        }
     }
 }

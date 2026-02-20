@@ -12,7 +12,10 @@ using NUnit.Framework;
 namespace Azure.Security.KeyVault.Keys.Tests
 {
     [ClientTestFixture(
-        KeyClientOptions.ServiceVersion.V7_4_Preview_1,
+        KeyClientOptions.ServiceVersion.V2025_07_01,
+        KeyClientOptions.ServiceVersion.V7_6,
+        KeyClientOptions.ServiceVersion.V7_5,
+        KeyClientOptions.ServiceVersion.V7_4,
         KeyClientOptions.ServiceVersion.V7_3,
         KeyClientOptions.ServiceVersion.V7_2)]
     public class ManagedHsmCryptographyClientLiveTests : CryptographyClientLiveTests
@@ -47,7 +50,8 @@ namespace Azure.Security.KeyVault.Keys.Tests
             nameof(EncryptionAlgorithm.A256Cbc),
             nameof(EncryptionAlgorithm.A128CbcPad),
             nameof(EncryptionAlgorithm.A192CbcPad),
-            nameof(EncryptionAlgorithm.A256CbcPad))] EncryptionAlgorithm algorithm)
+            nameof(EncryptionAlgorithm.A256CbcPad)
+            )] EncryptionAlgorithm algorithm)
         {
             int keySizeInBytes = algorithm.GetAesCbcEncryptionAlgorithm().KeySizeInBytes;
             JsonWebKey jwk = KeyUtilities.CreateAesKey(keySizeInBytes, s_aesKeyOps);
@@ -171,7 +175,10 @@ namespace Azure.Security.KeyVault.Keys.Tests
         public async Task AesKwWrapUnwrapRoundTrip([EnumValues(
             nameof(KeyWrapAlgorithm.A128KW),
             nameof(KeyWrapAlgorithm.A192KW),
-            nameof(KeyWrapAlgorithm.A256KW))] KeyWrapAlgorithm algorithm)
+            nameof(KeyWrapAlgorithm.A256KW),
+            nameof(KeyWrapAlgorithm.CkmAesKeyWrap),
+            nameof(KeyWrapAlgorithm.CkmAesKeyWrapPad)
+            )] KeyWrapAlgorithm algorithm)
         {
             KeyVaultKey key = await CreateTestKey(algorithm);
             RegisterForCleanup(key.Name);
@@ -197,44 +204,29 @@ namespace Azure.Security.KeyVault.Keys.Tests
         }
 
         [RecordedTest]
-        public async Task EdDSASignVerifyRoundTrip()
+        public async Task SignLocalVerifyRoundTripHSM([EnumValues(Exclude = new[] { nameof(SignatureAlgorithm.ES256K) })]SignatureAlgorithm algorithm)
         {
-            SignatureAlgorithm algorithm = SignatureAlgorithm.EdDsa;
+            await SignLocalVerifyRoundTripInternal(algorithm);
+        }
 
-            KeyVaultKey key = await CreateTestKey(algorithm);
-            RegisterForCleanup(key.Name);
+        // We do not test using ES256K below since macOS doesn't support it; various ideas to work around that adversely affect runtime code too much.
 
-            CryptographyClient cryptoClient = GetCryptoClient(key.Id);
+        [RecordedTest]
+        public async Task LocalSignVerifyRoundTripHSM([EnumValues(Exclude = new[] { nameof(SignatureAlgorithm.ES256K) })] SignatureAlgorithm algorithm)
+        {
+            await LocalSignVerifyRoundTripInternal(algorithm);
+        }
 
-            byte[] data = new byte[32];
-            Recording.Random.NextBytes(data);
+        [RecordedTest]
+        public async Task SignVerifyDataRoundTripHSM([EnumValues] SignatureAlgorithm algorithm)
+        {
+            await SignVerifyDataRoundTripInternal(algorithm);
+        }
 
-            using HashAlgorithm hashAlgo = algorithm.GetHashAlgorithm();
-            byte[] digest = hashAlgo.ComputeHash(data);
-
-            SignResult signResult = await cryptoClient.SignAsync(algorithm, digest);
-            SignResult signDataResult = await cryptoClient.SignDataAsync(algorithm, data);
-
-            Assert.AreEqual(algorithm, signResult.Algorithm);
-            Assert.AreEqual(algorithm, signDataResult.Algorithm);
-
-            Assert.AreEqual(key.Id, signResult.KeyId);
-            Assert.AreEqual(key.Id, signDataResult.KeyId);
-
-            Assert.NotNull(signResult.Signature);
-            Assert.NotNull(signDataResult.Signature);
-
-            VerifyResult verifyResult = await cryptoClient.VerifyAsync(algorithm, digest, signDataResult.Signature);
-            VerifyResult verifyDataResult = await cryptoClient.VerifyDataAsync(algorithm, data, signResult.Signature);
-
-            Assert.AreEqual(algorithm, verifyResult.Algorithm);
-            Assert.AreEqual(algorithm, verifyDataResult.Algorithm);
-
-            Assert.AreEqual(key.Id, verifyResult.KeyId);
-            Assert.AreEqual(key.Id, verifyDataResult.KeyId);
-
-            Assert.True(verifyResult.IsValid);
-            Assert.True(verifyResult.IsValid);
+        [RecordedTest]
+        public async Task SignVerifyDataStreamRoundTripHSM([EnumValues] SignatureAlgorithm algorithm)
+        {
+            await SignVerifyDataStreamRoundTripInternal(algorithm);
         }
 
         private async Task<KeyVaultKey> CreateTestKey(EncryptionAlgorithm algorithm)

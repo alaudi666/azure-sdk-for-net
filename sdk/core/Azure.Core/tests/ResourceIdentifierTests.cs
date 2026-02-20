@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using Azure.ResourceManager.Resources;
 using NUnit.Framework;
 
 namespace Azure.Core.Tests
@@ -33,7 +32,7 @@ namespace Azure.Core.Tests
 
         #region LocationResouceIdentifier
         [Test]
-        public void LocationFromDiffNamespaceWithChildResouce()
+        public void LocationFromDiffNamespaceWithChildResource()
         {
             string resourceId = $"{LocationInDifferentNamespace}/publishers/128technology";
             var id = GetResourceIdentifier(resourceId);
@@ -48,7 +47,7 @@ namespace Azure.Core.Tests
         }
 
         [Test]
-        public void LocationWithChildResouce()
+        public void LocationWithChildResource()
         {
             string resourceId = $"{LocationBaseResourceId}/myResourceType/myResourceName";
             var id = GetResourceIdentifier(resourceId);
@@ -539,10 +538,52 @@ namespace Azure.Core.Tests
         [TestCase("/subscriptions/17fecd63-33d8-4e43-ac6f-0aafa111b38d/providers/Contoso.Widgets/widgets/myWidget/configuration", Description = "singleton homed in a subscription resource")]
         [TestCase("/subscriptions/17fecd63-33d8-4e43-ac6f-0aafa111b38d/providers/Contoso.Widgets/widgets/myWidget/providers/Contoso.Extensions/extensions/myExtension", Description = "Extension over a subscription resource")]
         [TestCase("/subscriptions/17fecd63-33d8-4e43-ac6f-0aafa111b38d/providers/Contoso.Widgets/widgets/myWidget/flanges/myFlange", Description = "Child of a subscription resource")]
+        [TestCase("/subscriptions/17fecd63-33d8-4e43-ac6f-0aafa111b38d/providers/Microsoft.CognitiveServices/locations/westus/resourceGroups/myResourceGroup/deletedAccounts/myDeletedAccount", Description = "Location before ResourceGroup")]
         public void CanParseValidSubscriptionResource(string resourceId)
         {
             ResourceIdentifier subscription = GetResourceIdentifier(resourceId);
             Assert.AreEqual(resourceId, subscription.ToString());
+        }
+
+        [TestCase("/subscriptions/17fecd63-33d8-4e43-ac6f-0aafa111b38d/providers/Microsoft.CognitiveServices/locations/westus/resourceGroups/myResourceGroup/deletedAccounts/myDeletedAccount", "Microsoft.CognitiveServices/locations/resourceGroups/deletedAccounts")]
+        public void CanCalculateResourceType(string id, string resourceType)
+        {
+            ResourceIdentifier resourceId = GetResourceIdentifier(id);
+            Assert.AreEqual(resourceType, resourceId.ResourceType.ToString());
+            Assert.AreEqual("myResourceGroup", resourceId.ResourceGroupName);
+            Assert.AreEqual(AzureLocation.WestUS, resourceId.Location);
+            Assert.AreEqual("17fecd63-33d8-4e43-ac6f-0aafa111b38d", resourceId.SubscriptionId);
+            Assert.AreEqual("myDeletedAccount", resourceId.Name);
+
+            resourceId = resourceId.Parent;
+            Assert.AreEqual("Microsoft.CognitiveServices/locations/resourceGroups", resourceId.ResourceType.ToString());
+            Assert.AreEqual("myResourceGroup", resourceId.ResourceGroupName);
+            Assert.AreEqual(AzureLocation.WestUS, resourceId.Location);
+            Assert.AreEqual("17fecd63-33d8-4e43-ac6f-0aafa111b38d", resourceId.SubscriptionId);
+            Assert.AreEqual("myResourceGroup", resourceId.Name);
+
+            resourceId = resourceId.Parent;
+            Assert.AreEqual("Microsoft.CognitiveServices/locations", resourceId.ResourceType.ToString());
+            Assert.IsNull(resourceId.ResourceGroupName);
+            Assert.AreEqual(AzureLocation.WestUS, resourceId.Location);
+            Assert.AreEqual("17fecd63-33d8-4e43-ac6f-0aafa111b38d", resourceId.SubscriptionId);
+            Assert.AreEqual("westus", resourceId.Name);
+
+            resourceId = resourceId.Parent;
+            Assert.AreEqual("Microsoft.Resources/subscriptions", resourceId.ResourceType.ToString());
+            Assert.IsNull(resourceId.ResourceGroupName);
+            Assert.IsNull(resourceId.Location);
+            Assert.AreEqual("17fecd63-33d8-4e43-ac6f-0aafa111b38d", resourceId.SubscriptionId);
+            Assert.AreEqual("17fecd63-33d8-4e43-ac6f-0aafa111b38d", resourceId.Name);
+
+            resourceId = resourceId.Parent;
+            Assert.AreEqual("Microsoft.Resources/tenants", resourceId.ResourceType.ToString());
+            Assert.IsNull(resourceId.ResourceGroupName);
+            Assert.IsNull(resourceId.Location);
+            Assert.IsNull(resourceId.SubscriptionId);
+            Assert.AreEqual("", resourceId.Name);
+
+            Assert.IsNull(resourceId.Parent);
         }
 
         [TestCase("/subscriptions/db1ab6f0-4769-4b27-930e-01e2ef9c123c/tagNames/azsecpack", Description = "No provider tagname")]
@@ -737,7 +778,7 @@ namespace Azure.Core.Tests
         {
             var root = ResourceIdentifier.Root;
             Assert.IsNull(root.Parent);
-            Assert.AreEqual(root.ResourceType, TenantResource.ResourceType.ToString());
+            Assert.AreEqual(root.ResourceType, "Microsoft.Resources/tenants");
             Assert.AreEqual("/", root.ToString());
         }
 
@@ -775,27 +816,33 @@ namespace Azure.Core.Tests
             Assert.IsFalse(ResourceIdentifier.TryParse(id, out var result));
         }
 
+        [TestCase(null)]
+        public void NullInput(string invalidID)
+        {
+            Assert.Throws<ArgumentNullException>(() => { _ = new ResourceIdentifier(invalidID).Name; });
+            Assert.Throws<ArgumentNullException>(() => ResourceIdentifier.Parse(invalidID));
+            Assert.IsFalse(ResourceIdentifier.TryParse(invalidID, out var result));
+        }
+
         [TestCase("")]
+        public void EmptyInput(string invalidID)
+        {
+            Assert.Throws<ArgumentException>(() => { _ = new ResourceIdentifier(invalidID).Name; });
+            Assert.Throws<ArgumentException>(() => ResourceIdentifier.Parse(invalidID));
+            Assert.IsFalse(ResourceIdentifier.TryParse(invalidID, out var result));
+        }
+
         [TestCase(" ")]
         [TestCase("asdfghj")]
         [TestCase("123456")]
         [TestCase("!@#$%^&*/")]
         [TestCase("/subscriptions/")]
         [TestCase("/0c2f6471-1bf0-4dda-aec3-cb9272f09575/myRg/")]
-        public void InvalidRPIds(string invalidID)
+        public void InvalidInput(string invalidID)
         {
-            if (invalidID == String.Empty)
-            {
-                Assert.Throws<ArgumentException>(() => { _ = new ResourceIdentifier(invalidID).Name; });
-                Assert.Throws<ArgumentException>(() => ResourceIdentifier.Parse(invalidID));
-                Assert.IsFalse(ResourceIdentifier.TryParse(invalidID, out var result));
-            }
-            else
-            {
-                Assert.Throws<FormatException>(() => { _ = new ResourceIdentifier(invalidID).Name; });
-                Assert.Throws<FormatException>(() => ResourceIdentifier.Parse(invalidID));
-                Assert.IsFalse(ResourceIdentifier.TryParse(invalidID, out var result));
-            }
+            Assert.Throws<FormatException>(() => { _ = new ResourceIdentifier(invalidID).Name; });
+            Assert.Throws<FormatException>(() => ResourceIdentifier.Parse(invalidID));
+            Assert.IsFalse(ResourceIdentifier.TryParse(invalidID, out var result));
         }
 
         [TestCase(TrackedResourceId)]

@@ -5,58 +5,159 @@
 
 #nullable disable
 
+using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.DataBox;
 
 namespace Azure.ResourceManager.DataBox.Models
 {
-    public partial class PackageCarrierDetails : IUtf8JsonSerializable
+    /// <summary> Package carrier details. </summary>
+    public partial class PackageCarrierDetails : IJsonModel<PackageCarrierDetails>
     {
-        void IUtf8JsonSerializable.Write(Utf8JsonWriter writer)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual PackageCarrierDetails PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<PackageCarrierDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
+                    {
+                        return DeserializePackageCarrierDetails(document.RootElement, options);
+                    }
+                default:
+                    throw new FormatException($"The model {nameof(PackageCarrierDetails)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<PackageCarrierDetails>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
         {
             writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<PackageCarrierDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(PackageCarrierDetails)} does not support writing '{format}' format.");
+            }
             if (Optional.IsDefined(CarrierAccountNumber))
             {
-                writer.WritePropertyName("carrierAccountNumber");
+                writer.WritePropertyName("carrierAccountNumber"u8);
                 writer.WriteStringValue(CarrierAccountNumber);
             }
             if (Optional.IsDefined(CarrierName))
             {
-                writer.WritePropertyName("carrierName");
+                writer.WritePropertyName("carrierName"u8);
                 writer.WriteStringValue(CarrierName);
             }
             if (Optional.IsDefined(TrackingId))
             {
-                writer.WritePropertyName("trackingId");
+                writer.WritePropertyName("trackingId"u8);
                 writer.WriteStringValue(TrackingId);
             }
-            writer.WriteEndObject();
-        }
-
-        internal static PackageCarrierDetails DeserializePackageCarrierDetails(JsonElement element)
-        {
-            Optional<string> carrierAccountNumber = default;
-            Optional<string> carrierName = default;
-            Optional<string> trackingId = default;
-            foreach (var property in element.EnumerateObject())
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
             {
-                if (property.NameEquals("carrierAccountNumber"))
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    carrierAccountNumber = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("carrierName"))
-                {
-                    carrierName = property.Value.GetString();
-                    continue;
-                }
-                if (property.NameEquals("trackingId"))
-                {
-                    trackingId = property.Value.GetString();
-                    continue;
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
+                    {
+                        JsonSerializer.Serialize(writer, document.RootElement);
+                    }
+#endif
                 }
             }
-            return new PackageCarrierDetails(carrierAccountNumber.Value, carrierName.Value, trackingId.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        PackageCarrierDetails IJsonModel<PackageCarrierDetails>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual PackageCarrierDetails JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<PackageCarrierDetails>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(PackageCarrierDetails)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializePackageCarrierDetails(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static PackageCarrierDetails DeserializePackageCarrierDetails(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            string carrierAccountNumber = default;
+            string carrierName = default;
+            string trackingId = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("carrierAccountNumber"u8))
+                {
+                    carrierAccountNumber = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("carrierName"u8))
+                {
+                    carrierName = prop.Value.GetString();
+                    continue;
+                }
+                if (prop.NameEquals("trackingId"u8))
+                {
+                    trackingId = prop.Value.GetString();
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new PackageCarrierDetails(carrierAccountNumber, carrierName, trackingId, additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<PackageCarrierDetails>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<PackageCarrierDetails>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerDataBoxContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(PackageCarrierDetails)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        PackageCarrierDetails IPersistableModel<PackageCarrierDetails>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<PackageCarrierDetails>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

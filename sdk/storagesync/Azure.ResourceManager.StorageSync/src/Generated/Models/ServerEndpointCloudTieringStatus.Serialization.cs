@@ -6,140 +6,302 @@
 #nullable disable
 
 using System;
+using System.ClientModel.Primitives;
+using System.Collections.Generic;
 using System.Text.Json;
-using Azure.Core;
+using Azure.ResourceManager.StorageSync;
 
 namespace Azure.ResourceManager.StorageSync.Models
 {
-    public partial class ServerEndpointCloudTieringStatus
+    /// <summary> Server endpoint cloud tiering status object. </summary>
+    public partial class ServerEndpointCloudTieringStatus : IJsonModel<ServerEndpointCloudTieringStatus>
     {
-        internal static ServerEndpointCloudTieringStatus DeserializeServerEndpointCloudTieringStatus(JsonElement element)
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServerEndpointCloudTieringStatus PersistableModelCreateCore(BinaryData data, ModelReaderWriterOptions options)
         {
-            Optional<DateTimeOffset> lastUpdatedTimestamp = default;
-            Optional<ServerEndpointHealthState> health = default;
-            Optional<DateTimeOffset> healthLastUpdatedTimestamp = default;
-            Optional<int> lastCloudTieringResult = default;
-            Optional<DateTimeOffset> lastSuccessTimestamp = default;
-            Optional<CloudTieringSpaceSavings> spaceSavings = default;
-            Optional<CloudTieringCachePerformance> cachePerformance = default;
-            Optional<CloudTieringFilesNotTiering> filesNotTiering = default;
-            Optional<CloudTieringVolumeFreeSpacePolicyStatus> volumeFreeSpacePolicyStatus = default;
-            Optional<CloudTieringDatePolicyStatus> datePolicyStatus = default;
-            Optional<CloudTieringLowDiskMode> lowDiskMode = default;
-            foreach (var property in element.EnumerateObject())
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointCloudTieringStatus>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
             {
-                if (property.NameEquals("lastUpdatedTimestamp"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                case "J":
+                    using (JsonDocument document = JsonDocument.Parse(data, ModelSerializationExtensions.JsonDocumentOptions))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        return DeserializeServerEndpointCloudTieringStatus(document.RootElement, options);
                     }
-                    lastUpdatedTimestamp = property.Value.GetDateTimeOffset("O");
-                    continue;
-                }
-                if (property.NameEquals("health"))
+                default:
+                    throw new FormatException($"The model {nameof(ServerEndpointCloudTieringStatus)} does not support reading '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        void IJsonModel<ServerEndpointCloudTieringStatus>.Write(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            writer.WriteStartObject();
+            JsonModelWriteCore(writer, options);
+            writer.WriteEndObject();
+        }
+
+        /// <param name="writer"> The JSON writer. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual void JsonModelWriteCore(Utf8JsonWriter writer, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointCloudTieringStatus>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServerEndpointCloudTieringStatus)} does not support writing '{format}' format.");
+            }
+            if (options.Format != "W" && Optional.IsDefined(LastUpdatedOn))
+            {
+                writer.WritePropertyName("lastUpdatedTimestamp"u8);
+                writer.WriteStringValue(LastUpdatedOn.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(Health))
+            {
+                writer.WritePropertyName("health"u8);
+                writer.WriteStringValue(Health.Value.ToString());
+            }
+            if (options.Format != "W" && Optional.IsDefined(HealthLastUpdatedOn))
+            {
+                writer.WritePropertyName("healthLastUpdatedTimestamp"u8);
+                writer.WriteStringValue(HealthLastUpdatedOn.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(LastCloudTieringResult))
+            {
+                writer.WritePropertyName("lastCloudTieringResult"u8);
+                writer.WriteNumberValue(LastCloudTieringResult.Value);
+            }
+            if (options.Format != "W" && Optional.IsDefined(LastSuccessTimestamp))
+            {
+                writer.WritePropertyName("lastSuccessTimestamp"u8);
+                writer.WriteStringValue(LastSuccessTimestamp.Value, "O");
+            }
+            if (options.Format != "W" && Optional.IsDefined(SpaceSavings))
+            {
+                writer.WritePropertyName("spaceSavings"u8);
+                writer.WriteObjectValue(SpaceSavings, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(CachePerformance))
+            {
+                writer.WritePropertyName("cachePerformance"u8);
+                writer.WriteObjectValue(CachePerformance, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(FilesNotTiering))
+            {
+                writer.WritePropertyName("filesNotTiering"u8);
+                writer.WriteObjectValue(FilesNotTiering, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(VolumeFreeSpacePolicyStatus))
+            {
+                writer.WritePropertyName("volumeFreeSpacePolicyStatus"u8);
+                writer.WriteObjectValue(VolumeFreeSpacePolicyStatus, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(DatePolicyStatus))
+            {
+                writer.WritePropertyName("datePolicyStatus"u8);
+                writer.WriteObjectValue(DatePolicyStatus, options);
+            }
+            if (options.Format != "W" && Optional.IsDefined(LowDiskMode))
+            {
+                writer.WritePropertyName("lowDiskMode"u8);
+                writer.WriteObjectValue(LowDiskMode, options);
+            }
+            if (options.Format != "W" && _additionalBinaryDataProperties != null)
+            {
+                foreach (var item in _additionalBinaryDataProperties)
                 {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
+                    writer.WritePropertyName(item.Key);
+#if NET6_0_OR_GREATER
+                    writer.WriteRawValue(item.Value);
+#else
+                    using (JsonDocument document = JsonDocument.Parse(item.Value))
                     {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
+                        JsonSerializer.Serialize(writer, document.RootElement);
                     }
-                    health = new ServerEndpointHealthState(property.Value.GetString());
-                    continue;
-                }
-                if (property.NameEquals("healthLastUpdatedTimestamp"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    healthLastUpdatedTimestamp = property.Value.GetDateTimeOffset("O");
-                    continue;
-                }
-                if (property.NameEquals("lastCloudTieringResult"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    lastCloudTieringResult = property.Value.GetInt32();
-                    continue;
-                }
-                if (property.NameEquals("lastSuccessTimestamp"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    lastSuccessTimestamp = property.Value.GetDateTimeOffset("O");
-                    continue;
-                }
-                if (property.NameEquals("spaceSavings"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    spaceSavings = CloudTieringSpaceSavings.DeserializeCloudTieringSpaceSavings(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("cachePerformance"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    cachePerformance = CloudTieringCachePerformance.DeserializeCloudTieringCachePerformance(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("filesNotTiering"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    filesNotTiering = CloudTieringFilesNotTiering.DeserializeCloudTieringFilesNotTiering(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("volumeFreeSpacePolicyStatus"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    volumeFreeSpacePolicyStatus = CloudTieringVolumeFreeSpacePolicyStatus.DeserializeCloudTieringVolumeFreeSpacePolicyStatus(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("datePolicyStatus"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    datePolicyStatus = CloudTieringDatePolicyStatus.DeserializeCloudTieringDatePolicyStatus(property.Value);
-                    continue;
-                }
-                if (property.NameEquals("lowDiskMode"))
-                {
-                    if (property.Value.ValueKind == JsonValueKind.Null)
-                    {
-                        property.ThrowNonNullablePropertyIsNull();
-                        continue;
-                    }
-                    lowDiskMode = CloudTieringLowDiskMode.DeserializeCloudTieringLowDiskMode(property.Value);
-                    continue;
+#endif
                 }
             }
-            return new ServerEndpointCloudTieringStatus(Optional.ToNullable(lastUpdatedTimestamp), Optional.ToNullable(health), Optional.ToNullable(healthLastUpdatedTimestamp), Optional.ToNullable(lastCloudTieringResult), Optional.ToNullable(lastSuccessTimestamp), spaceSavings.Value, cachePerformance.Value, filesNotTiering.Value, volumeFreeSpacePolicyStatus.Value, datePolicyStatus.Value, lowDiskMode.Value);
         }
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServerEndpointCloudTieringStatus IJsonModel<ServerEndpointCloudTieringStatus>.Create(ref Utf8JsonReader reader, ModelReaderWriterOptions options) => JsonModelCreateCore(ref reader, options);
+
+        /// <param name="reader"> The JSON reader. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual ServerEndpointCloudTieringStatus JsonModelCreateCore(ref Utf8JsonReader reader, ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointCloudTieringStatus>)this).GetFormatFromOptions(options) : options.Format;
+            if (format != "J")
+            {
+                throw new FormatException($"The model {nameof(ServerEndpointCloudTieringStatus)} does not support reading '{format}' format.");
+            }
+            using JsonDocument document = JsonDocument.ParseValue(ref reader);
+            return DeserializeServerEndpointCloudTieringStatus(document.RootElement, options);
+        }
+
+        /// <param name="element"> The JSON element to deserialize. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        internal static ServerEndpointCloudTieringStatus DeserializeServerEndpointCloudTieringStatus(JsonElement element, ModelReaderWriterOptions options)
+        {
+            if (element.ValueKind == JsonValueKind.Null)
+            {
+                return null;
+            }
+            DateTimeOffset? lastUpdatedOn = default;
+            ServerEndpointHealthState? health = default;
+            DateTimeOffset? healthLastUpdatedOn = default;
+            int? lastCloudTieringResult = default;
+            DateTimeOffset? lastSuccessTimestamp = default;
+            CloudTieringSpaceSavings spaceSavings = default;
+            CloudTieringCachePerformance cachePerformance = default;
+            CloudTieringFilesNotTiering filesNotTiering = default;
+            CloudTieringVolumeFreeSpacePolicyStatus volumeFreeSpacePolicyStatus = default;
+            CloudTieringDatePolicyStatus datePolicyStatus = default;
+            CloudTieringLowDiskMode lowDiskMode = default;
+            IDictionary<string, BinaryData> additionalBinaryDataProperties = new ChangeTrackingDictionary<string, BinaryData>();
+            foreach (var prop in element.EnumerateObject())
+            {
+                if (prop.NameEquals("lastUpdatedTimestamp"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    lastUpdatedOn = prop.Value.GetDateTimeOffset("O");
+                    continue;
+                }
+                if (prop.NameEquals("health"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    health = new ServerEndpointHealthState(prop.Value.GetString());
+                    continue;
+                }
+                if (prop.NameEquals("healthLastUpdatedTimestamp"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    healthLastUpdatedOn = prop.Value.GetDateTimeOffset("O");
+                    continue;
+                }
+                if (prop.NameEquals("lastCloudTieringResult"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    lastCloudTieringResult = prop.Value.GetInt32();
+                    continue;
+                }
+                if (prop.NameEquals("lastSuccessTimestamp"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    lastSuccessTimestamp = prop.Value.GetDateTimeOffset("O");
+                    continue;
+                }
+                if (prop.NameEquals("spaceSavings"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    spaceSavings = CloudTieringSpaceSavings.DeserializeCloudTieringSpaceSavings(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("cachePerformance"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    cachePerformance = CloudTieringCachePerformance.DeserializeCloudTieringCachePerformance(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("filesNotTiering"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    filesNotTiering = CloudTieringFilesNotTiering.DeserializeCloudTieringFilesNotTiering(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("volumeFreeSpacePolicyStatus"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    volumeFreeSpacePolicyStatus = CloudTieringVolumeFreeSpacePolicyStatus.DeserializeCloudTieringVolumeFreeSpacePolicyStatus(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("datePolicyStatus"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    datePolicyStatus = CloudTieringDatePolicyStatus.DeserializeCloudTieringDatePolicyStatus(prop.Value, options);
+                    continue;
+                }
+                if (prop.NameEquals("lowDiskMode"u8))
+                {
+                    if (prop.Value.ValueKind == JsonValueKind.Null)
+                    {
+                        continue;
+                    }
+                    lowDiskMode = CloudTieringLowDiskMode.DeserializeCloudTieringLowDiskMode(prop.Value, options);
+                    continue;
+                }
+                if (options.Format != "W")
+                {
+                    additionalBinaryDataProperties.Add(prop.Name, BinaryData.FromString(prop.Value.GetRawText()));
+                }
+            }
+            return new ServerEndpointCloudTieringStatus(
+                lastUpdatedOn,
+                health,
+                healthLastUpdatedOn,
+                lastCloudTieringResult,
+                lastSuccessTimestamp,
+                spaceSavings,
+                cachePerformance,
+                filesNotTiering,
+                volumeFreeSpacePolicyStatus,
+                datePolicyStatus,
+                lowDiskMode,
+                additionalBinaryDataProperties);
+        }
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        BinaryData IPersistableModel<ServerEndpointCloudTieringStatus>.Write(ModelReaderWriterOptions options) => PersistableModelWriteCore(options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        protected virtual BinaryData PersistableModelWriteCore(ModelReaderWriterOptions options)
+        {
+            string format = options.Format == "W" ? ((IPersistableModel<ServerEndpointCloudTieringStatus>)this).GetFormatFromOptions(options) : options.Format;
+            switch (format)
+            {
+                case "J":
+                    return ModelReaderWriter.Write(this, options, AzureResourceManagerStorageSyncContext.Default);
+                default:
+                    throw new FormatException($"The model {nameof(ServerEndpointCloudTieringStatus)} does not support writing '{options.Format}' format.");
+            }
+        }
+
+        /// <param name="data"> The data to parse. </param>
+        /// <param name="options"> The client options for reading and writing models. </param>
+        ServerEndpointCloudTieringStatus IPersistableModel<ServerEndpointCloudTieringStatus>.Create(BinaryData data, ModelReaderWriterOptions options) => PersistableModelCreateCore(data, options);
+
+        /// <param name="options"> The client options for reading and writing models. </param>
+        string IPersistableModel<ServerEndpointCloudTieringStatus>.GetFormatFromOptions(ModelReaderWriterOptions options) => "J";
     }
 }

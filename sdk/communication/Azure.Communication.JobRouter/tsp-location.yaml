@@ -1,0 +1,6 @@
+commit: a0a2a2ccc3b8cbf61d6044db2b434091ec769acf
+directory: specification/communication/Communication.JobRouter
+additionalDirectories: []
+repo: Azure/azure-rest-api-specs
+
+emitterPackageJsonPath: eng/legacy-emitter-package.json
